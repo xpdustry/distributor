@@ -5,7 +5,21 @@
 
 ## Description
 
-A library not ready for the public...
+This library is still in developemt and needs some tools I did not finished to code yet.
+
+## Roadmap
+
+- [x] Commands
+
+- [x] Formatter
+
+- [ ] Localization
+
+- [ ] Discord
+
+- [ ] Statistics
+
+- [ ] Interfaces for services such as anti-VPNs
 
 ## Usage
 
