@@ -1,12 +1,13 @@
-package fr.xpdustry.templates;
+package fr.xpdustry.distributor;
 
-import arc.util.CommandHandler;
-import mindustry.mod.Plugin;
+import arc.util.*;
+import mindustry.mod.*;
 
-import static arc.util.Log.info;
+import static arc.util.Log.*;
+
 
 @SuppressWarnings("unused")  // <- Only used for this template so IntelliJ stop screaming at me...
-public class TemplatePlugin extends Plugin{
+public class DistributorPlugin extends Plugin{
 
     /**
      * This method is called when game initializes.
