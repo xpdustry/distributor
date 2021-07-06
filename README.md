@@ -6,3 +6,19 @@
 ## Description
 
 A library not ready for the public...
+
+## Usage
+
+Add these in your build.gradle
+
+```gradle
+repositories {
+			  ...
+			  maven { url 'https://jitpack.io' }
+		}
+}
+
+dependencies {
+    implementation 'fr.xpdustry:Distributor:v0.1'
+}
+```
