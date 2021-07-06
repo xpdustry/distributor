@@ -18,11 +18,19 @@ public class CommandParameter{
     }
 
     public CommandParameter(String name, boolean optional, boolean variadic, ParameterType... parameterTypes){
-        this(name, optional, variadic, EnumSet.copyOf(Arrays.asList(parameterTypes)));
+        this(name, optional, variadic, Arrays.asList(parameterTypes));
     }
 
     public CommandParameter(String name, boolean optional, boolean variadic, Collection<ParameterType> parameterTypes){
-        this(name, optional, variadic, EnumSet.copyOf(parameterTypes));
+        this.name = name;
+        this.optional = optional;
+        this.variadic = variadic;
+
+        if(parameterTypes.isEmpty()){
+            this.parameterTypes = EnumSet.of(ParameterType.string);
+        }else{
+            this.parameterTypes = EnumSet.copyOf(parameterTypes);
+        }
     }
 
     public CommandParameter(String name, boolean optional, boolean variadic, EnumSet<ParameterType> parameterTypes){
@@ -80,7 +88,7 @@ public class CommandParameter{
             }
         }),
 
-        bool((text) -> text.equalsIgnoreCase("true") || text.equals("1")),
+        bool((text) -> true),
         string((text) -> true);
 
         public final Boolf<String> check;

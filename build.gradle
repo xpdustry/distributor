@@ -76,6 +76,7 @@ jar{
     }
 
     from "plugin.json"
+    from "banner.txt"
 }
 
 

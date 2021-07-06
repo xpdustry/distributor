@@ -7,6 +7,8 @@ import fr.xpdustry.distributor.command.CommandParameter.*;
 
 import java.util.*;
 
+import static arc.util.Log.*;
+
 
 public class Command{
     public final String name;
@@ -50,7 +52,6 @@ public class Command{
 
         }else{
             String[] parameterList = text.split(" ");
-
             parameters = new CommandParameter[parameterList.length];
 
             boolean hadVariadicParameter = false;
@@ -100,7 +101,7 @@ public class Command{
                     hadVariadicParameter = true;
                 }
 
-                if(parameter.contains("=")){
+                if(parameterName.contains("=")){
                     // Split the parameter
                     String[] splicedParameter = parameterName.split("=");
                     parameterName = splicedParameter[0];
@@ -108,7 +109,6 @@ public class Command{
                     String[] types = splicedParameter[1].split("\\|");
 
                     for(String typeName : types){
-                        typeName = typeName.trim();
                         if(ParameterType.all.containsKey(typeName)){
                             typeList.add(ParameterType.all.get(typeName));
                         }else{
@@ -124,18 +124,18 @@ public class Command{
 
     /** Run the command as a standalone one, but be aware that it checks the parameters size and type,
      *  if you want to avoid these checks, use the runner directly or override this method */
-    public void handleCommand(String[] args, @Nullable Player player) throws ArgumentSizeException, IllegalArgumentException{
+    public void handleCommand(String[] args, @Nullable Player player){
         if(hasNotEnoughArguments(args)){
-            throw new ArgumentSizeException("Not enough arguments.");
+            err("Got not enough arguments.");
         }else if(hasTooManyArguments(args)){
-            throw new ArgumentSizeException("Too many arguments.");
+            err("Got too many arguments.");
         }
 
         // Index of an invalid argument
-        int index = hasInvalidArguments(args);
+        int index = getInvalidArgument(args);
 
         if(index != -1){
-            throw new IllegalArgumentException("Invalid argument type: expected " + parameters[index].getParameterTypes() + ", got " + args[index]);
+            err("Invalid argument type: expected " + parameters[index].getParameterTypes() + ", got " + args[index]);
         }
 
         runner.accept(args, player);
@@ -149,7 +149,13 @@ public class Command{
         return getNonOptionalParametersSize() > args.length;
     }
 
-    public int hasInvalidArguments(String[] args){
+    public boolean hasVariadicParameter(){
+        return parameters[parameters.length - 1].variadic;
+    }
+
+    /** Returns -1 if all arguments are valid,
+     *  or returns the index of the first invalid argument */
+    public int getInvalidArgument(String[] args){
         for(int i = 0; i < parameters.length; i++){
             if(!parameters[i].isValid(args[i])){
                 return i;
@@ -169,10 +175,6 @@ public class Command{
 
     public int getParametersSize(){
         return parameters.length;
-    }
-
-    public boolean hasVariadicParameter(){
-        return parameters[parameters.length - 1].variadic;
     }
 
     public CommandParameter[] getCommandParameters(){

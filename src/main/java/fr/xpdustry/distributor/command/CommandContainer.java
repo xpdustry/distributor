@@ -40,9 +40,9 @@ public class CommandContainer extends Command{
             }
 
             // Index of an invalid argument
-            int index = hasInvalidArguments(args);
+            int index = getInvalidArgument(args);
 
-            if(index != 1){
+            if(index != -1){
                 return new CommandResponse(name, ResponseType.badArguments);
             }
 
