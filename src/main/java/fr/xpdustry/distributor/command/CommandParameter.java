@@ -3,56 +3,38 @@ package fr.xpdustry.distributor.command;
 import arc.func.*;
 import arc.struct.*;
 
-import java.util.*;
-import java.util.EnumSet;
-
 
 public class CommandParameter{
     public final String name;
     public final boolean optional;
     public final boolean variadic;
-    private final EnumSet<ParameterType> parameterTypes;
+    public final ParameterType parameterType;
 
     public CommandParameter(String name, boolean optional, boolean variadic){
         this(name, optional, variadic, ParameterType.string);
     }
 
-    public CommandParameter(String name, boolean optional, boolean variadic, ParameterType... parameterTypes){
-        this(name, optional, variadic, Arrays.asList(parameterTypes));
-    }
-
-    public CommandParameter(String name, boolean optional, boolean variadic, Collection<ParameterType> parameterTypes){
+    public CommandParameter(String name, boolean optional, boolean variadic, ParameterType parameterType){
         this.name = name;
         this.optional = optional;
         this.variadic = variadic;
 
-        if(parameterTypes.isEmpty()){
-            this.parameterTypes = EnumSet.of(ParameterType.string);
+        if(parameterType != null){
+            this.parameterType = parameterType;
         }else{
-            this.parameterTypes = EnumSet.copyOf(parameterTypes);
+            this.parameterType = ParameterType.string;
         }
     }
 
-    public CommandParameter(String name, boolean optional, boolean variadic, EnumSet<ParameterType> parameterTypes){
-        this.name = name;
-        this.optional = optional;
-        this.variadic = variadic;
-        this.parameterTypes = parameterTypes;
-    }
-
-    /** Checks if the given argument can be parsed to the parameter types */
+    /** Checks if the given argument can be parsed to the parameter type */
     public boolean isValid(String arg){
-        for(ParameterType type : parameterTypes){
-            if(type.check.get(arg)){
-                return true;
-            }
-        }
-
-        return false;
+        return parameterType.check.get(arg);
     }
 
-    public EnumSet<ParameterType> getParameterTypes(){
-        return parameterTypes;
+    @Override
+    public String toString(){
+        char[] closures = optional ? new char[]{'[', ']'} : new char[]{'<', '>'};
+        return closures[0] + name + "=(" + parameterType + ")" + (variadic ? "..." : "") + closures[1];
     }
 
     public enum ParameterType{
@@ -92,7 +74,6 @@ public class CommandParameter{
         string((text) -> true);
 
         public final Boolf<String> check;
-
         public static final ObjectMap<String,ParameterType> all;
 
         static{

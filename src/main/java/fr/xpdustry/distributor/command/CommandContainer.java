@@ -12,6 +12,10 @@ import java.util.*;
 public class CommandContainer extends Command{
     protected final ObjectMap<String, Command> subcommands;
 
+    /**
+     * The CommandContainer is Command that can handle subcommands.
+     * It behaves a bit like the {@link CommandHandler}.
+     */
     public CommandContainer(String name, String parameterText, String description){
         super(name, parameterText, description);
 
@@ -22,7 +26,11 @@ public class CommandContainer extends Command{
         };
     }
 
-    public CommandResponse handleSubcommand(String name, String[] args, Player player){
+    public CommandResponse handleSubcommand(String name, String[] args){
+        return handleSubcommand(name, args, null);
+    }
+
+    public CommandResponse handleSubcommand(String name, String[] args, @Nullable Player player){
         if(this.subcommands.isEmpty()){
             return new CommandResponse(name, ResponseType.emptyExecutor);
         }
@@ -31,23 +39,25 @@ public class CommandContainer extends Command{
 
         if(command == null){
             return new CommandResponse(name, ResponseType.commandNotFound);
-
         }else{
-            if(command.hasNotEnoughArguments(args)){
-                return new CommandResponse(name, ResponseType.notEnoughArguments);
-            }else if(command.hasTooManyArguments(args)){
-                return new CommandResponse(name, ResponseType.tooManyArguments);
+            String[] parsedArguments;
+
+            if(args.length == 0){
+                parsedArguments = args;
+            }else{
+                parsedArguments = parseArguments(command, args[0]);
             }
 
-            // Index of an invalid argument
-            int index = getInvalidArgument(args);
-
-            if(index != -1){
+            if(command.hasNotEnoughArguments(parsedArguments)){
+                return new CommandResponse(name, ResponseType.notEnoughArguments);
+            }else if(command.hasTooManyArguments(parsedArguments)){
+                return new CommandResponse(name, ResponseType.tooManyArguments);
+            }else if(command.getInvalidArgument(parsedArguments) != -1){
                 return new CommandResponse(name, ResponseType.badArguments);
             }
 
             try{
-                command.runner.accept(args, player);
+                command.runner.accept(parsedArguments, player);
                 return new CommandResponse(name, ResponseType.success);
             }catch(Throwable e){
                 return new CommandResponse(name, ResponseType.unhandledException, e);
@@ -79,5 +89,14 @@ public class CommandContainer extends Command{
 
     public boolean hasCommand(String name){
         return subcommands.containsKey(name);
+    }
+
+    public String[] parseArguments(Command command, String args){
+        // Don't split the variadic arguments
+        if(command.hasVariadicParameter()){
+            return args.split(" ", command.getParametersSize());
+        }else{
+            return args.split(" ");
+        }
     }
 }

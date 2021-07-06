@@ -1,11 +1,16 @@
 package fr.xpdustry.distributor.util;
 
 import arc.struct.*;
+import arc.util.*;
 
 
 public class StringFormatter{
     public final ObjectMap<String, String> map;
 
+    /**
+     * Create a StringFormatter, a tool specifically designed for plugins.
+     * It can store predefined variables for templating your plugin messages and format strings like {@link Strings#format}.
+     */
     public StringFormatter(){
         this.map = new ObjectMap<>();
     }
@@ -14,6 +19,30 @@ public class StringFormatter{
         this.map = map;
     }
 
+    /**
+     * Behaves like {@link Strings#format}, but can also use predefined values when used with
+     * { } and $ tokens.
+     *
+     * <p>For example, if you have the predefined variable [age=21], you just have to do:
+     * <blockquote><pre>
+     * Bob is {age} years old
+     * </pre></blockquote>
+     *
+     * this will output:
+     * <blockquote><pre>
+     * Bob is 21 years old
+     * </pre></blockquote>
+     *
+     * <p>The $ token can auto-close color tags. For example, the predefined variable [r=red] can be used such as:
+     * <blockquote><pre>
+     * This is $r[really] important
+     * </pre></blockquote>
+     *
+     * this will output:
+     * <blockquote><pre>
+     * This is [red]really[] important
+     * </pre></blockquote>
+     */
     public String format(String text, final Object... args){
         StringBuilder builder = new StringBuilder(text.length() * 2);
         format(text, builder, 0, text.length(), new int[]{0}, new int[]{0}, args);
