@@ -33,6 +33,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'fr.xpdustry:Distributor:v0.1'
+    implementation 'fr.xpdustry:Distributor:v0.2'
 }
 ```
