@@ -13,7 +13,7 @@ This library is still in developemt and needs some tools I did not finished to c
 
 - [x] Formatter
 
-- [ ] Localization
+- [x] Localization (Unfinished but usable)
 
 - [ ] Discord
 
@@ -33,6 +33,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'fr.xpdustry:Distributor:v0.2'
+    implementation 'fr.xpdustry:Distributor:v0.3'
 }
 ```

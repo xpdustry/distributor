@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.command;
 import arc.util.*;
 
 
-public class Commands{
+public final class Commands{
     public static void registerToHandler(CommandHandler handler, Command command){
         if(command != null){
             handler.register(command.name, command.parameterText, command.description, command.runner::accept);

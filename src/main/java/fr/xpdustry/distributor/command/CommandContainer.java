@@ -78,17 +78,21 @@ public class CommandContainer extends Command{
     }
 
     @Nullable
-    public Command removeCommand(String name){
+    public Command remove(String name){
         return subcommands.remove(name);
     }
 
     @Nullable
-    public Command getCommand(String name){
+    public Command get(String name){
         return subcommands.get(name);
     }
 
-    public boolean hasCommand(String name){
+    public boolean has(String name){
         return subcommands.containsKey(name);
+    }
+
+    public boolean has(Command command, boolean identity){
+        return subcommands.containsValue(command, identity);
     }
 
     public String[] parseArguments(Command command, String args){

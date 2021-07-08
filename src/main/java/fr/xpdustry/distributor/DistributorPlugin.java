@@ -5,6 +5,7 @@ import mindustry.mod.*;
 
 import java.io.*;
 
+
 import static arc.util.Log.*;
 
 
@@ -35,6 +36,16 @@ public class DistributorPlugin extends Plugin{
         }catch(Exception e){
             info("Loaded DistributorPlugin !");
         }
+
+        /*
+        try{
+            BundleManager bundles = new BundleManager(this, BundleManager.ROOT_LOCALE);
+            bundles.loadPluginLocales(new Fi("C:\\Users\\Finley\\Documents\\Kode\\Java\\Plugins\\Distributor\\src\\main\\resources\\bundle.properties"));
+            info("String > " + bundles.get("test"));
+        }catch(Exception e){
+            err("Failed the locale loading...", e);
+        }
+         */
     }
 
     /**

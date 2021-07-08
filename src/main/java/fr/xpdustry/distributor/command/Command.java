@@ -35,7 +35,7 @@ public class Command{
      * <p>For example:
      * <ul>
      * <li>{@code <name>} is a non optional parameter which is implicitly a string.</li>
-     * <li>{@code [arguments=(numeric)...]} is an optional variadic parameter which only accepts integers values.</li>
+     * <li>{@code [arguments=(numeric)...]} is an optional variadic parameter which only accepts integer values.</li>
      * <li>etc...</li>
      * </ul>
      */
@@ -155,10 +155,10 @@ public class Command{
      */
     public void handleCommand(String[] args, @Nullable Player player){
         if(hasNotEnoughArguments(args)){
-            err("Got not enough arguments.");
+            debug("Got not enough arguments.");
             return;
         }else if(hasTooManyArguments(args)){
-            err("Got too many arguments.");
+            debug("Got too many arguments.");
             return;
         }
 
@@ -166,7 +166,7 @@ public class Command{
         int index = getInvalidArgument(args);
 
         if(index != -1){
-            err("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index]);
+            debug("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index]);
             return;
         }
 
