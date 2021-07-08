@@ -12,12 +12,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 16
+
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       - name: Build plugin jar
-        run: ./gradlew jar
+        id: build
+        run: |
+          ./gradlew jar
+          echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
+
       - name: Upload built jar file
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.event.repository.name }}
-          path: build/libs/${{ github.event.repository.name }}.jar
+          path: ${{ steps.build.outputs.ARTIFACT_PATH }}
