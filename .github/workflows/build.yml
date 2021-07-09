@@ -1,6 +1,10 @@
 name: Build
 
-on: [push, workflow_dispatch]
+on: [
+    push,
+    pull_request,
+    workflow_dispatch
+]
 
 jobs:
   build:
@@ -13,12 +17,10 @@ jobs:
         with:
           java-version: 16
 
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-
-      - name: Build plugin jar
+      - name: Build artifacts
         id: build
         run: |
+          chmod +x ./gradlew
           ./gradlew jar
           echo '::set-output name=ARTIFACT_PATH_CORE::'$(./gradlew core:getArtifactPath -q)
           echo '::set-output name=ARTIFACT_PATH_PLUGIN::'$(./gradlew plugin:getArtifactPath -q)
