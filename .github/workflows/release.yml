@@ -47,7 +47,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.build.outputs.ARTIFACT_PATH_CORE }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
-          path:
 
       - name: Upload plugin artifact
         uses: svenstaro/upload-release-action@v2

@@ -26,9 +26,11 @@ jobs:
       - name: Upload core artifact
         uses: actions/upload-artifact@v2
         with:
+          name: Distributor-core
           path: ${{ steps.build.outputs.ARTIFACT_PATH_CORE }}
 
       - name: Upload plugin artifact
         uses: actions/upload-artifact@v2
         with:
+          name: Distributor-plugin
           path: ${{ steps.build.outputs.ARTIFACT_PATH_PLUGIN }}
