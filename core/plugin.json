@@ -1,0 +1,6 @@
+{
+  "name": "xpdustry-distributor-core",
+  "displayName": "Xpdustry Distributor Core Lib",
+  "description": "A library for easier development.",
+  "main": "fr.xpdustry.distributor.core.DistributorPlugin"
+}

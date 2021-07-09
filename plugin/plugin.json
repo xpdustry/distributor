@@ -1,0 +1,6 @@
+{
+  "name": "xpdustry-distributor-plugin",
+  "displayName": "Xpdustry Distributor Plugin",
+  "description": "A plugin for server management and deployment.",
+  "main": "fr.xpdustry.distributor.core.DistributorPlugin"
+}

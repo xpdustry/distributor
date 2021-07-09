@@ -15,14 +15,20 @@ jobs:
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
+
       - name: Build plugin jar
         id: build
         run: |
           ./gradlew jar
-          echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
+          echo '::set-output name=ARTIFACT_PATH_CORE::'$(./gradlew core:getArtifactPath -q)
+          echo '::set-output name=ARTIFACT_PATH_PLUGIN::'$(./gradlew plugin:getArtifactPath -q)
 
-      - name: Upload built jar file
+      - name: Upload core artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}
-          path: ${{ steps.build.outputs.ARTIFACT_PATH }}
+          path: ${{ steps.build.outputs.ARTIFACT_PATH_CORE }}
+
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ steps.build.outputs.ARTIFACT_PATH_PLUGIN }}

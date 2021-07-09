@@ -1,1 +1,4 @@
 rootProject.name = "Distributor"
+
+include "core"
+include "plugin"
