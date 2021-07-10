@@ -14,10 +14,7 @@ import static arc.util.Log.*;
 public class DistributorPlugin extends Plugin{
     @Override
     public void init(){
-        showBanner();
-    }
-
-    public void showBanner(){
+        // Show a nice banner :^)
         try{
             Seq<String> lines = new Seq<>();
             InputStream stream = getClass().getClassLoader().getResourceAsStream("banner.txt");

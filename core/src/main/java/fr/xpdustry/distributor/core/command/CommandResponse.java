@@ -17,16 +17,4 @@ public class CommandResponse{
         this.type = responseType;
         this.exception = exception;
     }
-
-    public enum ResponseType{
-        tooManyArguments,
-        notEnoughArguments,
-        badArguments,
-        commandNotFound,
-        unhandledException,
-        emptyExecutor,
-        success
-    }
 }
-
-

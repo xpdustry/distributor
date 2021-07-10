@@ -5,15 +5,15 @@
 
 ## Description
 
-This library is still in developemt and needs some tools I did not finished to code yet.
+This library is still in development and needs some tools I did not finished to code yet.
 
 ## Roadmap
 
-- [x] Commands
+- [x] Commands (Totally finished, The javadoc may need some improvements)
 
-- [x] Formatter
+- [x] Formatter (Base classes finished, Javadoc needed)
 
-- [x] Localization (Unfinished but usable)
+- [x] Localization (Usable but need unit tests)
 
 - [ ] Discord
 
@@ -33,6 +33,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'fr.xpdustry:Distributor:v0.3'
+    implementation 'fr.xpdustry:Distributor:(Latest version tag)'
 }
 ```

@@ -3,70 +3,87 @@ package fr.xpdustry.distributor.core.command;
 import arc.util.*;
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.core.command.CommandParameter.*;
-
 import static arc.util.Log.*;
 
 
+/**
+ * Custom implementation of the {@link arc.util.CommandHandler.Command} class for Distributor.
+ */
 public class Command{
     public final String name;
     public final String description;
     public final String parameterText;
 
     protected CommandRunner runner;
-    private CommandParameter[] parameters;
     private int optionalParameterNumber = 0;
+    private final CommandParameter[] parameters;
 
-    /** Create a standalone Command without parameters */
+    /**
+     * Creates a {@link Command} which accepts no arguments.
+     * <br><b>Note:</b> This constructor is used for debugging because a command without description is confusing.
+     * @param name The name of the {@code Command}.
+     * @param runner The {@link CommandRunner} that will run the {@code Command}.
+     * @throws NullPointerException if one of the arguments is null.
+     */
+    public Command(String name, CommandRunner runner){
+        this(name, "", runner);
+    }
+
+    /**
+     * Creates a {@link Command} which accepts no arguments.
+     * See {@link #Command(String, String, String, CommandRunner)} if you want your command to accept arguments.
+     * @param name The name of the {@code Command}.
+     * @param description The description of the {@code Command}.
+     * @param runner The {@link CommandRunner} that will run the {@code Command}.
+     * @throws NullPointerException if one of the arguments is null.
+     */
     public Command(String name, String description, CommandRunner runner){
         this(name, "", description, runner);
     }
 
     /**
-     * Create a standalone Command with {@code CommandParameter}, they follow these parsing rules:
+     * Creates a {@link Command} which can accepts arguments.
+     * <br>They are parsed from the {@code parameterText} into an array of {@link CommandParameter} that will be used by the {@link Command}.
+     * It follows these syntax rules:
+     *
      * <ol>
-     * <li>By default, they are divided by spaces</li>
-     * <li>A parameter between {@literal < / >} closures is not optional, it means the command won't run without them.</li>
-     * <li>A parameter between {@literal [ / ]} closures is optional, it means it's totally fine to run a command without them.</li>
-     * <li>A parameter with ... at the end is variadic, it will include all the surplus arguments in one, usually used with long text.</li>
-     * <li>A parameter can have a datatype, it's either <b>numeric, decimal, bool or string</b>. Parameters are strings by default.</li>
+     *     <li>The parameters are divided by spaces so they cannot contain one.</li>
+     *     <li>A parameter between angle brackets such as {@code <parameter>} is mandatory.</li>
+     *     <li>A parameter between square brackets such as {@code [parameter]} is optional.</li>
+     *     <li>A parameter with 3 trailing commas ... such as {@code <parameter...>} is variadic,
+     *     it will combine all the surplus arguments into one, usually used with text.</li>
+     *     <li>A parameter can specify a datatype between round brackets such as {@code [parameter=(datatype)]}.
+     *     It's either <b>numeric, decimal, bool or string</b>. If the datatype is not specified for a given parameter,
+     *     the resulting {@link CommandParameter} will have the <b>string</b> datatype by default.</li>
+     *     <li>All mandatory parameters must come before optional parameters and it can only be one variadic parameter, which is always the last.</li>
      * </ol>
      *
-     * <p>For example:
+     * <br>For example:
      * <ul>
-     * <li>{@code <name>} is a non optional parameter which is implicitly a string.</li>
-     * <li>{@code [arguments=(numeric)...]} is an optional variadic parameter which only accepts integer values.</li>
-     * <li>etc...</li>
+     *     <li>{@code <name>} is a non optional parameter which is implicitly a string.</li>
+     *     <li>{@code [arguments=(numeric)...]} is an optional variadic parameter which only accepts integer values.</li>
+     *     <li>etc...</li>
      * </ul>
+     *
+     * @param name The name of the {@code Command}.
+     * @param parameterText The parameters of the {@code Command}.
+     * @param description The description of the {@code Command}.
+     * @param runner The {@code CommandRunner} that will run the command.
+     * @throws NullPointerException if one of the arguments is null.
+     * @see CommandParameter
      */
     public Command(String name, String parameterText, String description, CommandRunner runner){
+        if(name == null || parameterText == null || description == null || runner == null) throw new NullPointerException();
+
         this.name = name;
         this.description = description;
         this.parameterText = parameterText;
         this.runner = runner;
-        parseParameters(parameterText);
-    }
 
-    /** Constructor for subclasses with their own implementation */
-    protected Command(String name, String description){
-        this(name, "", description);
-    }
-
-    /** Constructor for subclasses with their own implementation */
-    protected Command(String name, String parameterText, String description){
-        this.name = name;
-        this.description = description;
-        this.parameterText = parameterText;
-        this.runner = (args, player) -> {};
-        parseParameters(parameterText);
-    }
-
-    /** Parses the parameters text to an array of CommandParameters */
-    private void parseParameters(String text){
-        if(text == null || text.isEmpty()){
+        if(parameterText.isEmpty()){
             parameters = new CommandParameter[0];
         }else{
-            String[] parameterList = text.split(" ");
+            String[] parameterList = parameterText.split(" ");
             parameters = new CommandParameter[parameterList.length];
 
             boolean hadVariadicParameter = false;
@@ -145,13 +162,21 @@ public class Command{
         }
     }
 
+    /**
+     * Runs a command without a player, usually used for server-side commands.
+     * See {@link #handleCommand(String[], Player)} for more details.
+     * @param args An array of arguments.
+     */
     public void handleCommand(String[] args){
         handleCommand(args, null);
     }
 
     /**
-     * Run the command as a standalone one, but be aware that it checks the parameters size and type,
-     * if you want to avoid these checks, use the runner directly or override this method
+     * Runs the command with checks on the arguments size and type. If one of these criteras are invalid,
+     * it will log what has gone wrong if {@link mindustry.net.Administration.Config#debug} is enabled.
+     * <br>If you want to avoid these checks, use the {@link #runner} directly or override this method.
+     * @param args The command arguments.
+     * @param player The player, can be null.
      */
     public void handleCommand(String[] args, @Nullable Player player){
         if(hasNotEnoughArguments(args)){
@@ -163,7 +188,7 @@ public class Command{
         }
 
         // Index of an invalid argument
-        int index = getInvalidArgument(args);
+        int index = getInvalidArgumentType(args);
 
         if(index != -1){
             debug("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index]);
@@ -187,10 +212,11 @@ public class Command{
     }
 
     /**
-     * Returns -1 if all arguments are valid or returns the index of the first invalid argument.
-     * Make sure to verify the arguments size before verifying the argument types
+     * <b>Before using this method, make sure to verify the arguments size.</b>
+     * @return -1 if all the argument match the type of their parameter typ,
+     * or returns the index of the first invalid argument.
      */
-    public int getInvalidArgument(String[] args){
+    public int getInvalidArgumentType(String[] args){
         for(int i = 0; i < args.length; i++){
             if(!parameters[i].isValid(args[i])){
                 return i;
@@ -210,11 +236,10 @@ public class Command{
         return parameters.length;
     }
 
+    /** @return a copy of the parameters */
     public CommandParameter[] getParameters(){
-        return parameters;
-    }
-
-    public interface CommandRunner{
-        void accept(String[] args, @Nullable Player player);
+        CommandParameter[] copy = new CommandParameter[parameters.length];
+        System.arraycopy(parameters, 0, copy, 0, parameters.length);
+        return copy;
     }
 }
