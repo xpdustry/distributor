@@ -36,6 +36,7 @@ jobs:
       - name: Upload core artifact
         uses: svenstaro/upload-release-action@v2
         with:
+          asset_name: Distributor-core.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.release.outputs.ARTIFACT_PATH_CORE }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
@@ -43,6 +44,7 @@ jobs:
       - name: Upload plugin artifact
         uses: svenstaro/upload-release-action@v2
         with:
+          asset_name: Distributor-plugin.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.release.outputs.ARTIFACT_PATH_PLUGIN }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}

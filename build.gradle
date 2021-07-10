@@ -103,8 +103,6 @@ subprojects{
             from file
         }
 
-        archiveBaseName = "$rootProject.name-$project.name"
-
         // The following line is required
         from configurations.runtimeClasspath.collect{
             it.isDirectory() ? it : zipTree(it)
