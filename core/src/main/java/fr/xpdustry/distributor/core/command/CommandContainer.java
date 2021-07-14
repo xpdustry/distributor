@@ -13,11 +13,17 @@ import java.util.*;
  */
 public class CommandContainer extends Command{
     protected final ObjectMap<String, Command> subcommands;
+    private final int splitParameterIndex;
 
     /**
-     * Creates a {@code CommandContainer}. When the {@link #runner} is called,
-     * it will by default take the first argument as the subcommand name and the rest as the subcommand arguments.
+     * Creates a {@code CommandContainer}. By default, when the {@link #runner} is called,
+     * it will take the first argument as the subcommand name and the rest as the subcommand arguments.
+     *
+     * <br>Then, it will split the arguments based on the number of parameters of the subcommand
+     * and the {@code splitParameterIndex} which is 0 by default (The 2nd parameter of the {@code CommandContainer}).
+     *
      * <br><b>Nice tip:</b> For the parameters, I recommend you to have something like {@code <subcommand> [arguments...]}.
+     *
      * @param name The name of the {@code CommandContainer}.
      * @param parameterText The parameters of the {@code CommandContainer}.
      * @param description The description of the {@code CommandContainer}.
@@ -25,11 +31,30 @@ public class CommandContainer extends Command{
      * @throws NullPointerException if one of the arguments is null.
      */
     public CommandContainer(String name, String parameterText, String description){
+        this(name, parameterText, description, 0);
+    }
+
+    /**
+     * Creates a {@code CommandContainer}. But with the {@code splitParameterIndex} specified.
+     * @param name The name of the {@code CommandContainer}.
+     * @param parameterText The parameters of the {@code CommandContainer}.
+     * @param description The description of the {@code CommandContainer}.
+     * @param splitParameterIndex The parameter index to split
+     * @throws IllegalArgumentException if the {@code CommandContainer} doesn't accept at least one argument.
+     * @throws IllegalArgumentException if the {@code splitParameterIndex} is below -1 or greater than the parameter size.
+     * @throws NullPointerException if one of the arguments is null.
+     * @see #CommandContainer(String, String, String)
+     */
+    public CommandContainer(String name, String parameterText, String description, int splitParameterIndex){
         super(name, parameterText, description, CommandRunner.voidRunner);
 
         if(getParametersSize() == 0){
             throw new IllegalArgumentException("A CommandContainer must accept at least one argument.");
+        }else if(getParametersSize() < splitParameterIndex || splitParameterIndex < -1){
+            throw new IllegalArgumentException("The the split parameter index is invalid.");
         }
+
+        this.splitParameterIndex = splitParameterIndex;
 
         this.subcommands = new ObjectMap<>();
 
@@ -68,24 +93,24 @@ public class CommandContainer extends Command{
         if(command == null){
             return new CommandResponse(name, ResponseType.commandNotFound);
         }else{
-            String[] parsedArguments;
+            String[] splitArguments;
 
-            if(args.length == 0 || getParametersSize() > 2){
-                parsedArguments = args;
+            if(splitParameterIndex != -1 && args.length > splitParameterIndex){
+                splitArguments = splitArguments(command, args[splitParameterIndex]);
             }else{
-                parsedArguments = parseArguments(command, args[0]);
+                splitArguments = args;
             }
 
-            if(command.hasNotEnoughArguments(parsedArguments)){
+            if(command.hasNotEnoughArguments(splitArguments)){
                 return new CommandResponse(name, ResponseType.notEnoughArguments);
-            }else if(command.hasTooManyArguments(parsedArguments)){
+            }else if(command.hasTooManyArguments(splitArguments)){
                 return new CommandResponse(name, ResponseType.tooManyArguments);
-            }else if(command.getInvalidArgumentType(parsedArguments) != -1){
+            }else if(command.getInvalidArgumentType(splitArguments) != -1){
                 return new CommandResponse(name, ResponseType.badArguments);
             }
 
             try{
-                command.runner.accept(parsedArguments, player);
+                command.runner.accept(splitArguments, player);
                 return new CommandResponse(name, ResponseType.success);
             }catch(Throwable e){
                 return new CommandResponse(name, ResponseType.unhandledException, e);
@@ -124,12 +149,12 @@ public class CommandContainer extends Command{
     }
 
     /**
-     * Split the arguments for a given subcommand, used when the {@code CommandContainer} accepts 2 parameters.
+     * Split the arguments for a given subcommand.
      * @param command The command.
      * @param args The argument to be split.
      * @return The split argument.
      */
-    public String[] parseArguments(Command command, String args){
+    public String[] splitArguments(Command command, String args){
         // Don't split the variadic arguments
         if(command.hasVariadicParameter()){
             return args.split(" ", command.getParametersSize());

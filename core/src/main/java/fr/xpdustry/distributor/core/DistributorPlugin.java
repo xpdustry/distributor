@@ -1,7 +1,9 @@
 package fr.xpdustry.distributor.core;
 
+import arc.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.game.*;
 import mindustry.mod.*;
 
 import java.io.*;
@@ -35,6 +37,12 @@ public class DistributorPlugin extends Plugin{
         }catch(IOException e){
             info("Loaded DistributorPlugin !");
         }
+        /*
+        Events.on(EventType.PlayerJoin.class, event -> {
+            info(event.player.locale());
+        });
+
+         */
     }
 
     @Override

@@ -69,7 +69,6 @@ public class CommandsTest{
 
         CommandHandler handler = new CommandHandler("/");
 
-
         Command command = new Command("div", "<arg1> <arg2>", "divide stuff", (args, player) -> {
             int result = Integer.parseInt(args[0]) / Integer.parseInt(args[1]);
             int expected = Integer.parseInt(arg1) / Integer.parseInt(arg2);
@@ -79,7 +78,6 @@ public class CommandsTest{
 
         CommandContainer container = new CommandContainer("test", "<cmd> [args...]", "test");
         container.register(command);
-
 
         Commands.registerToHandler(handler, command, container);
 
@@ -138,7 +136,7 @@ public class CommandsTest{
 
         // Test if all the cases have been tested and executed
         for(Entry<ResponseType, Boolean> entry : executed){
-            assertTrue(entry.value, entry.key.name() + " case hasn't been executed");
+            assertTrue(entry.value, entry.key.name() + " case hasn't been executed.");
         }
     }
 }

@@ -6,22 +6,26 @@ import arc.struct.*;
 
 public enum ParameterType{
     numeric((text) -> {
-        if(text.isEmpty()) return false;
+        if(text.startsWith("-") || text.startsWith("+")){
+            text = text.substring(1);
+        }
 
-        if(text.startsWith("-") || text.startsWith("+") || Character.isDigit(text.charAt(0))){
-            return text.chars().skip(1).allMatch(Character::isDigit);
+        if(!text.isEmpty()){
+            return text.chars().allMatch(Character::isDigit);
         }else{
             return false;
         }
     }),
 
     decimal((text) -> {
-        if(text.isEmpty()) return false;
+        if(text.startsWith("-") || text.startsWith("+")){
+            text = text.substring(1);
+        }
 
-        if(text.startsWith("-") || text.startsWith("+") || Character.isDigit(text.charAt(0))){
-            final boolean[] hadComma = {false};
+        if(!text.isEmpty()){
+            boolean[] hadComma = {false};
 
-            return text.chars().skip(1).allMatch(i -> {
+            return text.chars().allMatch(i -> {
                 if(Character.isDigit(i)){
                     return true;
                 }else if((i == '.' || i == ',') && !hadComma[0]){
