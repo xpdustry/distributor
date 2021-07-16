@@ -2,12 +2,11 @@ package fr.xpdustry.distributor.core;
 
 import arc.struct.*;
 import arc.util.*;
-
 import fr.xpdustry.distributor.core.plugins.*;
 
 import java.io.*;
 
-import static arc.util.Log.*;
+import static arc.util.Log.info;
 
 
 public class DistributorPlugin extends RootPlugin{

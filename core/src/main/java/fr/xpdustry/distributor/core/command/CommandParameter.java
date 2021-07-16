@@ -37,6 +37,6 @@ public class CommandParameter{
      */
     @Override
     public String toString(){
-        return (optional ? '[' : '<') + name + "=(" + parameterType + ")" + (variadic ? "..." : null) + (optional ? ']' : '>');
+        return (optional ? '[' : '<') + name + "=(" + parameterType + ")" + (variadic ? "..." : "") + (optional ? ']' : '>');
     }
 }

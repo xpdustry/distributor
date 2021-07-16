@@ -8,8 +8,8 @@ import java.util.concurrent.*;
 
 
 public class BundleManager extends Bundle implements Formatter{
+    protected final ConcurrentHashMap<String, Bundle> bundles;
     private final Formatter formatter;
-    protected final ConcurrentHashMap<String,Bundle> bundles;
 
     public BundleManager(Locale locale){
         this(locale, Formatter.defaultFormatter);

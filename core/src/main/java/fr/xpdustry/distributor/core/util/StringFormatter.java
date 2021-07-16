@@ -41,7 +41,7 @@ public class StringFormatter implements Formatter{
      * <blockquote><pre>
      * Bob is {age} years old.
      * </pre></blockquote>
-     *
+     * <p>
      * this will output:
      * <blockquote><pre>
      * Bob is 21 years old.
@@ -52,7 +52,7 @@ public class StringFormatter implements Formatter{
      * <blockquote><pre>
      * This is $r{really} important.
      * </pre></blockquote>
-     *
+     * <p>
      * this will output:
      * <blockquote><pre>
      * This is [red]really[] important.
@@ -121,7 +121,7 @@ public class StringFormatter implements Formatter{
                 depth--;
             }else{
                 builder.append(c);
-                hadIgnoreToken= false;
+                hadIgnoreToken = false;
             }
 
             pos++;

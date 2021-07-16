@@ -1,9 +1,8 @@
 package fr.xpdustry.distributor.core.plugins;
 
 
-import mindustry.mod.*;
-
 import fr.xpdustry.distributor.core.*;
+import mindustry.mod.*;
 
 
 /**

@@ -11,8 +11,8 @@ import java.util.*;
  * The {@code CommandContainer} is a {@link Command} that can handle subcommands.
  * It behaves like the {@link CommandHandler} and it's designed to be subclassed.
  */
-public class CommandContainer extends Command{
-    protected final ObjectMap<String, Command> subcommands;
+public class CommandContainer<T> extends Command<T>{
+    protected final ObjectMap<String, Command<T>> subcommands;
     private final int splitParameterIndex;
 
     /**
@@ -23,7 +23,6 @@ public class CommandContainer extends Command{
      * and the {@code splitParameterIndex} which is 0 by default (The 2nd parameter of the {@code CommandContainer}).
      *
      * <br><b>Nice tip:</b> For the parameters, I recommend you to have something like {@code <subcommand> [arguments...]}.
-     *
      * @param name The name of the {@code CommandContainer}.
      * @param parameterText The parameters of the {@code CommandContainer}.
      * @param description The description of the {@code CommandContainer}.
@@ -45,8 +44,9 @@ public class CommandContainer extends Command{
      * @throws NullPointerException if one of the arguments is null.
      * @see #CommandContainer(String, String, String)
      */
+    @SuppressWarnings("unchecked")
     public CommandContainer(String name, String parameterText, String description, int splitParameterIndex){
-        super(name, parameterText, description, CommandRunner.voidRunner);
+        super(name, parameterText, description, (CommandRunner<T>) CommandRunner.voidRunner);
 
         if(getParametersSize() == 0){
             throw new IllegalArgumentException("A CommandContainer must accept at least one argument.");
@@ -58,14 +58,14 @@ public class CommandContainer extends Command{
 
         this.subcommands = new ObjectMap<>();
 
-        this.runner = (args, player) -> {
-            handleSubcommand(args[0], Arrays.copyOfRange(args, 1, args.length), player);
+        this.runner = (args, type) -> {
+            handleSubcommand(args[0], Arrays.copyOfRange(args, 1, args.length), type);
         };
     }
 
     /**
      * Runs a subcommand without a player, usually used for server-side commands.
-     * <br>See {@link #handleSubcommand(String, String[], Player)} for more details.
+     * <br>See {@link #handleSubcommand(String, String[], T)} for more details.
      * @param name The subcommand name.
      * @param args The subcommand arguments.
      * @return a {@link CommandResponse} containing the result information.
@@ -83,12 +83,12 @@ public class CommandContainer extends Command{
      * @param player The player, can be null.
      * @return a {@link CommandResponse} containing the result information.
      */
-    public CommandResponse handleSubcommand(String name, String[] args, @Nullable Player player){
+    public CommandResponse handleSubcommand(String name, String[] args, @Nullable T player){
         if(this.subcommands.isEmpty()){
             return new CommandResponse(name, ResponseType.emptyExecutor);
         }
 
-        Command command = this.subcommands.get(name);
+        Command<T> command = this.subcommands.get(name);
 
         if(command == null){
             return new CommandResponse(name, ResponseType.commandNotFound);
@@ -118,25 +118,25 @@ public class CommandContainer extends Command{
         }
     }
 
-    public Command register(Command command){
+    public Command<T> register(Command<T> command){
         return subcommands.put(command.name, command);
     }
 
-    public Command register(String name, String description, CommandRunner runner){
-        return subcommands.put(name, new Command(name, "", description, runner));
+    public Command<T> register(String name, String description, CommandRunner<T> runner){
+        return subcommands.put(name, new Command<T>(name, "", description, runner));
     }
 
-    public Command register(String name, String parameters, String description, CommandRunner runner){
-        return subcommands.put(name, new Command(name, parameters, description, runner));
+    public Command<T> register(String name, String parameters, String description, CommandRunner<T> runner){
+        return subcommands.put(name, new Command<T>(name, parameters, description, runner));
     }
 
     @Nullable
-    public Command remove(String name){
+    public Command<T> remove(String name){
         return subcommands.remove(name);
     }
 
     @Nullable
-    public Command get(String name){
+    public Command<T> get(String name){
         return subcommands.get(name);
     }
 
@@ -144,7 +144,7 @@ public class CommandContainer extends Command{
         return subcommands.containsKey(name);
     }
 
-    public boolean has(Command command, boolean identity){
+    public boolean has(Command<T> command, boolean identity){
         return subcommands.containsValue(command, identity);
     }
 
@@ -154,7 +154,7 @@ public class CommandContainer extends Command{
      * @param args The argument to be split.
      * @return The split argument.
      */
-    public String[] splitArguments(Command command, String args){
+    public String[] splitArguments(Command<T> command, String args){
         // Don't split the variadic arguments
         if(command.hasVariadicParameter()){
             return args.split(" ", command.getParametersSize());

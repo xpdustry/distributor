@@ -49,12 +49,9 @@ public class Bundle implements LocalizationProvider{
         String result = properties.getProperty(key);
 
         if(result == null){
-
             if(parent != null){
                 result = parent.get(key);
-            }
-
-            if(result == null){
+            }if(result == null){
                 return "???" + key + "???";
             }
         }
@@ -70,9 +67,7 @@ public class Bundle implements LocalizationProvider{
     public boolean has(String key){
         if(properties.containsKey(key)){
             return true;
-        }
-
-        if(parent != null){
+        }if(parent != null){
             return parent.has(key);
         }
 

@@ -7,6 +7,7 @@ import arc.util.*;
 
 import fr.xpdustry.distributor.core.command.*;
 
+import mindustry.gen.*;
 import org.junit.jupiter.api.*;
 
 import java.util.*;
@@ -23,7 +24,7 @@ public class CommandsTest{
     public void commandTest(){
         final boolean[] executed = {false};
 
-        Command command = new Command("sub", "<arg1> <arg2>", "sub stuff", (args, player) -> {
+        Command<Player> command = new Command<>("sub", "<arg1> <arg2>", "sub stuff", (args, player) -> {
             int result = Integer.parseInt(args[0]) - Integer.parseInt(args[1]);
             int expected = Integer.parseInt(arg1) - Integer.parseInt(arg2);
             assertEquals(result, expected);
@@ -39,7 +40,7 @@ public class CommandsTest{
     public void commandExecutorTest(){
         final boolean[] executed = {false, false};
 
-        CommandContainer container = new CommandContainer("test", "<cmd> [params...]", "test");
+        CommandContainer<Player> container = new CommandContainer<>("test", "<cmd> [params...]", "test");
 
         container.register("add", "<arg1> <arg2>", "add stuff", (args, player) -> {
             int result = Integer.parseInt(args[0]) + Integer.parseInt(args[1]);
@@ -69,14 +70,14 @@ public class CommandsTest{
 
         CommandHandler handler = new CommandHandler("/");
 
-        Command command = new Command("div", "<arg1> <arg2>", "divide stuff", (args, player) -> {
+        Command<Player> command = new Command<>("div", "<arg1> <arg2>", "divide stuff", (args, player) -> {
             int result = Integer.parseInt(args[0]) / Integer.parseInt(args[1]);
             int expected = Integer.parseInt(arg1) / Integer.parseInt(arg2);
             assertEquals(result, expected);
             executed[0]++;
         });
 
-        CommandContainer container = new CommandContainer("test", "<cmd> [args...]", "test");
+        CommandContainer<Player> container = new CommandContainer<>("test", "<cmd> [args...]", "test");
         container.register(command);
 
         Commands.registerToHandler(handler, command, container);
@@ -95,7 +96,7 @@ public class CommandsTest{
         final ObjectMap<ResponseType, Boolean> executed =
             Seq.with(ResponseType.values()).asMap(type -> type, type -> false);
 
-        CommandContainer executor = new CommandContainer("test", "<arg1> [params...]", "test"){{
+        CommandContainer<Player> executor = new CommandContainer<>("test", "<arg1> [params...]", "test"){{
             runner = (args, player) -> {
                 CommandResponse response = handleSubcommand(args[0], Arrays.copyOfRange(args, 1, args.length), null);
                 executed.put(response.type, true);

@@ -45,7 +45,6 @@ public enum ParameterType{
 
     string((text) -> true);
 
-    public final Boolf<String> check;
     public static final ObjectMap<String, ParameterType> all;
 
     static{
@@ -54,6 +53,8 @@ public enum ParameterType{
             all.put(type.name(), type);
         }
     }
+
+    public final Boolf<String> check;
 
     ParameterType(Boolf<String> check){
         this.check = check;

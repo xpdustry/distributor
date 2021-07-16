@@ -3,18 +3,18 @@ package fr.xpdustry.distributor.core.command;
 import arc.util.*;
 import mindustry.gen.*;
 
-import static arc.util.Log.*;
+import static arc.util.Log.err;
 
 
 /**
  * Custom implementation of the {@link arc.util.CommandHandler.Command} class for Distributor.
  */
-public class Command{
+public class Command<T>{
     public final String name;
     public final String description;
     public final String parameterText;
 
-    protected CommandRunner runner;
+    protected CommandRunner<T> runner;
     private int optionalParameterNumber = 0;
     private final CommandParameter[] parameters;
 
@@ -25,7 +25,7 @@ public class Command{
      * @param runner The {@link CommandRunner} that will run the {@code Command}.
      * @throws NullPointerException if one of the arguments is null.
      */
-    public Command(String name, CommandRunner runner){
+    public Command(String name, CommandRunner<T> runner){
         this(name, "", runner);
     }
 
@@ -37,7 +37,7 @@ public class Command{
      * @param runner The {@link CommandRunner} that will run the {@code Command}.
      * @throws NullPointerException if one of the arguments is null.
      */
-    public Command(String name, String description, CommandRunner runner){
+    public Command(String name, String description, CommandRunner<T> runner){
         this(name, "", description, runner);
     }
 
@@ -64,7 +64,6 @@ public class Command{
      *     <li>{@code [arguments=(numeric)...]} is an optional variadic parameter which only accepts integer values.</li>
      *     <li>etc...</li>
      * </ul>
-     *
      * @param name The name of the {@code Command}.
      * @param parameterText The parameters of the {@code Command}.
      * @param description The description of the {@code Command}.
@@ -72,7 +71,7 @@ public class Command{
      * @throws NullPointerException if one of the arguments is null.
      * @see CommandParameter
      */
-    public Command(String name, String parameterText, String description, CommandRunner runner){
+    public Command(String name, String parameterText, String description, CommandRunner<T> runner){
         if(name == null || parameterText == null || description == null || runner == null) throw new NullPointerException();
 
         this.name = name;
@@ -163,8 +162,8 @@ public class Command{
     }
 
     /**
-     * Runs a command without a player, usually used for server-side commands.
-     * See {@link #handleCommand(String[], Player)} for more details.
+     * Runs a command without a type, usually used for server-side commands.
+     * See {@link #handleCommand(String[], T)} for more details.
      * @param args An array of arguments.
      */
     public void handleCommand(String[] args){
@@ -176,9 +175,9 @@ public class Command{
      * it will log what has gone wrong.
      * <br>If you want to avoid these checks, use the {@link #runner} directly or override this method.
      * @param args The command arguments.
-     * @param player The player, can be null.
+     * @param type The type, can be null.
      */
-    public void handleCommand(String[] args, @Nullable Player player){
+    public void handleCommand(String[] args, @Nullable T type){
         if(hasNotEnoughArguments(args)){
             err("Got not enough arguments.");
             return;
@@ -195,7 +194,7 @@ public class Command{
             return;
         }
 
-        runner.accept(args, player);
+        runner.accept(args, type);
     }
 
     public boolean hasTooManyArguments(String[] args){
@@ -221,7 +220,9 @@ public class Command{
             if(!parameters[i].isValid(args[i])){
                 return i;
             }
-        }return -1;
+        }
+
+        return -1;
     }
 
     public int getOptionalParametersSize(){

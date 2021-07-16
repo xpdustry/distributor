@@ -1,15 +1,14 @@
 package fr.xpdustry.distributor.core.command;
 
 import arc.util.*;
-import mindustry.gen.*;
 
 
 /**
  * The consumer interface used to run the commands.
  */
-public interface CommandRunner{
+public interface CommandRunner<T>{
     /** {@code voidRunner} is usually used for custom {@link Command} implementations or subclasses. */
-    CommandRunner voidRunner = (args, player) -> {};
+    CommandRunner<?> voidRunner = (args, type) -> {};
 
-    void accept(String[] args, @Nullable Player player);
+    void accept(String[] args, @Nullable T type);
 }
