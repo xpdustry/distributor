@@ -8,8 +8,8 @@ import java.util.concurrent.*;
 
 
 public class BundleManager extends Bundle implements Formatter{
-    public final ConcurrentHashMap<String,Bundle> bundles;
     private final Formatter formatter;
+    protected final ConcurrentHashMap<String,Bundle> bundles;
 
     public BundleManager(Locale locale){
         this(locale, Formatter.defaultFormatter);
@@ -25,7 +25,7 @@ public class BundleManager extends Bundle implements Formatter{
         this.bundles.put(getLocale().toString(), this);
     }
 
-    /** fr_BE_PREEURO( fr_BE( fr( en ) ) ) */
+    /** fr_BE_PREEURO -> fr_BE -> fr -> ROOT */
     public Bundle createBundleChain(Locale locale){
         Bundle bundle;
 
@@ -49,21 +49,6 @@ public class BundleManager extends Bundle implements Formatter{
     public Bundle getBundle(String key){
         return bundles.get(key);
     }
-
-    /*
-    public void loadPluginLocale(Fi... files){
-        for(Fi file : files){
-            Locale locale = getLocale(file);
-
-            if(locale == null){
-                debug("Invalid bundle file found while loading locales of @ plugin: @", plugin.meta.displayName(), file.name());
-                continue;
-            }
-
-            loadPluginLocale(locale, file.read());
-        }
-    }
-     */
 
     public void loadPluginLocale(Locale locale, InputStream stream) throws IOException{
         createBundleChain(locale);

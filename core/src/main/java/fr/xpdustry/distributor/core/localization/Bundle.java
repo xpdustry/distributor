@@ -17,8 +17,11 @@ public class Bundle implements LocalizationProvider{
     protected final Properties properties;
 
     public Bundle(Locale locale, Bundle parent){
-        if(locale == null) throw new NullPointerException();
-        if(parent != null && locale == parent.getLocale()) throw new IllegalArgumentException("A bundle and it's parent can't have the same locale");
+        if(locale == null){
+            throw new NullPointerException();
+        }if(parent != null && locale == parent.getLocale()){
+            throw new IllegalArgumentException("A bundle and it's parent can't have the same locale");
+        }
 
         this.locale = locale;
         this.parent = parent;

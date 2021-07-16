@@ -17,6 +17,8 @@ This library is still in development and needs some tools I did not finished to 
 
 - [ ] Discord
 
+- [x] Separate Event pool
+
 - [ ] Statistics
 
 - [ ] Interfaces for services such as anti-VPNs

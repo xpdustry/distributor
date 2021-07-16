@@ -98,7 +98,7 @@ public class Command{
                     throw new IllegalArgumentException("Malformed parameter: " + parameter);
                 }
 
-                // Get the closure of the parameter
+                // Get the brackets of the parameter
                 char start = parameter.charAt(0);
                 char end = parameter.charAt(parameter.length() - 1);
 
@@ -120,7 +120,7 @@ public class Command{
                 // Check if it already has been an optional parameter
                 hadOptionalParameter = optional | hadOptionalParameter;
 
-                // Trim the closures
+                // Trim the brackets
                 String parameterName = parameter.substring(1, parameter.length() - 1);
 
                 // Check if a variadic parameter is the last
@@ -147,7 +147,7 @@ public class Command{
                         throw new IllegalArgumentException("Malformed type: " + typeText);
                     }
 
-                    // Trim the closures
+                    // Trim the brackets
                     typeText = typeText.substring(1, typeText.length() - 1);
 
                     if(ParameterType.all.containsKey(typeText)){
@@ -172,18 +172,18 @@ public class Command{
     }
 
     /**
-     * Runs the command with checks on the arguments size and type. If one of these criteras are invalid,
-     * it will log what has gone wrong if {@link mindustry.net.Administration.Config#debug} is enabled.
+     * Runs the command with checks on the arguments size and type. If one of these criteria are invalid,
+     * it will log what has gone wrong.
      * <br>If you want to avoid these checks, use the {@link #runner} directly or override this method.
      * @param args The command arguments.
      * @param player The player, can be null.
      */
     public void handleCommand(String[] args, @Nullable Player player){
         if(hasNotEnoughArguments(args)){
-            debug("Got not enough arguments.");
+            err("Got not enough arguments.");
             return;
         }else if(hasTooManyArguments(args)){
-            debug("Got too many arguments.");
+            err("Got too many arguments.");
             return;
         }
 
@@ -191,7 +191,7 @@ public class Command{
         int index = getInvalidArgumentType(args);
 
         if(index != -1){
-            debug("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index]);
+            err("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index]);
             return;
         }
 
@@ -213,7 +213,7 @@ public class Command{
 
     /**
      * <b>Before using this method, make sure to verify the arguments size.</b>
-     * @return -1 if all the argument match the type of their parameter typ,
+     * @return -1 if all the argument match the type of their parameter type,
      * or returns the index of the first invalid argument.
      */
     public int getInvalidArgumentType(String[] args){

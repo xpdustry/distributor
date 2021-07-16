@@ -1,19 +1,16 @@
 package fr.xpdustry.distributor.core;
 
-import arc.*;
 import arc.struct.*;
 import arc.util.*;
-import mindustry.game.*;
-import mindustry.mod.*;
+
+import fr.xpdustry.distributor.core.plugins.*;
 
 import java.io.*;
-
 
 import static arc.util.Log.*;
 
 
-@SuppressWarnings("unused")  // <- Only used for this template so IntelliJ stop screaming at me...
-public class DistributorPlugin extends Plugin{
+public class DistributorPlugin extends RootPlugin{
     @Override
     public void init(){
         // Show a nice banner :^)
@@ -33,25 +30,16 @@ public class DistributorPlugin extends Plugin{
             info("Loaded...");
             lines.forEach(l -> info(" > " + l));
             info(" > ");
-
         }catch(IOException e){
             info("Loaded DistributorPlugin !");
         }
-        /*
-        Events.on(EventType.PlayerJoin.class, event -> {
-            info(event.player.locale());
-        });
-
-         */
     }
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-
     }
 }
