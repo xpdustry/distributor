@@ -41,7 +41,10 @@ public enum ParameterType{
         }
     }),
 
-    bool((text) -> true),
+    bool((text) -> switch(text.toLowerCase()){
+        case "true", "false", "yes", "no" -> true;
+        default -> false;
+    }),
 
     string((text) -> true);
 

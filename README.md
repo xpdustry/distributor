@@ -6,23 +6,55 @@
 
 ## Description
 
-This library is still in development and needs some tools I did not finished to code yet.
+**Distributor** is a library to make mindustry plugin development easier.
+It can also be used for Server Manager plugins. It is still in developement so feel free to pr.
+For a better understanding of the library, the Xpdustry core plugin is also here so check the code to see how to use correctly the library.
 
-## Roadmap
+## Roadmaps
 
-- [x] Commands (Totally finished, The javadoc may need some improvements)
+### Core
 
-- [x] Formatter (Base classes finished, Javadoc needed)
+- Commands
+    - [X] Base
+    - [X] Container
+    - [ ] Javadoc / Tests (need some fixes and upgrades)
 
-- [x] Localization (Usable but need unit tests)
+- Formatter (Advanced string interpolation)
+    - [X] Base
+    - [ ] Javadoc / Tests
 
-- [ ] Discord
+- Localization
+    - [X] Base
+    - [ ] Auto-loading ?
+    - [ ] Javadoc / Tests
+    
+- Discord (Embedable Mindustry Discord Bot)
+    - [ ] Base
+    - [ ] Javadoc / Tests
+    
+- Threads
+    - [ ] Base (PostMan)
+    - [ ] Advanced (Shared Threads and sequential tasks)
+    - [ ] Javadoc / Tests
 
-- [x] Separate Event pool
+- Monitoring
+    - [ ] Statistics
+    - [ ] Javadoc / Tests
 
-- [ ] Statistics
+- Services
+    - [ ] Anti-VPN
+    - [ ] Anti-Raids
+    - [ ] Javadoc / Tests
+    
+- Administration
+    - [ ] Permissions
+    - [ ] Roles (access number)
+    - [ ] Javadoc / Tests
 
-- [ ] Interfaces for services such as anti-VPNs
+### Plugin
+
+- [ ] Base commands
+- [ ] Admin tools
 
 ## Usage
 
@@ -30,12 +62,11 @@ Add these in your build.gradle
 
 ```gradle
 repositories {
-        ...
         maven { url 'https://jitpack.io' }
     }
 }
 
 dependencies {
-    implementation 'fr.xpdustry:Distributor:(Latest version tag)'
+    implementation 'fr.xpdustry.Distributor:(core or plugin):(latest version tag)'
 }
 ```

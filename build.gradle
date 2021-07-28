@@ -71,8 +71,8 @@ allprojects{
     }
 
     compileJava{
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_16
+        targetCompatibility = JavaVersion.VERSION_16
         options.encoding = "UTF-8"
     }
 
@@ -82,6 +82,14 @@ allprojects{
 
     test{
         useJUnitPlatform()
+    }
+}
+
+
+// Declaring project specific dependencies
+project(":plugin"){
+    dependencies{
+        implementation project(":core")
     }
 }
 
@@ -107,6 +115,8 @@ subprojects{
         from configurations.runtimeClasspath.collect{
             it.isDirectory() ? it : zipTree(it)
         }
+
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
 

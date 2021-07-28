@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.core.util;
+package fr.xpdustry.distributor.core.string;
 
 import arc.struct.*;
 import arc.util.*;

@@ -2,7 +2,6 @@ package fr.xpdustry.distributor.core.command;
 
 import arc.struct.*;
 import arc.util.*;
-import mindustry.gen.*;
 
 import java.util.*;
 
@@ -13,7 +12,7 @@ import java.util.*;
  */
 public class CommandContainer<T> extends Command<T>{
     protected final ObjectMap<String, Command<T>> subcommands;
-    private final int splitParameterIndex;
+    private final int parsedParameterIndex;
 
     /**
      * Creates a {@code CommandContainer}. By default, when the {@link #runner} is called,
@@ -38,23 +37,23 @@ public class CommandContainer<T> extends Command<T>{
      * @param name The name of the {@code CommandContainer}.
      * @param parameterText The parameters of the {@code CommandContainer}.
      * @param description The description of the {@code CommandContainer}.
-     * @param splitParameterIndex The parameter index to split
+     * @param parsedParameterIndex The parameter index to split
      * @throws IllegalArgumentException if the {@code CommandContainer} doesn't accept at least one argument.
      * @throws IllegalArgumentException if the {@code splitParameterIndex} is below -1 or greater than the parameter size.
      * @throws NullPointerException if one of the arguments is null.
      * @see #CommandContainer(String, String, String)
      */
     @SuppressWarnings("unchecked")
-    public CommandContainer(String name, String parameterText, String description, int splitParameterIndex){
+    public CommandContainer(String name, String parameterText, String description, int parsedParameterIndex){
         super(name, parameterText, description, (CommandRunner<T>) CommandRunner.voidRunner);
 
         if(getParametersSize() == 0){
             throw new IllegalArgumentException("A CommandContainer must accept at least one argument.");
-        }else if(getParametersSize() < splitParameterIndex || splitParameterIndex < -1){
-            throw new IllegalArgumentException("The the split parameter index is invalid.");
+        }else if(getParametersSize() < parsedParameterIndex || parsedParameterIndex < -1){
+            throw new IllegalArgumentException("The split parameter index is invalid.");
         }
 
-        this.splitParameterIndex = splitParameterIndex;
+        this.parsedParameterIndex = parsedParameterIndex;
 
         this.subcommands = new ObjectMap<>();
 
@@ -93,24 +92,21 @@ public class CommandContainer<T> extends Command<T>{
         if(command == null){
             return new CommandResponse(name, ResponseType.commandNotFound);
         }else{
-            String[] splitArguments;
-
-            if(splitParameterIndex != -1 && args.length > splitParameterIndex){
-                splitArguments = splitArguments(command, args[splitParameterIndex]);
-            }else{
-                splitArguments = args;
+            // Parses the arguments
+            if(parsedParameterIndex != -1 && args.length > parsedParameterIndex){
+                args = parseArguments(command, args[parsedParameterIndex]);
             }
 
-            if(command.hasNotEnoughArguments(splitArguments)){
+            if(command.hasNotEnoughArguments(args)){
                 return new CommandResponse(name, ResponseType.notEnoughArguments);
-            }else if(command.hasTooManyArguments(splitArguments)){
+            }else if(command.hasTooManyArguments(args)){
                 return new CommandResponse(name, ResponseType.tooManyArguments);
-            }else if(command.getInvalidArgumentType(splitArguments) != -1){
+            }else if(command.getInvalidArgumentType(args) != -1){
                 return new CommandResponse(name, ResponseType.badArguments);
             }
 
             try{
-                command.runner.accept(splitArguments, player);
+                command.runner.accept(args, player);
                 return new CommandResponse(name, ResponseType.success);
             }catch(Throwable e){
                 return new CommandResponse(name, ResponseType.unhandledException, e);
@@ -154,7 +150,7 @@ public class CommandContainer<T> extends Command<T>{
      * @param args The argument to be split.
      * @return The split argument.
      */
-    public String[] splitArguments(Command<T> command, String args){
+    public String[] parseArguments(Command<T> command, String args){
         // Don't split the variadic arguments
         if(command.hasVariadicParameter()){
             return args.split(" ", command.getParametersSize());

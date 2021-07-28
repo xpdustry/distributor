@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.core.localization;
 import java.util.*;
 
 
-public class Bundle implements LocalizationProvider{
+public class Bundle implements LocaleProvider{
     public static final Locale ROOT_LOCALE = new Locale("", "", "");
     public static final Bundle ROOT_BUNDLE = new Bundle(ROOT_LOCALE, null);
 

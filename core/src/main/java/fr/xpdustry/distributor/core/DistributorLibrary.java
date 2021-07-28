@@ -1,15 +1,14 @@
 package fr.xpdustry.distributor.core;
 
 import arc.struct.*;
-import arc.util.*;
-import fr.xpdustry.distributor.core.plugins.*;
+import fr.xpdustry.distributor.core.plugin.*;
 
 import java.io.*;
 
-import static arc.util.Log.info;
+import static arc.util.Log.*;
 
 
-public class DistributorPlugin extends RootPlugin{
+public class DistributorLibrary extends RootPlugin{
     @Override
     public void init(){
         // Show a nice banner :^)
@@ -32,13 +31,5 @@ public class DistributorPlugin extends RootPlugin{
         }catch(IOException e){
             info("Loaded DistributorPlugin !");
         }
-    }
-
-    @Override
-    public void registerServerCommands(CommandHandler handler){
-    }
-
-    @Override
-    public void registerClientCommands(CommandHandler handler){
     }
 }

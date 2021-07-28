@@ -1,12 +1,12 @@
 package fr.xpdustry.distributor.core.localization;
 
-import fr.xpdustry.distributor.core.util.Formatter;
+import fr.xpdustry.distributor.core.string.Formatter;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-
+// TODO CHack the Bundle Manager
 public class BundleManager extends Bundle implements Formatter{
     protected final ConcurrentHashMap<String, Bundle> bundles;
     private final Formatter formatter;

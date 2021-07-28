@@ -1,7 +1,8 @@
 package fr.xpdustry.distributor.core.command;
 
 import arc.util.*;
-import mindustry.gen.*;
+
+import fr.xpdustry.distributor.core.admin.*;
 
 import static arc.util.Log.err;
 
@@ -9,7 +10,7 @@ import static arc.util.Log.err;
 /**
  * Custom implementation of the {@link arc.util.CommandHandler.Command} class for Distributor.
  */
-public class Command<T>{
+public class Command<T> implements Permission{
     public final String name;
     public final String description;
     public final String parameterText;

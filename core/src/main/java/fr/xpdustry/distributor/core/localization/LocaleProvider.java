@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.core.localization;
 import java.util.*;
 
 
-public interface LocalizationProvider{
+public interface LocaleProvider{
     /** @return the localized string of the given key. */
     String get(String key);
 

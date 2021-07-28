@@ -3,7 +3,10 @@ package fr.xpdustry.distributor.core.event;
 import arc.*;
 import arc.func.*;
 import arc.struct.*;
+import arc.util.Timer;
+import mindustry.content.*;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 
@@ -11,52 +14,94 @@ import java.util.concurrent.*;
  * A non blocking event pool I guess...
  */
 public final class PostMan{
-    private static final ObjectSet<Object> arcEvents = new ObjectSet<>();
-    private static final ObjectMap<Object, ObjectSet<Watcher<?>>> postManEvents = new ObjectMap<>();
-    private static final ExecutorService executor = Executors.newCachedThreadPool();
+    private static final Set<Object> arcEvents = new HashSet<>(8);
+    private static final Map<Object, Set<Watcher<?>>> postManEvents =
+        new ConcurrentHashMap<>(32);
 
-    public static <T> void bind(Class<T> type){
-        if(!arcEvents.contains(type)){
-            Events.on(type, PostMan::fire);
-            arcEvents.add(type);
+    public static synchronized <T> void bind(Class<T> event){
+        if(!arcEvents.contains(event)){
+            Events.on(event, PostMan::fire);
+            arcEvents.add(event);
         }
     }
 
-    public static void bind(Class<?>... types){
-        bind(Seq.with(types));
-    }
-
-    public static void bind(Seq<Class<?>> types){
-        Seq<Class<?>> filter = types.select(type -> !arcEvents.contains(type));
-        filter.forEach(type -> Events.on(type, PostMan::fire));
-        arcEvents.addAll(types);
-    }
-
-    public static <T> Watcher<T> on(Watcher<T> watcher){
-        postManEvents.get(watcher.event, ObjectSet::new).add(watcher);
-        return watcher;
+    public static <T> Watcher<T> on(T type, Cons<T> listener){
+        return on(new Watcher<>(type, listener));
     }
 
     public static <T> Watcher<T> on(Class<T> type, Cons<T> listener){
-        Watcher<T> watcher = new Watcher<>(type, listener);
-        postManEvents.get(type, ObjectSet::new).add(watcher);
+        return on(new Watcher<>(type, listener));
+    }
+
+    public static <T> Watcher<T> on(T type, Cons<T> listener, int lifetime){
+        return on(new Watcher<>(type, listener, lifetime));
+    }
+
+    public static <T> Watcher<T> on(Class<T> type, Cons<T> listener, int lifetime){
+        return on(new Watcher<>(type, listener, lifetime));
+    }
+
+    public static <T> Watcher<T> on(Watcher<T> watcher){
+        Set<Watcher<?>> set = postManEvents.computeIfAbsent(
+            watcher.event, key -> ConcurrentHashMap.newKeySet());
+
+        set.add(watcher);
         return watcher;
     }
 
     public static <T> void remove(Watcher<T> watcher){
-        postManEvents.get(watcher.event, ObjectSet::new).remove(watcher);
+        Set<Watcher<?>> set = postManEvents.get(watcher.event);
+        if(set != null) set.remove(watcher);
     }
 
     public static <T> void fire(T type){
-        fire(type.getClass(), type);
+        fire(type, EventRunner.defaultRunner);
+    }
+
+    public static <T> void fire(T type, EventRunner runner){
+        fire(type.getClass(), type, runner);
+    }
+
+    public static <T> void fire(Class<?> ctype, T type){
+        fire(ctype, type, EventRunner.defaultRunner);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void fire(Class<?> ctype, T type){
+    public static <T> void fire(Class<?> ctype, T type, EventRunner runner){
         if(postManEvents.containsKey(type)){
-            executor.submit(() -> postManEvents.get(type).each(e -> ((Watcher<T>)e).trigger(type)));
+            runner.get(() -> postManEvents.get(type).forEach(e -> ((Watcher<T>)e).trigger(type)));
         }if(postManEvents.containsKey(ctype)){
-            executor.submit(() -> postManEvents.get(ctype).each(e -> ((Watcher<T>)e).trigger(type)));
+            runner.get(() -> postManEvents.get(ctype).forEach(e -> ((Watcher<T>)e).trigger(type)));
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
