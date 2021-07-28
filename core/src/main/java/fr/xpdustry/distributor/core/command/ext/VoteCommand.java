@@ -3,9 +3,6 @@ package fr.xpdustry.distributor.core.command.ext;
 import arc.struct.*;
 import arc.util.*;
 
-import fr.xpdustry.distributor.core.util.*;
-import mindustry.game.EventType.*;
-
 import fr.xpdustry.distributor.core.command.*;
 import fr.xpdustry.distributor.core.event.*;
 

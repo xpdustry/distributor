@@ -11,7 +11,7 @@ import java.util.*;
  * It behaves like the {@link CommandHandler} and it's designed to be subclassed.
  */
 public class CommandContainer<T> extends Command<T>{
-    protected final ObjectMap<String, Command<T>> subcommands;
+    protected final Map<String, Command<T>> subcommands = new HashMap<>();
     private final int parsedParameterIndex;
 
     /**
@@ -54,8 +54,6 @@ public class CommandContainer<T> extends Command<T>{
         }
 
         this.parsedParameterIndex = parsedParameterIndex;
-
-        this.subcommands = new ObjectMap<>();
 
         this.runner = (args, type) -> {
             handleSubcommand(args[0], Arrays.copyOfRange(args, 1, args.length), type);
@@ -140,8 +138,8 @@ public class CommandContainer<T> extends Command<T>{
         return subcommands.containsKey(name);
     }
 
-    public boolean has(Command<T> command, boolean identity){
-        return subcommands.containsValue(command, identity);
+    public boolean has(Command<T> command){
+        return subcommands.containsValue(command);
     }
 
     /**

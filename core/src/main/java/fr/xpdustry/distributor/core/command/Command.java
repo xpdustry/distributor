@@ -4,7 +4,7 @@ import arc.util.*;
 
 import fr.xpdustry.distributor.core.admin.*;
 
-import static arc.util.Log.err;
+import static arc.util.Log.info;
 
 
 /**
@@ -180,10 +180,10 @@ public class Command<T> implements Permission{
      */
     public void handleCommand(String[] args, @Nullable T type){
         if(hasNotEnoughArguments(args)){
-            err("Got not enough arguments.");
+            print("Got not enough arguments.", type);
             return;
         }else if(hasTooManyArguments(args)){
-            err("Got too many arguments.");
+            print("Got too many arguments.", type);
             return;
         }
 
@@ -191,7 +191,7 @@ public class Command<T> implements Permission{
         int index = getInvalidArgumentType(args);
 
         if(index != -1){
-            err("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index]);
+            print("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index], type);
             return;
         }
 
@@ -243,5 +243,9 @@ public class Command<T> implements Permission{
         CommandParameter[] copy = new CommandParameter[parameters.length];
         System.arraycopy(parameters, 0, copy, 0, parameters.length);
         return copy;
+    }
+
+    public void print(String message, @Nullable T type){
+        info(message);
     }
 }
