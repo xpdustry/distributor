@@ -22,17 +22,10 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew jar
-          echo '::set-output name=ARTIFACT_PATH_CORE::'$(./gradlew core:getArtifactPath -q)
-          echo '::set-output name=ARTIFACT_PATH_PLUGIN::'$(./gradlew plugin:getArtifactPath -q)
+          echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
 
-      - name: Upload core artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: Distributor-core
-          path: ${{ steps.build.outputs.ARTIFACT_PATH_CORE }}
-
-      - name: Upload plugin artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: Distributor-plugin
-          path: ${{ steps.build.outputs.ARTIFACT_PATH_PLUGIN }}
+          path: ${{ steps.build.outputs.ARTIFACT_PATH }}

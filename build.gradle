@@ -1,7 +1,5 @@
 import groovy.json.JsonSlurper
-import groovy.json.JsonBuilder
 import org.apache.groovy.json.internal.LazyMap
-import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.internal.os.OperatingSystem
 
 
@@ -9,16 +7,16 @@ buildscript{
     ext{
         // Mindustry API version you want to use
         mindustryVersion = "v126.2"
-
+        
         // Junit version for tests outside a server
         junitVersion = "5.7.2"
 
         // A string that points directly to your server.jar directory
         serverDirectoryPath = null
 
-        // the file:// at the beginning is required if you use windows if you don't want github actions to scream at you
+        // the file:// at the beginning is required if you use Windows, if you don't want github actions to scream at you
         if(System.getProperty("user.name") == "Finley"){
-            serverDirectoryPath = "file://C:/Users/Finley/Documents/My Games/Mindustry/Server/mindustry-server-$mindustryVersion" as GStringImpl
+            serverDirectoryPath = "file://C:/Users/Finley/Documents/My Games/Mindustry/Server/mindustry-server-$mindustryVersion"
         }
     }
 
@@ -33,172 +31,145 @@ buildscript{
     }
 }
 
-
-allprojects{
-    apply plugin: "java"
-    apply plugin: "maven-publish"
-
-    ext{
-        // Shared metadata between the 2 plugins
-        shared = new JsonSlurper().parseText(file("$rootDir/shared-plugin.json").text) as LazyMap
-    }
-
-    group "fr.xpdustry.distributor"
-    version shared.version
-
-    repositories{
-        mavenCentral()
-        maven{ url "https://www.jitpack.io" }
-    }
-
-    dependencies{
-        // Mindustry
-        compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-        compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
-
-        // Unit Testing
-        testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-        testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
-
-        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    }
-
-    java{
-        withJavadocJar()
-        withSourcesJar()
-    }
-
-    compileJava{
-        sourceCompatibility = JavaVersion.VERSION_16
-        targetCompatibility = JavaVersion.VERSION_16
-        options.encoding = "UTF-8"
-    }
-
-    compileTestJava{
-        options.encoding = "UTF-8"
-    }
-
-    test{
-        useJUnitPlatform()
-    }
+plugins{
+    id "java"
+    id "maven-publish"
 }
 
 
-// Declaring project specific dependencies
-project(":plugin"){
-    dependencies{
-        implementation project(":core")
-    }
+ext{
+    // Plugin metadata extracted from plugin.json
+    plugin = new JsonSlurper().parseText(file("$projectDir/plugin.json").text) as LazyMap
+}
+
+group "fr.xpdustry"
+version plugin.version
+
+
+repositories{
+    mavenCentral()
+    maven{ url "https://www.jitpack.io" }
+}
+
+dependencies{
+    // Mindustry
+    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+
+    // Unit Testing
+    testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+    testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+java{
+    withJavadocJar()
+    withSourcesJar()
+}
+
+compileJava{
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+    options.encoding = "UTF-8"
+}
+
+compileTestJava{
+    options.encoding = "UTF-8"
+}
+
+test{
+    useJUnitPlatform()
 }
 
 
-subprojects{
-    ext{
-        // Plugin metadata extracted from plugin.json
-        plugin = new JsonSlurper().parseText(file("$projectDir/plugin.json").text) as LazyMap
+jar{
+    from "$rootDir/plugin.json"
+    // The following line is required
+    from configurations.runtimeClasspath.collect{
+        it.isDirectory() ? it : zipTree(it)
     }
+}
 
-    jar{
-        doFirst{
-            def file = new File("${getTemporaryDir().path}/plugin.json")
+task moveJar{
+    dependsOn jar
 
-            file.withWriter{
-                it.write(new JsonBuilder(plugin + shared).toPrettyString())
-            }
-
-            from file
+    doLast{
+        if(serverDirectoryPath == null || serverDirectoryPath.isEmpty()){
+            throw new GradleException("serverDirectoryPath is unset")
         }
 
-        // The following line is required
-        from configurations.runtimeClasspath.collect{
-            it.isDirectory() ? it : zipTree(it)
-        }
+        // Deletes all the jar files that begins with the base artifact name
+        delete file("$serverDirectoryPath/config/mods").listFiles({
+            it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
+        } as FileFilter)
 
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-
-
-    task moveJar{
-        dependsOn jar
-
-        doLast{
-            if(serverDirectoryPath == null || serverDirectoryPath.isEmpty()){
-                throw new GradleException("serverDirectoryPath is unset")
-            }
-
-            // Deletes all the jar files that begins with the base artifact name
-            delete file("$serverDirectoryPath/config/mods").listFiles({
-                it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
-            } as FileFilter)
-
-            copy{
-                from jar.archiveFile.get()
-                into file("$serverDirectoryPath/config/mods")
-            }
+        copy{
+            from jar.archiveFile.get()
+            into file("$serverDirectoryPath/config/mods")
         }
     }
+}
 
-    task runServer{
-        doLast{
-            if(serverDirectoryPath == null || serverDirectoryPath.isEmpty()){
-                throw new GradleException("serverDirectoryPath is unset")
+task runServer{
+    doLast{
+        if(serverDirectoryPath == null || serverDirectoryPath.isEmpty()){
+            throw new GradleException("serverDirectoryPath is unset")
+        }
+
+        exec{
+            OperatingSystem os = OperatingSystem.current()
+
+            workingDir = file(serverDirectoryPath)
+
+            // Open a mindustry server in a new terminal window
+            if(os.isWindows()){
+                commandLine = ["cmd", "/C", "start", "run_server.bat"]
+            }else if(os.isLinux()){
+                commandLine = ["sh", "-c", "./run_server.sh"]
+            }else{
+                throw new GradleException("Unsupported operation, please implement a case for your os")
             }
+        }
+    }
+}
 
-            exec{
-                OperatingSystem os = OperatingSystem.current()
+task deployJar{
+    dependsOn moveJar
+    dependsOn runServer
+}
 
-                workingDir = file(serverDirectoryPath)
+task getArtifactPath{
+    doLast{
+        println jar.archiveFile.get().toString()
+    }
+}
 
-                // Open a mindustry server in a new terminal window
-                if(os.isWindows()){
-                    commandLine = ["cmd", "/C", "start", "run_server.bat"]
-                }else if(os.isLinux()){
-                    commandLine = ["sh", "-c", "./run_server.sh"]
-                }else{
-                    throw new GradleException("Unsupported operation, please implement a case for your os")
+publishing{
+    publications{
+        mavenJava(MavenPublication){
+            from components.java
+
+            pom{
+                name = plugin.displayName
+                artifactId = project.name.toLowerCase()
+                description = plugin.description
+                url = "https://github.com/$plugin.repo"
+
+                licenses{
+                    license{
+                        name = "MIT License as Publication"
+                        url = "https://www.opensource.org/licenses/mit-license.php"
+                    }
                 }
-            }
-        }
-    }
 
-    task deployJar{
-        dependsOn moveJar
-        dependsOn runServer
-    }
-
-    task getArtifactPath{
-        doLast{
-            println jar.archiveFile.get().toString()
-        }
-    }
-
-    publishing{
-        publications{
-            mavenJava(MavenPublication){
-                from components.java
-
-                pom{
-                    name = plugin.displayName
-                    artifactId = project.name
-                    description = plugin.description
-                    url = "https://github.com/$shared.repo"
-
-                    licenses{
-                        license{
-                            name = "MIT License as Publication"
-                            url = "https://www.opensource.org/licenses/mit-license.php"
-                        }
-                    }
-
-                    developers{
-                        developer{
-                            id = shared.author
-                        }
-                    }
+                developers{
+                    developer{ id = plugin.author }
                 }
             }
         }
     }
 }
+

@@ -25,26 +25,17 @@ jobs:
       - name: Set up the release
         id: release
         run: |
-          tag=$(cat shared-plugin.json | grep "version*") # Cut the line with the version in shared-plugin.json
+          tag=$(cat plugin.json | grep "version*") # Cut the line with the version in shared-plugin.json
           tag=$(echo $tag | cut -d ":" -f 2,3)            # Split with ":" and take the version number
           tag=$(echo $tag | tr -d \"," ")                 # Trim the " and , and spaces
 
           echo '::set-output name=RELEASE_TAG::'$tag
-          echo '::set-output name=ARTIFACT_PATH_CORE::'$(./gradlew core:getArtifactPath -q)
-          echo '::set-output name=ARTIFACT_PATH_PLUGIN::'$(./gradlew plugin:getArtifactPath -q)
+          echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
 
-      - name: Upload core artifact
+      - name: Upload artifact
         uses: svenstaro/upload-release-action@v2
         with:
-          asset_name: Distributor-core.jar
+          asset_name: Distributor.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ steps.release.outputs.ARTIFACT_PATH_CORE }}
-          tag: v${{ steps.release.outputs.RELEASE_TAG }}
-
-      - name: Upload plugin artifact
-        uses: svenstaro/upload-release-action@v2
-        with:
-          asset_name: Distributor-plugin.jar
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ steps.release.outputs.ARTIFACT_PATH_PLUGIN }}
+          file: ${{ steps.release.outputs.ARTIFACT_PATH }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}

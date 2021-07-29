@@ -2,17 +2,14 @@
 
 [![Jitpack latest version](https://jitpack.io/v/fr.xpdustry/Distributor.svg)](https://jitpack.io/#fr.xpdustry/Distributor)
 [![Build status](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
-[![Mindustry 5.0 | 6.0](https://img.shields.io/badge/Mindustry-5.0%20%7C%206.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
+[![Mindustry 5.0 | 6.0](https://img.shields.io/badge/Mindustry-6.0%20%7C%207.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Description
 
-**Distributor** is a library to make mindustry plugin development easier.
-It can also be used for Server Manager plugins. It is still in developement so feel free to pr.
-For a better understanding of the library, the Xpdustry core plugin is also here so check the code to see how to use correctly the library.
+**Distributor** is a Mindustry plugin that can be used as a library to make plugin development easier,
+or as a Server Manager to automate your server tasks. It is still in development so feel free to pr.
 
-## Roadmaps
-
-### Core
+## Roadmap
 
 - Commands
     - [X] Base
@@ -51,10 +48,9 @@ For a better understanding of the library, the Xpdustry core plugin is also here
     - [ ] Roles (access number)
     - [ ] Javadoc / Tests
 
-### Plugin
-
-- [ ] Base commands
-- [ ] Admin tools
+- Plugin
+    - [ ] Base commands
+    - [ ] Admin tools
 
 ## Usage
 
@@ -67,6 +63,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'fr.xpdustry.Distributor:(core or plugin):(latest version tag)'
+    compileOnly 'fr.xpdustry.Distributor:(latest version tag)'
 }
 ```
