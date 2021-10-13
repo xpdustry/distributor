@@ -1,13 +1,13 @@
 {
-  "name": "xpdustry-distributor-core",
-  "displayName": "Xpdustry Distributor Library",
-  "description": "A library for easier plugin development.",
-  "main": "fr.xpdustry.distributor.Distributor",
+  "name": "xpdustry-distributor-plugin",
+  "displayName": "Xpdustry Distributor Plugin",
   "author": "Phinner",
-  "version": "0.6",
+  "description": "A template plugin for easier development, enjoy.",
+  "version": "0.7",
   "minGameVersion": "105",
   "hidden": true,
   "java": true,
+  "main": "fr.xpdustry.distributor.Distributor",
   "repo": "Xpdustry/Distributor",
   "dependencies": []
 }

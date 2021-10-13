@@ -1,250 +1,144 @@
 package fr.xpdustry.distributor.command;
 
 import arc.util.*;
-import fr.xpdustry.distributor.security.*;
 
-import static arc.util.Log.info;
+import fr.xpdustry.distributor.command.context.*;
+import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.command.param.*;
+
+import java.util.*;
 
 
-/**
- * Custom implementation of the {@link arc.util.CommandHandler.Command} class for Distributor.
- */
-public class Command<T> implements Permission{
-    public final String name;
-    public final String description;
-    public final String parameterText;
+public abstract class Command<T>{
+    private final String name;
+    private final Map<String, String> properties;
 
-    protected CommandRunner<T> runner;
-    private int optionalParameterNumber = 0;
-    private final CommandParameter[] parameters;
+    protected final ContextRunner<T> responseHandler;
+    protected final List<CommandParameter<?>> parameters;
 
-    /**
-     * Creates a {@link Command} which accepts no arguments.
-     * <br><b>Note:</b> This constructor is used for debugging because a command without description is confusing.
-     * @param name The name of the {@code Command}.
-     * @param runner The {@link CommandRunner} that will run the {@code Command}.
-     * @throws NullPointerException if one of the arguments is null.
-     */
-    public Command(String name, CommandRunner<T> runner){
-        this(name, "", runner);
+    protected Command<T> parent = null;
+    protected final SortedMap<String, Command<T>> subcommands;
+
+    public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<T> responseHandler){
+        this.name = Objects.requireNonNull(name, "'name' is null.");
+        this.properties = new HashMap<>();
+
+        this.responseHandler = Objects.requireNonNull(responseHandler, "'responseHandler' is null.");
+        this.parameters = Objects.requireNonNull(parameters, "'parameters' is null.");
+
+        this.subcommands = new TreeMap<>();
     }
 
-    /**
-     * Creates a {@link Command} which accepts no arguments.
-     * See {@link #Command(String, String, String, CommandRunner)} if you want your command to accept arguments.
-     * @param name The name of the {@code Command}.
-     * @param description The description of the {@code Command}.
-     * @param runner The {@link CommandRunner} that will run the {@code Command}.
-     * @throws NullPointerException if one of the arguments is null.
-     */
-    public Command(String name, String description, CommandRunner<T> runner){
-        this(name, "", description, runner);
-    }
+    public void call(CommandContext<T> context){
+        List<String> args = context.getArgs();
 
-    /**
-     * Creates a {@link Command} which can accepts arguments.
-     * <br>They are parsed from the {@code parameterText} into an array of {@link CommandParameter} that will be used by the {@link Command}.
-     * It follows these syntax rules:
-     *
-     * <ol>
-     *     <li>The parameters are divided by spaces so they cannot contain one.</li>
-     *     <li>A parameter between angle brackets such as {@code <parameter>} is mandatory.</li>
-     *     <li>A parameter between square brackets such as {@code [parameter]} is optional.</li>
-     *     <li>A parameter with 3 trailing commas ... such as {@code <parameter...>} is variadic,
-     *     it will combine all the surplus arguments into one, usually used with text.</li>
-     *     <li>A parameter can specify a datatype between round brackets such as {@code [parameter=(datatype)]}.
-     *     It's either <b>numeric, decimal, bool or string</b>. If the datatype is not specified for a given parameter,
-     *     the resulting {@link CommandParameter} will have the <b>string</b> datatype by default.</li>
-     *     <li>All mandatory parameters must come before optional parameters and it can only be one variadic parameter, which is always the last.</li>
-     * </ol>
-     *
-     * <br>For example:
-     * <ul>
-     *     <li>{@code <name>} is a non optional parameter which is implicitly a string.</li>
-     *     <li>{@code [arguments=(numeric)...]} is an optional variadic parameter which only accepts integer values.</li>
-     *     <li>etc...</li>
-     * </ul>
-     * @param name The name of the {@code Command}.
-     * @param parameterText The parameters of the {@code Command}.
-     * @param description The description of the {@code Command}.
-     * @param runner The {@code CommandRunner} that will run the command.
-     * @throws NullPointerException if one of the arguments is null.
-     * @see CommandParameter
-     */
-    public Command(String name, String parameterText, String description, CommandRunner<T> runner){
-        if(name == null || parameterText == null || description == null || runner == null) throw new NullPointerException();
-
-        this.name = name;
-        this.description = description;
-        this.parameterText = parameterText;
-        this.runner = runner;
-
-        if(parameterText.isEmpty()){
-            this.parameters = new CommandParameter[0];
-        }else{
-            String[] parameterList = parameterText.split(" ");
-            this.parameters = new CommandParameter[parameterList.length];
-
-            boolean hadVariadicParameter = false;
-            boolean hadOptionalParameter = false;
-
-            for(int i = 0; i < this.parameters.length; i++){
-                String parameter = parameterList[i];
-                ParameterType type = null;
-
-                // Prevent parameters without names
-                if(parameter.length() <= 2){
-                    throw new IllegalArgumentException("Malformed parameter: " + parameter);
-                }
-
-                // Get the brackets of the parameter
-                char start = parameter.charAt(0);
-                char end = parameter.charAt(parameter.length() - 1);
-
-                boolean optional;
-
-                if(start == '<' && end == '>'){
-                    if(hadOptionalParameter){
-                        throw new IllegalArgumentException("Can't have non-optional parameter after an optional parameter!");
-                    }
-                    optional = false;
-                }else{
-                    if(start != '[' || end != ']'){
-                        throw new IllegalArgumentException("Malformed parameter: " + parameter);
-                    }
-                    optional = true;
-                    this.optionalParameterNumber += 1;
-                }
-
-                // Check if it already has been an optional parameter
-                hadOptionalParameter = optional | hadOptionalParameter;
-
-                // Trim the brackets
-                String parameterName = parameter.substring(1, parameter.length() - 1);
-
-                // Check if a variadic parameter is the last
-                if(parameterName.endsWith("...")){
-                    if(hadVariadicParameter){
-                        throw new IllegalArgumentException("A variadic parameter should be the last parameter!");
-                    }
-                    // Get rid of the variadic closure
-                    parameterName = parameterName.substring(0, parameterName.length() - 3);
-                    hadVariadicParameter = true;
-                }
-
-                if(parameterName.contains("=")){
-                    // Split the parameter
-                    String[] splicedParameter = parameterName.split("=");
-                    parameterName = splicedParameter[0];
-
-                    // Parse the type
-                    String typeText = splicedParameter[1];
-                    start = typeText.charAt(0);
-                    end = typeText.charAt(typeText.length() - 1);
-
-                    if(!(start == '(' && end == ')')){
-                        throw new IllegalArgumentException("Malformed type: " + typeText);
-                    }
-
-                    // Trim the brackets
-                    typeText = typeText.substring(1, typeText.length() - 1);
-
-                    if(ParameterType.all.containsKey(typeText)){
-                        type = ParameterType.all.get(typeText);
-                    }else{
-                        throw new IllegalArgumentException("Invalid type name: " + typeText);
-                    }
-                }
-
-                this.parameters[i] = new CommandParameter(parameterName, optional, hadVariadicParameter, type);
+        try{
+            if(args.size() < getMinimumArgumentSize()){
+                throw new ArgumentException(ArgumentExceptionType.ARGUMENT_NUMBER_TOO_LOW)
+                .with("expected", getMinimumArgumentSize())
+                .with("actual", args.size());
+            }else if(args.size() > getMinimumArgumentSize()){
+                throw new ArgumentException(ArgumentExceptionType.ARGUMENT_NUMBER_TOO_BIG)
+                .with("expected", getMaximumArgumentSize())
+                .with("actual", args.size());
             }
-        }
-    }
 
-    /**
-     * Runs a command without a type, usually used for server-side commands.
-     * See {@link #handleCommand(String[], T)} for more details.
-     * @param args An array of arguments.
-     */
-    public void handleCommand(String[] args){
-        handleCommand(args, null);
-    }
-
-    /**
-     * Runs the command with checks on the arguments size and type. If one of these criteria are invalid,
-     * it will log what has gone wrong.
-     * <br>If you want to avoid these checks, use the {@link #runner} directly or override this method.
-     * @param args The command arguments.
-     * @param type The type, can be null.
-     */
-    public void handleCommand(String[] args, @Nullable T type){
-        if(hasNotEnoughArguments(args)){
-            print("Got not enough arguments.", type);
-            return;
-        }else if(hasTooManyArguments(args)){
-            print("Got too many arguments.", type);
-            return;
-        }
-
-        // Index of an invalid argument
-        int index = getInvalidArgumentType(args);
-
-        if(index != -1){
-            print("Invalid argument type: expected " + parameters[index].parameterType + ", got " + args[index], type);
-            return;
-        }
-
-        runner.accept(args, type);
-    }
-
-    public boolean hasTooManyArguments(String[] args){
-        return getParametersSize() < args.length && !hasVariadicParameter();
-    }
-
-    public boolean hasNotEnoughArguments(String[] args){
-        return getNonOptionalParametersSize() > args.length;
-    }
-
-    public boolean hasVariadicParameter(){
-        if(getParametersSize() == 0) return false;
-        return parameters[getParametersSize() - 1].variadic;
-    }
-
-    /**
-     * <b>Before using this method, make sure to verify the arguments size.</b>
-     * @return -1 if all the argument match the type of their parameter type,
-     * or returns the index of the first invalid argument.
-     */
-    public int getInvalidArgumentType(String[] args){
-        for(int i = 0; i < args.length; i++){
-            if(!parameters[i].isValid(args[i])){
-                return i;
+            for(int i = 0; i < args.size(); i++){
+                CommandParameter<?> parameter = parameters.get(i);
+                context.setObject(parameter.getName(), parameter.parse(args.get(i)));
             }
+
+            execute(context);
+            context.setSuccess(true);
+        }catch(Exception exception){
+            context.setException(exception);
+            context.setSuccess(false);
+        }finally{
+            responseHandler.handleContext(context);
         }
-
-        return -1;
     }
 
-    public int getOptionalParametersSize(){
-        return optionalParameterNumber;
+    /** Actual command */
+    protected abstract void execute(CommandContext<T> context) throws Exception;
+
+    public String getName(){
+        return name;
     }
 
-    public int getNonOptionalParametersSize(){
-        return getParametersSize() - optionalParameterNumber;
+    public List<CommandParameter<?>> getParameters(){
+        return new ArrayList<>(parameters);
     }
 
-    public int getParametersSize(){
-        return parameters.length;
+    @Nullable
+    public String getProperty(String name){
+        return properties.get(name);
     }
 
-    /** @return a copy of the parameters */
-    public CommandParameter[] getParameters(){
-        CommandParameter[] copy = new CommandParameter[parameters.length];
-        System.arraycopy(parameters, 0, copy, 0, parameters.length);
-        return copy;
+    public String getProperty(String name, String def){
+        return properties.getOrDefault(name, def);
     }
 
-    public void print(String message, @Nullable T type){
-        info(message);
+    public boolean hasProperty(String name){
+        return properties.containsKey(name);
+    }
+
+    public Map<String,String> getProperties(){
+        return new HashMap<>(properties);
+    }
+
+    protected void setProperty(String name, String value){
+        properties.put(name, value);
+    }
+
+    protected void removeProperty(String name){
+        properties.remove(name);
+    }
+
+    @Nullable
+    public Command<T> getSubcommand(String name){
+        return subcommands.get(name);
+    }
+
+    public boolean hasSubcommand(String name){
+        return subcommands.containsKey(name);
+    }
+
+    public SortedMap<String,Command<T>> getSubcommands(){
+        return new TreeMap<>(subcommands);
+    }
+
+    public Command<T> addSubcommand(Command<T> command){
+        command.setParent(this);
+        return subcommands.put(command.name, command);
+    }
+
+    @Nullable
+    public Command<T> removeSubcommand(String name){
+        return subcommands.remove(name);
+    }
+
+    @Nullable
+    public Command<T> getParent(){
+        return parent;
+    }
+
+    public void setParent(Command<T> parent){
+        this.parent = parent;
+    }
+
+    public ContextRunner<T> getResponseHandler(){
+        return responseHandler;
+    }
+
+    public int getOptionalArgumentSize(){
+        return (int)parameters.stream().filter(CommandParameter::isOptional).count();
+    }
+
+    public int getMinimumArgumentSize(){
+        return parameters.size() - getOptionalArgumentSize();
+    }
+
+    public int getMaximumArgumentSize(){
+        return parameters.size();
     }
 }

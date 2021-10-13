@@ -1,19 +1,20 @@
 package fr.xpdustry.distributor.event;
 
 import arc.*;
-import arc.func.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
 
-/**
- * A non blocking event pool I guess...
- */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public final class PostMan{
     private static final Set<Object> arcEvents = new HashSet<>(8);
-    private static final Map<Object, Set<Watcher<?>>> postManEvents =
-        new ConcurrentHashMap<>(32);
+
+    private static final Map<Object, Set<Watcher<?>>> events = new ConcurrentHashMap<>(64);
+
+    private PostMan(){
+        /* Why would you do that ? */
+    }
 
     public static synchronized <T> void bind(Class<T> event){
         if(!arcEvents.contains(event)){
@@ -22,37 +23,47 @@ public final class PostMan{
         }
     }
 
-    public static <T> Watcher<T> on(T type, Runnable listener){
-        return on(new Watcher<>(type, event -> listener.run()));
+    public static synchronized <T> void bind(T event){
+        if(!arcEvents.contains(event)){
+            Events.run(event, () -> PostMan.fire(event));
+            arcEvents.add(event);
+        }
     }
 
-    public static <T> Watcher<T> on(Class<T> type, Cons<T> listener){
+    public static <T> Watcher<T> on(Class<T> type, EventListener<T> listener){
+        return on(new Watcher<>(type, listener));
+    }
+
+    public static <T> Watcher<T> on(Class<T> type, EventListener<T> listener, int lifetime){
+        return on(new Watcher<>(type, listener, lifetime));
+    }
+
+    public static <T> Watcher<T> on(T type, Runnable listener){
         return on(new Watcher<>(type, listener));
     }
 
     public static <T> Watcher<T> on(T type, Runnable listener, int lifetime){
-        return on(new Watcher<>(type, event -> listener.run(), lifetime));
-    }
-
-    public static <T> Watcher<T> on(Class<T> type, Cons<T> listener, int lifetime){
         return on(new Watcher<>(type, listener, lifetime));
     }
 
     public static <T> Watcher<T> on(Watcher<T> watcher){
-        Set<Watcher<?>> set = postManEvents.computeIfAbsent(
-            watcher.event, key -> ConcurrentHashMap.newKeySet());
-
-        set.add(watcher);
+        events.computeIfAbsent(watcher.getEvent(), key -> ConcurrentHashMap.newKeySet(8)).add(watcher);
         return watcher;
     }
 
+    public static <T> boolean contains(Watcher<T> watcher){
+        Set<Watcher<?>> set = events.get(watcher.getEvent());
+        if(set != null) return set.contains(watcher);
+        else return false;
+    }
+
     public static <T> void remove(Watcher<T> watcher){
-        Set<Watcher<?>> set = postManEvents.get(watcher.event);
+        Set<Watcher<?>> set = events.get(watcher.getEvent());
         if(set != null) set.remove(watcher);
     }
 
     public static <T> void fire(T type){
-        fire(type, EventRunner.defaultRunner);
+        fire(type, EventRunner.DEFAULT);
     }
 
     public static <T> void fire(T type, EventRunner runner){
@@ -60,15 +71,15 @@ public final class PostMan{
     }
 
     public static <T> void fire(Class<?> ctype, T type){
-        fire(ctype, type, EventRunner.defaultRunner);
+        fire(ctype, type, EventRunner.DEFAULT);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> void fire(Class<?> ctype, T type, EventRunner runner){
-        if(postManEvents.containsKey(type)){
-            runner.get(() -> postManEvents.get(type).forEach(e -> ((Watcher<T>)e).trigger(type)));
-        }if(postManEvents.containsKey(ctype)){
-            runner.get(() -> postManEvents.get(ctype).forEach(e -> ((Watcher<T>)e).trigger(type)));
+        if(events.containsKey(type)){
+            runner.run(() -> events.get(type).forEach(listener -> ((Watcher<T>)listener).trigger(type)));
+        }if(events.containsKey(ctype)){
+            runner.run(() -> events.get(ctype).forEach(listener -> ((Watcher<T>)listener).trigger(type)));
         }
     }
 }

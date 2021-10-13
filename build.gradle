@@ -1,23 +1,14 @@
 import groovy.json.JsonSlurper
-import org.apache.groovy.json.internal.LazyMap
-import org.gradle.internal.os.OperatingSystem
+import java.nio.charset.StandardCharsets
 
 
 buildscript{
     ext{
-        // Mindustry API version you want to use
-        mindustryVersion = "v126.2"
-        
-        // Junit version for tests outside a server
-        junitVersion = "5.7.2"
-
-        // A string that points directly to your server.jar directory
-        serverDirectoryPath = null
-
-        // the file:// at the beginning is required if you use Windows, if you don't want github actions to scream at you
-        if(System.getProperty("user.name") == "Finley"){
-            serverDirectoryPath = "file://C:/Users/Finley/Documents/My Games/Mindustry/Server/mindustry-server-$mindustryVersion"
-        }
+        // Properties
+        mindustryVersion = property("props.mindustry-version")
+        serverDirectoryPath = property("props.mindustry-server-directory")
+        // Plugin metadata extracted from plugin.json
+        metadata = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
     }
 
     repositories{
@@ -31,19 +22,15 @@ buildscript{
     }
 }
 
+
 plugins{
     id "java"
     id "maven-publish"
 }
 
 
-ext{
-    // Plugin metadata extracted from plugin.json
-    plugin = new JsonSlurper().parseText(file("$projectDir/plugin.json").text) as LazyMap
-}
-
-group "fr.xpdustry"
-version plugin.version
+group property("props.project-group")
+version metadata.version
 
 
 repositories{
@@ -55,52 +42,67 @@ dependencies{
     // Mindustry
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
+
+    // Rhino
+    implementation "org.mozilla:rhino:1.7.13"
+
+    // XML
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.12.4'
+    implementation 'com.fasterxml.woodstox:woodstox-core:6.2.6'
+
+    // Types
+    implementation 'io.leangen.geantyref:geantyref:1.3.11'
+
+
+    // Annotations
+    // compileOnly 'org.jetbrains:annotations:22.0.0'
 
     // Unit Testing
     testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.1"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
 }
 
+
 java{
-    withJavadocJar()
     withSourcesJar()
 }
 
 compileJava{
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
-    options.encoding = "UTF-8"
-}
-
-compileTestJava{
-    options.encoding = "UTF-8"
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = StandardCharsets.UTF_8
 }
 
 test{
     useJUnitPlatform()
 }
 
+compileTestJava{
+    options.encoding = StandardCharsets.UTF_8
+}
+
 
 jar{
-    from "$rootDir/plugin.json"
-    // The following line is required
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveBaseName = project.property("props.project-name")
+
+    //The following line is required
     from configurations.runtimeClasspath.collect{
         it.isDirectory() ? it : zipTree(it)
     }
+
+    from "$rootDir/plugin.json"
 }
+
 
 task moveJar{
     dependsOn jar
 
     doLast{
-        if(serverDirectoryPath == null || serverDirectoryPath.isEmpty()){
-            throw new GradleException("serverDirectoryPath is unset")
-        }
-
         // Deletes all the jar files that begins with the base artifact name
         delete file("$serverDirectoryPath/config/mods").listFiles({
             it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
@@ -113,27 +115,11 @@ task moveJar{
     }
 }
 
-task runServer{
-    doLast{
-        if(serverDirectoryPath == null || serverDirectoryPath.isEmpty()){
-            throw new GradleException("serverDirectoryPath is unset")
-        }
-
-        exec{
-            OperatingSystem os = OperatingSystem.current()
-
-            workingDir = file(serverDirectoryPath)
-
-            // Open a mindustry server in a new terminal window
-            if(os.isWindows()){
-                commandLine = ["cmd", "/C", "start", "run_server.bat"]
-            }else if(os.isLinux()){
-                commandLine = ["sh", "-c", "./run_server.sh"]
-            }else{
-                throw new GradleException("Unsupported operation, please implement a case for your os")
-            }
-        }
-    }
+task runServer(type: JavaExec){
+    workingDir = serverDirectoryPath
+    classpath = files("$serverDirectoryPath/server.jar")
+    mainClass = "mindustry.server.ServerLauncher"
+    standardInput = System.in
 }
 
 task deployJar{
@@ -141,22 +127,48 @@ task deployJar{
     dependsOn runServer
 }
 
-task getArtifactPath{
-    doLast{
-        println jar.archiveFile.get().toString()
+// Makes sure the task are only available if the props.mindustry-server-directory is set correctly
+for(Task serverTask : [moveJar, runServer, deployJar]){
+    serverTask.configure{
+        onlyIf{ file(serverDirectoryPath).exists() }
     }
 }
 
+// Required if you want to use the Release GitHub action
+task getArtifactPath{
+    doLast{ println jar.archiveFile.get().toString() }
+}
+
+// Utility task :^)
+task generateReadmeHeader{
+    doLast{
+        StringBuilder builder = new StringBuilder(512)
+
+        builder.append("# ").append(project.property("props.project-name")).append("\n\n")
+        builder.append("[![Jitpack latest version](https://jitpack.io/v/${metadata.repo}.svg)](https://jitpack.io/#${metadata.repo})\n")
+        builder.append("[![Build status](https://github.com/${metadata.repo}/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/${metadata.repo}/actions/workflows/build.yml)\n")
+        builder.append("[![Mindustry 6.0 | 7.0 ](https://img.shields.io/badge/Mindustry-6.0%20%7C%207.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)\n")
+
+        if(!file("$rootDir/generated").exists()) file("$rootDir/generated").mkdir()
+        file("$rootDir/generated/README.md").write(builder.toString())
+    }
+}
+
+clean{
+    delete file("$rootDir/generated")
+}
+
+
 publishing{
     publications{
-        mavenJava(MavenPublication){
+        maven(MavenPublication){
             from components.java
 
             pom{
-                name = plugin.displayName
-                artifactId = project.name.toLowerCase()
-                description = plugin.description
-                url = "https://github.com/$plugin.repo"
+                name = metadata.displayName
+                artifactId = metadata.name
+                description = metadata.description
+                url = "https://github.com/$metadata.repo"
 
                 licenses{
                     license{
@@ -166,10 +178,11 @@ publishing{
                 }
 
                 developers{
-                    developer{ id = plugin.author }
+                    developer{
+                        id = metadata.author
+                    }
                 }
             }
         }
     }
 }
-

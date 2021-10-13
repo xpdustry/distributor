@@ -1,10 +1,6 @@
 name: Build
 
-on: [
-    push,
-    pull_request,
-    workflow_dispatch
-]
+on: [push, workflow_dispatch]
 
 jobs:
   build:
@@ -17,15 +13,15 @@ jobs:
         with:
           java-version: 16
 
-      - name: Build artifacts
+      - name: Build plugin jar
         id: build
         run: |
           chmod +x ./gradlew
           ./gradlew jar
           echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
 
-      - name: Upload artifact
+      - name: Upload built jar file
         uses: actions/upload-artifact@v2
         with:
-          name: Distributor-core
+          name: ${{ github.event.repository.name }}
           path: ${{ steps.build.outputs.ARTIFACT_PATH }}

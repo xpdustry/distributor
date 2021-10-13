@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.security;
 
 
 public interface Permission{
-    default int getAccessLevel(){
-        return 0;
+    default long getAccess(){
+        return 0L;
     }
 }

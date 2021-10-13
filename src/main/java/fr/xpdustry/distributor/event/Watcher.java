@@ -1,51 +1,53 @@
 package fr.xpdustry.distributor.event;
 
-import arc.func.*;
-
 import java.util.concurrent.atomic.*;
 
 
-/**
- * Useless class ? As long as it compiles...
- * I have no idea what I am doing...
- */
 public class Watcher<T>{
-    public final Object event;
-    public final Cons<T> listener;
+    private final Object event;
+    private final EventListener<T> listener;
     private final AtomicInteger lifetime;
 
-    public Watcher(Class<T> event, Cons<T> listener){
+    public Watcher(Class<T> event, EventListener<T> listener){
         this(event, listener, -1);
     }
 
-    public Watcher(T event, Cons<T> listener){
-        this(event, listener, -1);
-    }
+    public Watcher(Class<T> event, EventListener<T> listener, int lifetime){
+        if(listener == null || event == null) throw new NullPointerException();
 
-    public Watcher(Class<T> event, Cons<T> listener, int lifetime){
         this.event = event;
         this.listener = listener;
         this.lifetime = new AtomicInteger(lifetime);
     }
 
-    public Watcher(T event, Cons<T> listener, int lifetime){
+    public Watcher(T event, Runnable listener){
+        this(event, listener, -1);
+    }
+
+    public Watcher(T event, Runnable listener, int lifetime){
+        if(listener == null || event == null) throw new NullPointerException();
+
         this.event = event;
-        this.listener = listener;
+        this.listener = e -> listener.run();
         this.lifetime = new AtomicInteger(lifetime);
     }
 
     public void trigger(T type){
-        if(lifetime.get() == 0){
-            PostMan.remove(this);
-            return;
-        }else if(lifetime.get() > 0){
-            lifetime.decrementAndGet();
+        if(lifetime.get() != 0){
+            if(lifetime.get() > 0) lifetime.decrementAndGet();
+            listener.trigger(type);
         }
+    }
 
-        listener.get(type);
+    public Object getEvent(){
+        return event;
     }
 
     public int getLifetime(){
         return lifetime.get();
+    }
+
+    public void setLifetime(int lifetime){
+        this.lifetime.set(lifetime);
     }
 }
