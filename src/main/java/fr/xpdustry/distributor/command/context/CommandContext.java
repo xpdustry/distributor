@@ -41,6 +41,10 @@ public class CommandContext<T> implements ObjectStore{
         return type;
     }
 
+    public String getArg(int index){
+        return args.get(index);
+    }
+
     public List<String> getArgs(){
         return new ArrayList<>(args);
     }

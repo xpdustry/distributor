@@ -11,14 +11,16 @@ public abstract class MindustryCommand<T> extends Command<T>{
     private String description;
     private final String parameterText;
 
-    public MindustryCommand(String name, String description, ContextRunner<T> responseHandler){
+    public MindustryCommand(String name, String description, ContextRunner<T> responseHandler)
+    {
         super(name, Collections.emptyList(), responseHandler);
         this.description = description;
         this.parameterText = "";
     }
 
-    public MindustryCommand(String name, String description, String parameterText,
-                            MindustryCommandParser parser, ContextRunner<T> responseHandler) throws ParsingException{
+    public MindustryCommand(String name, String parameterText, String description,
+                            MindustryCommandParser parser, ContextRunner<T> responseHandler) throws ParsingException
+    {
         super(name, parser.parseParameters(parameterText), responseHandler);
         this.description = description;
         this.parameterText = parameterText;

@@ -35,9 +35,9 @@ public class MindustryCommandManager<T> extends MindustryCommand<T>{
         this.parser = parser;
     }
 
-    public MindustryCommandManager(String name, String description, String parameterText,
+    public MindustryCommandManager(String name, String parameterText, String description,
                                    MindustryCommandParser parser, ContextRunner<T> responseHandler) throws ParsingException{
-        super(name, description, parameterText, parser, responseHandler);
+        super(name, parameterText, description, parser, responseHandler);
         this.parser = parser;
     }
 
@@ -55,9 +55,9 @@ public class MindustryCommandManager<T> extends MindustryCommand<T>{
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public MindustryCommand<T> register(CommandHandler handler, String name, String description, String parameterText,
+    public MindustryCommand<T> register(CommandHandler handler, String name, String parameterText, String description,
                                         UnsafeContextRunner<T> runner) throws ParsingException{
-        MindustryCommand<T> command = new MindustryLambdaCommand<>(name, description, parameterText, parser, responseHandler, runner);
+        MindustryCommand<T> command = new MindustryLambdaCommand<>(name, parameterText, description, parser, responseHandler, runner);
         handler.register(command.getName(), command.getParameterText(), command.getDescription(), makeRunner(command));
         addSubcommand(command);
         return command;

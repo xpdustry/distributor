@@ -23,11 +23,7 @@ public class CommandParameter<T>{
     }
 
     public CommandParameter(String name, String defaultValue, boolean optional, Class<T> valueType, ArgumentPreprocessor<T> parser){
-        this.name = Objects.requireNonNull(name, "'name' is null.");
-        this.defaultValue = defaultValue;
-        this.valueType = TypeToken.get(valueType);
-        this.optional = optional;
-        this.parser = parser;
+        this(name, defaultValue, optional, TypeToken.get(valueType), parser);
     }
 
     public String getName(){

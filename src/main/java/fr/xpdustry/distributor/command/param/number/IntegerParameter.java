@@ -1,39 +1,28 @@
 package fr.xpdustry.distributor.command.param.number;
 
-import fr.xpdustry.distributor.exception.*;
 
+import fr.xpdustry.distributor.command.param.*;
+
+import java.util.*;
 
 public class IntegerParameter extends NumericParameter<Integer>{
     public IntegerParameter(String name, String defaultValue, boolean optional){
-        super(name, defaultValue, optional, Integer.class, Integer::parseInt, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        super(name, defaultValue, optional, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.class, Integer::parseInt, Integer::compare);
+    }
+
+    public IntegerParameter(String name, String defaultValue, boolean optional,
+                            ArgumentPreprocessor<Integer> parser, Comparator<Integer> comparator)
+    {
+        super(name, defaultValue, optional, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.class, parser, comparator);
     }
 
     public IntegerParameter(String name, String defaultValue, boolean optional, int minimum, int maximum){
-        super(name, defaultValue, optional, Integer.class, Integer::parseInt, minimum, maximum);
+        super(name, defaultValue, optional, minimum, maximum, Integer.class, Integer::parseInt, Integer::compare);
     }
 
-    @Override
-    public Integer parse(String arg) throws ParsingException{
-        try{
-            int number = Integer.parseInt(arg);
-
-            if(number < getMinimum()){
-                throw new ParsingException(ParsingExceptionType.NUMERIC_VALUE_TOO_LOW)
-                .with("type", getValueType())
-                .with("expected", getMinimum())
-                .with("actual", number);
-            }else if(number > getMaximum()){
-                throw new ParsingException(ParsingExceptionType.NUMERIC_VALUE_TOO_BIG)
-                .with("type", getValueType())
-                .with("expected", getMaximum())
-                .with("actual", number);
-            }
-
-            return number;
-        }catch(NumberFormatException e){
-            throw new ParsingException(ParsingExceptionType.ARGUMENT_TYPE_ERROR, e)
-            .with("type", getValueType())
-            .with("arg", arg);
-        }
+    public IntegerParameter(String name, String defaultValue, boolean optional, int minimum, int maximum,
+                            ArgumentPreprocessor<Integer> parser, Comparator<Integer> comparator)
+    {
+        super(name, defaultValue, optional, minimum, maximum, Integer.class, parser, comparator);
     }
 }

@@ -3,17 +3,18 @@ package fr.xpdustry.distributor;
 import arc.files.*;
 import arc.util.*;
 
+import fr.xpdustry.distributor.exception.*;
+import mindustry.*;
+import mindustry.gen.*;
+
 import fr.xpdustry.distributor.command.mindy.*;
 import fr.xpdustry.distributor.plugin.settings.*;
-import mindustry.*;
-
 import fr.xpdustry.distributor.plugin.internal.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
 
 import com.fasterxml.jackson.databind.*;
 
-import mindustry.gen.*;
 import org.mozilla.javascript.*;
 
 import java.io.*;
@@ -63,7 +64,18 @@ public class Distributor extends DistributorPlugin{
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        commandManager.setCommandHandler(handler);
+        try{
+            commandManager.register(handler, "js", "<args...>", "Run some funni js", ctx -> {
+                Playerc player = ctx.getType();
+                if(player.admin()){
+                    player.sendMessage(JavaScriptEngine.getInstance().evaluate(ctx.getArg(0)));
+                }else{
+                    player.sendMessage("No");
+                }
+            });
+        }catch(ParsingException e){
+            e.printStackTrace();
+        }
     }
 
     public static SharedClassLoader getModClassLoader(){

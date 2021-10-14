@@ -1,5 +1,7 @@
 package fr.xpdustry.distributor.command.mindy;
 
+import arc.util.*;
+
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.command.param.*;
 import fr.xpdustry.distributor.command.param.number.*;
@@ -33,10 +35,12 @@ public class MindustryCommandParser{
             char start = parameter.charAt(0);
             char end = parameter.charAt(parameter.length() - 1);
 
+            Log.debug("What the fuck ? @ @ @", start, end, parameter);
+
             if(start == '<' && end == '>'){
                 if(hadOptionalParameter) throw new IllegalArgumentException("Can't have non-optional parameter after an optional parameter!");
                 optional = false;
-            }else if(start != '[' || end != ']'){
+            }else if(start == '[' && end == ']'){
                 optional = true;
             }else{
                 throw new IllegalArgumentException("Malformed parameter: " + parameter);
