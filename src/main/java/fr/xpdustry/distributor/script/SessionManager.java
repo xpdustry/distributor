@@ -5,7 +5,6 @@ import rhino.*;
 import java.util.*;
 
 public class SessionManager{
-    private final JavaScriptEngine engine;
     private final Map<String, Scriptable> sessions = new HashMap<>();
 
     public Scriptable getSession(String name){
@@ -14,13 +13,5 @@ public class SessionManager{
 
     public Scriptable removeSession(String name){
         return sessions.remove(name);
-    }
-
-    public SessionManager(JavaScriptEngine engine){
-        this.engine = engine;
-    }
-
-    public JavaScriptEngine getEngine(){
-        return engine;
     }
 }

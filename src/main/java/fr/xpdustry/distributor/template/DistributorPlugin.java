@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.template;
 import arc.*;
 import arc.util.*;
 
-import fr.xpdustry.distributor.plugin.*;
+import fr.xpdustry.distributor.util.*;
 import mindustry.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
@@ -18,11 +18,13 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
         return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;
     }
 
+    /*
     @Nullable
     public String asScriptPath(String path){
         LoadedMod mod = asMod();
         return "mods/" + ((mod != null) ? mod.meta.name : "unknown") + "/" + path;
     }
+     */
 
     @Nullable
     public static CommandHandler getClientCommands(){

@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.exception;
 
 
-public class ObjectStoreException extends Exception{
+public class ObjectStoreException extends RuntimeException{
     public ObjectStoreException(String message){
         super(message);
     }

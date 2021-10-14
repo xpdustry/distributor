@@ -4,10 +4,10 @@ import java.util.*;
 
 
 @SuppressWarnings("unused")
-public class Interpolator implements StringFormatter{
+public class StringInterpolator implements StringFormatter{
     private final Map<String, String> map;
 
-    public Interpolator(Map<String, String> map){
+    public StringInterpolator(Map<String, String> map){
         this.map = Objects.requireNonNull(map);
     }
 

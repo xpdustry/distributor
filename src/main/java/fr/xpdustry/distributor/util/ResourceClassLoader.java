@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.plugin;
+package fr.xpdustry.distributor.util;
 
 import java.io.*;
 import java.net.*;

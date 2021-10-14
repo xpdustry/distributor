@@ -1,15 +1,15 @@
-package fr.xpdustry.distributor.adaptater;
+package fr.xpdustry.distributor.command.mindy;
 
+import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.command.param.*;
 import fr.xpdustry.distributor.command.param.number.*;
 import fr.xpdustry.distributor.command.param.string.*;
-import fr.xpdustry.distributor.exception.*;
 
 import java.util.*;
 
 
 public class MindustryCommandParser{
-    public List<CommandParameter<?>> parseParameters(String parameterText) throws ArgumentException{
+    public List<CommandParameter<?>> parseParameters(String parameterText) throws ParsingException{
         ArrayList<CommandParameter<?>> parameters = new ArrayList<>();
         if(parameterText.isEmpty()) return parameters; // <- No parameters case
 
@@ -81,7 +81,7 @@ public class MindustryCommandParser{
                 IntegerParameter out = new IntegerParameter(parameterName, "0", optional);
                 parameters.add(out);
             }else{
-                throw new ArgumentException(ArgumentExceptionType.UNKNOWN_PARAMETER_TYPE)
+                throw new ParsingException(ParsingExceptionType.UNKNOWN_PARAMETER_TYPE)
                 .with("expected", Arrays.asList("string", "int"))
                 .with("actual", type);
             }

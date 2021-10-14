@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.exception;
+package fr.xpdustry.distributor.exception.type;
 
 import fr.xpdustry.distributor.util.struct.*;
 

@@ -13,17 +13,17 @@ public class IntegerParameter extends NumericParameter<Integer>{
     }
 
     @Override
-    public Integer parse(String arg) throws ArgumentException{
+    public Integer parse(String arg) throws ParsingException{
         try{
             int number = Integer.parseInt(arg);
 
             if(number < getMinimum()){
-                throw new ArgumentException(ArgumentExceptionType.NUMERIC_VALUE_TOO_LOW)
+                throw new ParsingException(ParsingExceptionType.NUMERIC_VALUE_TOO_LOW)
                 .with("type", getValueType())
                 .with("expected", getMinimum())
                 .with("actual", number);
             }else if(number > getMaximum()){
-                throw new ArgumentException(ArgumentExceptionType.NUMERIC_VALUE_TOO_BIG)
+                throw new ParsingException(ParsingExceptionType.NUMERIC_VALUE_TOO_BIG)
                 .with("type", getValueType())
                 .with("expected", getMaximum())
                 .with("actual", number);
@@ -31,8 +31,8 @@ public class IntegerParameter extends NumericParameter<Integer>{
 
             return number;
         }catch(NumberFormatException e){
-            throw new ArgumentException(ArgumentExceptionType.ARGUMENT_FORMATTING_ERROR, e)
-            .with("type", Integer.class)
+            throw new ParsingException(ParsingExceptionType.ARGUMENT_TYPE_ERROR, e)
+            .with("type", getValueType())
             .with("arg", arg);
         }
     }

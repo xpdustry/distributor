@@ -2,8 +2,8 @@ package fr.xpdustry.distributor.command;
 
 import arc.util.*;
 
-import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.param.*;
 
 import java.util.*;
@@ -11,7 +11,6 @@ import java.util.*;
 
 public abstract class Command<T>{
     private final String name;
-    private final Map<String, String> properties;
 
     protected final ContextRunner<T> responseHandler;
     protected final List<CommandParameter<?>> parameters;
@@ -21,7 +20,7 @@ public abstract class Command<T>{
 
     public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<T> responseHandler){
         this.name = Objects.requireNonNull(name, "'name' is null.");
-        this.properties = new HashMap<>();
+        // this.properties = new HashMap<>();
 
         this.responseHandler = Objects.requireNonNull(responseHandler, "'responseHandler' is null.");
         this.parameters = Objects.requireNonNull(parameters, "'parameters' is null.");
@@ -70,28 +69,16 @@ public abstract class Command<T>{
     }
 
     @Nullable
-    public String getProperty(String name){
-        return properties.get(name);
+    public Command<T> getParent(){
+        return parent;
     }
 
-    public String getProperty(String name, String def){
-        return properties.getOrDefault(name, def);
+    protected void setParent(Command<T> parent){
+        this.parent = parent;
     }
 
-    public boolean hasProperty(String name){
-        return properties.containsKey(name);
-    }
-
-    public Map<String,String> getProperties(){
-        return new HashMap<>(properties);
-    }
-
-    protected void setProperty(String name, String value){
-        properties.put(name, value);
-    }
-
-    protected void removeProperty(String name){
-        properties.remove(name);
+    public ContextRunner<T> getResponseHandler(){
+        return responseHandler;
     }
 
     @Nullable
@@ -117,17 +104,8 @@ public abstract class Command<T>{
         return subcommands.remove(name);
     }
 
-    @Nullable
-    public Command<T> getParent(){
-        return parent;
-    }
-
-    public void setParent(Command<T> parent){
-        this.parent = parent;
-    }
-
-    public ContextRunner<T> getResponseHandler(){
-        return responseHandler;
+    public boolean removeSubcommand(Command<T> command){
+        return subcommands.remove(command.getName(), command);
     }
 
     public int getOptionalArgumentSize(){

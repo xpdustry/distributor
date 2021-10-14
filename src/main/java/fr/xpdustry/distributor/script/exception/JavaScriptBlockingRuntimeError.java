@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.exception;
+package fr.xpdustry.distributor.script.exception;
 
 
 public class JavaScriptBlockingRuntimeError extends Error{

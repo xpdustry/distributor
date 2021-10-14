@@ -50,7 +50,7 @@ public class CommandParameter<T>{
         return parser;
     }
 
-    public T parse(String arg) throws ArgumentException{
+    public T parse(String arg) throws ParsingException{
         return parser.process(arg);
     }
 }

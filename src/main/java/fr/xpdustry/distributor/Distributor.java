@@ -3,7 +3,8 @@ package fr.xpdustry.distributor;
 import arc.files.*;
 import arc.util.*;
 
-import fr.xpdustry.distributor.adaptater.*;
+import fr.xpdustry.distributor.command.mindy.*;
+import fr.xpdustry.distributor.plugin.settings.*;
 import mindustry.*;
 
 import fr.xpdustry.distributor.plugin.internal.*;
@@ -21,27 +22,21 @@ import java.io.*;
 public class Distributor extends DistributorPlugin{
     private static final ObjectMapper xml = StaticProvider.createXML();
     private static final Settings settings = StaticProvider.createSettings(xml);
+    private static final MindustryCommandManager<Playerc> commandManager = new MindustryCommandManager<>();
     private static final SharedClassLoader modClassLoader = new SharedClassLoader(Distributor.class.getClassLoader());
 
     @Override
     public void init(){
+        showBanner();
+
         Time.mark();
-        Log.info("Begin loading");
+        Log.info("Begin Distributor loading...");
 
-        // Show a nice banner :^)
-        try(InputStream in = resources.getResourceAsStream("banner.txt")){
-            if(in == null) throw new IOException("Asset not found.");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            reader.lines().forEach(line -> Log.info(" > " + line));
-            Log.info(" > ");
-        }catch(IOException e){
-            Log.info("Loaded DistributorPlugin !");
-        }
-
+        // Init Distributor systems
         initFiles();
 
-        modClassLoader.setChildren(Vars.mods.list());
-
+        // Init JavaScript engine
+        ContextFactory.initGlobal(new SafeContextFactory(5));
         JavaScriptEngine.setGlobalContextProvider(() -> {
             Context context = Context.getCurrentContext();
             if(context == null){
@@ -53,23 +48,22 @@ public class Distributor extends DistributorPlugin{
             return context;
         });
 
-        Log.info("End loading : " + Time.elapsed() + " milliseconds");
+        // Init modClassLoader
+        modClassLoader.setChildren(Vars.mods.list());
 
-        CommandManager<Playerc> manager = new CommandManager<>();
-        manager.setCommandHandler(getServerCommands());
-        manager.register("bob", "Says hi", ctx -> {
+        Log.info("End Distributor loading : " + Time.elapsed() + " milliseconds");
+    }
+
+    @Override
+    public void registerServerCommands(CommandHandler handler){
+        commandManager.register(handler, "bob", "Says hi", ctx -> {
             Log.info("Hello! From Bob...");
         });
     }
 
     @Override
-    public void registerServerCommands(CommandHandler handler){
-
-    }
-
-    @Override
     public void registerClientCommands(CommandHandler handler){
-
+        commandManager.setCommandHandler(handler);
     }
 
     public static SharedClassLoader getModClassLoader(){
@@ -92,7 +86,7 @@ public class Distributor extends DistributorPlugin{
 
             // Copy the init script
             try(InputStream in = resources.getResourceAsStream("init.js"); OutputStream out = new FileOutputStream(scripts.child("init.js").file())){
-                if(in == null) throw new IOException("Asset not found.");
+                if(in == null) throw new IOException("Resource not found.");
 
                 byte[] buffer = new byte[1024];
                 int length;
@@ -102,6 +96,18 @@ public class Distributor extends DistributorPlugin{
             }catch(IOException e){
                 scripts.child("init.js").writeString("// Global scope here...\n");
             }
+        }
+    }
+
+    /** Show a nice banner :^) */
+    public void showBanner(){
+        try(InputStream in = resources.getResourceAsStream("banner.txt")){
+            if(in == null) throw new IOException("Asset not found.");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            reader.lines().forEach(line -> Log.info(" > " + line));
+            Log.info(" > ");
+        }catch(IOException e){
+            Log.info("Loaded DistributorPlugin !");
         }
     }
 }

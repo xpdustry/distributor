@@ -9,7 +9,7 @@ import com.ctc.wstx.stax.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.xml.*;
 import com.fasterxml.jackson.module.jaxb.*;
-import fr.xpdustry.distributor.plugin.internal.Settings;
+import fr.xpdustry.distributor.plugin.settings.Settings;
 
 import javax.xml.stream.*;
 import java.io.*;
