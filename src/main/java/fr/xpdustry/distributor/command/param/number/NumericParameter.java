@@ -2,9 +2,9 @@ package fr.xpdustry.distributor.command.param.number;
 
 import fr.xpdustry.distributor.command.param.*;
 import fr.xpdustry.distributor.exception.*;
+
 import io.leangen.geantyref.*;
 
-import java.math.*;
 import java.util.*;
 
 
@@ -14,8 +14,7 @@ public abstract class NumericParameter<T extends Number> extends CommandParamete
     private final Comparator<T> comparator;
 
     public NumericParameter(String name, String defaultValue, boolean optional, T minimum, T maximum,
-                            TypeToken<T> valueType, ArgumentPreprocessor<T> parser, Comparator<T> comparator)
-    {
+                            TypeToken<T> valueType, ArgumentPreprocessor<T> parser, Comparator<T> comparator){
         super(name, defaultValue, optional, valueType, parser);
         this.minimum = Objects.requireNonNull(minimum, "Numerics can't be null.");
         this.maximum = Objects.requireNonNull(maximum, "Numerics can't be null.");
@@ -24,8 +23,7 @@ public abstract class NumericParameter<T extends Number> extends CommandParamete
     }
 
     public NumericParameter(String name, String defaultValue, boolean optional, T minimum, T maximum,
-                            Class<T> valueType, ArgumentPreprocessor<T> parser, Comparator<T> comparator)
-    {
+                            Class<T> valueType, ArgumentPreprocessor<T> parser, Comparator<T> comparator){
         this(name, defaultValue, optional, minimum, maximum, TypeToken.get(valueType), parser, comparator);
     }
 
@@ -74,7 +72,7 @@ public abstract class NumericParameter<T extends Number> extends CommandParamete
 
     public final void checkValueRange(){
         if(comparator.compare(minimum, maximum) > 0){
-            throw new IllegalArgumentException("The minimum value is greater than the maximum value.");
+            throw new IllegalStateException("The minimum value is greater than the maximum value.");
         }
     }
 }

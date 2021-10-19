@@ -2,12 +2,10 @@ package fr.xpdustry.distributor.plugin.settings;
 
 import com.fasterxml.jackson.annotation.*;
 
-import fr.xpdustry.distributor.security.*;
-
 import java.util.*;
 
 
-public class Role implements Permission{
+public class Role{
     public String name;
     public boolean admin;
     public long access;
@@ -17,12 +15,6 @@ public class Role implements Permission{
         this.name = name;
         this.admin = admin;
         this.access = access;
-    }
-
-    @JsonIgnore
-    @Override
-    public long getAccess(){
-        return access;
     }
 
     public static List<Role> getDefault(){

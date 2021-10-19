@@ -2,33 +2,38 @@ package fr.xpdustry.distributor.command;
 
 import arc.util.*;
 
-import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.param.*;
+import fr.xpdustry.distributor.exception.*;
+
+import io.leangen.geantyref.*;
 
 import java.util.*;
 
 
-public abstract class Command<T>{
+public abstract class Command<C>{
     private final String name;
+    private final List<CommandParameter<?>> parameters;
 
-    protected final ContextRunner<T> responseHandler;
-    protected final List<CommandParameter<?>> parameters;
+    private final TypeToken<? extends C> callerType;
+    private final ContextRunner<C> responseHandler;
 
-    protected Command<T> parent = null;
-    protected final SortedMap<String, Command<T>> subcommands;
+    private Command<?> parent = null;
 
-    public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<T> responseHandler){
-        this.name = Objects.requireNonNull(name, "'name' is null.");
-        // this.properties = new HashMap<>();
+    public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<C> responseHandler, TypeToken<? extends C> callerType){
+        this.name = Objects.requireNonNull(name, "The name is null.");
+        this.parameters = Objects.requireNonNull(parameters, "The parameters are null.");
+        this.callerType = callerType;
 
-        this.responseHandler = Objects.requireNonNull(responseHandler, "'responseHandler' is null.");
-        this.parameters = Objects.requireNonNull(parameters, "'parameters' is null.");
-
-        this.subcommands = new TreeMap<>();
+        this.responseHandler = Objects.requireNonNull(responseHandler, "The responseHandler is null.");
     }
 
-    public void call(CommandContext<T> context){
+    public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<C> responseHandler, Class<? extends C> callerType){
+        this(name, parameters, responseHandler, TypeToken.get(callerType));
+    }
+
+    public void call(CommandContext<C> context){
+        context.setCommand(this);
         List<String> args = context.getArgs();
 
         try{
@@ -42,9 +47,14 @@ public abstract class Command<T>{
                 .with("actual", args.size());
             }
 
-            for(int i = 0; i < args.size(); i++){
+            for(int i = 0; i < parameters.size(); i++){
                 CommandParameter<?> parameter = parameters.get(i);
-                context.setObject(parameter.getName(), parameter.parse(args.get(i)));
+
+                if(i < args.size()){
+                    context.setObject(parameter.getName(), parameter.parse(args.get(i)));
+                }else{
+                    context.setObject(parameter.getName(), parameter.parse(parameter.getDefaultValue()));
+                }
             }
 
             execute(context);
@@ -58,7 +68,7 @@ public abstract class Command<T>{
     }
 
     /** Actual command */
-    protected abstract void execute(CommandContext<T> context) throws Exception;
+    protected abstract void execute(CommandContext<C> context) throws Exception;
 
     public String getName(){
         return name;
@@ -68,44 +78,21 @@ public abstract class Command<T>{
         return new ArrayList<>(parameters);
     }
 
-    @Nullable
-    public Command<T> getParent(){
-        return parent;
+    public TypeToken<? extends C> getCallerType(){
+        return callerType;
     }
 
-    protected void setParent(Command<T> parent){
-        this.parent = parent;
-    }
-
-    public ContextRunner<T> getResponseHandler(){
+    public ContextRunner<C> getResponseHandler(){
         return responseHandler;
     }
 
     @Nullable
-    public Command<T> getSubcommand(String name){
-        return subcommands.get(name);
+    public Command<?> getParent(){
+        return parent;
     }
 
-    public boolean hasSubcommand(String name){
-        return subcommands.containsKey(name);
-    }
-
-    public SortedMap<String,Command<T>> getSubcommands(){
-        return new TreeMap<>(subcommands);
-    }
-
-    public Command<T> addSubcommand(Command<T> command){
-        command.setParent(this);
-        return subcommands.put(command.name, command);
-    }
-
-    @Nullable
-    public Command<T> removeSubcommand(String name){
-        return subcommands.remove(name);
-    }
-
-    public boolean removeSubcommand(Command<T> command){
-        return subcommands.remove(command.getName(), command);
+    public void setParent(Command<?> parent){
+        this.parent = parent;
     }
 
     public int getOptionalArgumentSize(){

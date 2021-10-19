@@ -1,4 +1,6 @@
-package fr.xpdustry.distributor.script;
+package fr.xpdustry.distributor.script.js;
+
+import fr.xpdustry.distributor.exception.*;
 
 import org.mozilla.javascript.*;
 
@@ -10,7 +12,12 @@ public final class JavaScriptEngine{
     private final ImporterTopLevel importer;
 
     private static ContextProvider provider = ContextProvider.DEFAULT;
-    private static final ThreadLocal<JavaScriptEngine> instance = ThreadLocal.withInitial(() -> new JavaScriptEngine(provider.getContext()));
+    private static final ThreadLocal<JavaScriptEngine> instance =
+        ThreadLocal.withInitial(() -> new JavaScriptEngine(provider.getContext()));
+
+    public static synchronized ContextProvider getGlobalContextProvider(){
+        return JavaScriptEngine.provider;
+    }
 
     public static synchronized void setGlobalContextProvider(ContextProvider provider){
         JavaScriptEngine.provider = provider;
@@ -38,18 +45,15 @@ public final class JavaScriptEngine{
         return scope;
     }
 
-    public String evaluate(String source){
-        return evaluate(importer, source, "engine.js");
+    public Object eval(String source) throws ScriptException{
+        return eval(importer, source, "engine.js");
     }
 
-    public String evaluate(Scriptable scope, String source, String sourceName){
+    public Object eval(Scriptable scope, String source, String sourceName) throws ScriptException{
         try{
-            Object result = ctx.evaluateString(scope, source, sourceName, 1, null);
-            if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap();
-            if(result instanceof Undefined) result = "undefined";
-            return String.valueOf(result);
-        }catch(Exception e){
-            return e.getClass().getSimpleName() + (e.getMessage() == null ? "" : ": " + e.getMessage());
+            return ctx.evaluateString(scope, source, sourceName, 1, null);
+        }catch(Exception | BlockingScriptError e){
+            throw new ScriptException(e);
         }
     }
 
@@ -65,20 +69,36 @@ public final class JavaScriptEngine{
         return ctx.compileFunction(scope, source, sourceName, 1, null);
     }
 
-    public Object invoke(Function function, Object... args){
-        return function.call(ctx, importer, importer, args);
+    public Object invoke(Function function, Object... args) throws ScriptException{
+        try{
+            return function.call(ctx, importer, importer, args);
+        }catch(Exception | BlockingScriptError e){
+            throw new ScriptException(e);
+        }
     }
 
-    public Object invoke(Function function, Scriptable scope, Object... args){
-        return function.call(ctx, scope, scope, args);
+    public Object invoke(Function function, Scriptable scope, Object... args) throws ScriptException{
+        try{
+            return function.call(ctx, scope, scope, args);
+        }catch(Exception | BlockingScriptError e){
+            throw new ScriptException(e);
+        }
     }
 
-    public Object exec(Script script){
-        return script.exec(ctx, importer);
+    public Object exec(Script script) throws ScriptException{
+        try{
+            return script.exec(ctx, importer);
+        }catch(Exception | BlockingScriptError e){
+            throw new ScriptException(e);
+        }
     }
 
-    public Object exec(Script script, Scriptable scope){
-        return script.exec(ctx, scope);
+    public Object exec(Script script, Scriptable scope) throws ScriptException{
+        try{
+            return script.exec(ctx, scope);
+        }catch(Exception | BlockingScriptError e){
+            throw new ScriptException(e);
+        }
     }
 
     public interface ContextProvider{

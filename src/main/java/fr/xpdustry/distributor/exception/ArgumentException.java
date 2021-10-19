@@ -6,6 +6,7 @@ public class ArgumentException extends PayloadException{
     private final ArgumentExceptionType type;
 
     public ArgumentException(ArgumentExceptionType type){
+        super();
         this.type = type;
     }
 

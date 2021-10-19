@@ -3,27 +3,38 @@ package fr.xpdustry.distributor;
 import arc.files.*;
 import arc.util.*;
 
-import fr.xpdustry.distributor.exception.*;
 import mindustry.*;
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.mindy.*;
-import fr.xpdustry.distributor.plugin.settings.*;
+import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.plugin.internal.*;
-import fr.xpdustry.distributor.script.*;
+import fr.xpdustry.distributor.plugin.settings.*;
+import fr.xpdustry.distributor.script.js.*;
 import fr.xpdustry.distributor.template.*;
+import fr.xpdustry.distributor.util.*;
 
 import com.fasterxml.jackson.databind.*;
 
+import org.apache.commons.io.*;
 import org.mozilla.javascript.*;
 
 import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
 
 
 public class Distributor extends DistributorPlugin{
     private static final ObjectMapper xml = StaticProvider.createXML();
     private static final Settings settings = StaticProvider.createSettings(xml);
-    private static final MindustryCommandManager<Playerc> commandManager = new MindustryCommandManager<>();
+    /*
+    @SuppressWarnings("unchecked")
+    private static final CommandManager<Playerc> commandManager = new CommandManager<>(
+        new MindustryCommandParser(), (ContextRunner<Playerc>)ContextRunner.VOID, Playerc.class);
+     */
+
+    private static final ResourceLoader resources = new ResourceLoader(Distributor.class.getClassLoader());
     private static final SharedClassLoader modClassLoader = new SharedClassLoader(Distributor.class.getClassLoader());
 
     @Override
@@ -37,7 +48,7 @@ public class Distributor extends DistributorPlugin{
         initFiles();
 
         // Init JavaScript engine
-        ContextFactory.initGlobal(new SafeContextFactory(5));
+        ContextFactory.initGlobal(new TimedContextFactory(5));
         JavaScriptEngine.setGlobalContextProvider(() -> {
             Context context = Context.getCurrentContext();
             if(context == null){
@@ -57,22 +68,28 @@ public class Distributor extends DistributorPlugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
+        /*
         commandManager.register(handler, "bob", "Says hi", ctx -> {
             Log.info("Hello! From Bob...");
         });
+
+         */
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
         try{
+            /*
             commandManager.register(handler, "js", "<args...>", "Run some funni js", ctx -> {
-                Playerc player = ctx.getType();
+                Playerc player = ctx.getCaller();
                 if(player.admin()){
-                    player.sendMessage(JavaScriptEngine.getInstance().evaluate(ctx.getArg(0)));
+                    player.sendMessage(JavaScriptEngine.getInstance().eval(ctx.getArg(0)).toString());
                 }else{
                     player.sendMessage("No");
                 }
             });
+
+             */
         }catch(ParsingException e){
             e.printStackTrace();
         }
@@ -97,14 +114,10 @@ public class Distributor extends DistributorPlugin{
             scripts.mkdirs();
 
             // Copy the init script
-            try(InputStream in = resources.getResourceAsStream("init.js"); OutputStream out = new FileOutputStream(scripts.child("init.js").file())){
-                if(in == null) throw new IOException("Resource not found.");
-
-                byte[] buffer = new byte[1024];
-                int length;
-                while((length = in.read(buffer)) > 0){
-                    out.write(buffer, 0, length);
-                }
+            try{
+                URL url = resources.getResource("init.js");
+                if(url == null) throw new IOException("Resource not found.");
+                IOUtils.copy(url, scripts.child("init.js").file());
             }catch(IOException e){
                 scripts.child("init.js").writeString("// Global scope here...\n");
             }
@@ -115,8 +128,7 @@ public class Distributor extends DistributorPlugin{
     public void showBanner(){
         try(InputStream in = resources.getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("Asset not found.");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            reader.lines().forEach(line -> Log.info(" > " + line));
+            IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
             Log.info(" > ");
         }catch(IOException e){
             Log.info("Loaded DistributorPlugin !");

@@ -9,11 +9,10 @@ import java.util.concurrent.*;
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public final class PostMan{
     private static final Set<Object> arcEvents = new HashSet<>(8);
-
-    private static final Map<Object, Set<Watcher<?>>> events = new ConcurrentHashMap<>(64);
+    private static final Map<Object, Set<EventListener<?>>> events = new ConcurrentHashMap<>(32);
 
     private PostMan(){
-        /* Why would you do that ? */
+        /* Why would you do that? */
     }
 
     public static synchronized <T> void bind(Class<T> event){
@@ -30,57 +29,38 @@ public final class PostMan{
         }
     }
 
-    public static <T> Watcher<T> on(Class<T> type, EventListener<T> listener){
-        return on(new Watcher<>(type, listener));
+    public static <T> EventListener<T> on(Class<T> type, EventRunner<T> runner){
+        return on(new EventListener<>(type, runner));
     }
 
-    public static <T> Watcher<T> on(Class<T> type, EventListener<T> listener, int lifetime){
-        return on(new Watcher<>(type, listener, lifetime));
+    public static <T> EventListener<T> on(T type, Runnable listener){
+        return on(new EventListener<>(type, listener));
     }
 
-    public static <T> Watcher<T> on(T type, Runnable listener){
-        return on(new Watcher<>(type, listener));
+    public static <T> EventListener<T> on(EventListener<T> listener){
+        events.computeIfAbsent(listener.getEvent(), key -> ConcurrentHashMap.newKeySet(8)).add(listener);
+        return listener;
     }
 
-    public static <T> Watcher<T> on(T type, Runnable listener, int lifetime){
-        return on(new Watcher<>(type, listener, lifetime));
-    }
-
-    public static <T> Watcher<T> on(Watcher<T> watcher){
-        events.computeIfAbsent(watcher.getEvent(), key -> ConcurrentHashMap.newKeySet(8)).add(watcher);
-        return watcher;
-    }
-
-    public static <T> boolean contains(Watcher<T> watcher){
-        Set<Watcher<?>> set = events.get(watcher.getEvent());
-        if(set != null) return set.contains(watcher);
+    public static <T> boolean contains(EventListener<T> listener){
+        Set<EventListener<?>> set = events.get(listener.getEvent());
+        if(set != null) return set.contains(listener);
         else return false;
     }
 
-    public static <T> void remove(Watcher<T> watcher){
-        Set<Watcher<?>> set = events.get(watcher.getEvent());
-        if(set != null) set.remove(watcher);
+    public static <T> void remove(EventListener<T> listener){
+        Set<EventListener<?>> set = events.get(listener.getEvent());
+        if(set != null) set.remove(listener);
     }
 
     public static <T> void fire(T type){
-        fire(type, EventRunner.DEFAULT);
-    }
-
-    public static <T> void fire(T type, EventRunner runner){
-        fire(type.getClass(), type, runner);
-    }
-
-    public static <T> void fire(Class<?> ctype, T type){
-        fire(ctype, type, EventRunner.DEFAULT);
+        fire(type.getClass(), type);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void fire(Class<?> ctype, T type, EventRunner runner){
-        if(events.containsKey(type)){
-            runner.run(() -> events.get(type).forEach(listener -> ((Watcher<T>)listener).trigger(type)));
-        }if(events.containsKey(ctype)){
-            runner.run(() -> events.get(ctype).forEach(listener -> ((Watcher<T>)listener).trigger(type)));
-        }
+    public static <T> void fire(Class<?> ctype, T type){
+        if(events.containsKey(type)) events.get(type).forEach(listener -> ((EventListener<T>)listener).trigger(type));
+        if(events.containsKey(ctype)) events.get(ctype).forEach(listener -> ((EventListener<T>)listener).trigger(type));
     }
 }
 

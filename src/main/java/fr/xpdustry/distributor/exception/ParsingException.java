@@ -2,10 +2,11 @@ package fr.xpdustry.distributor.exception;
 
 import fr.xpdustry.distributor.exception.type.*;
 
-public class ParsingException extends PayloadException{
+public class ParsingException extends RuntimePayloadException{
     private final ParsingExceptionType type;
 
     public ParsingException(ParsingExceptionType type){
+        super();
         this.type = type;
     }
 
@@ -21,5 +22,4 @@ public class ParsingException extends PayloadException{
     public ParsingException with(String key, Object value){
         return (ParsingException)super.with(key, value);
     }
-
 }

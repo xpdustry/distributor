@@ -5,20 +5,22 @@ import fr.xpdustry.distributor.util.struct.*;
 
 import java.util.*;
 
-public class CommandContext<T> implements ObjectStore{
-    private final T type;
+
+public class CommandContext<C> implements ObjectStore{
+    private final C caller;
     private final List<String> args;
-    private final Command<T> command;
     private final Map<String, Object> store;
 
+    private Command<C> command = null;
     private Object result = null;
     private boolean success = false;
     private Exception exception = null;
 
-    public CommandContext(T type, List<String> args, Command<T> command){
-        this.type = type;
-        this.args = Objects.requireNonNull(args, "'args' is null.");
-        this.command = Objects.requireNonNull(command, "'command' is null");
+    private CommandContext<?> child = null;
+
+    public CommandContext(C caller, List<String> args){
+        this.caller = caller;
+        this.args = Objects.requireNonNull(args, "The args are null.");
         this.store = new HashMap<>(args.size());
     }
 
@@ -37,8 +39,22 @@ public class CommandContext<T> implements ObjectStore{
         return store.remove(key);
     }
 
-    public T getType(){
-        return type;
+    @SuppressWarnings("unchecked")
+    public <T> CommandContext<T> childContext(T caller, List<String> args){
+        if(child == null){
+            child = new CommandContext<>(caller, args);
+            return (CommandContext<T>)child;
+        }else{
+            throw new IllegalStateException("This context already has a child.");
+        }
+    }
+
+    public C getCaller(){
+        return caller;
+    }
+
+    public Optional<C> getWrappedCaller(){
+        return Optional.ofNullable(caller);
     }
 
     public String getArg(int index){
@@ -47,6 +63,22 @@ public class CommandContext<T> implements ObjectStore{
 
     public List<String> getArgs(){
         return new ArrayList<>(args);
+    }
+
+    public Map<String, Object> getStore(){
+        return new HashMap<>(store);
+    }
+
+    public boolean hasException(){
+        return exception != null;
+    }
+
+    public Command<C> getCommand(){
+        return command;
+    }
+
+    public void setCommand(Command<C> command){
+        this.command = command;
     }
 
     public void setResult(Object result){
@@ -73,15 +105,7 @@ public class CommandContext<T> implements ObjectStore{
         this.exception = exception;
     }
 
-    public boolean hasException(){
-        return exception != null;
-    }
-
-    public Command<T> getCommand(){
-        return command;
-    }
-
-    public Map<String, Object> getStore(){
-        return new HashMap<>(store);
+    public CommandContext<?> getChild(){
+        return child;
     }
 }

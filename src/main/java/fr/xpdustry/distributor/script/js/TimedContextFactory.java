@@ -1,15 +1,15 @@
-package fr.xpdustry.distributor.script;
+package fr.xpdustry.distributor.script.js;
 
-import fr.xpdustry.distributor.script.exception.*;
+import fr.xpdustry.distributor.exception.*;
+
 import org.mozilla.javascript.*;
-import org.mozilla.javascript.Callable;
 
 
 /** @see org.mozilla.javascript.ContextFactory */
-public class SafeContextFactory extends ContextFactory{
+public class TimedContextFactory extends ContextFactory{
     private final int maxRuntimeDuration;
 
-    public SafeContextFactory(int maxRuntimeDuration){
+    public TimedContextFactory(int maxRuntimeDuration){
         this.maxRuntimeDuration = maxRuntimeDuration;
     }
 
@@ -43,7 +43,7 @@ public class SafeContextFactory extends ContextFactory{
         TimedContext tcx = (TimedContext)cx;
         long currentTime = System.currentTimeMillis();
         if(currentTime - tcx.startTime > maxRuntimeDuration * 1000L){
-            throw new JavaScriptBlockingRuntimeError("The JavaScript Program has ran for too long: " + Thread.currentThread().getName());
+            throw new BlockingScriptError(Thread.currentThread());
         }
     }
 

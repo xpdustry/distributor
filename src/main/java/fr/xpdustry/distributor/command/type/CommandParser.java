@@ -1,16 +1,16 @@
-package fr.xpdustry.distributor.command.mindy;
+package fr.xpdustry.distributor.command.type;
 
 import arc.util.*;
 
-import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.command.param.*;
 import fr.xpdustry.distributor.command.param.number.*;
 import fr.xpdustry.distributor.command.param.string.*;
+import fr.xpdustry.distributor.exception.*;
 
 import java.util.*;
 
 
-public class MindustryCommandParser{
+public class CommandParser implements ParameterParser{
     public List<CommandParameter<?>> parseParameters(String parameterText) throws ParsingException{
         ArrayList<CommandParameter<?>> parameters = new ArrayList<>();
         if(parameterText.isEmpty()) return parameters; // <- No parameters case
@@ -19,7 +19,7 @@ public class MindustryCommandParser{
         parameters.ensureCapacity(parameterList.length);
 
         boolean optional;
-        String defaultValue = null;
+        String defaultValue = "";
         String type = "string";
 
         boolean hadVariadicParameter = false;

@@ -12,18 +12,19 @@ public class CommandParameter<T>{
     private final TypeToken<T> valueType;
 
     private final boolean optional;
-    private final ArgumentPreprocessor<T> parser;
+    private final ArgumentPreprocessor<T> preprocessor;
 
-    public CommandParameter(String name, String defaultValue, boolean optional, TypeToken<T> valueType, ArgumentPreprocessor<T> parser){
-        this.name = Objects.requireNonNull(name, "'name' is null.");
-        this.defaultValue = defaultValue;
-        this.valueType = valueType;
+    public CommandParameter(String name, String defaultValue, boolean optional, TypeToken<T> valueType, ArgumentPreprocessor<T> preprocessor){
+        this.name = Objects.requireNonNull(name, "The name is null.");
+        this.defaultValue = Objects.requireNonNull(defaultValue, "The defaultValue is null.");
         this.optional = optional;
-        this.parser = parser;
+
+        this.valueType = Objects.requireNonNull(valueType, "The valueType is null.");
+        this.preprocessor = Objects.requireNonNull(preprocessor, "The preprocessor is null.");
     }
 
-    public CommandParameter(String name, String defaultValue, boolean optional, Class<T> valueType, ArgumentPreprocessor<T> parser){
-        this(name, defaultValue, optional, TypeToken.get(valueType), parser);
+    public CommandParameter(String name, String defaultValue, boolean optional, Class<T> valueType, ArgumentPreprocessor<T> preprocessor){
+        this(name, defaultValue, optional, TypeToken.get(valueType), preprocessor);
     }
 
     public String getName(){
@@ -42,11 +43,11 @@ public class CommandParameter<T>{
         return optional;
     }
 
-    public ArgumentPreprocessor<T> getParser(){
-        return parser;
+    public ArgumentPreprocessor<T> getPreprocessor(){
+        return preprocessor;
     }
 
     public T parse(String arg) throws ParsingException{
-        return parser.process(arg);
+        return preprocessor.process(arg);
     }
 }

@@ -2,8 +2,9 @@ package fr.xpdustry.distributor.plugin.settings;
 
 import com.fasterxml.jackson.annotation.*;
 
-import java.util.*;
 import javax.xml.bind.annotation.*;
+
+import java.util.*;
 
 
 @JsonPropertyOrder({"root-path", "roles"})
