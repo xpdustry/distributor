@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.util.struct;
 
 import arc.util.*;
+
 import fr.xpdustry.distributor.exception.*;
 
 

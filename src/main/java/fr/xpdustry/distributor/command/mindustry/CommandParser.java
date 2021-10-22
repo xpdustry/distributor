@@ -1,6 +1,4 @@
-package fr.xpdustry.distributor.command.type;
-
-import arc.util.*;
+package fr.xpdustry.distributor.command.mindustry;
 
 import fr.xpdustry.distributor.command.param.*;
 import fr.xpdustry.distributor.command.param.number.*;
@@ -10,13 +8,15 @@ import fr.xpdustry.distributor.exception.*;
 import java.util.*;
 
 
-public class CommandParser implements ParameterParser{
-    public List<CommandParameter<?>> parseParameters(String parameterText) throws ParsingException{
+public interface CommandParser{
+    List<CommandParameter<?>> parseParameters(String parameterText) throws ParsingException;
+
+    CommandParser DEFAULT = parameterText -> {
         ArrayList<CommandParameter<?>> parameters = new ArrayList<>();
         if(parameterText.isEmpty()) return parameters; // <- No parameters case
 
-        String[] parameterList = parameterText.split(" ");
-        parameters.ensureCapacity(parameterList.length);
+        String[] rawParameters = parameterText.split(" ");
+        parameters.ensureCapacity(rawParameters.length);
 
         boolean optional;
         String defaultValue = "";
@@ -25,32 +25,30 @@ public class CommandParser implements ParameterParser{
         boolean hadVariadicParameter = false;
         boolean hadOptionalParameter = false;
 
-        for(String parameter : parameterList){
+        for(String rawParameter : rawParameters){
             // Prevent parameters without names
-            if(parameter.length() <= 2){
-                throw new IllegalArgumentException("Malformed parameter: " + parameter);
+            if(rawParameter.length() <= 2){
+                throw new ParsingException("Malformed parameter: " + rawParameter);
             }
 
             // Get the brackets of the parameter
-            char start = parameter.charAt(0);
-            char end = parameter.charAt(parameter.length() - 1);
-
-            Log.debug("What the fuck ? @ @ @", start, end, parameter);
+            char start = rawParameter.charAt(0);
+            char end = rawParameter.charAt(rawParameter.length() - 1);
 
             if(start == '<' && end == '>'){
-                if(hadOptionalParameter) throw new IllegalArgumentException("Can't have non-optional parameter after an optional parameter!");
+                if(hadOptionalParameter) throw new ParsingException("Can't have non-optional parameter after an optional parameter!");
                 optional = false;
             }else if(start == '[' && end == ']'){
                 optional = true;
             }else{
-                throw new IllegalArgumentException("Malformed parameter: " + parameter);
+                throw new ParsingException("Malformed parameter: " + rawParameter);
             }
 
             // Check if an optional parameter already occurred
             hadOptionalParameter = optional | hadOptionalParameter;
 
             // Trim the brackets
-            String parameterName = parameter.substring(1, parameter.length() - 1);
+            String parameterName = rawParameter.substring(1, rawParameter.length() - 1);
 
             // Check for a default value
             if(parameterName.contains("=")){
@@ -64,7 +62,7 @@ public class CommandParser implements ParameterParser{
             // Check if a variadic parameter is the last
             if(parameterName.endsWith("...")){
                 if(hadVariadicParameter){
-                    throw new IllegalArgumentException("A variadic parameter should be the last parameter!");
+                    throw new ParsingException("A variadic parameter should be the last parameter!");
                 }
                 // Get rid of the variadic closure
                 parameterName = parameterName.substring(0, parameterName.length() - 3);
@@ -80,17 +78,18 @@ public class CommandParser implements ParameterParser{
             }
 
             if(type.equalsIgnoreCase("string")){
-                parameters.add(new StringParameter(parameterName, defaultValue, optional, arg -> arg));
+                parameters.add(new StringParameter(parameterName, defaultValue, optional));
             }else if(type.equalsIgnoreCase("int")){
-                IntegerParameter out = new IntegerParameter(parameterName, "0", optional);
-                parameters.add(out);
+                parameters.add(new IntegerParameter(parameterName, defaultValue, optional));
+            }else if(type.equalsIgnoreCase("float")){
+                parameters.add(new FloatParameter(parameterName, defaultValue, optional));
             }else{
                 throw new ParsingException(ParsingExceptionType.UNKNOWN_PARAMETER_TYPE)
-                .with("expected", Arrays.asList("string", "int"))
-                .with("actual", type);
+                    .with("expected", Arrays.asList("string", "int"))
+                    .with("actual", type);
             }
         }
 
         return parameters;
-    }
+    };
 }

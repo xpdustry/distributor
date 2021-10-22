@@ -2,6 +2,7 @@ package fr.xpdustry.distributor.exception;
 
 import fr.xpdustry.distributor.exception.type.*;
 
+
 public class ArgumentException extends PayloadException{
     private final ArgumentExceptionType type;
 

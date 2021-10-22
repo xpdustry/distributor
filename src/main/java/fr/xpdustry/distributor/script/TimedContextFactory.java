@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.script.js;
+package fr.xpdustry.distributor.script;
 
 import fr.xpdustry.distributor.exception.*;
 

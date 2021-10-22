@@ -7,5 +7,7 @@ public enum ParsingExceptionType{
     ARGUMENT_TYPE_ERROR,
     PATTERN_ERROR,
 
-    UNKNOWN_PARAMETER_TYPE;
+    UNKNOWN_PARAMETER_TYPE,
+
+    UNDEFINED;
 }

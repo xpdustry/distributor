@@ -2,8 +2,9 @@ package fr.xpdustry.distributor.command.param;
 
 import fr.xpdustry.distributor.exception.*;
 
+
 public interface ArgumentPreprocessor<T>{
     T process(String arg) throws ParsingException;
 
-    ArgumentPreprocessor<String> RAW_ARG = arg -> arg;
+    ArgumentPreprocessor<String> RAW = arg -> arg;
 }

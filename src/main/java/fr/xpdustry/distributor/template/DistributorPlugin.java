@@ -8,8 +8,6 @@ import mindustry.mod.Mods.*;
 import mindustry.mod.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.util.*;
-
 
 public abstract class DistributorPlugin extends Plugin implements Disposable{
     @Nullable

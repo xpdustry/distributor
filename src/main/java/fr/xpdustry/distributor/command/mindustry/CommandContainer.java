@@ -1,9 +1,9 @@
-package fr.xpdustry.distributor.command.type;
+package fr.xpdustry.distributor.command.mindustry;
 
 import arc.util.*;
 
 import fr.xpdustry.distributor.command.context.*;
-import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.command.param.*;
 
 import io.leangen.geantyref.*;
 
@@ -11,21 +11,16 @@ import java.util.*;
 
 
 public abstract class CommandContainer<C> extends MindustryCommand<C>{
-    private final ParameterParser parser;
+    private final CommandParser parser;
     private final SortedMap<String, MindustryCommand<C>> subcommands = new TreeMap<>();
 
-    public CommandContainer(String name, String parameterText, String description,
-                            ParameterParser parser, ContextRunner<C> responseHandler, TypeToken<? extends C> callerType) throws ParsingException{
-        super(name, parameterText, description, parser, responseHandler, callerType);
+    public CommandContainer(String name, String parameterText, String description, List<CommandParameter<?>> parameters,
+                            ContextRunner<C> responseHandler, CommandParser parser, TypeToken<? extends C> callerType){
+        super(name, parameterText, description, parameters, responseHandler, callerType);
         this.parser = parser;
     }
 
-    public CommandContainer(String name, String parameterText, String description,
-                            ParameterParser parser, ContextRunner<C> responseHandler, Class<? extends C> callerType) throws ParsingException{
-        this(name, parameterText, description, parser, responseHandler, TypeToken.get(callerType));
-    }
-
-    public ParameterParser getParser(){
+    public CommandParser getParser(){
         return parser;
     }
 
@@ -55,10 +50,4 @@ public abstract class CommandContainer<C> extends MindustryCommand<C>{
     protected boolean removeSubcommand(MindustryCommand<C> command){
         return subcommands.remove(command.getName(), command);
     }
-
-    /*
-    public CommandContext<C> makeContext(String[] args, C type){
-        return new CommandContext<>(type, Arrays.asList(args));
-    }
-     */
 }

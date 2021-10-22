@@ -2,8 +2,14 @@ package fr.xpdustry.distributor.exception;
 
 import fr.xpdustry.distributor.exception.type.*;
 
+
 public class ParsingException extends RuntimePayloadException{
     private final ParsingExceptionType type;
+
+    public ParsingException(String message){
+        super(message);
+        this.type = ParsingExceptionType.UNDEFINED;
+    }
 
     public ParsingException(ParsingExceptionType type){
         super();

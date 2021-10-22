@@ -53,6 +53,7 @@ dependencies{
 
     // Types
     implementation 'io.leangen.geantyref:geantyref:1.3.11'
+    implementation 'org.javatuples:javatuples:1.2'
 
     // Utils
     implementation 'commons-io:commons-io:2.11.0'

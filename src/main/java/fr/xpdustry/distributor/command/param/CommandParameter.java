@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.command.param;
 
 import fr.xpdustry.distributor.exception.*;
+
 import io.leangen.geantyref.*;
 
 import java.util.*;
@@ -21,10 +22,6 @@ public class CommandParameter<T>{
 
         this.valueType = Objects.requireNonNull(valueType, "The valueType is null.");
         this.preprocessor = Objects.requireNonNull(preprocessor, "The preprocessor is null.");
-    }
-
-    public CommandParameter(String name, String defaultValue, boolean optional, Class<T> valueType, ArgumentPreprocessor<T> preprocessor){
-        this(name, defaultValue, optional, TypeToken.get(valueType), preprocessor);
     }
 
     public String getName(){

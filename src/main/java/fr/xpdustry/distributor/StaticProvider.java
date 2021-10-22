@@ -3,13 +3,14 @@ package fr.xpdustry.distributor;
 import arc.*;
 import arc.files.*;
 import arc.util.*;
+
+import fr.xpdustry.distributor.plugin.settings.Settings;
+
 import com.ctc.wstx.api.*;
 import com.ctc.wstx.stax.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.xml.*;
 import com.fasterxml.jackson.module.jaxb.*;
-import fr.xpdustry.distributor.plugin.settings.Settings;
 
 import javax.xml.stream.*;
 import java.io.*;
@@ -27,9 +28,9 @@ public class StaticProvider{
         outputFactory.setProperty(WstxOutputProperties.P_OUTPUT_CDATA_AS_TEXT, true);
 
         XmlFactory factory = XmlFactory.builder()
-        .inputFactory(inputFactory)
-        .outputFactory(outputFactory)
-        .build();
+            .inputFactory(inputFactory)
+            .outputFactory(outputFactory)
+            .build();
 
         XmlMapper xml = new XmlMapper(factory);
         xml.registerModule(new JaxbAnnotationModule());

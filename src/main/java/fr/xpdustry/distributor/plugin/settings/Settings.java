@@ -3,7 +3,6 @@ package fr.xpdustry.distributor.plugin.settings;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.xml.bind.annotation.*;
-
 import java.util.*;
 
 

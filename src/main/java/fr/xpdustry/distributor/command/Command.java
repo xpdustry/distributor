@@ -23,28 +23,22 @@ public abstract class Command<C>{
     public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<C> responseHandler, TypeToken<? extends C> callerType){
         this.name = Objects.requireNonNull(name, "The name is null.");
         this.parameters = Objects.requireNonNull(parameters, "The parameters are null.");
-        this.callerType = callerType;
-
+        this.callerType = Objects.requireNonNull(callerType, "The callerType is null.");
         this.responseHandler = Objects.requireNonNull(responseHandler, "The responseHandler is null.");
     }
 
-    public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<C> responseHandler, Class<? extends C> callerType){
-        this(name, parameters, responseHandler, TypeToken.get(callerType));
-    }
-
     public void call(CommandContext<C> context){
-        context.setCommand(this);
         List<String> args = context.getArgs();
 
         try{
             if(args.size() < getMinimumArgumentSize()){
                 throw new ArgumentException(ArgumentExceptionType.ARGUMENT_NUMBER_TOO_LOW)
-                .with("expected", getMinimumArgumentSize())
-                .with("actual", args.size());
-            }else if(args.size() > getMinimumArgumentSize()){
+                    .with("expected", getMinimumArgumentSize())
+                    .with("actual", args.size());
+            }else if(args.size() > getMaximumArgumentSize()){
                 throw new ArgumentException(ArgumentExceptionType.ARGUMENT_NUMBER_TOO_BIG)
-                .with("expected", getMaximumArgumentSize())
-                .with("actual", args.size());
+                    .with("expected", getMaximumArgumentSize())
+                    .with("actual", args.size());
             }
 
             for(int i = 0; i < parameters.size(); i++){

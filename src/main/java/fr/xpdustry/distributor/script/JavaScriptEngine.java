@@ -1,26 +1,29 @@
-package fr.xpdustry.distributor.script.js;
+package fr.xpdustry.distributor.script;
 
 import fr.xpdustry.distributor.exception.*;
 
 import org.mozilla.javascript.*;
 
 import java.io.*;
+import java.util.concurrent.atomic.*;
 
 
 public final class JavaScriptEngine{
     private final Context ctx;
     private final ImporterTopLevel importer;
 
-    private static ContextProvider provider = ContextProvider.DEFAULT;
+    private static final AtomicReference<ContextProvider> contextProvider =
+        new AtomicReference<>(ContextProvider.DEFAULT);
+
     private static final ThreadLocal<JavaScriptEngine> instance =
-        ThreadLocal.withInitial(() -> new JavaScriptEngine(provider.getContext()));
+        ThreadLocal.withInitial(() -> new JavaScriptEngine(contextProvider.get().getContext()));
 
     public static synchronized ContextProvider getGlobalContextProvider(){
-        return JavaScriptEngine.provider;
+        return JavaScriptEngine.contextProvider.get();
     }
 
     public static synchronized void setGlobalContextProvider(ContextProvider provider){
-        JavaScriptEngine.provider = provider;
+        JavaScriptEngine.contextProvider.set(provider);
     }
 
     public static JavaScriptEngine getInstance(){

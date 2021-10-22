@@ -6,17 +6,17 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.command.context.*;
-import fr.xpdustry.distributor.command.mindy.*;
+import fr.xpdustry.distributor.command.mindustry.*;
 import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.exception.type.*;
 import fr.xpdustry.distributor.plugin.internal.*;
 import fr.xpdustry.distributor.plugin.settings.*;
-import fr.xpdustry.distributor.script.js.*;
+import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
 import fr.xpdustry.distributor.util.*;
 
 import com.fasterxml.jackson.databind.*;
-
+import io.leangen.geantyref.*;
 import org.apache.commons.io.*;
 import org.mozilla.javascript.*;
 
@@ -28,11 +28,6 @@ import java.nio.charset.*;
 public class Distributor extends DistributorPlugin{
     private static final ObjectMapper xml = StaticProvider.createXML();
     private static final Settings settings = StaticProvider.createSettings(xml);
-    /*
-    @SuppressWarnings("unchecked")
-    private static final CommandManager<Playerc> commandManager = new CommandManager<>(
-        new MindustryCommandParser(), (ContextRunner<Playerc>)ContextRunner.VOID, Playerc.class);
-     */
 
     private static final ResourceLoader resources = new ResourceLoader(Distributor.class.getClassLoader());
     private static final SharedClassLoader modClassLoader = new SharedClassLoader(Distributor.class.getClassLoader());
@@ -68,31 +63,23 @@ public class Distributor extends DistributorPlugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        /*
-        commandManager.register(handler, "bob", "Says hi", ctx -> {
-            Log.info("Hello! From Bob...");
+        CommandRegistry<Playerc> registry = new CommandRegistry<>(handler, TypeToken.get(Playerc.class), ctx -> {
+            Log.debug("@ ctx store -> @", ctx.getCommand().getName(), ctx.getStore());
+            if(!ctx.hasSucceed()) Log.err(ctx.getException());
         });
 
-         */
+        registry.register("hello", "Says hello.", ctx -> {
+            Log.info("Hello Xpdustry!");
+        });
+
+        registry.register("num", "[num:int=10]", "Says a number", ctx -> {
+            int num = ctx.getAs("num");
+            Log.info("Xpdustry times @", num);
+        });
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        try{
-            /*
-            commandManager.register(handler, "js", "<args...>", "Run some funni js", ctx -> {
-                Playerc player = ctx.getCaller();
-                if(player.admin()){
-                    player.sendMessage(JavaScriptEngine.getInstance().eval(ctx.getArg(0)).toString());
-                }else{
-                    player.sendMessage("No");
-                }
-            });
-
-             */
-        }catch(ParsingException e){
-            e.printStackTrace();
-        }
     }
 
     public static SharedClassLoader getModClassLoader(){
