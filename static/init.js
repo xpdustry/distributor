@@ -1,10 +1,8 @@
-//noinspection
-// This file acts as the global scope.
+// Init script
 
 "use strict";
 
-const log = (text, args) => Log.info(text, args)
-const print = text => System.out.println(text)
+importPackage(Packages.java.lang)
 
 //these are not strictly necessary, but are kept for edge cases
 const run = method => new Runnable(){run: method}
@@ -16,7 +14,7 @@ const cons = method => new Cons(){get: method}
 const prov = method => new Prov(){get: method}
 const func = method => new Func(){get: method}
 
-const newEffect = (lifetime, renderer) => new Effect.Effect(lifetime, new Effect.EffectRenderer({render: renderer}))
+const jCall = Call
 Call = Packages.mindustry.gen.Call
 
 //js 'extend(Base, ..., {})' = java 'new Base(...) {}'
@@ -38,12 +36,10 @@ function extend(/*Base, ..., def*/){
 }
 
 importPackage(Packages.arc)
-importPackage(Packages.arc.audio)
 importPackage(Packages.arc.func)
 importPackage(Packages.arc.graphics)
 importPackage(Packages.arc.graphics.g2d)
 importPackage(Packages.arc.graphics.gl)
-importPackage(Packages.arc.input)
 importPackage(Packages.arc.math)
 importPackage(Packages.arc.math.geom)
 importPackage(Packages.arc.scene)
@@ -55,12 +51,6 @@ importPackage(Packages.arc.scene.ui.layout)
 importPackage(Packages.arc.scene.utils)
 importPackage(Packages.arc.struct)
 importPackage(Packages.arc.util)
-importPackage(Packages.arc.util.async)
-importPackage(Packages.arc.util.io)
-importPackage(Packages.arc.util.noise)
-importPackage(Packages.arc.util.pooling)
-importPackage(Packages.arc.util.serialization)
-importPackage(Packages.arc.util.viewport)
 
 importPackage(Packages.mindustry)
 importPackage(Packages.mindustry.ai)
@@ -91,10 +81,7 @@ importPackage(Packages.mindustry.maps.filters)
 importPackage(Packages.mindustry.maps.generators)
 importPackage(Packages.mindustry.maps.planet)
 importPackage(Packages.mindustry.net)
-importPackage(Packages.mindustry.service)
 importPackage(Packages.mindustry.type)
-importPackage(Packages.mindustry.type.ammo)
-importPackage(Packages.mindustry.type.weapons)
 importPackage(Packages.mindustry.type.weather)
 importPackage(Packages.mindustry.ui)
 importPackage(Packages.mindustry.ui.dialogs)
@@ -120,6 +107,7 @@ importPackage(Packages.mindustry.world.blocks.units)
 importPackage(Packages.mindustry.world.consumers)
 importPackage(Packages.mindustry.world.draw)
 importPackage(Packages.mindustry.world.meta)
+importPackage(Packages.mindustry.world.meta.values)
 importPackage(Packages.mindustry.world.modules)
 
 const PlayerIpUnbanEvent = Packages.mindustry.game.EventType.PlayerIpUnbanEvent
@@ -129,8 +117,6 @@ const PlayerBanEvent = Packages.mindustry.game.EventType.PlayerBanEvent
 const PlayerLeave = Packages.mindustry.game.EventType.PlayerLeave
 const PlayerConnect = Packages.mindustry.game.EventType.PlayerConnect
 const PlayerJoin = Packages.mindustry.game.EventType.PlayerJoin
-const ConnectPacketEvent = Packages.mindustry.game.EventType.ConnectPacketEvent
-const ConnectionEvent = Packages.mindustry.game.EventType.ConnectionEvent
 const UnitChangeEvent = Packages.mindustry.game.EventType.UnitChangeEvent
 const UnitUnloadEvent = Packages.mindustry.game.EventType.UnitUnloadEvent
 const UnitCreateEvent = Packages.mindustry.game.EventType.UnitCreateEvent
@@ -143,9 +129,7 @@ const BlockBuildBeginEvent = Packages.mindustry.game.EventType.BlockBuildBeginEv
 const ResearchEvent = Packages.mindustry.game.EventType.ResearchEvent
 const UnlockEvent = Packages.mindustry.game.EventType.UnlockEvent
 const StateChangeEvent = Packages.mindustry.game.EventType.StateChangeEvent
-const CoreChangeEvent = Packages.mindustry.game.EventType.CoreChangeEvent
 const TileChangeEvent = Packages.mindustry.game.EventType.TileChangeEvent
-const TilePreChangeEvent = Packages.mindustry.game.EventType.TilePreChangeEvent
 const GameOverEvent = Packages.mindustry.game.EventType.GameOverEvent
 const UnitControlEvent = Packages.mindustry.game.EventType.UnitControlEvent
 const PickupEvent = Packages.mindustry.game.EventType.PickupEvent
@@ -155,7 +139,6 @@ const DepositEvent = Packages.mindustry.game.EventType.DepositEvent
 const WithdrawEvent = Packages.mindustry.game.EventType.WithdrawEvent
 const SectorCaptureEvent = Packages.mindustry.game.EventType.SectorCaptureEvent
 const PlayerChatEvent = Packages.mindustry.game.EventType.PlayerChatEvent
-const MenuOptionChooseEvent = Packages.mindustry.game.EventType.MenuOptionChooseEvent
 const ClientPreConnectEvent = Packages.mindustry.game.EventType.ClientPreConnectEvent
 const CommandIssueEvent = Packages.mindustry.game.EventType.CommandIssueEvent
 const SchematicCreateEvent = Packages.mindustry.game.EventType.SchematicCreateEvent
@@ -185,16 +168,3 @@ const ResizeEvent = Packages.mindustry.game.EventType.ResizeEvent
 const LoseEvent = Packages.mindustry.game.EventType.LoseEvent
 const WinEvent = Packages.mindustry.game.EventType.WinEvent
 const Trigger = Packages.mindustry.game.EventType.Trigger
-
-importPackage(Packages.java.lang)
-importPackage(Packages.java.util)
-
-importPackage(Packages.fr.xpdustry.distributor.core.util)
-importPackage(Packages.fr.xpdustry.distributor.core.string)
-importPackage(Packages.fr.xpdustry.distributor.core.command)
-importPackage(Packages.fr.xpdustry.distributor.core.localization)
-
-importPackage(Packages.fr.xpdustry.distributor.plugin)
-importPackage(Packages.fr.xpdustry.distributor.plugin.event)
-importPackage(Packages.fr.xpdustry.distributor.plugin.security)
-importPackage(Packages.fr.xpdustry.distributor.plugin.settings)

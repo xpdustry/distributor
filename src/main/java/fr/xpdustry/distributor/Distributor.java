@@ -4,90 +4,118 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.gen.*;
 
-import fr.xpdustry.distributor.command.mindustry.*;
 import fr.xpdustry.distributor.exception.*;
-import fr.xpdustry.distributor.exception.type.*;
-import fr.xpdustry.distributor.plugin.internal.*;
-import fr.xpdustry.distributor.plugin.settings.*;
+import fr.xpdustry.distributor.plugin.*;
+import fr.xpdustry.distributor.settings.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
-import fr.xpdustry.distributor.util.*;
+import fr.xpdustry.distributor.util.loader.*;
 
+import com.ctc.wstx.api.*;
+import com.ctc.wstx.stax.*;
 import com.fasterxml.jackson.databind.*;
-import io.leangen.geantyref.*;
+import com.fasterxml.jackson.dataformat.xml.*;
+import com.fasterxml.jackson.module.jaxb.*;
 import org.apache.commons.io.*;
+import org.apache.http.client.*;
+import org.apache.http.client.methods.*;
 import org.mozilla.javascript.*;
+import org.mozilla.javascript.commonjs.module.*;
+import org.mozilla.javascript.commonjs.module.provider.*;
 
+import javax.xml.stream.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
 
 public class Distributor extends DistributorPlugin{
-    private static final ObjectMapper xml = StaticProvider.createXML();
-    private static final Settings settings = StaticProvider.createSettings(xml);
+    private static final ObjectMapper xml;
+    private static DistributorSettings settings;
 
     private static final ResourceLoader resources = new ResourceLoader(Distributor.class.getClassLoader());
     private static final SharedClassLoader modClassLoader = new SharedClassLoader(Distributor.class.getClassLoader());
 
+    static {
+        // Based on https://github.com/FasterXML/jackson-dataformat-xml
+        XMLInputFactory inputFactory = new WstxInputFactory(); // Woodstox XMLInputFactory impl
+        inputFactory.setProperty(WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, 32000);
+
+        XMLOutputFactory outputFactory = new WstxOutputFactory(); // Woodstox XMLOutputFactory impl
+        outputFactory.setProperty(WstxOutputProperties.P_OUTPUT_CDATA_AS_TEXT, true);
+
+        XmlFactory factory = XmlFactory.builder()
+            .inputFactory(inputFactory)
+            .outputFactory(outputFactory)
+            .build();
+
+        xml = new XmlMapper(factory);
+        xml.registerModule(new JaxbAnnotationModule());
+        xml.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
     @Override
     public void init(){
-        showBanner();
-
         Time.mark();
         Log.info("Begin Distributor loading...");
 
+        super.init();
+        showBanner();
+
         // Init Distributor systems
         initFiles();
-
-        // Init JavaScript engine
-        ContextFactory.initGlobal(new TimedContextFactory(5));
-        JavaScriptEngine.setGlobalContextProvider(() -> {
-            Context context = Context.getCurrentContext();
-            if(context == null){
-                context = Context.enter();
-                context.setOptimizationLevel(9);
-                context.setLanguageVersion(Context.VERSION_ES6);
-                context.setApplicationClassLoader(modClassLoader);
-            }
-            return context;
-        });
+        initScripts();
 
         // Init modClassLoader
         modClassLoader.setChildren(Vars.mods.list());
+
+        serverRegistry.setResponseHandler(ctx -> {
+            Log.debug("@ ctx store -> @", ctx.getCommand().getName(), ctx.getStore());
+            if(!ctx.hasSucceed()) Log.err(ctx.getException());
+        });
+
+        serverRegistry.register("hello", "Says hello.", ctx -> {
+            Log.info("Hello Xpdustry!");
+        });
+
+        serverRegistry.register("num", "[num:int=10]", "Says a number", ctx -> {
+            int num = ctx.getAs("num");
+            Log.info("Xpdustry times @", num);
+        });
+
+        serverRegistry.register("jscript", "<script...>", "Run some messy javascript.", ctx -> {
+            try{
+                Object obj = ScriptEngine.getInstance().eval(ctx.getAs("script"));
+                Log.debug("out @", ScriptEngine.toString(obj));
+            }catch(ScriptException e){
+                Log.err(e.getSimpleMessage());
+            }
+        });
 
         Log.info("End Distributor loading : " + Time.elapsed() + " milliseconds");
     }
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        CommandRegistry<Playerc> registry = new CommandRegistry<>(handler, TypeToken.get(Playerc.class), ctx -> {
-            Log.debug("@ ctx store -> @", ctx.getCommand().getName(), ctx.getStore());
-            if(!ctx.hasSucceed()) Log.err(ctx.getException());
-        });
 
-        registry.register("hello", "Says hello.", ctx -> {
-            Log.info("Hello Xpdustry!");
-        });
-
-        registry.register("num", "[num:int=10]", "Says a number", ctx -> {
-            int num = ctx.getAs("num");
-            Log.info("Xpdustry times @", num);
-        });
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
+
     }
 
     public static SharedClassLoader getModClassLoader(){
         return modClassLoader;
     }
 
+    public static DistributorSettings getSettings(){
+        return settings;
+    }
+
     public static Fi getRootPath(){
-        return new Fi(settings.rootPath);
+        return new Fi(settings.getRootPath());
     }
 
     private void initFiles(){
@@ -102,13 +130,48 @@ public class Distributor extends DistributorPlugin{
 
             // Copy the init script
             try{
-                URL url = resources.getResource("init.js");
+                HttpGet get = new HttpGet("http://httpbin.org/get");
+                URL url = resources.getResource("static/init.js");
                 if(url == null) throw new IOException("Resource not found.");
-                IOUtils.copy(url, scripts.child("init.js").file());
+                IOUtils.copy(url, scripts.child("static/init.js").file());
             }catch(IOException e){
-                scripts.child("init.js").writeString("// Global scope here...\n");
+                scripts.child("static/init.js").writeString("// Global scope here...\n");
             }
         }
+    }
+
+    private void initScripts(){
+        // Init JavaScript engine
+        ContextFactory.initGlobal(new TimedContextFactory(5));
+
+        ScriptEngine.setGlobalFactory(() -> {
+            Context context = Context.getCurrentContext();
+
+            if(context == null){
+                context = Context.enter();
+                context.setOptimizationLevel(9);
+                context.setLanguageVersion(Context.VERSION_ES6);
+                context.setApplicationClassLoader(getModClassLoader());
+            }
+
+            ScriptEngine engine = new ScriptEngine(context);
+
+            new RequireBuilder()
+                .setSandboxed(false)
+                .setModuleScriptProvider(new SoftCachingModuleScriptProvider(new ScriptLoader(resources)))
+                .createRequire(context, engine.getImporter())
+                .install(engine.getImporter());
+
+            try{
+                Fi init = new Fi(getSettings().getRootPath()).child("scripts/init.js");
+                Script script = engine.compileScript(init.reader(), init.name());
+                engine.exec(script);
+            }catch(IOException | ScriptException e){
+                Log.err("Failed to run the init script.", e);
+            }
+
+            return engine;
+        });
     }
 
     /** Show a nice banner :^) */

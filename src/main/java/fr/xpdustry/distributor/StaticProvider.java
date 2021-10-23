@@ -4,7 +4,7 @@ import arc.*;
 import arc.files.*;
 import arc.util.*;
 
-import fr.xpdustry.distributor.plugin.settings.Settings;
+import fr.xpdustry.distributor.settings.DistributorSettings;
 
 import com.ctc.wstx.api.*;
 import com.ctc.wstx.stax.*;
@@ -39,13 +39,13 @@ public class StaticProvider{
         return xml;
     }
 
-    public static Settings createSettings(ObjectMapper mapper){
+    public static DistributorSettings createSettings(ObjectMapper mapper){
         // Look for distributor.xml in the server directory
         Fi config = new Fi(Core.files.external("./distributor.xml").absolutePath());
-        Settings settings = new Settings();
+        DistributorSettings settings = new DistributorSettings();
 
         try{
-            if(config.exists()) settings = mapper.readValue(config.read(), Settings.class);
+            if(config.exists()) settings = mapper.readValue(config.read(), DistributorSettings.class);
             else mapper.writeValue(config.file(), settings);
         }catch(IOException e){
             Log.err("An error occurred while saving the setting file, fallback to default settings.", e);

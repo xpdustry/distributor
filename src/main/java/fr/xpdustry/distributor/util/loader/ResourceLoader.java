@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.util;
+package fr.xpdustry.distributor.util.loader;
 
 import java.io.*;
 import java.net.*;

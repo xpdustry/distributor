@@ -55,7 +55,7 @@ public class TimedContextFactory extends ContextFactory{
     }
 
     /** Custom Context to store execution time. */
-    private static class TimedContext extends Context{
+    public static class TimedContext extends Context{
         private long startTime;
 
         public TimedContext(ContextFactory factory){

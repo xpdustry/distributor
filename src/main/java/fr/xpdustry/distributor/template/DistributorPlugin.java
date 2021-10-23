@@ -4,12 +4,26 @@ import arc.*;
 import arc.util.*;
 
 import mindustry.*;
+import mindustry.gen.*;
 import mindustry.mod.Mods.*;
 import mindustry.mod.*;
 import mindustry.server.*;
 
+import fr.xpdustry.distributor.command.mindustry.*;
+
+import io.leangen.geantyref.*;
+
 
 public abstract class DistributorPlugin extends Plugin implements Disposable{
+    protected CommandRegistry<Playerc> serverRegistry;
+    protected CommandRegistry<Playerc> clientRegistry;
+
+    @Override
+    public void init(){
+        serverRegistry = new CommandRegistry<>(getServerCommands(), TypeToken.get(Playerc.class));
+        clientRegistry = new CommandRegistry<>(getClientCommands(), TypeToken.get(Playerc.class));
+    }
+
     @Nullable
     public LoadedMod asMod(){
         return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;

@@ -3,34 +3,35 @@ package fr.xpdustry.distributor.script;
 import fr.xpdustry.distributor.exception.*;
 
 import org.mozilla.javascript.*;
+import org.mozilla.javascript.Function;
 
 import java.io.*;
 import java.util.concurrent.atomic.*;
 
 
-public final class JavaScriptEngine{
+public final class ScriptEngine{
+    private static final AtomicReference<ScriptEngineFactory> factory =
+        new AtomicReference<>(ScriptEngineFactory.DEFAULT);
+
+    private static final ThreadLocal<ScriptEngine> threadInstance =
+        ThreadLocal.withInitial(() -> factory.get().makeEngine());
+
+    public static ScriptEngineFactory getGlobalFactory(){
+        return factory.get();
+    }
+
+    public static void setGlobalFactory(ScriptEngineFactory factory){
+        ScriptEngine.factory.set(factory);
+    }
+
+    public static ScriptEngine getInstance(){
+        return threadInstance.get();
+    }
+
     private final Context ctx;
     private final ImporterTopLevel importer;
 
-    private static final AtomicReference<ContextProvider> contextProvider =
-        new AtomicReference<>(ContextProvider.DEFAULT);
-
-    private static final ThreadLocal<JavaScriptEngine> instance =
-        ThreadLocal.withInitial(() -> new JavaScriptEngine(contextProvider.get().getContext()));
-
-    public static synchronized ContextProvider getGlobalContextProvider(){
-        return JavaScriptEngine.contextProvider.get();
-    }
-
-    public static synchronized void setGlobalContextProvider(ContextProvider provider){
-        JavaScriptEngine.contextProvider.set(provider);
-    }
-
-    public static JavaScriptEngine getInstance(){
-        return instance.get();
-    }
-
-    private JavaScriptEngine(Context context){
+    public ScriptEngine(Context context){
         this.ctx = context;
         this.importer = new ImporterTopLevel(ctx);
     }
@@ -49,7 +50,7 @@ public final class JavaScriptEngine{
     }
 
     public Object eval(String source) throws ScriptException{
-        return eval(importer, source, "engine.js");
+        return eval(importer, source, "engine@" + Integer.toHexString(hashCode()) + ".js");
     }
 
     public Object eval(Scriptable scope, String source, String sourceName) throws ScriptException{
@@ -104,13 +105,17 @@ public final class JavaScriptEngine{
         }
     }
 
-    public interface ContextProvider{
-        Context getContext();
+    public Context getContext(){
+        return ctx;
+    }
 
-        ContextProvider DEFAULT = () -> {
-            Context context = Context.getCurrentContext();
-            if(context == null) context = Context.enter();
-            return context;
-        };
+    public ImporterTopLevel getImporter(){
+        return importer;
+    }
+
+    public static String toString(Object obj){
+        if(obj instanceof NativeJavaObject) obj = ((NativeJavaObject)obj).unwrap();
+        if(obj instanceof Undefined) obj = "undefined";
+        return String.valueOf(obj);
     }
 }

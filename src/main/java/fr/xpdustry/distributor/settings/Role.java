@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.plugin.settings;
+package fr.xpdustry.distributor.settings;
 
 import com.fasterxml.jackson.annotation.*;
 

@@ -57,6 +57,8 @@ dependencies{
 
     // Utils
     implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
 
     // Annotations
     // compileOnly 'org.jetbrains:annotations:22.0.0'
