@@ -14,9 +14,9 @@ public abstract class CommandContainer<C> extends MindustryCommand<C>{
     private final CommandParser parser;
     private final SortedMap<String, MindustryCommand<C>> subcommands = new TreeMap<>();
 
-    public CommandContainer(String name, String parameterText, String description, List<CommandParameter<?>> parameters,
+    public CommandContainer(String name, String description, List<CommandParameter<?>> parameters,
                             ContextRunner<C> responseHandler, CommandParser parser, TypeToken<? extends C> callerType){
-        super(name, parameterText, description, parameters, responseHandler, callerType);
+        super(name, description, parameters, responseHandler, callerType);
         this.parser = parser;
     }
 

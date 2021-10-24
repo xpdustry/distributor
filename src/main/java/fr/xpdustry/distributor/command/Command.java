@@ -43,11 +43,18 @@ public abstract class Command<C>{
 
             for(int i = 0; i < parameters.size(); i++){
                 CommandParameter<?> parameter = parameters.get(i);
+                String arg = i < args.size() ? args.get(i) : parameter.getDefaultValue();
 
-                if(i < args.size()){
-                    context.setObject(parameter.getName(), parameter.parse(args.get(i)));
+                if(!parameter.isVariadic()){
+                    context.setObject(parameter.getName(), parameter.parse(arg));
                 }else{
-                    context.setObject(parameter.getName(), parameter.parse(parameter.getDefaultValue()));
+                    List<Object> list = new ArrayList<>();
+                    for(String subArg : arg.split(parameter.getDelimiter())){
+                        subArg = subArg.trim();
+                        list.add(parameter.parse(subArg));
+                    }
+
+                    context.setObject(parameter.getName(), list);
                 }
             }
 

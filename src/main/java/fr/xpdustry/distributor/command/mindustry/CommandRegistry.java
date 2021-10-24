@@ -4,11 +4,13 @@ import arc.util.*;
 import arc.util.CommandHandler.*;
 
 import fr.xpdustry.distributor.command.context.*;
+import fr.xpdustry.distributor.command.mindustry.LambdaCommand.*;
 
 import io.leangen.geantyref.*;
 
 import java.util.*;
 import java.util.Map.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 
@@ -22,13 +24,13 @@ public class CommandRegistry<C>{
     private final SortedMap<String, MindustryCommandRunner<C>> registry = new TreeMap<>();
 
     public CommandRegistry(CommandHandler commandHandler, TypeToken<? extends C> callerType){
-        this.callerType = callerType;
-        this.commandHandler = commandHandler;
+        this.callerType = Objects.requireNonNull(callerType, "The callerType is null.");
+        this.commandHandler = Objects.requireNonNull(commandHandler, "The commandHandler is null.");
     }
 
     public MindustryCommand<C> register(MindustryCommand<C> command){
         MindustryCommandRunner<C> runner = new MindustryCommandRunner<>(command);
-        commandHandler.register(command.getName(), command.getParameterText(), command.getDescription(), runner);
+        commandHandler.register(command.getName(), command.getSimpleParameterText(), command.getDescription(), runner);
         registry.put(command.getName(), runner);
         return command;
     }
@@ -38,8 +40,15 @@ public class CommandRegistry<C>{
     }
 
     public MindustryCommand<C> register(String name, String parameterText, String description, UnsafeContextRunner<C> runner){
-        return register(new LambdaCommand<>(name, parameterText, description,
+        return register(new LambdaCommand<>(name, description,
             parser.parseParameters(parameterText), runner, responseHandler, callerType));
+    }
+
+    public MindustryCommand<C> register(Consumer<LambdaCommand.Builder<C>> consumer){
+        LambdaCommand.Builder<C> builder = new Builder<>();
+        builder.callerType(callerType);
+        consumer.accept(builder);
+        return register(builder.build());
     }
 
     @Nullable

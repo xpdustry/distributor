@@ -3,7 +3,6 @@ package fr.xpdustry.distributor.script;
 import fr.xpdustry.distributor.exception.*;
 
 import org.mozilla.javascript.*;
-import org.mozilla.javascript.Function;
 
 import java.io.*;
 import java.util.concurrent.atomic.*;

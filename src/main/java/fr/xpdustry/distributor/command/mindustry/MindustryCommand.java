@@ -10,29 +10,56 @@ import java.util.*;
 
 
 public abstract class MindustryCommand<C> extends Command<C>{
-    private String description;
-    private final String parameterText;
+    private final String description;
 
-    public MindustryCommand(String name, String parameterText, String description, List<CommandParameter<?>> parameters,
+    public MindustryCommand(String name, String description, List<CommandParameter<?>> parameters,
                             ContextRunner<C> responseHandler, TypeToken<? extends C> callerType){
         super(name, parameters, responseHandler, callerType);
         this.description = Objects.requireNonNull(description, "The description is null.");
-        this.parameterText = Objects.requireNonNull(parameterText, "The parameterText is null.");
     }
 
     public MindustryCommand(String name, String description, ContextRunner<C> responseHandler, TypeToken<? extends C> callerType){
-        this(name, "", description, Collections.emptyList(), responseHandler, callerType);
+        this(name, description, Collections.emptyList(), responseHandler, callerType);
     }
 
     public String getDescription(){
         return description;
     }
 
-    protected void setDescription(String description){
-        this.description = Objects.requireNonNull(description, "The description is null.");
+    public String getParameterText(){
+        StringBuilder builder = new StringBuilder();
+        Iterator<CommandParameter<?>> iterator = getParameters().listIterator();
+
+        while(iterator.hasNext()){
+            CommandParameter<?> param = iterator.next();
+
+            builder.append(param.isOptional() ? "[" : "<");
+            builder.append(param.getName()).append(":");
+            builder.append(param.getValueTypeName());
+            if(!param.getDefaultValue().isEmpty()) builder.append("=").append(param.getDefaultValue());
+            builder.append(param.isOptional() ? "]" : ">");
+
+            if(iterator.hasNext()) builder.append(" ");
+        }
+
+        return builder.toString();
     }
 
-    public String getParameterText(){
-        return parameterText;
+    public String getSimpleParameterText(){
+        StringBuilder builder = new StringBuilder();
+        Iterator<CommandParameter<?>> iterator = getParameters().listIterator();
+
+        while(iterator.hasNext()){
+            CommandParameter<?> param = iterator.next();
+
+            builder.append(param.isOptional() ? "[" : "<");
+            builder.append(param.getName());
+            if(param.isVariadic()) builder.append("...");
+            builder.append(param.isOptional() ? "]" : ">");
+
+            if(iterator.hasNext()) builder.append(" ");
+        }
+
+        return builder.toString();
     }
 }

@@ -13,9 +13,9 @@ public abstract class NumericParameter<T extends Number> extends CommandParamete
     private final T maximum;
     private final Comparator<T> comparator;
 
-    public NumericParameter(String name, String defaultValue, boolean optional, T minimum, T maximum,
+    public NumericParameter(String name, String defaultValue, boolean optional, String delimiter, T minimum, T maximum,
                             TypeToken<T> valueType, ArgumentPreprocessor<T> parser, Comparator<T> comparator){
-        super(name, defaultValue, optional, valueType, parser);
+        super(name, defaultValue, optional, delimiter, valueType, parser);
         this.minimum = Objects.requireNonNull(minimum, "Numerics can't be null.");
         this.maximum = Objects.requireNonNull(maximum, "Numerics can't be null.");
         this.comparator = Objects.requireNonNull(comparator, "The comparator is null.");

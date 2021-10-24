@@ -1,8 +1,10 @@
-package fr.xpdustry.distributor.plugin;
+package fr.xpdustry.distributor.util.loader;
 
 import arc.struct.*;
 
 import mindustry.mod.Mods.*;
+
+import java.util.*;
 
 
 /**
@@ -10,12 +12,12 @@ import mindustry.mod.Mods.*;
  */
 public class SharedClassLoader extends ClassLoader{
     /** Shared mod list */
-    private Seq<LoadedMod> children;
+    private final Seq<LoadedMod> children;
     private final ThreadLocal<Boolean> inChild = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
-    public SharedClassLoader(ClassLoader parent){
+    public SharedClassLoader(ClassLoader parent, Seq<LoadedMod> children){
         super(parent);
-        this.children = new Seq<>();
+        this.children = Objects.requireNonNull(children, "The children are null.");
     }
 
     @Override
@@ -47,10 +49,6 @@ public class SharedClassLoader extends ClassLoader{
         }
 
         throw (last == null ? new ClassNotFoundException(name) : last);
-    }
-
-    public void setChildren(Seq<LoadedMod> children){
-        this.children = children;
     }
 
     public Seq<LoadedMod> getChildren(){

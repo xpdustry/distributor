@@ -18,12 +18,6 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
     protected CommandRegistry<Playerc> serverRegistry;
     protected CommandRegistry<Playerc> clientRegistry;
 
-    @Override
-    public void init(){
-        serverRegistry = new CommandRegistry<>(getServerCommands(), TypeToken.get(Playerc.class));
-        clientRegistry = new CommandRegistry<>(getClientCommands(), TypeToken.get(Playerc.class));
-    }
-
     @Nullable
     public LoadedMod asMod(){
         return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;
@@ -39,6 +33,16 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
         if(Core.app == null) return null;
         ServerControl server = (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
         return (server != null) ? server.handler : null;
+    }
+
+    @Override
+    public void registerServerCommands(CommandHandler handler){
+        serverRegistry = new CommandRegistry<>(handler, TypeToken.get(Playerc.class));
+    }
+
+    @Override
+    public void registerClientCommands(CommandHandler handler){
+        clientRegistry = new CommandRegistry<>(handler, TypeToken.get(Playerc.class));
     }
 
     @Override

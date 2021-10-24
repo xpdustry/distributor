@@ -59,6 +59,14 @@ public interface CommandParser{
                 defaultValue = splitParameter[1];
             }
 
+            // Check for type
+            if(parameterName.contains(":")){
+                // Split the parameter
+                String[] splitParameter = parameterName.split(":");
+                parameterName = splitParameter[0];
+                type = splitParameter[1];
+            }
+
             // Check if a variadic parameter is the last
             if(parameterName.endsWith("...")){
                 if(hadVariadicParameter){
@@ -69,20 +77,12 @@ public interface CommandParser{
                 hadVariadicParameter = true;
             }
 
-            // Check for type
-            if(parameterName.contains(":")){
-                // Split the parameter
-                String[] splitParameter = parameterName.split(":");
-                parameterName = splitParameter[0];
-                type = splitParameter[1];
-            }
-
             if(type.equalsIgnoreCase("string")){
-                parameters.add(new StringParameter(parameterName, defaultValue, optional));
+                parameters.add(new StringParameter(parameterName, defaultValue, optional, hadVariadicParameter ? "(?!)" : null));
             }else if(type.equalsIgnoreCase("int")){
-                parameters.add(new IntegerParameter(parameterName, defaultValue, optional));
+                parameters.add(new IntegerParameter(parameterName, defaultValue, optional, hadVariadicParameter ? " " : null));
             }else if(type.equalsIgnoreCase("float")){
-                parameters.add(new FloatParameter(parameterName, defaultValue, optional));
+                parameters.add(new FloatParameter(parameterName, defaultValue, optional, hadVariadicParameter ? " " : null));
             }else{
                 throw new ParsingException(ParsingExceptionType.UNKNOWN_PARAMETER_TYPE)
                     .with("expected", Arrays.asList("string", "int"))
