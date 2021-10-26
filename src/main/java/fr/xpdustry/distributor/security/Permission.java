@@ -7,5 +7,5 @@ public interface Permission<E extends Enum<E>>{
     EnumSet<E> getPermissions();
 
     // TODO find a better way to test permissions
-    boolean hasPermissions(E... permissions);
+    // boolean hasPermissions(E... permissions);
 }

@@ -1,44 +1,44 @@
 package fr.xpdustry.distributor.command;
 
-import arc.util.*;
-
 import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.param.*;
 import fr.xpdustry.distributor.exception.*;
 
 import io.leangen.geantyref.*;
+import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.*;
+
+import static fr.xpdustry.distributor.exception.ArgumentExceptionType.*;
 
 
 public abstract class Command<C>{
     private final String name;
     private final List<CommandParameter<?>> parameters;
-
     private final TypeToken<? extends C> callerType;
     private final ContextRunner<C> responseHandler;
 
     private Command<?> parent = null;
 
-    public Command(String name, List<CommandParameter<?>> parameters, ContextRunner<C> responseHandler, TypeToken<? extends C> callerType){
-        this.name = Objects.requireNonNull(name, "The name is null.");
-        this.parameters = Objects.requireNonNull(parameters, "The parameters are null.");
-        this.callerType = Objects.requireNonNull(callerType, "The callerType is null.");
-        this.responseHandler = Objects.requireNonNull(responseHandler, "The responseHandler is null.");
+    public Command(@NotNull String name, @NotNull List<CommandParameter<?>> parameters,
+                   @NotNull TypeToken<? extends C> callerType, @NotNull ContextRunner<C> responseHandler){
+        //TODO apply Objects.requireNonNull
+        this.name = name;
+        this.parameters = parameters;
+        this.callerType = callerType;
+        this.responseHandler = responseHandler;
     }
 
-    public void call(CommandContext<C> context){
+    public void call(@NotNull CommandContext<C> context){
         List<String> args = context.getArgs();
 
         try{
             if(args.size() < getMinimumArgumentSize()){
-                throw new ArgumentException(ArgumentExceptionType.ARGUMENT_NUMBER_TOO_LOW)
-                    .with("expected", getMinimumArgumentSize())
-                    .with("actual", args.size());
+                throw new ArgumentException(ARGUMENT_NUMBER_TOO_LOW);
             }else if(args.size() > getMaximumArgumentSize()){
-                throw new ArgumentException(ArgumentExceptionType.ARGUMENT_NUMBER_TOO_BIG)
-                    .with("expected", getMaximumArgumentSize())
-                    .with("actual", args.size());
+                throw new ArgumentException(ARGUMENT_NUMBER_TOO_BIG);
             }
 
             for(int i = 0; i < parameters.size(); i++){
@@ -48,13 +48,7 @@ public abstract class Command<C>{
                 if(!parameter.isVariadic()){
                     context.setObject(parameter.getName(), parameter.parse(arg));
                 }else{
-                    List<Object> list = new ArrayList<>();
-                    for(String subArg : arg.split(parameter.getDelimiter())){
-                        subArg = subArg.trim();
-                        list.add(parameter.parse(subArg));
-                    }
-
-                    context.setObject(parameter.getName(), list);
+                    context.setObject(parameter.getName(), handleVariadic(parameter, arg));
                 }
             }
 
@@ -69,30 +63,36 @@ public abstract class Command<C>{
     }
 
     /** Actual command */
-    protected abstract void execute(CommandContext<C> context) throws Exception;
+    protected abstract void execute(@NotNull CommandContext<C> context) throws Exception;
 
-    public String getName(){
+    protected List<Object> handleVariadic(CommandParameter<?> parameter, String arg){
+        return Arrays.stream(arg.split(" "))
+            .sequential()
+            .map(a -> parameter.parse(a.trim()))
+            .collect(Collectors.toList());
+    }
+
+    public @NotNull String getName(){
         return name;
     }
 
-    public List<CommandParameter<?>> getParameters(){
+    public @NotNull List<CommandParameter<?>> getParameters(){
         return new ArrayList<>(parameters);
     }
 
-    public TypeToken<? extends C> getCallerType(){
+    public @NotNull TypeToken<? extends C> getCallerType(){
         return callerType;
     }
 
-    public ContextRunner<C> getResponseHandler(){
+    public @NotNull ContextRunner<C> getResponseHandler(){
         return responseHandler;
     }
 
-    @Nullable
-    public Command<?> getParent(){
+    protected @Nullable Command<?> getParent(){
         return parent;
     }
 
-    public void setParent(Command<?> parent){
+    public void setParent(@Nullable Command<?> parent){
         this.parent = parent;
     }
 

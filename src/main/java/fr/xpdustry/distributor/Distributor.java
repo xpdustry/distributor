@@ -5,13 +5,14 @@ import arc.util.*;
 
 import mindustry.*;
 
-import fr.xpdustry.distributor.command.mindustry.*;
 import fr.xpdustry.distributor.command.param.string.*;
 import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.plugin.commands.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
 import fr.xpdustry.distributor.util.loader.*;
 
+import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.commonjs.module.*;
@@ -24,38 +25,86 @@ import java.util.*;
 
 
 public class Distributor extends DistributorPlugin{
-    private static final Properties properties = new Properties();
-    private static ResourceLoader resources;
+    // TODO add localization resource loader
+
     private static SharedClassLoader modClassLoader;
+    private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
+    private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
 
     static{
-        // Default settings
-        properties.put("distributor.root-path", "./distributor");
+        // TODO Generate RuntimeExceptions when the static initializer fails
+
+        // Deploy the file tree
+        Fi root = config.getRootPath();
+        Fi scripts = config.getScriptPath();
+
+        if(!root.exists()){
+            root.mkdirs();
+        }if(!scripts.exists()){
+            scripts.mkdirs();
+
+            try{
+                URL url = new URL("https://raw.githubusercontent.com/Xpdustry/Distributor/dev/static/init.js");
+                IOUtils.copy(url, scripts.child("init.js").file());
+            }catch(IOException e){
+                scripts.child("init.js").writeString("// Global scope here...\n");
+                Log.err("Failed to load the default init script.", e);
+            }
+        }
+
+        // JavaScript Setup
+        try{
+            scriptLoader.addResource(config.getScriptPath().file());
+        }catch(MalformedURLException e){
+            Log.err("Failed to setup the script path for the Require.", e);
+        }
+
+        ContextFactory.initGlobal(new TimedContextFactory(config.getMaxRuntimeDuration()));
+        ScriptEngine.setGlobalFactory(() -> {
+            Context context = Context.getCurrentContext();
+
+            if(context == null){
+                context = Context.enter();
+                context.setOptimizationLevel(9);
+                context.setLanguageVersion(Context.VERSION_ES6);
+                context.setApplicationClassLoader(getModClassLoader());
+            }
+
+            ScriptEngine engine = new ScriptEngine(context);
+
+            new RequireBuilder()
+                .setSandboxed(false)
+                .setModuleScriptProvider(new SoftCachingModuleScriptProvider(new ScriptLoader(scriptLoader)))
+                .createRequire(context, engine.getImporter())
+                .install(engine.getImporter());
+
+            try{
+                Fi init = config.getScriptPath().child("init.js");
+                Script script = engine.compileScript(init.reader(), init.name());
+                engine.exec(script);
+            }catch(IOException | ScriptException e){
+                Log.err("Failed to run the init script.", e);
+            }
+
+            return engine;
+        });
     }
 
     @Override
     public void init(){
+        Time.mark();
         // Show a nice banner :^)
         try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("Asset not found.");
             IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
             Log.info(" > ");
         }catch(IOException e){
-            Log.info("Loaded DistributorPlugin !");
+            Log.info("Initialized DistributorPlugin !");
         }
 
         // Begin the loading
-        Time.mark();
         Log.info("Begin Distributor loading...");
-        super.init();
-
-        resources = new ResourceLoader(getClass().getClassLoader());
         modClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
-
-        // Init Distributor systems
-        initFiles();
-        initScripts();
-
         Log.info("End Distributor loading : " + Time.elapsed() + " milliseconds");
     }
 
@@ -63,10 +112,15 @@ public class Distributor extends DistributorPlugin{
     public void registerServerCommands(CommandHandler handler){
         super.registerServerCommands(handler);
 
-        serverRegistry.register(c -> c
-            .name("djs")
+        serverRegistry.setResponseHandler(ctx -> {
+            Optional<Exception> exception = ctx.getException();
+            exception.ifPresent(Log::err);
+        });
+
+        serverRegistry.register(command ->
+            command.name("jscript")
             .description("Run some random js code.")
-            .parameter(new StringParameter("script", "", false, "(?!)"))
+            .parameter(new StringParameter("script").withVariadic(true))
             .runner(ctx -> {
                 try{
                     List<String> script = ctx.getAs("script");
@@ -86,78 +140,5 @@ public class Distributor extends DistributorPlugin{
 
     public static SharedClassLoader getModClassLoader(){
         return modClassLoader;
-    }
-
-    public static Properties getProperties(){
-        return properties;
-    }
-
-    public static Fi getRootPath(){
-        return new Fi(properties.getProperty("distributor.root-path"));
-    }
-
-    private void initFiles(){
-        // Look for distributor.properties in the server directory
-        Fi config = new Fi("./config/distributor.properties");
-
-        try{
-            if(config.exists()) properties.load(config.read());
-            else properties.store(config.write(), "Distributor settings");
-        }catch(IOException e){
-            Log.err("An error occurred while saving the setting file, fallback to default settings.", e);
-        }
-
-        // Deploy the file tree
-        Fi root = getRootPath();
-        if(!root.exists()){
-            root.mkdirs();
-
-            // Script folder
-            Fi scripts = root.child("scripts");
-            scripts.mkdirs();
-
-            try{
-                URL url = new URL("https://raw.githubusercontent.com/Xpdustry/Distributor/dev/static/init.js");
-                String script = IOUtils.toString(url, Charset.defaultCharset());
-                scripts.child("init.js").writeString(script);
-            }catch(IOException e){
-                scripts.child("init.js").writeString("// Global scope here...\n");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void initScripts(){
-        // Init JavaScript engine
-        ContextFactory.initGlobal(new TimedContextFactory(5));
-
-        ScriptEngine.setGlobalFactory(() -> {
-            Context context = Context.getCurrentContext();
-
-            if(context == null){
-                context = Context.enter();
-                context.setOptimizationLevel(9);
-                context.setLanguageVersion(Context.VERSION_ES6);
-                context.setApplicationClassLoader(getModClassLoader());
-            }
-
-            ScriptEngine engine = new ScriptEngine(context);
-
-            new RequireBuilder()
-                .setSandboxed(false)
-                .setModuleScriptProvider(new SoftCachingModuleScriptProvider(new ScriptLoader(resources)))
-                .createRequire(context, engine.getImporter())
-                .install(engine.getImporter());
-
-            try{
-                Fi init = getRootPath().child("scripts/init.js");
-                Script script = engine.compileScript(init.reader(), init.name());
-                engine.exec(script);
-            }catch(IOException | ScriptException e){
-                Log.err("Failed to run the init script.", e);
-            }
-
-            return engine;
-        });
     }
 }

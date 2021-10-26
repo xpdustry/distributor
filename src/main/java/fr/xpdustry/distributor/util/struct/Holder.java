@@ -1,11 +1,12 @@
 package fr.xpdustry.distributor.util.struct;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
 
 /** Holds a value and nothing else... */
-public class Holder<T>{
+public class Holder<T> implements Serializable{
     protected T value;
 
     public Holder(){

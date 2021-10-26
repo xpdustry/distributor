@@ -3,26 +3,23 @@ package fr.xpdustry.distributor.command.param.number;
 import fr.xpdustry.distributor.command.param.*;
 
 import io.leangen.geantyref.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
 
 public class IntegerParameter extends NumericParameter<Integer>{
-    public IntegerParameter(String name, String defaultValue, boolean optional, String delimiter, int minimum, int maximum,
-                            ArgumentPreprocessor<Integer> parser, Comparator<Integer> comparator){
-        super(name, defaultValue, optional, delimiter, minimum, maximum, TypeToken.get(int.class), parser, comparator);
+    public IntegerParameter(@NotNull String name, @NotNull ArgumentPreprocessor<Integer> preprocessor,
+                            @NotNull String defaultValue, boolean optional, boolean variadic,
+                            int min, int max, @NotNull Comparator<Integer> comparator){
+        super(name, TypeToken.get(int.class), preprocessor, defaultValue, optional, variadic, min, max, comparator);
     }
 
-    public IntegerParameter(String name, String defaultValue, boolean optional, String delimiter, int minimum, int maximum){
-        this(name, defaultValue, optional, delimiter, minimum, maximum, Integer::parseInt, Integer::compare);
+    public IntegerParameter(@NotNull String name, @NotNull String defaultValue, boolean optional, boolean variadic){
+        this(name, Integer::parseInt, defaultValue, optional, variadic, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer::compare);
     }
 
-    public IntegerParameter(String name, String defaultValue, boolean optional, String delimiter){
-        this(name, defaultValue, optional, delimiter, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer::parseInt, Integer::compare);
-    }
-
-    public IntegerParameter(String name, String defaultValue, boolean optional, String delimiter,
-                            ArgumentPreprocessor<Integer> parser, Comparator<Integer> comparator){
-        this(name, defaultValue, optional, delimiter, Integer.MIN_VALUE, Integer.MAX_VALUE, parser, comparator);
+    public IntegerParameter(@NotNull String name){
+        this(name, "", false, false);
     }
 }

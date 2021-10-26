@@ -78,11 +78,11 @@ public interface CommandParser{
             }
 
             if(type.equalsIgnoreCase("string")){
-                parameters.add(new StringParameter(parameterName, defaultValue, optional, hadVariadicParameter ? "(?!)" : null));
+                parameters.add(new StringParameter(parameterName, defaultValue, optional, hadVariadicParameter));
             }else if(type.equalsIgnoreCase("int")){
-                parameters.add(new IntegerParameter(parameterName, defaultValue, optional, hadVariadicParameter ? " " : null));
+                parameters.add(new IntegerParameter(parameterName, defaultValue, optional, hadVariadicParameter));
             }else if(type.equalsIgnoreCase("float")){
-                parameters.add(new FloatParameter(parameterName, defaultValue, optional, hadVariadicParameter ? " " : null));
+                parameters.add(new FloatParameter(parameterName, defaultValue, optional, hadVariadicParameter));
             }else{
                 throw new ParsingException(ParsingExceptionType.UNKNOWN_PARAMETER_TYPE)
                     .with("expected", Arrays.asList("string", "int"))

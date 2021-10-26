@@ -1,48 +1,55 @@
 package fr.xpdustry.distributor.command.param;
 
-import arc.util.*;
-
 import fr.xpdustry.distributor.exception.*;
 
 import io.leangen.geantyref.*;
-
-import java.util.*;
+import org.jetbrains.annotations.*;
 
 
 public class CommandParameter<T>{
     private final String name;
-    private final String defaultValue;
-    private final TypeToken<T> valueType;
-
-    private final boolean optional;
-    private final @Nullable String delimiter;
+    private final TypeToken<? extends T> valueType;
     private final ArgumentPreprocessor<T> preprocessor;
 
-    public CommandParameter(String name, String defaultValue, boolean optional, String delimiter, TypeToken<T> valueType, ArgumentPreprocessor<T> preprocessor){
-        this.name = Objects.requireNonNull(name, "The name is null.");
-        this.defaultValue = Objects.requireNonNull(defaultValue, "The defaultValue is null.");
+    private final String defaultValue;
+    private final boolean optional;
+    private final boolean variadic;
 
+    public CommandParameter(@NotNull String name, @NotNull TypeToken<? extends T> valueType,
+                            @NotNull ArgumentPreprocessor<T> preprocessor,
+                            @NotNull String defaultValue, boolean optional, boolean variadic){
+        //TODO apply Objects.requireNonNull
+        this.name = name;
+        this.valueType = valueType;
+        this.preprocessor = preprocessor;
+        this.defaultValue = defaultValue;
         this.optional = optional;
-        this.delimiter = delimiter;
-
-        this.valueType = Objects.requireNonNull(valueType, "The valueType is null.");
-        this.preprocessor = Objects.requireNonNull(preprocessor, "The preprocessor is null.");
+        this.variadic = variadic;
     }
 
-    public CommandParameter(String name, String defaultValue, boolean optional, TypeToken<T> valueType, ArgumentPreprocessor<T> preprocessor){
-        this(name, defaultValue, optional, null, valueType, preprocessor);
+    public CommandParameter(@NotNull String name, @NotNull TypeToken<? extends T> valueType,
+                            @NotNull ArgumentPreprocessor<T> preprocessor){
+        this(name, valueType, preprocessor, "", false, false);
     }
 
-    public String getName(){
+    public T parse(@NotNull String arg) throws ParsingException{
+        return preprocessor.process(arg);
+    }
+
+    public @NotNull String getName(){
         return name;
     }
 
-    public String getDefaultValue(){
-        return defaultValue;
+    public @NotNull TypeToken<? extends T> getValueType(){
+        return valueType;
     }
 
-    public TypeToken<T> getValueType(){
-        return valueType;
+    public @NotNull ArgumentPreprocessor<T> getPreprocessor(){
+        return preprocessor;
+    }
+
+    public @NotNull String getDefaultValue(){
+        return defaultValue;
     }
 
     public boolean isOptional(){
@@ -50,25 +57,21 @@ public class CommandParameter<T>{
     }
 
     public boolean isVariadic(){
-        return delimiter != null;
+        return variadic;
     }
 
-    public String getDelimiter(){
-        return delimiter;
+    public @NotNull CommandParameter<T> withDefaultValue(@NotNull String defaultValue) {
+        return this.defaultValue.equals(defaultValue) ? this :
+            new CommandParameter<T>(this.name, this.valueType, this.preprocessor, defaultValue, this.optional, this.variadic);
     }
 
-    public ArgumentPreprocessor<T> getPreprocessor(){
-        return preprocessor;
+    public @NotNull CommandParameter<T> withOptional(boolean optional) {
+        return this.optional == optional ? this :
+            new CommandParameter<T>(this.name, this.valueType, this.preprocessor, this.defaultValue, optional, this.variadic);
     }
 
-    public String getValueTypeName(){
-        // Basically, get the lower case class name
-        // java.lang.String -> string
-        String[] strings = getValueType().getType().getTypeName().split("\\.");
-        return strings[strings.length - 1].toLowerCase();
-    }
-
-    public T parse(String arg) throws ParsingException{
-        return preprocessor.process(arg);
+    public @NotNull CommandParameter<T> withVariadic(boolean variadic) {
+        return this.variadic == variadic ? this :
+            new CommandParameter<T>(this.name, this.valueType, this.preprocessor, this.defaultValue, this.optional, variadic);
     }
 }

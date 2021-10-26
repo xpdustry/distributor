@@ -9,5 +9,5 @@ public enum ParsingExceptionType{
 
     UNKNOWN_PARAMETER_TYPE,
 
-    UNDEFINED;
+    UNDEFINED
 }

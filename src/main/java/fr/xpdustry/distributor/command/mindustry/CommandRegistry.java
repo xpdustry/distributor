@@ -3,8 +3,11 @@ package fr.xpdustry.distributor.command.mindustry;
 import arc.util.*;
 import arc.util.CommandHandler.*;
 
+import mindustry.gen.*;
+
 import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.mindustry.LambdaCommand.*;
+import fr.xpdustry.distributor.command.param.*;
 
 import io.leangen.geantyref.*;
 
@@ -24,30 +27,31 @@ public class CommandRegistry<C>{
     private final SortedMap<String, MindustryCommandRunner<C>> registry = new TreeMap<>();
 
     public CommandRegistry(CommandHandler commandHandler, TypeToken<? extends C> callerType){
-        this.callerType = Objects.requireNonNull(callerType, "The callerType is null.");
-        this.commandHandler = Objects.requireNonNull(commandHandler, "The commandHandler is null.");
+        this.callerType = callerType;
+        this.commandHandler = commandHandler;
     }
 
     public MindustryCommand<C> register(MindustryCommand<C> command){
         MindustryCommandRunner<C> runner = new MindustryCommandRunner<>(command);
-        commandHandler.register(command.getName(), command.getSimpleParameterText(), command.getDescription(), runner);
+        commandHandler.register(command.getName(), command.getParameterText(), command.getDescription(), runner);
         registry.put(command.getName(), runner);
         return command;
     }
 
     public MindustryCommand<C> register(String name, String description, UnsafeContextRunner<C> runner){
-        return register(new LambdaCommand<>(name, description, runner, responseHandler, callerType));
+        return register(new LambdaCommand<>(name, description, callerType, runner, responseHandler));
     }
 
     public MindustryCommand<C> register(String name, String parameterText, String description, UnsafeContextRunner<C> runner){
         return register(new LambdaCommand<>(name, description,
-            parser.parseParameters(parameterText), runner, responseHandler, callerType));
+            parser.parseParameters(parameterText), callerType, runner, responseHandler));
     }
 
-    public MindustryCommand<C> register(Consumer<LambdaCommand.Builder<C>> consumer){
-        LambdaCommand.Builder<C> builder = new Builder<>();
-        builder.callerType(callerType);
+    public MindustryCommand<C> register(Consumer<LambdaCommandBuilder<C>> consumer){
+        LambdaCommandBuilder<C> builder = new LambdaCommandBuilder<>();
         consumer.accept(builder);
+        builder.responseHandler(responseHandler);
+        builder.callerType(callerType);
         return register(builder.build());
     }
 

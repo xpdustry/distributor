@@ -1,21 +1,15 @@
 package fr.xpdustry.distributor.util.struct;
 
-import arc.util.*;
-
 import fr.xpdustry.distributor.exception.*;
 
 
 public interface ObjectStore{
-    @Nullable
     Object getObject(String key);
 
-    @Nullable
     Object setObject(String key, Object value);
 
-    @Nullable
     Object removeObject(String key);
 
-    @Nullable
     @SuppressWarnings("unchecked")
     default <V> V getAs(String key) throws ObjectStoreException{
         try{
@@ -25,7 +19,6 @@ public interface ObjectStore{
         }
     }
 
-    @Nullable
     @SuppressWarnings("unchecked")
     default <V> V setAs(String key, V value) throws ObjectStoreException{
         try{
@@ -35,7 +28,6 @@ public interface ObjectStore{
         }
     }
 
-    @Nullable
     @SuppressWarnings("unchecked")
     default <V> V removeAs(String key) throws ObjectStoreException{
         try{
