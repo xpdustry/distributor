@@ -44,7 +44,7 @@ public class Distributor extends DistributorPlugin{
             scripts.mkdirs();
 
             try{
-                URL url = new URL("https://raw.githubusercontent.com/Xpdustry/Distributor/dev/static/init.js");
+                URL url = new URL("https://raw.githubusercontent.com/Xpdustry/Distributor/master/static/init.js");
                 IOUtils.copy(url, scripts.child("init.js").file());
             }catch(IOException e){
                 scripts.child("init.js").writeString("// Global scope here...\n");
