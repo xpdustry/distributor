@@ -60,17 +60,17 @@ public class CommandParameter<T>{
         return variadic;
     }
 
-    public @NotNull CommandParameter<T> withDefaultValue(@NotNull String defaultValue) {
+    public @NotNull CommandParameter<T> withDefaultValue(@NotNull String defaultValue){
         return this.defaultValue.equals(defaultValue) ? this :
             new CommandParameter<T>(this.name, this.valueType, this.preprocessor, defaultValue, this.optional, this.variadic);
     }
 
-    public @NotNull CommandParameter<T> withOptional(boolean optional) {
+    public @NotNull CommandParameter<T> withOptional(boolean optional){
         return this.optional == optional ? this :
             new CommandParameter<T>(this.name, this.valueType, this.preprocessor, this.defaultValue, optional, this.variadic);
     }
 
-    public @NotNull CommandParameter<T> withVariadic(boolean variadic) {
+    public @NotNull CommandParameter<T> withVariadic(boolean variadic){
         return this.variadic == variadic ? this :
             new CommandParameter<T>(this.name, this.valueType, this.preprocessor, this.defaultValue, this.optional, variadic);
     }

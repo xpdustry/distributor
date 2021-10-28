@@ -12,27 +12,25 @@ import mindustry.server.*;
 import fr.xpdustry.distributor.command.mindustry.*;
 
 import io.leangen.geantyref.*;
+import org.jetbrains.annotations.Nullable;
 
 
 public abstract class DistributorPlugin extends Plugin implements Disposable{
     protected CommandRegistry<Playerc> serverRegistry;
     protected CommandRegistry<Playerc> clientRegistry;
 
-    @Nullable
-    public LoadedMod asMod(){
-        return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;
-    }
-
-    @Nullable
-    public static CommandHandler getClientCommands(){
+    public static @Nullable CommandHandler getClientCommands(){
         return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
     }
 
-    @Nullable
-    public static CommandHandler getServerCommands(){
+    public static @Nullable CommandHandler getServerCommands(){
         if(Core.app == null) return null;
         ServerControl server = (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
         return (server != null) ? server.handler : null;
+    }
+
+    public @Nullable LoadedMod asMod(){
+        return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;
     }
 
     @Override

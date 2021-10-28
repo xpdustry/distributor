@@ -72,19 +72,19 @@ public class NumericParameter<T extends Number> extends CommandParameter<T>{
         return comparator;
     }
 
-    public @NotNull NumericParameter<T> withMin(@NotNull T min) {
+    public @NotNull NumericParameter<T> withMin(@NotNull T min){
         return Objects.equals(this.min, min) ? this :
             new NumericParameter<>(getName(), getValueType(), getPreprocessor(),
                 getDefaultValue(), isOptional(), isVariadic(), min, this.max, this.comparator);
     }
 
-    public @NotNull NumericParameter<T> withMax(@NotNull T max) {
+    public @NotNull NumericParameter<T> withMax(@NotNull T max){
         return Objects.equals(this.max, max) ? this :
             new NumericParameter<>(getName(), getValueType(), getPreprocessor(),
                 getDefaultValue(), isOptional(), isVariadic(), this.min, max, this.comparator);
     }
 
-    public @NotNull NumericParameter<T> withMin(@NotNull Comparator<T> comparator) {
+    public @NotNull NumericParameter<T> withMin(@NotNull Comparator<T> comparator){
         return Objects.equals(this.comparator, comparator) ? this :
             new NumericParameter<>(getName(), getValueType(), getPreprocessor(),
                 getDefaultValue(), isOptional(), isVariadic(), this.min, this.max, comparator);

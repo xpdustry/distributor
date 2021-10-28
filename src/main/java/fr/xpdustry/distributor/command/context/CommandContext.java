@@ -72,12 +72,12 @@ public class CommandContext<C> implements ObjectStore{
         return new HashMap<>(store);
     }
 
-    public void setResult(@Nullable Object result){
-        this.result = result;
-    }
-
     public @NotNull Optional<Object> getResult(){
         return Optional.ofNullable(result);
+    }
+
+    public void setResult(@Nullable Object result){
+        this.result = result;
     }
 
     public boolean hasSucceed(){

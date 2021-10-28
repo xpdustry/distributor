@@ -2,9 +2,6 @@ package fr.xpdustry.distributor.util.string;
 
 
 public interface StringFormatter{
-    /** @return a formatted string with the given arguments */
-    String format(String text, Object... args);
-
     StringFormatter VOID = (text, args) -> text;
 
     StringFormatter DEFAULT = String::format;
@@ -28,4 +25,7 @@ public interface StringFormatter{
             return out.toString();
         }
     };
+
+    /** @return a formatted string with the given arguments */
+    String format(String text, Object... args);
 }

@@ -7,7 +7,7 @@ import mindustry.*;
 
 import fr.xpdustry.distributor.command.param.string.*;
 import fr.xpdustry.distributor.exception.*;
-import fr.xpdustry.distributor.plugin.commands.*;
+import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
 import fr.xpdustry.distributor.util.loader.*;
@@ -25,22 +25,23 @@ import java.util.*;
 
 
 public class Distributor extends DistributorPlugin{
-    // TODO add localization resource loader
-
-    private static SharedClassLoader modClassLoader;
     private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
+    // TODO add localization resource loader
+    private static SharedClassLoader modClassLoader;
 
     static{
         // TODO Generate RuntimeExceptions when the static initializer fails
 
-        // Deploy the file tree
+        // FileTree setup
+
         Fi root = config.getRootPath();
         Fi scripts = config.getScriptPath();
 
         if(!root.exists()){
             root.mkdirs();
-        }if(!scripts.exists()){
+        }
+        if(!scripts.exists()){
             scripts.mkdirs();
 
             try{
@@ -53,6 +54,7 @@ public class Distributor extends DistributorPlugin{
         }
 
         // JavaScript Setup
+
         try{
             scriptLoader.addResource(config.getScriptPath().file());
         }catch(MalformedURLException e){
@@ -90,6 +92,10 @@ public class Distributor extends DistributorPlugin{
         });
     }
 
+    public static SharedClassLoader getModClassLoader(){
+        return modClassLoader;
+    }
+
     @Override
     public void init(){
         Time.mark();
@@ -119,26 +125,22 @@ public class Distributor extends DistributorPlugin{
 
         serverRegistry.register(command ->
             command.name("jscript")
-            .description("Run some random js code.")
-            .parameter(new StringParameter("script").withVariadic(true))
-            .runner(ctx -> {
-                try{
-                    List<String> script = ctx.getAs("script");
-                    Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                    Log.debug("out @", ScriptEngine.toString(obj));
-                }catch(ScriptException e){
-                    Log.err(e.getSimpleMessage());
-                }
-            })
+                .description("Run some random js code.")
+                .parameter(new StringParameter("script").withVariadic(true))
+                .runner(ctx -> {
+                    try{
+                        List<String> script = ctx.getAs("script");
+                        Object obj = ScriptEngine.getInstance().eval(script.get(0));
+                        Log.debug("out @", ScriptEngine.toString(obj));
+                    }catch(ScriptException e){
+                        Log.err(e.getSimpleMessage());
+                    }
+                })
         );
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
         super.registerClientCommands(handler);
-    }
-
-    public static SharedClassLoader getModClassLoader(){
-        return modClassLoader;
     }
 }

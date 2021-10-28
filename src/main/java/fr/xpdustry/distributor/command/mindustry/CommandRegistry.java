@@ -3,11 +3,8 @@ package fr.xpdustry.distributor.command.mindustry;
 import arc.util.*;
 import arc.util.CommandHandler.*;
 
-import mindustry.gen.*;
-
 import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.mindustry.LambdaCommand.*;
-import fr.xpdustry.distributor.command.param.*;
 
 import io.leangen.geantyref.*;
 
@@ -20,11 +17,10 @@ import java.util.stream.*;
 public class CommandRegistry<C>{
     private final CommandHandler commandHandler;
     private final TypeToken<? extends C> callerType;
-
+    private final SortedMap<String, MindustryCommandRunner<C>> registry = new TreeMap<>();
     @SuppressWarnings("unchecked")
     private ContextRunner<C> responseHandler = (ContextRunner<C>)ContextRunner.VOID;
     private CommandParser parser = CommandParser.DEFAULT;
-    private final SortedMap<String, MindustryCommandRunner<C>> registry = new TreeMap<>();
 
     public CommandRegistry(CommandHandler commandHandler, TypeToken<? extends C> callerType){
         this.callerType = callerType;

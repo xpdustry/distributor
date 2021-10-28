@@ -15,6 +15,14 @@ public final class ScriptEngine{
     private static final ThreadLocal<ScriptEngine> threadInstance =
         ThreadLocal.withInitial(() -> factory.get().makeEngine());
 
+    private final Context ctx;
+    private final ImporterTopLevel importer;
+
+    public ScriptEngine(Context context){
+        this.ctx = context;
+        this.importer = new ImporterTopLevel(ctx);
+    }
+
     public static ScriptEngineFactory getGlobalFactory(){
         return factory.get();
     }
@@ -27,12 +35,10 @@ public final class ScriptEngine{
         return threadInstance.get();
     }
 
-    private final Context ctx;
-    private final ImporterTopLevel importer;
-
-    public ScriptEngine(Context context){
-        this.ctx = context;
-        this.importer = new ImporterTopLevel(ctx);
+    public static String toString(Object obj){
+        if(obj instanceof NativeJavaObject) obj = ((NativeJavaObject)obj).unwrap();
+        if(obj instanceof Undefined) obj = "undefined";
+        return String.valueOf(obj);
     }
 
     public Scriptable newScope(){
@@ -110,11 +116,5 @@ public final class ScriptEngine{
 
     public ImporterTopLevel getImporter(){
         return importer;
-    }
-
-    public static String toString(Object obj){
-        if(obj instanceof NativeJavaObject) obj = ((NativeJavaObject)obj).unwrap();
-        if(obj instanceof Undefined) obj = "undefined";
-        return String.valueOf(obj);
     }
 }

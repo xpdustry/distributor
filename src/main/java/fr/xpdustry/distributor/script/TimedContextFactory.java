@@ -39,19 +39,19 @@ public class TimedContextFactory extends ContextFactory{
     }
 
     @Override
+    protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args){
+        TimedContext tcx = (TimedContext)cx;
+        tcx.startTime = System.currentTimeMillis();
+        return super.doTopCall(callable, cx, scope, thisObj, args);
+    }
+
+    @Override
     protected void observeInstructionCount(Context cx, int instructionCount){
         TimedContext tcx = (TimedContext)cx;
         long currentTime = System.currentTimeMillis();
         if(currentTime - tcx.startTime > maxRuntimeDuration * 1000L){
             throw new BlockingScriptError(Thread.currentThread());
         }
-    }
-
-    @Override
-    protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args){
-        TimedContext tcx = (TimedContext)cx;
-        tcx.startTime = System.currentTimeMillis();
-        return super.doTopCall(callable, cx, scope, thisObj, args);
     }
 
     /** Custom Context to store execution time. */

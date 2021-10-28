@@ -17,42 +17,6 @@ public class Holder<T> implements Serializable{
         this.value = value;
     }
 
-    public void set(T value){
-        this.value = value;
-    }
-
-    public T get(){
-        return value;
-    }
-
-    public void use(Consumer<T> cons){
-        cons.accept(value);
-    }
-
-    public <R extends T> void compute(Function<T, R> func){
-        value = func.apply(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <R> Holder<R> as(){
-        return (Holder<R>)this;
-    }
-
-    @Override
-    public String toString(){
-        return value.toString();
-    }
-
-    @Override
-    public boolean equals(Object o){
-        return Objects.equals(value, o);
-    }
-
-    @Override
-    public int hashCode(){
-        return value != null ? value.hashCode() : 0;
-    }
-
     public static Holder<Boolean> getBool(){
         return new Holder<>(false);
     }
@@ -87,5 +51,41 @@ public class Holder<T> implements Serializable{
 
     public static Holder<String> getString(){
         return new Holder<>("");
+    }
+
+    public void set(T value){
+        this.value = value;
+    }
+
+    public T get(){
+        return value;
+    }
+
+    public void use(Consumer<T> cons){
+        cons.accept(value);
+    }
+
+    public <R extends T> void compute(Function<T, R> func){
+        value = func.apply(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <R> Holder<R> as(){
+        return (Holder<R>)this;
+    }
+
+    @Override
+    public int hashCode(){
+        return value != null ? value.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        return Objects.equals(value, o);
+    }
+
+    @Override
+    public String toString(){
+        return value.toString();
     }
 }

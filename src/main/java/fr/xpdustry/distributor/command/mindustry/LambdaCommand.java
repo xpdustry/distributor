@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.command.mindustry;
 
-import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.command.context.*;
 import fr.xpdustry.distributor.command.param.*;
 
@@ -12,10 +11,6 @@ import java.util.*;
 
 public class LambdaCommand<C> extends MindustryCommand<C>{
     private final UnsafeContextRunner<C> runner;
-
-    public static <C> LambdaCommandBuilder<C> builder(){
-        return new LambdaCommandBuilder<>();
-    }
 
     public LambdaCommand(@NotNull String name, @NotNull String description, @NotNull List<CommandParameter<?>> parameters,
                          @NotNull TypeToken<? extends C> callerType, @NotNull UnsafeContextRunner<C> runner,
@@ -30,6 +25,10 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
         this(name, description, Collections.emptyList(), callerType, runner, responseHandler);
     }
 
+    public static <C> LambdaCommandBuilder<C> builder(){
+        return new LambdaCommandBuilder<>();
+    }
+
     @Override
     protected void execute(@NotNull CommandContext<C> context) throws Exception{
         runner.handleContext(context);
@@ -37,13 +36,11 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
 
 
     public static final class LambdaCommandBuilder<C>{
+        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
         private String name;
         private TypeToken<? extends C> callerType;
         private UnsafeContextRunner<C> runner;
-
         private String description = "";
-        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
-
         @SuppressWarnings("unchecked")
         private ContextRunner<C> responseHandler = (ContextRunner<C>)ContextRunner.VOID;
 

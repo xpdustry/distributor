@@ -9,8 +9,6 @@ import java.util.*;
 
 
 public interface CommandParser{
-    List<CommandParameter<?>> parseParameters(String parameterText) throws ParsingException;
-
     CommandParser DEFAULT = parameterText -> {
         ArrayList<CommandParameter<?>> parameters = new ArrayList<>();
         if(parameterText.isEmpty()) return parameters; // <- No parameters case
@@ -92,4 +90,6 @@ public interface CommandParser{
 
         return parameters;
     };
+
+    List<CommandParameter<?>> parseParameters(String parameterText) throws ParsingException;
 }
