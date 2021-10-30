@@ -4,20 +4,18 @@ import arc.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.gen.*;
 import mindustry.mod.Mods.*;
 import mindustry.mod.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.command.mindustry.*;
+import fr.xpdustry.distributor.command.type.*;
 
-import io.leangen.geantyref.*;
 import org.jetbrains.annotations.Nullable;
 
 
 public abstract class DistributorPlugin extends Plugin implements Disposable{
-    protected CommandRegistry<Playerc> serverRegistry;
-    protected CommandRegistry<Playerc> clientRegistry;
+    protected CommandRegistry serverRegistry;
+    protected CommandRegistry clientRegistry;
 
     public static @Nullable CommandHandler getClientCommands(){
         return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
@@ -35,12 +33,12 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        serverRegistry = new CommandRegistry<>(handler, TypeToken.get(Playerc.class));
+        serverRegistry = new CommandRegistry(handler);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        clientRegistry = new CommandRegistry<>(handler, TypeToken.get(Playerc.class));
+        clientRegistry = new CommandRegistry(handler);
     }
 
     @Override

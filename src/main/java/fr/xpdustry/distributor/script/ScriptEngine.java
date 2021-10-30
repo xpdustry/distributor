@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.concurrent.atomic.*;
 
 
-public final class ScriptEngine{
+public class ScriptEngine{
     private static final AtomicReference<ScriptEngineFactory> factory =
         new AtomicReference<>(ScriptEngineFactory.DEFAULT);
 

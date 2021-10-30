@@ -1,16 +1,20 @@
 package fr.xpdustry.distributor;
 
 import arc.files.*;
+import arc.struct.*;
 import arc.util.*;
 
 import mindustry.*;
 
-import fr.xpdustry.distributor.command.param.string.*;
+import fr.xpdustry.distributor.command.type.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
 import fr.xpdustry.distributor.util.loader.*;
+import fr.xpdustry.distributor.util.struct.*;
+import fr.xpdustry.xcommand.param.number.*;
+import fr.xpdustry.xcommand.param.string.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -26,13 +30,11 @@ import java.util.*;
 
 public class Distributor extends DistributorPlugin{
     private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
+    private static final ResourceLoader bundleLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
-    // TODO add localization resource loader
     private static SharedClassLoader modClassLoader;
 
     static{
-        // TODO Generate RuntimeExceptions when the static initializer fails
-
         // FileTree setup
 
         Fi root = config.getRootPath();
@@ -40,8 +42,7 @@ public class Distributor extends DistributorPlugin{
 
         if(!root.exists()){
             root.mkdirs();
-        }
-        if(!scripts.exists()){
+        }if(!scripts.exists()){
             scripts.mkdirs();
 
             try{
@@ -52,9 +53,85 @@ public class Distributor extends DistributorPlugin{
                 Log.err("Failed to load the default init script.", e);
             }
         }
+    }
 
-        // JavaScript Setup
+    public static SharedClassLoader getModClassLoader(){
+        return modClassLoader;
+    }
 
+    @Override
+    public void init(){
+        // Show a nice banner :^)
+        try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
+            if(in == null) throw new IOException("Asset not found.");
+            IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
+            Log.info(" > ");
+        }catch(IOException e){
+            Log.info("Initialized DistributorPlugin !");
+        }
+
+        // Begin the loading
+        Time.mark();
+        Log.info("Begin Distributor loading...");
+
+        modClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
+
+        initRhino();
+
+        // End loading
+        Log.info("End Distributor loading : " + Time.elapsed() + " milliseconds");
+    }
+
+    @Override
+    public void registerServerCommands(CommandHandler handler){
+        super.registerServerCommands(handler);
+
+        serverRegistry.setResponseHandler(ctx -> {
+            Optional<Exception> exception = ctx.getException();
+            exception.ifPresent(Log::err);
+        });
+
+        serverRegistry.register(serverRegistry.builder()
+            .name("jscript")
+            .description("Run some random js code.")
+            .parameter(new StringParameter("script")
+                .withVariadic()
+                .withParser(CommandRegistry.RAW_STRING_PARSER))
+            .runner(ctx -> {
+                try{
+                    List<String> script = ctx.getAs("script");
+                    Object obj = ScriptEngine.getInstance().eval(script.get(0));
+                    Log.debug("out @", ScriptEngine.toString(obj));
+                    ctx.setResult(obj);
+                    Log.info("What ?");
+                }catch(ScriptException e){
+                    Log.err(e.getSimpleMessage());
+                }
+            })
+        );
+
+        // TODO fix the bug with the uncatched NumberFormatException
+        serverRegistry.register(serverRegistry.builder()
+            .name("sum")
+            .description("add some numbers...")
+            .parameter(new IntegerParameter("nums")
+                .withVariadic()
+                .withOptional())
+            .runner(ctx -> {
+                Holder<Integer> sum = Holder.getInt();
+                List<Integer> ints = ctx.getAs("nums");
+                ints.forEach(i -> sum.set(sum.get() + i));
+                Log.info("The sum is @", sum);
+            })
+        );
+    }
+
+    @Override
+    public void registerClientCommands(CommandHandler handler){
+        super.registerClientCommands(handler);
+    }
+
+    public void initRhino(){
         try{
             scriptLoader.addResource(config.getScriptPath().file());
         }catch(MalformedURLException e){
@@ -90,57 +167,5 @@ public class Distributor extends DistributorPlugin{
 
             return engine;
         });
-    }
-
-    public static SharedClassLoader getModClassLoader(){
-        return modClassLoader;
-    }
-
-    @Override
-    public void init(){
-        Time.mark();
-        // Show a nice banner :^)
-        try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
-            if(in == null) throw new IOException("Asset not found.");
-            IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
-            Log.info(" > ");
-        }catch(IOException e){
-            Log.info("Initialized DistributorPlugin !");
-        }
-
-        // Begin the loading
-        Log.info("Begin Distributor loading...");
-        modClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
-        Log.info("End Distributor loading : " + Time.elapsed() + " milliseconds");
-    }
-
-    @Override
-    public void registerServerCommands(CommandHandler handler){
-        super.registerServerCommands(handler);
-
-        serverRegistry.setResponseHandler(ctx -> {
-            Optional<Exception> exception = ctx.getException();
-            exception.ifPresent(Log::err);
-        });
-
-        serverRegistry.register(command ->
-            command.name("jscript")
-                .description("Run some random js code.")
-                .parameter(new StringParameter("script").withVariadic(true))
-                .runner(ctx -> {
-                    try{
-                        List<String> script = ctx.getAs("script");
-                        Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                        Log.debug("out @", ScriptEngine.toString(obj));
-                    }catch(ScriptException e){
-                        Log.err(e.getSimpleMessage());
-                    }
-                })
-        );
-    }
-
-    @Override
-    public void registerClientCommands(CommandHandler handler){
-        super.registerClientCommands(handler);
     }
 }

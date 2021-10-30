@@ -1,9 +1,10 @@
-package fr.xpdustry.distributor.command.mindustry;
+package fr.xpdustry.distributor.command.type;
 
 import arc.util.*;
 
-import fr.xpdustry.distributor.command.context.*;
-import fr.xpdustry.distributor.command.param.*;
+import fr.xpdustry.xcommand.caller.*;
+import fr.xpdustry.xcommand.context.*;
+import fr.xpdustry.xcommand.param.*;
 
 import io.leangen.geantyref.*;
 
@@ -13,9 +14,9 @@ import java.util.*;
 public abstract class CommandContainer<C> extends MindustryCommand<C>{
     private final SortedMap<String, MindustryCommand<C>> subcommands = new TreeMap<>();
 
-    public CommandContainer(String name, String description, List<CommandParameter<?>> parameters,
-                            TypeToken<? extends C> callerType, ContextRunner<C> responseHandler){
-        super(name, description, parameters, callerType, responseHandler);
+    public CommandContainer(String name, String description, List<CommandParameter<?>> parameters, TypeToken<? extends C> callerType,
+                            ContextRunner<C> responseHandler, CallerValidator<C> callerValidator){
+        super(name, description, parameters, callerType, responseHandler, callerValidator);
     }
 
     @Nullable

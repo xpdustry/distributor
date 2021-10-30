@@ -1,9 +1,9 @@
-package fr.xpdustry.distributor.command.mindustry;
+package fr.xpdustry.distributor.command.type;
 
-import fr.xpdustry.distributor.command.param.*;
-import fr.xpdustry.distributor.command.param.number.*;
-import fr.xpdustry.distributor.command.param.string.*;
 import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.xcommand.param.*;
+import fr.xpdustry.xcommand.param.number.*;
+import fr.xpdustry.xcommand.param.string.*;
 
 import java.util.*;
 

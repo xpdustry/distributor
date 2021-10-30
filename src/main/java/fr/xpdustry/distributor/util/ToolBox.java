@@ -1,7 +1,5 @@
 package fr.xpdustry.distributor.util;
 
-import fr.xpdustry.distributor.command.param.*;
-
 import org.mozilla.javascript.*;
 
 import java.util.*;
@@ -18,6 +16,5 @@ public final class ToolBox{
         if(obj instanceof Undefined) obj = "undefined";
         return String.valueOf(obj);
     }
-
      */
 }

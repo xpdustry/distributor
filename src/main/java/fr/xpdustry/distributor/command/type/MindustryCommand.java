@@ -1,47 +1,40 @@
-package fr.xpdustry.distributor.command.mindustry;
+package fr.xpdustry.distributor.command.type;
 
-import fr.xpdustry.distributor.command.*;
-import fr.xpdustry.distributor.command.context.*;
-import fr.xpdustry.distributor.command.param.*;
-import fr.xpdustry.distributor.command.param.string.*;
+import fr.xpdustry.xcommand.*;
+import fr.xpdustry.xcommand.caller.*;
+import fr.xpdustry.xcommand.context.*;
+import fr.xpdustry.xcommand.param.*;
 
 import io.leangen.geantyref.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
 
 public abstract class MindustryCommand<C> extends Command<C>{
-    private final String description;
+    private final @NotNull String description;
 
-    public MindustryCommand(String name, String description, List<CommandParameter<?>> parameters,
-                            TypeToken<? extends C> callerType, ContextRunner<C> responseHandler){
-        //TODO apply Objects.requireNonNull
-        super(name, parameters, callerType, responseHandler);
+    public MindustryCommand(@NotNull String name, @NotNull String description,
+                            @NotNull List<CommandParameter<?>> parameters, @NotNull TypeToken<? extends C> callerType,
+                            @NotNull ContextRunner<C> responseHandler, @NotNull CallerValidator<C> callerValidator){
+        super(name, parameters, callerType, responseHandler, callerValidator);
         this.description = description;
     }
 
-    public MindustryCommand(String name, String description, ContextRunner<C> responseHandler, TypeToken<? extends C> callerType){
-        this(name, description, Collections.emptyList(), callerType, responseHandler);
+    public MindustryCommand(@NotNull String name, @NotNull String description, @NotNull TypeToken<? extends C> callerType,
+                            @NotNull ContextRunner<C> responseHandler, @NotNull CallerValidator<C> callerValidator){
+        this(name, description, Collections.emptyList(), callerType, responseHandler, callerValidator);
     }
 
-    @Override
-    protected List<Object> handleVariadic(CommandParameter<?> parameter, String arg){
-        if(parameter instanceof StringParameter){
-            return Collections.singletonList(parameter.parse(arg));
-        }else{
-            return super.handleVariadic(parameter, arg);
-        }
-    }
-
-    public String getDescription(){
+    public @NotNull String getDescription(){
         return description;
     }
 
-    public String getParameterText(){
+    public @NotNull String getParameterText(){
         return getParameterText(false);
     }
 
-    public String getParameterText(boolean advancedSyntax){
+    public @NotNull String getParameterText(boolean advancedSyntax){
         StringBuilder builder = new StringBuilder();
         Iterator<CommandParameter<?>> iterator = getParameters().listIterator();
 
@@ -69,5 +62,8 @@ public abstract class MindustryCommand<C> extends Command<C>{
         return builder.toString();
     }
 
-
+    @Override
+    protected void setParent(@Nullable Command<?> parent){
+        super.setParent(parent);
+    }
 }
