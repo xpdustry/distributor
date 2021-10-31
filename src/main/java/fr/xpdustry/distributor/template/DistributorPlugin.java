@@ -8,7 +8,7 @@ import mindustry.mod.Mods.*;
 import mindustry.mod.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.command.type.*;
+import fr.xpdustry.distributor.command.*;
 
 import org.jetbrains.annotations.Nullable;
 

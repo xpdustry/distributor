@@ -44,7 +44,7 @@ dependencies{
     compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
     // Xpdustry
-    implementation 'fr.xpdustry:XCommand:v1.0.1'
+    implementation 'fr.xpdustry:XCommand:v1.3'
 
     // Scripting
     implementation "org.mozilla:rhino:1.7.13"

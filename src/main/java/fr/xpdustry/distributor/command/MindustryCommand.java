@@ -1,8 +1,6 @@
-package fr.xpdustry.distributor.command.type;
+package fr.xpdustry.distributor.command;
 
 import fr.xpdustry.xcommand.*;
-import fr.xpdustry.xcommand.caller.*;
-import fr.xpdustry.xcommand.context.*;
 import fr.xpdustry.xcommand.param.*;
 
 import io.leangen.geantyref.*;
@@ -14,16 +12,15 @@ import java.util.*;
 public abstract class MindustryCommand<C> extends Command<C>{
     private final @NotNull String description;
 
-    public MindustryCommand(@NotNull String name, @NotNull String description,
-                            @NotNull List<CommandParameter<?>> parameters, @NotNull TypeToken<? extends C> callerType,
-                            @NotNull ContextRunner<C> responseHandler, @NotNull CallerValidator<C> callerValidator){
-        super(name, parameters, callerType, responseHandler, callerValidator);
+    public MindustryCommand(@NotNull String name, @NotNull String description, @NotNull List<CommandParameter<?>> parameters,
+                            @NotNull TypeToken<? extends C> callerType, @NotNull CallerValidator<C> callerValidator){
+        super(name, parameters, callerType, callerValidator);
         this.description = description;
     }
 
-    public MindustryCommand(@NotNull String name, @NotNull String description, @NotNull TypeToken<? extends C> callerType,
-                            @NotNull ContextRunner<C> responseHandler, @NotNull CallerValidator<C> callerValidator){
-        this(name, description, Collections.emptyList(), callerType, responseHandler, callerValidator);
+    public MindustryCommand(@NotNull String name, @NotNull String description,
+                            @NotNull TypeToken<? extends C> callerType, @NotNull CallerValidator<C> callerValidator){
+        this(name, description, Collections.emptyList(), callerType, callerValidator);
     }
 
     public @NotNull String getDescription(){

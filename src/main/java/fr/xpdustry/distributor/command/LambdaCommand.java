@@ -1,7 +1,6 @@
-package fr.xpdustry.distributor.command.type;
+package fr.xpdustry.distributor.command;
 
-import fr.xpdustry.xcommand.caller.*;
-import fr.xpdustry.xcommand.context.*;
+import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.param.*;
 
 import io.leangen.geantyref.*;
@@ -15,15 +14,15 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
 
     public LambdaCommand(@NotNull String name, @NotNull String description, @NotNull List<CommandParameter<?>> parameters,
                          @NotNull TypeToken<? extends C> callerType, @NotNull ContextRunner<C> runner,
-                         @NotNull ContextRunner<C> responseHandler, @NotNull CallerValidator<C> callerValidator){
-        super(name, description, parameters, callerType, responseHandler, callerValidator);
+                         @NotNull CallerValidator<C> callerValidator){
+        super(name, description, parameters, callerType, callerValidator);
         this.runner = runner;
     }
 
     public LambdaCommand(@NotNull String name, @NotNull String description,
                          @NotNull TypeToken<? extends C> callerType, @NotNull ContextRunner<C> runner,
-                         @NotNull ContextRunner<C> responseHandler, @NotNull CallerValidator<C> callerValidator){
-        this(name, description, Collections.emptyList(), callerType, runner, responseHandler, callerValidator);
+                         @NotNull CallerValidator<C> callerValidator){
+        this(name, description, Collections.emptyList(), callerType, runner, callerValidator);
     }
 
     public static <C> LambdaCommandBuilder<C> builder(){
@@ -36,15 +35,13 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
     }
 
     public static final class LambdaCommandBuilder<C>{
-        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
         private String name;
-        private TypeToken<? extends C> callerType;
-        private ContextRunner<C> runner;
         private String description = "";
+        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
+        private TypeToken<? extends C> type;
+        private ContextRunner<C> runner;
         @SuppressWarnings("unchecked")
-        private ContextRunner<C> responseHandler = (ContextRunner<C>)ContextRunner.VOID;
-        @SuppressWarnings("unchecked")
-        private CallerValidator<C> callerValidator = (CallerValidator<C>)CallerValidator.NONE;
+        private CallerValidator<C> validator = (CallerValidator<C>)CallerValidator.NONE;
 
         public LambdaCommandBuilder<C> name(String name){
             this.name = name;
@@ -66,22 +63,18 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
             return this;
         }
 
-        public LambdaCommandBuilder<C> callerType(TypeToken<? extends C> callerType){
-            this.callerType = callerType;
+        public LambdaCommandBuilder<C> type(TypeToken<? extends C> callerType){
+            this.type = callerType;
             return this;
         }
 
-        public LambdaCommandBuilder<C> responseHandler(ContextRunner<C> responseHandler){
-            this.responseHandler = responseHandler;
+        public LambdaCommandBuilder<C> validator(CallerValidator<C> validator){
+            this.validator = validator;
             return this;
-        }
-
-        public void callerValidator(CallerValidator<C> callerValidator){
-            this.callerValidator = callerValidator;
         }
 
         public LambdaCommand<C> build(){
-            return new LambdaCommand<>(name, description, parameters, callerType, runner, responseHandler, callerValidator);
+            return new LambdaCommand<>(name, description, parameters, type, runner, validator);
         }
     }
 }

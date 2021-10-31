@@ -1,12 +1,10 @@
 package fr.xpdustry.distributor;
 
 import arc.files.*;
-import arc.struct.*;
 import arc.util.*;
 
 import mindustry.*;
 
-import fr.xpdustry.distributor.command.type.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
@@ -96,10 +94,10 @@ public class Distributor extends DistributorPlugin{
             .description("Run some random js code.")
             .parameter(new StringParameter("script")
                 .withVariadic()
-                .withParser(CommandRegistry.RAW_STRING_PARSER))
+                .withToken(null))
             .runner(ctx -> {
                 try{
-                    List<String> script = ctx.getAs("script");
+                    List<String> script = ctx.get("script");
                     Object obj = ScriptEngine.getInstance().eval(script.get(0));
                     Log.debug("out @", ScriptEngine.toString(obj));
                     ctx.setResult(obj);
@@ -110,16 +108,17 @@ public class Distributor extends DistributorPlugin{
             })
         );
 
-        // TODO fix the bug with the uncatched NumberFormatException
+        // TODO find way to not delegate the parameter information to the root class
+
         serverRegistry.register(serverRegistry.builder()
             .name("sum")
             .description("add some numbers...")
             .parameter(new IntegerParameter("nums")
-                .withVariadic()
+                //.withVariadic()
                 .withOptional())
             .runner(ctx -> {
                 Holder<Integer> sum = Holder.getInt();
-                List<Integer> ints = ctx.getAs("nums");
+                List<Integer> ints = ctx.get("nums");
                 ints.forEach(i -> sum.set(sum.get() + i));
                 Log.info("The sum is @", sum);
             })
