@@ -6,10 +6,7 @@
 
 ## Description
 
-**Distributor** is a Mindustry plugin that can be used as a library to make plugin development easier,
-or as a Server Manager to automate your server tasks. It is still in development so feel free to PR.
-
-The command package is heavily inspired of `Incendo/cloud`, the shit is so cool but so damn complex...
+**Distributor** is a Mindustry plugin that can be used as a library to make plugin development easier, or as a Server Manager to automate your server tasks.
 
 ## Usage
 

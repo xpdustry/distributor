@@ -10,9 +10,7 @@ import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
 import fr.xpdustry.distributor.util.loader.*;
-import fr.xpdustry.distributor.util.struct.*;
-import fr.xpdustry.xcommand.param.number.*;
-import fr.xpdustry.xcommand.param.string.*;
+import fr.xpdustry.xcommand.parameter.string.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -27,6 +25,8 @@ import java.util.*;
 
 
 public class Distributor extends DistributorPlugin{
+    public static final String DISTRIBUTOR_INTERNAL_NAME = "xpdustry-distributor-plugin";
+
     private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
     private static final ResourceLoader bundleLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
@@ -34,9 +34,8 @@ public class Distributor extends DistributorPlugin{
 
     static{
         // FileTree setup
-
         Fi root = config.getRootPath();
-        Fi scripts = config.getScriptPath();
+        Fi scripts = config.getScriptsPath();
 
         if(!root.exists()){
             root.mkdirs();
@@ -51,6 +50,10 @@ public class Distributor extends DistributorPlugin{
                 Log.err("Failed to load the default init script.", e);
             }
         }
+    }
+
+    public static Distributor getInstance(){
+        return (Distributor)Vars.mods.getMod(DISTRIBUTOR_INTERNAL_NAME).main;
     }
 
     public static SharedClassLoader getModClassLoader(){
@@ -84,43 +87,18 @@ public class Distributor extends DistributorPlugin{
     public void registerServerCommands(CommandHandler handler){
         super.registerServerCommands(handler);
 
-        serverRegistry.setResponseHandler(ctx -> {
-            Optional<Exception> exception = ctx.getException();
-            exception.ifPresent(Log::err);
-        });
-
-        serverRegistry.register(serverRegistry.builder()
-            .name("jscript")
+        serverRegistry.register(serverRegistry.builder("jscript")
             .description("Run some random js code.")
-            .parameter(new StringParameter("script")
-                .withVariadic()
-                .withToken(null))
+            .parameter(StringParameter.of("script").variadic().splitter(Collections::singletonList))
             .runner(ctx -> {
                 try{
                     List<String> script = ctx.get("script");
                     Object obj = ScriptEngine.getInstance().eval(script.get(0));
                     Log.debug("out @", ScriptEngine.toString(obj));
                     ctx.setResult(obj);
-                    Log.info("What ?");
                 }catch(ScriptException e){
                     Log.err(e.getSimpleMessage());
                 }
-            })
-        );
-
-        // TODO find way to not delegate the parameter information to the root class
-
-        serverRegistry.register(serverRegistry.builder()
-            .name("sum")
-            .description("add some numbers...")
-            .parameter(new IntegerParameter("nums")
-                //.withVariadic()
-                .withOptional())
-            .runner(ctx -> {
-                Holder<Integer> sum = Holder.getInt();
-                List<Integer> ints = ctx.get("nums");
-                ints.forEach(i -> sum.set(sum.get() + i));
-                Log.info("The sum is @", sum);
             })
         );
     }
@@ -132,7 +110,7 @@ public class Distributor extends DistributorPlugin{
 
     public void initRhino(){
         try{
-            scriptLoader.addResource(config.getScriptPath().file());
+            scriptLoader.addResource(config.getScriptsPath().file());
         }catch(MalformedURLException e){
             Log.err("Failed to setup the script path for the Require.", e);
         }
@@ -157,7 +135,7 @@ public class Distributor extends DistributorPlugin{
                 .install(engine.getImporter());
 
             try{
-                Fi init = config.getScriptPath().child("init.js");
+                Fi init = config.getScriptsPath().child("init.js");
                 Script script = engine.compileScript(init.reader(), init.name());
                 engine.exec(script);
             }catch(IOException | ScriptException e){

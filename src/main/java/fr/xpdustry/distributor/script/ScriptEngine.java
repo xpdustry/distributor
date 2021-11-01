@@ -36,7 +36,7 @@ public class ScriptEngine{
     }
 
     public static String toString(Object obj){
-        if(obj instanceof NativeJavaObject) obj = ((NativeJavaObject)obj).unwrap();
+        if(obj instanceof NativeJavaObject n) obj = n.unwrap();
         if(obj instanceof Undefined) obj = "undefined";
         return String.valueOf(obj);
     }

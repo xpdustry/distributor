@@ -14,18 +14,15 @@ public interface DistributorConfig extends Config, Accessible{
 
     @DefaultValue("${distributor.path.root}/scripts")
     @Key("distributor.path.scripts")
-    Fi getScriptPath();
+    Fi getScriptsPath();
 
     @DefaultValue("${distributor.path.root}/bundles")
     @Key("distributor.path.bundles")
-    Fi getBundlePath();
+    Fi getBundlesPath();
 
-    /* For crash logs...
-    @DefaultValue("${distributor.path.root}/bundles")
+    @DefaultValue("${distributor.path.root}/logs")
     @Key("distributor.path.logs")
-    Fi getBundlePath();
-     */
-
+    Fi getLogsPath();
 
     @DefaultValue("10")
     @Key("distributor.script.max-runtime-duration")

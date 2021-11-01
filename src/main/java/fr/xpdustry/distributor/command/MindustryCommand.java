@@ -1,7 +1,8 @@
 package fr.xpdustry.distributor.command;
 
 import fr.xpdustry.xcommand.*;
-import fr.xpdustry.xcommand.param.*;
+import fr.xpdustry.xcommand.context.*;
+import fr.xpdustry.xcommand.parameter.*;
 
 import io.leangen.geantyref.*;
 import org.jetbrains.annotations.*;
@@ -10,21 +11,14 @@ import java.util.*;
 
 
 public abstract class MindustryCommand<C> extends Command<C>{
-    private final @NotNull String description;
-
     public MindustryCommand(@NotNull String name, @NotNull String description, @NotNull List<CommandParameter<?>> parameters,
-                            @NotNull TypeToken<? extends C> callerType, @NotNull CallerValidator<C> callerValidator){
-        super(name, parameters, callerType, callerValidator);
-        this.description = description;
+                            @NotNull TypeToken<? extends C> callerType, @NotNull ContextValidator<C> validator){
+        super(name, description, parameters, callerType, validator);
     }
 
-    public MindustryCommand(@NotNull String name, @NotNull String description,
-                            @NotNull TypeToken<? extends C> callerType, @NotNull CallerValidator<C> callerValidator){
-        this(name, description, Collections.emptyList(), callerType, callerValidator);
-    }
-
-    public @NotNull String getDescription(){
-        return description;
+    public MindustryCommand(@NotNull String name, @NotNull String description, @NotNull TypeToken<? extends C> callerType,
+                            @NotNull ContextValidator<C> validator){
+        this(name, description, Collections.emptyList(), callerType, validator);
     }
 
     public @NotNull String getParameterText(){
@@ -57,10 +51,5 @@ public abstract class MindustryCommand<C> extends Command<C>{
         }
 
         return builder.toString();
-    }
-
-    @Override
-    protected void setParent(@Nullable Command<?> parent){
-        super.setParent(parent);
     }
 }

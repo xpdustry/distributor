@@ -168,3 +168,25 @@ const ResizeEvent = Packages.mindustry.game.EventType.ResizeEvent
 const LoseEvent = Packages.mindustry.game.EventType.LoseEvent
 const WinEvent = Packages.mindustry.game.EventType.WinEvent
 const Trigger = Packages.mindustry.game.EventType.Trigger
+
+
+importPackage(Packages.fr.xpdustry.xcommand)
+importPackage(Packages.fr.xpdustry.xcommand.context)
+importPackage(Packages.fr.xpdustry.xcommand.exception)
+importPackage(Packages.fr.xpdustry.xcommand.parameter)
+importPackage(Packages.fr.xpdustry.xcommand.parameter.number)
+importPackage(Packages.fr.xpdustry.xcommand.parameter.string)
+importPackage(Packages.fr.xpdustry.xcommand.util)
+
+importPackage(Packages.fr.xpdustry.distributor)
+importPackage(Packages.fr.xpdustry.distributor.command)
+importPackage(Packages.fr.xpdustry.distributor.event)
+importPackage(Packages.fr.xpdustry.distributor.exception)
+importPackage(Packages.fr.xpdustry.distributor.localization)
+importPackage(Packages.fr.xpdustry.distributor.plugin)
+importPackage(Packages.fr.xpdustry.distributor.script)
+importPackage(Packages.fr.xpdustry.distributor.template)
+importPackage(Packages.fr.xpdustry.distributor.util)
+importPackage(Packages.fr.xpdustry.distributor.util.loader)
+importPackage(Packages.fr.xpdustry.distributor.util.string)
+importPackage(Packages.fr.xpdustry.distributor.util.struct)

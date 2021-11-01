@@ -34,11 +34,20 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
     @Override
     public void registerServerCommands(CommandHandler handler){
         serverRegistry = new CommandRegistry(handler);
+        serverRegistry.setResponseHandler(CommandRegistry.DEFAULT_SERVER_RESPONSE_HANDLER);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
         clientRegistry = new CommandRegistry(handler);
+    }
+
+    public CommandRegistry getServerRegistry(){
+        return serverRegistry;
+    }
+
+    public CommandRegistry getClientRegistry(){
+        return clientRegistry;
     }
 
     @Override

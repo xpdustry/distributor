@@ -44,7 +44,7 @@ dependencies{
     compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
     // Xpdustry
-    implementation 'fr.xpdustry:XCommand:v1.3'
+    implementation 'fr.xpdustry:XCommand:v1.5.4'
 
     // Scripting
     implementation "org.mozilla:rhino:1.7.13"
@@ -68,8 +68,8 @@ java{
 }
 
 compileJava{
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
     options.encoding = StandardCharsets.UTF_8
 }
 
