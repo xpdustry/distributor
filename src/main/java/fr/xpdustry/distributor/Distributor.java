@@ -4,11 +4,14 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
+import mindustry.gen.*;
 
+import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.template.*;
+import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.distributor.util.loader.*;
 import fr.xpdustry.xcommand.parameter.string.*;
 
@@ -23,14 +26,34 @@ import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
 
+import static fr.xpdustry.distributor.command.CommandRegistry.*;
+
 
 public class Distributor extends DistributorPlugin{
     public static final String DISTRIBUTOR_INTERNAL_NAME = "xpdustry-distributor-plugin";
 
     private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
-    private static final ResourceLoader bundleLoader = new ResourceLoader(Distributor.class.getClassLoader());
+    // private static final ResourceLoader bundleLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static SharedClassLoader modClassLoader;
+
+    private static final LambdaCommand<Playerc> jsCommand =
+        LambdaCommand.of("jscript", PLAYER_TYPE)
+            .validator(DEFAULT_ADMIN_VALIDATOR)
+            .description("Run some random js code.")
+            .parameter(StringParameter.of("script").variadic().splitter(Collections::singletonList))
+            .runner(ctx -> {
+                MindustryCaller caller = new MindustryCaller(ctx.getCaller());
+                List<String> script = ctx.get("script");
+
+                try{
+                    Object obj = ScriptEngine.getInstance().eval(script.get(0));
+                    caller.info(">>> @", ToolBox.toString(obj));
+                    ctx.setResult(obj);
+                }catch(ScriptException e){
+                    caller.err(e.getSimpleMessage());
+                }
+            }).build();
 
     static{
         // FileTree setup
@@ -39,7 +62,8 @@ public class Distributor extends DistributorPlugin{
 
         if(!root.exists()){
             root.mkdirs();
-        }if(!scripts.exists()){
+        }
+        if(!scripts.exists()){
             scripts.mkdirs();
 
             try{
@@ -86,26 +110,13 @@ public class Distributor extends DistributorPlugin{
     @Override
     public void registerServerCommands(CommandHandler handler){
         super.registerServerCommands(handler);
-
-        serverRegistry.register(serverRegistry.builder("jscript")
-            .description("Run some random js code.")
-            .parameter(StringParameter.of("script").variadic().splitter(Collections::singletonList))
-            .runner(ctx -> {
-                try{
-                    List<String> script = ctx.get("script");
-                    Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                    Log.debug("out @", ScriptEngine.toString(obj));
-                    ctx.setResult(obj);
-                }catch(ScriptException e){
-                    Log.err(e.getSimpleMessage());
-                }
-            })
-        );
+        serverRegistry.register(jsCommand);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
         super.registerClientCommands(handler);
+        clientRegistry.register(jsCommand);
     }
 
     public void initRhino(){

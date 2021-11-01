@@ -37,40 +37,38 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
     public static final class LambdaCommandBuilder<C>{
         private final @NotNull String name;
         private final @NotNull TypeToken<? extends C> type;
-
+        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
         private @NotNull String description = "";
         @SuppressWarnings("unchecked")
         private @NotNull ContextValidator<C> validator = (ContextValidator<C>)ContextValidator.NONE;
         @SuppressWarnings("unchecked")
         private @NotNull ContextRunner<C> runner = (ContextRunner<C>)ContextRunner.NONE;
 
-        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
-
         public LambdaCommandBuilder(@NotNull String name, @NotNull TypeToken<? extends C> type){
             this.name = name;
             this.type = type;
         }
 
-        public LambdaCommandBuilder<C> description(String description){
+        public LambdaCommandBuilder<C> description(@NotNull String description){
             this.description = description;
             return this;
         }
 
-        public LambdaCommandBuilder<C> parameter(CommandParameter<?> parameter){
+        public LambdaCommandBuilder<C> parameter(@NotNull CommandParameter<?> parameter){
             this.parameters.add(parameter);
             return this;
         }
 
-        public LambdaCommandBuilder<C> parameter(CommandParameterBuilder<?> builder){
+        public LambdaCommandBuilder<C> parameter(@NotNull CommandParameterBuilder<?> builder){
             return parameter(builder.build());
         }
 
-        public LambdaCommandBuilder<C> runner(ContextRunner<C> runner){
+        public LambdaCommandBuilder<C> runner(@NotNull ContextRunner<C> runner){
             this.runner = runner;
             return this;
         }
 
-        public LambdaCommandBuilder<C> validator(ContextValidator<C> validator){
+        public LambdaCommandBuilder<C> validator(@NotNull ContextValidator<C> validator){
             this.validator = validator;
             return this;
         }

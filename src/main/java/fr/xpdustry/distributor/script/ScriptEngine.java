@@ -35,12 +35,6 @@ public class ScriptEngine{
         return threadInstance.get();
     }
 
-    public static String toString(Object obj){
-        if(obj instanceof NativeJavaObject n) obj = n.unwrap();
-        if(obj instanceof Undefined) obj = "undefined";
-        return String.valueOf(obj);
-    }
-
     public Scriptable newScope(){
         return newScope(importer);
     }

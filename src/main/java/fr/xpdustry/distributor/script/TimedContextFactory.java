@@ -30,12 +30,11 @@ public class TimedContextFactory extends ContextFactory{
             case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
             case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
                 return true;
-
             case Context.FEATURE_PARENT_PROTO_PROPERTIES:
                 return false;
+            default:
+                return super.hasFeature(cx, featureIndex);
         }
-
-        return super.hasFeature(cx, featureIndex);
     }
 
     @Override
