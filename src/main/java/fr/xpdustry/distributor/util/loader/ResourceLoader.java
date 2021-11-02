@@ -1,23 +1,25 @@
 package fr.xpdustry.distributor.util.loader;
 
+import org.jetbrains.annotations.*;
+
 import java.io.*;
 import java.net.*;
 
 
 public class ResourceLoader extends URLClassLoader{
-    public ResourceLoader(ClassLoader parent){
+    public ResourceLoader(@NotNull ClassLoader parent){
         this(new URL[]{}, parent);
     }
 
-    public ResourceLoader(URL[] urls, ClassLoader parent){
+    public ResourceLoader(@NotNull URL[] urls, @NotNull ClassLoader parent){
         super(urls, parent);
     }
 
-    public void addResource(URL url){
+    public void addResource(@NotNull URL url){
         super.addURL(url);
     }
 
-    public void addResource(File file) throws MalformedURLException{
+    public void addResource(@NotNull File file) throws MalformedURLException{
         super.addURL(file.toURI().toURL());
     }
 }

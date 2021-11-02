@@ -5,9 +5,11 @@ import arc.files.*;
 import org.aeonbits.owner.*;
 import org.aeonbits.owner.Config.*;
 
+import java.util.*;
+
 
 @Sources("file:./config/distributor.properties")
-public interface DistributorConfig extends Config, Accessible{
+public interface DistributorSettings extends Config, Accessible{
     @DefaultValue("./distributor")
     @Key("distributor.path.root")
     Fi getRootPath();
@@ -16,15 +18,24 @@ public interface DistributorConfig extends Config, Accessible{
     @Key("distributor.path.scripts")
     Fi getScriptsPath();
 
-    @DefaultValue("${distributor.path.root}/bundles")
-    @Key("distributor.path.bundles")
-    Fi getBundlesPath();
+    @DefaultValue("init.js")
+    @Key("distributor.scripts.startup")
+    List<String> getStartupScripts();
+
+    @DefaultValue("10")
+    @Key("distributor.scripts.max-runtime-duration")
+    int getMaxRuntimeDuration();
 
     @DefaultValue("${distributor.path.root}/logs")
     @Key("distributor.path.logs")
     Fi getLogsPath();
 
-    @DefaultValue("10")
-    @Key("distributor.script.max-runtime-duration")
-    int getMaxRuntimeDuration();
+    @DefaultValue("LOG")
+    @Key("distributor.policy.runtime")
+    RuntimePolicy getRuntimePolicy();
+
+
+    enum RuntimePolicy{
+        LOG, SILENT, THROW
+    }
 }

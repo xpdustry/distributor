@@ -32,10 +32,8 @@ import static fr.xpdustry.distributor.command.CommandRegistry.*;
 public class Distributor extends DistributorPlugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
 
-    private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
+    static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
-    private static SharedClassLoader modClassLoader;
-
     private static final LambdaCommand<Playerc> jsCommand =
         LambdaCommand.of("jscript", PLAYER_TYPE)
             .validator(DEFAULT_ADMIN_VALIDATOR)
@@ -47,7 +45,7 @@ public class Distributor extends DistributorPlugin{
 
                 try{
                     Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                    caller.send(">>> @", ToolBox.unwrapScriptObject(obj));
+                    caller.send(">>> @", ToolBox.scriptObjectToString(obj));
                     ctx.setResult(obj);
                 }catch(ScriptException e){
                     caller.send(e.getSimpleMessage());
@@ -55,10 +53,12 @@ public class Distributor extends DistributorPlugin{
                 }
             }).build();
 
+    private static SharedClassLoader modClassLoader;
+
     static{
         // FileTree setup
-        Fi root = config.getRootPath();
-        Fi scripts = config.getScriptsPath();
+        Fi root = settings.getRootPath();
+        Fi scripts = settings.getScriptsPath();
 
         if(!root.exists()){
             root.mkdirs();
@@ -83,6 +83,10 @@ public class Distributor extends DistributorPlugin{
 
     public static SharedClassLoader getModClassLoader(){
         return modClassLoader;
+    }
+
+    public static DistributorSettings getSettings(){
+        return settings;
     }
 
     @Override
@@ -110,24 +114,24 @@ public class Distributor extends DistributorPlugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        var registry = new CommandRegistry(handler);
-        registry.register(jsCommand);
+        serverRegistry.register(jsCommand);
+        serverRegistry.export(handler);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        var registry = new CommandRegistry(handler);
-        registry.register(jsCommand);
+        clientRegistry.register(jsCommand);
+        serverRegistry.export(handler);
     }
 
     public void initRhino(){
         try{
-            scriptLoader.addResource(config.getScriptsPath().file());
+            scriptLoader.addResource(settings.getScriptsPath().file());
         }catch(MalformedURLException e){
             Log.err("Failed to setup the script path for the Require.", e);
         }
 
-        ContextFactory.initGlobal(new TimedContextFactory(config.getMaxRuntimeDuration()));
+        ContextFactory.initGlobal(new TimedContextFactory(settings.getMaxRuntimeDuration()));
 
         ScriptEngine.setGlobalFactory(() -> {
             Context context = Context.getCurrentContext();
@@ -147,12 +151,18 @@ public class Distributor extends DistributorPlugin{
                 .createRequire(context, engine.getImporter())
                 .install(engine.getImporter());
 
-            try{
-                Fi init = config.getScriptsPath().child("init.js");
-                Script script = engine.compileScript(init.reader(), init.name());
-                engine.exec(script);
-            }catch(IOException | ScriptException e){
-                Log.err("Failed to run the init script.", e);
+            for(String scriptName : settings.getStartupScripts()){
+                try{
+                    Fi scriptFile = settings.getScriptsPath().child(scriptName);
+                    Script script = engine.compileScript(scriptFile.reader(), scriptName);
+                    engine.exec(script);
+                }catch(IOException | ScriptException e){
+                    String error = Strings.format("Failed to run the init script '@'", scriptName);
+                    switch(settings.getRuntimePolicy()){
+                        case LOG -> Log.err(error, e);
+                        case THROW -> throw new RuntimeException(error, e);
+                    }
+                }
             }
 
             return engine;

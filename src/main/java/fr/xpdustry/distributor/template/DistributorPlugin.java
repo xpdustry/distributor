@@ -1,33 +1,42 @@
 package fr.xpdustry.distributor.template;
 
-import arc.*;
 import arc.util.*;
 
 import mindustry.*;
 import mindustry.mod.Mods.*;
 import mindustry.mod.*;
-import mindustry.server.*;
+
+import fr.xpdustry.distributor.command.*;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 
 public abstract class DistributorPlugin extends Plugin implements Disposable{
-    public static @Nullable CommandHandler getClientCommands(){
-        return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
-    }
-
-    public static @Nullable CommandHandler getServerCommands(){
-        if(Core.app == null) return null;
-        ServerControl server = (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
-        return (server != null) ? server.handler : null;
-    }
+    protected final CommandRegistry serverRegistry = new CommandRegistry();
+    protected final CommandRegistry clientRegistry = new CommandRegistry();
 
     public @Nullable LoadedMod asMod(){
         return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;
     }
 
+    public @NotNull CommandRegistry getServerRegistry(){
+        return serverRegistry;
+    }
+
+    public @NotNull CommandRegistry getClientRegistry(){
+        return clientRegistry;
+    }
+
     @Override
     public void dispose(){
-        /* Put something... */
+        CommandHandler handler;
+
+        if((handler = Commands.getServerCommands()) != null){
+            serverRegistry.dispose(handler);
+        }
+        if((handler = Commands.getClientCommands()) != null){
+            clientRegistry.dispose(handler);
+        }
     }
 }

@@ -29,7 +29,7 @@ public class RouterBundle extends WrappedBundle{
     }
 
     @Override
-    public @NotNull String getNotNull(String key, Object... args){
+    public @NotNull String getNotNull(@NotNull String key, Object... args){
         if(containsKey(key)){
             return "router";
         }else{

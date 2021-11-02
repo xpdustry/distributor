@@ -6,7 +6,6 @@ import arc.util.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.LambdaCommand.*;
-import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.context.*;
 
@@ -16,6 +15,10 @@ import org.jetbrains.annotations.*;
 import java.util.*;
 
 
+/**
+ * Utility class to keep track of commands for a given public,
+ * be aware that {@link }
+ */
 public class CommandRegistry{
     public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
 
@@ -29,19 +32,11 @@ public class CommandRegistry{
             return true;
         }
     };
-
-    private final @NotNull CommandHandler commandHandler;
+    private final SortedMap<String, Command<Playerc>> commands = new TreeMap<>();
     private @NotNull CommandWrapperFactory wrapperFactory = CommandWrapper::new;
-    private final SortedMap<String, Command<Playerc>> registry = new TreeMap<>();
-
-    public CommandRegistry(@NotNull CommandHandler commandHandler){
-        this.commandHandler = commandHandler;
-    }
 
     public Command<Playerc> register(@NotNull Command<Playerc> command){
-        commandHandler.register(command.getName(), ToolBox.getParameterText(command),
-            command.getDescription(), wrapperFactory.wrapCommand(command));
-        registry.put(command.getName(), command);
+        commands.put(command.getName(), command);
         return command;
     }
 
@@ -54,19 +49,28 @@ public class CommandRegistry{
     }
 
     public @Nullable Command<Playerc> getCommand(@NotNull String name){
-        return registry.get(name);
+        return commands.get(name);
     }
 
-    public @NotNull CommandHandler getCommandHandler(){
-        return commandHandler;
-    }
-
-    public SortedMap<String, Command<Playerc>> getRegistry(){
-        return new TreeMap<>(registry);
+    public SortedMap<String, Command<Playerc>> getCommands(){
+        return new TreeMap<>(commands);
     }
 
     public void setWrapperFactory(@NotNull CommandWrapperFactory wrapperFactory){
         this.wrapperFactory = wrapperFactory;
+    }
+
+    public void export(@NotNull CommandHandler handler){
+        for(var command : commands.values()){
+            handler.register(command.getName(), Commands.getParameterText(command),
+                command.getDescription(), wrapperFactory.wrapCommand(command));
+        }
+    }
+
+    public void dispose(@NotNull CommandHandler handler){
+        for(var command : commands.values()){
+            handler.removeCommand(command.getName());
+        }
     }
 
     public interface CommandWrapperFactory{

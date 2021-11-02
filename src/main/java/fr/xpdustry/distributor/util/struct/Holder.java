@@ -1,19 +1,21 @@
 package fr.xpdustry.distributor.util.struct;
 
+import org.jetbrains.annotations.*;
+
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
 
 /** Holds a value and nothing else... */
-public class Holder<T> implements Serializable{
-    protected T value;
+public class Holder<T>{
+    protected @Nullable T value;
 
     public Holder(){
         this.value = null;
     }
 
-    public Holder(T value){
+    public Holder(@Nullable T value){
         this.value = value;
     }
 
@@ -53,24 +55,24 @@ public class Holder<T> implements Serializable{
         return new Holder<>("");
     }
 
-    public void set(T value){
+    public void set(@Nullable T value){
         this.value = value;
     }
 
-    public T get(){
+    public @Nullable T get(){
         return value;
     }
 
-    public void use(Consumer<T> cons){
+    public void use(@NotNull Consumer<T> cons){
         cons.accept(value);
     }
 
-    public <R extends T> void compute(Function<T, R> func){
+    public <R extends T> void compute(@NotNull Function<T, R> func){
         value = func.apply(value);
     }
 
     @SuppressWarnings("unchecked")
-    public <R> Holder<R> as(){
+    public @NotNull <R> Holder<R> as(){
         return (Holder<R>)this;
     }
 
@@ -80,12 +82,12 @@ public class Holder<T> implements Serializable{
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(@Nullable Object o){
         return Objects.equals(value, o);
     }
 
     @Override
-    public String toString(){
-        return value.toString();
+    public @NotNull String toString(){
+        return String.valueOf(value);
     }
 }

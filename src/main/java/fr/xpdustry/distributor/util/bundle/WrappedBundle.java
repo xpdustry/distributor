@@ -2,8 +2,8 @@ package fr.xpdustry.distributor.util.bundle;
 
 import arc.util.*;
 
-import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
