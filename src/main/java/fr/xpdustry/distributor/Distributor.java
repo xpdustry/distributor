@@ -30,10 +30,9 @@ import static fr.xpdustry.distributor.command.CommandRegistry.*;
 
 
 public class Distributor extends DistributorPlugin{
-    public static final String DISTRIBUTOR_INTERNAL_NAME = "xpdustry-distributor-plugin";
+    public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
 
     private static final DistributorConfig config = ConfigFactory.create(DistributorConfig.class);
-    // private static final ResourceLoader bundleLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static SharedClassLoader modClassLoader;
 
@@ -48,10 +47,11 @@ public class Distributor extends DistributorPlugin{
 
                 try{
                     Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                    caller.info(">>> @", ToolBox.toString(obj));
+                    caller.send(">>> @", ToolBox.unwrapScriptObject(obj));
                     ctx.setResult(obj);
                 }catch(ScriptException e){
-                    caller.err(e.getSimpleMessage());
+                    caller.send(e.getSimpleMessage());
+                    ctx.setResult(Undefined.instance);
                 }
             }).build();
 
@@ -63,6 +63,7 @@ public class Distributor extends DistributorPlugin{
         if(!root.exists()){
             root.mkdirs();
         }
+
         if(!scripts.exists()){
             scripts.mkdirs();
 
@@ -77,7 +78,7 @@ public class Distributor extends DistributorPlugin{
     }
 
     public static Distributor getInstance(){
-        return (Distributor)Vars.mods.getMod(DISTRIBUTOR_INTERNAL_NAME).main;
+        return (Distributor)Vars.mods.getMod(INTERNAL_NAME).main;
     }
 
     public static SharedClassLoader getModClassLoader(){
@@ -109,14 +110,14 @@ public class Distributor extends DistributorPlugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        super.registerServerCommands(handler);
-        serverRegistry.register(jsCommand);
+        var registry = new CommandRegistry(handler);
+        registry.register(jsCommand);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        super.registerClientCommands(handler);
-        clientRegistry.register(jsCommand);
+        var registry = new CommandRegistry(handler);
+        registry.register(jsCommand);
     }
 
     public void initRhino(){
@@ -127,6 +128,7 @@ public class Distributor extends DistributorPlugin{
         }
 
         ContextFactory.initGlobal(new TimedContextFactory(config.getMaxRuntimeDuration()));
+
         ScriptEngine.setGlobalFactory(() -> {
             Context context = Context.getCurrentContext();
 

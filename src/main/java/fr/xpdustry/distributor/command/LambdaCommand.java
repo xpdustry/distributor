@@ -11,7 +11,7 @@ import org.jetbrains.annotations.*;
 import java.util.*;
 
 
-public class LambdaCommand<C> extends MindustryCommand<C>{
+public class LambdaCommand<C> extends Command<C>{
     private final ContextRunner<C> runner;
 
     public LambdaCommand(@NotNull String name, @NotNull String description, @NotNull List<CommandParameter<?>> parameters,
@@ -38,6 +38,7 @@ public class LambdaCommand<C> extends MindustryCommand<C>{
         private final @NotNull String name;
         private final @NotNull TypeToken<? extends C> type;
         private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
+
         private @NotNull String description = "";
         @SuppressWarnings("unchecked")
         private @NotNull ContextValidator<C> validator = (ContextValidator<C>)ContextValidator.NONE;

@@ -53,6 +53,8 @@ dependencies{
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.aeonbits.owner:owner-java8:1.0.12'
     implementation 'io.leangen.geantyref:geantyref:1.3.11'
+    implementation 'org.javatuples:javatuples:1.2'
+
 
     // Maybe...
     // implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -133,6 +135,15 @@ for(Task serverTask : [moveJar, runServer, deployJar]){
 // Required if you want to use the Release GitHub action
 task getArtifactPath{
     doLast{ println jar.archiveFile.get().toString() }
+}
+
+task zipBundles(type: Zip){
+    archiveFileName = "bundles.zip"
+    destinationDirectory = layout.projectDirectory.dir("static")
+
+    from(layout.buildDirectory.dir("static")){
+        include "bundle*.properties"
+    }
 }
 
 // Utility task :^)

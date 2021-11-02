@@ -6,7 +6,8 @@ import arc.util.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.LambdaCommand.*;
-import fr.xpdustry.distributor.command.runner.*;
+import fr.xpdustry.distributor.util.*;
+import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.context.*;
 
 import io.leangen.geantyref.*;
@@ -22,7 +23,7 @@ public class CommandRegistry{
         MindustryCaller caller = new MindustryCaller(ctx.getCaller());
 
         if(!caller.isAdmin()){
-            caller.warn("You need to be an admin to run this command.");
+            caller.send("You need to be an admin to run this command.");
             return false;
         }else{
             return true;
@@ -30,22 +31,21 @@ public class CommandRegistry{
     };
 
     private final @NotNull CommandHandler commandHandler;
-    private final SortedMap<String, MindustryCommand<Playerc>> registry = new TreeMap<>();
-    private @NotNull MindustryRunnerFactory runnerFactory = MindustryCommandRunner::new;
-
+    private @NotNull CommandWrapperFactory wrapperFactory = CommandWrapper::new;
+    private final SortedMap<String, Command<Playerc>> registry = new TreeMap<>();
 
     public CommandRegistry(@NotNull CommandHandler commandHandler){
         this.commandHandler = commandHandler;
     }
 
-    public MindustryCommand<Playerc> register(@NotNull MindustryCommand<Playerc> command){
-        commandHandler.register(
-            command.getName(), command.getParameterText(), command.getDescription(), runnerFactory.makeRunner(command));
+    public Command<Playerc> register(@NotNull Command<Playerc> command){
+        commandHandler.register(command.getName(), ToolBox.getParameterText(command),
+            command.getDescription(), wrapperFactory.wrapCommand(command));
         registry.put(command.getName(), command);
         return command;
     }
 
-    public @NotNull MindustryCommand<Playerc> register(@NotNull LambdaCommandBuilder<Playerc> builder){
+    public @NotNull Command<Playerc> register(@NotNull LambdaCommandBuilder<Playerc> builder){
         return register(builder.build());
     }
 
@@ -53,7 +53,7 @@ public class CommandRegistry{
         return LambdaCommand.of(name, PLAYER_TYPE);
     }
 
-    public @Nullable MindustryCommand<Playerc> getCommand(@NotNull String name){
+    public @Nullable Command<Playerc> getCommand(@NotNull String name){
         return registry.get(name);
     }
 
@@ -61,11 +61,15 @@ public class CommandRegistry{
         return commandHandler;
     }
 
-    public SortedMap<String, MindustryCommand<Playerc>> getRegistry(){
+    public SortedMap<String, Command<Playerc>> getRegistry(){
         return new TreeMap<>(registry);
     }
 
-    public void setRunnerFactory(@NotNull MindustryRunnerFactory runnerFactory){
-        this.runnerFactory = runnerFactory;
+    public void setWrapperFactory(@NotNull CommandWrapperFactory wrapperFactory){
+        this.wrapperFactory = wrapperFactory;
+    }
+
+    public interface CommandWrapperFactory{
+        CommandWrapper wrapCommand(@NotNull Command<Playerc> command);
     }
 }

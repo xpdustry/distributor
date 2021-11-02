@@ -4,12 +4,30 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
+import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+import java.util.zip.*;
 
-/** Utility class for commands that are server-side and client-side at the same time */
+
+/** Utility class for commands that are server-side and client-side at the same time. */
 @SuppressWarnings("all")
 public class MindustryCaller{
+
+
+    /*
+    public static final Map<String, String>
+    public static String black = "\u001b[30m";
+    public static String red = "\u001b[31m";
+    public static String green = "\u001b[32m";
+    public static String yellow = "\u001b[33m";
+    public static String blue = "\u001b[34m";
+    public static String purple = "\u001b[35m";
+    public static String cyan = "\u001b[36m";
+     */
+
+
     public static final Playerc DUMMY_PLAYER = Player.create();
 
     private final @Nullable Playerc player;
@@ -18,35 +36,11 @@ public class MindustryCaller{
         this.player = player;
     }
 
-    public void debug(String message, Object... args){
-        if(isPlayer()){
-            player.sendMessage("[lightgray]" + Strings.format(message, args));
-        }else{
-            Log.debug(message, args);
-        }
-    }
-
-    public void info(String message, Object... args){
+    public void send(String message, Object... args){
         if(isPlayer()){
             player.sendMessage(Strings.format(message, args));
         }else{
             Log.info(message, args);
-        }
-    }
-
-    public void warn(String message, Object... args){
-        if(isPlayer()){
-            player.sendMessage("[yellow]" + Strings.format(message, args));
-        }else{
-            Log.warn(message, args);
-        }
-    }
-
-    public void err(String message, Object... args){
-        if(isPlayer()){
-            player.sendMessage("[red]" + Strings.format(message, args));
-        }else{
-            Log.err(message, args);
         }
     }
 
@@ -60,6 +54,10 @@ public class MindustryCaller{
 
     public boolean isServer(){
         return player == null || player == DUMMY_PLAYER;
+    }
+
+    public @NotNull Locale getLocale(){
+        return isPlayer() ? Locale.forLanguageTag(player.locale().replace('_', '-')) : Locale.getDefault();
     }
 
     public @Nullable Playerc getPlayer(){

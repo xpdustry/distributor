@@ -8,15 +8,10 @@ import mindustry.mod.Mods.*;
 import mindustry.mod.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.command.*;
-
 import org.jetbrains.annotations.Nullable;
 
 
 public abstract class DistributorPlugin extends Plugin implements Disposable{
-    protected CommandRegistry serverRegistry;
-    protected CommandRegistry clientRegistry;
-
     public static @Nullable CommandHandler getClientCommands(){
         return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
     }
@@ -29,24 +24,6 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
 
     public @Nullable LoadedMod asMod(){
         return (Vars.mods != null) ? Vars.mods.getMod(this.getClass()) : null;
-    }
-
-    @Override
-    public void registerServerCommands(CommandHandler handler){
-        serverRegistry = new CommandRegistry(handler);
-    }
-
-    @Override
-    public void registerClientCommands(CommandHandler handler){
-        clientRegistry = new CommandRegistry(handler);
-    }
-
-    public CommandRegistry getServerRegistry(){
-        return serverRegistry;
-    }
-
-    public CommandRegistry getClientRegistry(){
-        return clientRegistry;
     }
 
     @Override
