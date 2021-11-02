@@ -34,15 +34,14 @@ public class LambdaCommand<C> extends Command<C>{
         runner.handleContext(context);
     }
 
+    @SuppressWarnings("unchecked")
     public static final class LambdaCommandBuilder<C>{
         private final @NotNull String name;
         private final @NotNull TypeToken<? extends C> type;
         private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
 
         private @NotNull String description = "";
-        @SuppressWarnings("unchecked")
         private @NotNull ContextValidator<C> validator = (ContextValidator<C>)ContextValidator.NONE;
-        @SuppressWarnings("unchecked")
         private @NotNull ContextRunner<C> runner = (ContextRunner<C>)ContextRunner.NONE;
 
         public LambdaCommandBuilder(@NotNull String name, @NotNull TypeToken<? extends C> type){

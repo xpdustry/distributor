@@ -141,7 +141,7 @@ task zipBundles(type: Zip){
     archiveFileName = "bundles.zip"
     destinationDirectory = layout.projectDirectory.dir("static")
 
-    from(layout.buildDirectory.dir("static")){
+    from(layout.buildDirectory.dir("$rootDir/static")){
         include "bundle*.properties"
     }
 }
