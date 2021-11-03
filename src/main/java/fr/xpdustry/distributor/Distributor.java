@@ -1,7 +1,9 @@
 package fr.xpdustry.distributor;
 
 import arc.files.*;
+import arc.math.geom.*;
 import arc.util.*;
+import arc.util.Timer;
 
 import mindustry.*;
 import mindustry.gen.*;
@@ -18,8 +20,6 @@ import fr.xpdustry.xcommand.parameter.string.*;
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
 import org.mozilla.javascript.*;
-import org.mozilla.javascript.commonjs.module.*;
-import org.mozilla.javascript.commonjs.module.provider.*;
 
 import java.io.*;
 import java.net.*;
@@ -32,7 +32,7 @@ import static fr.xpdustry.distributor.command.CommandRegistry.*;
 public class Distributor extends DistributorPlugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
 
-    static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
+    private static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static final LambdaCommand<Playerc> jsCommand =
         LambdaCommand.of("jscript", PLAYER_TYPE)
@@ -71,8 +71,8 @@ public class Distributor extends DistributorPlugin{
                 URL url = new URL("https://raw.githubusercontent.com/Xpdustry/Distributor/master/static/init.js");
                 IOUtils.copy(url, scripts.child("init.js").file());
             }catch(IOException e){
+                handleException("Failed to load the default init script.", e);
                 scripts.child("init.js").writeString("// Global scope here...\n");
-                Log.err("Failed to load the default init script.", e);
             }
         }
     }
@@ -128,7 +128,7 @@ public class Distributor extends DistributorPlugin{
         try{
             scriptLoader.addResource(settings.getScriptsPath().file());
         }catch(MalformedURLException e){
-            Log.err("Failed to setup the script path for the Require.", e);
+            handleException("Failed to setup the script path for the Require.", e);
         }
 
         ContextFactory.initGlobal(new TimedContextFactory(settings.getMaxRuntimeDuration()));
@@ -144,28 +144,26 @@ public class Distributor extends DistributorPlugin{
             }
 
             ScriptEngine engine = new ScriptEngine(context);
-
-            new RequireBuilder()
-                .setSandboxed(false)
-                .setModuleScriptProvider(new SoftCachingModuleScriptProvider(new ScriptLoader(scriptLoader)))
-                .createRequire(context, engine.getImporter())
-                .install(engine.getImporter());
+            engine.setupRequire(scriptLoader);
 
             for(String scriptName : settings.getStartupScripts()){
                 try{
-                    Fi scriptFile = settings.getScriptsPath().child(scriptName);
-                    Script script = engine.compileScript(scriptFile.reader(), scriptName);
-                    engine.exec(script);
+                    engine.exec(settings.getScriptsPath().child(scriptName));
                 }catch(IOException | ScriptException e){
-                    String error = Strings.format("Failed to run the init script '@'", scriptName);
-                    switch(settings.getRuntimePolicy()){
-                        case LOG -> Log.err(error, e);
-                        case THROW -> throw new RuntimeException(error, e);
-                    }
+                    handleException(Strings.format(
+                        "Failed to run the startup script '@' for the engine of the thread '@'.",
+                        scriptName, Thread.currentThread().getName()), e);
                 }
             }
 
             return engine;
         });
+    }
+
+    private static void handleException(String message, Throwable t){
+        switch(settings.getRuntimePolicy()){
+            case LOG -> Log.err(message, t);
+            case THROW -> throw new RuntimeException(message, t);
+        }
     }
 }

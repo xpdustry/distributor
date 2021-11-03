@@ -1,5 +1,6 @@
 package fr.xpdustry.distributor.command;
 
+import arc.struct.*;
 import arc.util.*;
 
 import mindustry.gen.*;
@@ -13,19 +14,20 @@ import java.util.*;
 /** Utility class for commands that are server-side and client-side at the same time. */
 @SuppressWarnings("all")
 public class MindustryCaller{
+    private static final Map<String, String> serverColors;
 
+    static{
+        Map<String, String> colors = new HashMap<>();
+        colors.put("black",     ColorCodes.black);
+        colors.put("red",       ColorCodes.red);
+        colors.put("green",     ColorCodes.green);
+        colors.put("yellow",    ColorCodes.yellow);
+        colors.put("blue",      ColorCodes.blue);
+        colors.put("purple",    ColorCodes.purple);
+        colors.put("cyan",      ColorCodes.cyan);
 
-    /*
-    public static final Map<String, String>
-    public static String black = "\u001b[30m";
-    public static String red = "\u001b[31m";
-    public static String green = "\u001b[32m";
-    public static String yellow = "\u001b[33m";
-    public static String blue = "\u001b[34m";
-    public static String purple = "\u001b[35m";
-    public static String cyan = "\u001b[36m";
-     */
-
+        serverColors = colors;
+    }
 
     public static final Playerc DUMMY_PLAYER = Player.create();
 
@@ -62,4 +64,25 @@ public class MindustryCaller{
     public @Nullable Playerc getPlayer(){
         return player;
     }
+
+    /*public static String toServerString(String text){
+        StringBuilder builder = new StringBuilder((int)(text.length() * 1.2F));
+        int begin = -1;
+        int pos = 0;
+        Seq<String> stack = new Seq<>(4);
+
+        while(pos < text.length()){
+            begin = text.indexOf('[', pos);
+            if(begin == -1){
+                builder.append(text.substring(pos, text.length()));
+                pos = text.length();
+            }else{
+                int end = text.indexOf(']', begin);
+                if(end != -1){
+                    String color = s
+                }
+            }
+
+        }
+    }*/
 }

@@ -1,8 +1,13 @@
 package fr.xpdustry.distributor.script;
 
+import arc.files.*;
+
 import fr.xpdustry.distributor.exception.*;
 
+import org.jetbrains.annotations.*;
 import org.mozilla.javascript.*;
+import org.mozilla.javascript.commonjs.module.*;
+import org.mozilla.javascript.commonjs.module.provider.*;
 
 import java.io.*;
 import java.util.concurrent.atomic.*;
@@ -15,10 +20,11 @@ public class ScriptEngine{
     private static final ThreadLocal<ScriptEngine> threadInstance =
         ThreadLocal.withInitial(() -> factory.get().makeEngine());
 
-    private final Context ctx;
+    private final @NotNull Context ctx;
     private final ImporterTopLevel importer;
+    private @Nullable Require require = null;
 
-    public ScriptEngine(Context context){
+    public ScriptEngine(@NotNull Context context){
         this.ctx = context;
         this.importer = new ImporterTopLevel(ctx);
     }
@@ -35,11 +41,11 @@ public class ScriptEngine{
         return threadInstance.get();
     }
 
-    public Scriptable newScope(){
+    public @NotNull Scriptable newScope(){
         return newScope(importer);
     }
 
-    public Scriptable newScope(Scriptable parent){
+    public @NotNull Scriptable newScope(Scriptable parent){
         Scriptable scope = ctx.newObject(parent);
         // Ensures that definitions in the root scope are found.
         scope.setPrototype(parent);
@@ -48,14 +54,29 @@ public class ScriptEngine{
         return scope;
     }
 
+    public void setupRequire(ClassLoader loader){
+        if(hasRequire()) throw new IllegalStateException("The require is already set up for this engine");
+
+        require = new RequireBuilder()
+            .setSandboxed(false)
+            .setModuleScriptProvider(new SoftCachingModuleScriptProvider(
+                new ScriptLoader(loader)))
+            .createRequire(ctx, importer);
+        require.install(importer);
+    }
+
+    public boolean hasRequire(){
+        return require != null;
+    }
+
     public Object eval(String source) throws ScriptException{
-        return eval(importer, source, "engine@" + Integer.toHexString(hashCode()) + ".js");
+        return eval(importer, source, toString());
     }
 
     public Object eval(Scriptable scope, String source, String sourceName) throws ScriptException{
         try{
             return ctx.evaluateString(scope, source, sourceName, 1, null);
-        }catch(Exception | BlockingScriptError e){
+        }catch(JavaScriptException | BlockingScriptError e){
             throw new ScriptException(e);
         }
     }
@@ -73,34 +94,37 @@ public class ScriptEngine{
     }
 
     public Object invoke(Function function, Object... args) throws ScriptException{
-        try{
-            return function.call(ctx, importer, importer, args);
-        }catch(Exception | BlockingScriptError e){
-            throw new ScriptException(e);
-        }
+        return invoke(function, importer, args);
     }
 
     public Object invoke(Function function, Scriptable scope, Object... args) throws ScriptException{
         try{
             return function.call(ctx, scope, scope, args);
-        }catch(Exception | BlockingScriptError e){
+        }catch(JavaScriptException | BlockingScriptError e){
             throw new ScriptException(e);
         }
     }
 
     public Object exec(Script script) throws ScriptException{
-        try{
-            return script.exec(ctx, importer);
-        }catch(Exception | BlockingScriptError e){
-            throw new ScriptException(e);
-        }
+        return exec(script, importer);
     }
 
     public Object exec(Script script, Scriptable scope) throws ScriptException{
         try{
             return script.exec(ctx, scope);
-        }catch(Exception | BlockingScriptError e){
+        }catch(JavaScriptException | BlockingScriptError e){
             throw new ScriptException(e);
+        }
+    }
+
+    public Object exec(Fi file) throws IOException, ScriptException{
+        return exec(file.file());
+    }
+
+    public Object exec(File file) throws IOException, ScriptException{
+        try(InputStream stream = new FileInputStream(file);
+            InputStreamReader reader = new InputStreamReader(stream)){
+            return exec(compileScript(reader, file.getName()));
         }
     }
 
@@ -110,5 +134,10 @@ public class ScriptEngine{
 
     public ImporterTopLevel getImporter(){
         return importer;
+    }
+
+    @Override
+    public String toString(){
+        return "engine@" + Thread.currentThread().getName() + ".js";
     }
 }

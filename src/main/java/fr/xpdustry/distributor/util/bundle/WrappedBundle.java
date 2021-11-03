@@ -11,7 +11,7 @@ import java.util.*;
 public class WrappedBundle{
     protected final @NotNull ResourceBundle bundle;
 
-    public WrappedBundle(@NotNull ResourceBundle bundle){
+    protected WrappedBundle(@NotNull ResourceBundle bundle){
         this.bundle = bundle;
     }
 

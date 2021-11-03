@@ -16,8 +16,7 @@ import java.util.*;
 
 
 /**
- * Utility class to keep track of commands for a given public,
- * be aware that {@link }
+ * Utility class to keep track of commands for a given plugin.
  */
 public class CommandRegistry{
     public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);

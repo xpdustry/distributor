@@ -10,7 +10,7 @@ import java.util.*;
 public class RouterBundle extends WrappedBundle{
     public static final Locale ROUTER_LOCALE = new Locale("router");
 
-    public RouterBundle(@NotNull ResourceBundle bundle){
+    protected RouterBundle(@NotNull ResourceBundle bundle){
         super(bundle);
     }
 
