@@ -4,12 +4,14 @@ import arc.*;
 import arc.util.*;
 
 import mindustry.*;
+import mindustry.gen.*;
 import mindustry.server.*;
 
 import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.parameter.*;
 
+import io.leangen.geantyref.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
@@ -17,6 +19,22 @@ import java.util.*;
 
 
 public final class Commands{
+    public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
+
+    public static final Playerc SERVER_PLAYER = new Player(){
+        @Override public void sendMessage(String text){
+            Log.info(text);
+        }
+
+        @Override public boolean admin(){
+            return true;
+        }
+
+        @Override public String locale(){
+            return Locale.getDefault().toString();
+        }
+    };
+
     private Commands(){
         /* No. */
     }

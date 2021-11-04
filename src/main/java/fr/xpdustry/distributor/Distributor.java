@@ -1,11 +1,9 @@
 package fr.xpdustry.distributor;
 
-import arc.*;
 import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.game.EventType.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.*;
@@ -35,20 +33,19 @@ public class Distributor extends AbstractPlugin{
     private static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
     private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
     private static final LambdaCommand<Playerc> jsCommand =
-        LambdaCommand.of("jscript", PLAYER_TYPE)
+        LambdaCommand.of("jscript", Commands.PLAYER_TYPE)
             .validator(DEFAULT_ADMIN_VALIDATOR)
             .description("Run some random js code.")
             .parameter(StringParameter.of("script").variadic().splitter(Collections::singletonList))
             .runner(ctx -> {
-                MindustryCaller caller = new MindustryCaller(ctx.getCaller());
                 List<String> script = ctx.get("script");
 
                 try{
                     Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                    caller.send(">>> @", ToolBox.scriptObjectToString(obj));
+                    ctx.getCaller().sendMessage(">>> " + ToolBox.scriptObjectToString(obj));
                     ctx.setResult(obj);
                 }catch(ScriptException e){
-                    caller.send(e.getSimpleMessage());
+                    ctx.getCaller().sendMessage(e.getMessage());
                     ctx.setResult(Undefined.instance);
                 }
             }).build();

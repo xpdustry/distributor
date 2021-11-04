@@ -9,7 +9,8 @@ public class ScriptException extends Exception{
         super(cause);
     }
 
-    public String getSimpleMessage(){
+    @Override
+    public String getMessage(){
         return getCause().getClass().getSimpleName() + (getCause().getMessage() == null ? "" : ": " + getCause().getMessage());
     }
 }

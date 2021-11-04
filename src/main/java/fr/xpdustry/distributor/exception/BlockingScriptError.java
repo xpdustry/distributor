@@ -1,15 +1,11 @@
 package fr.xpdustry.distributor.exception;
 
 
+import fr.xpdustry.distributor.script.*;
+
+
 public class BlockingScriptError extends Error{
-    private final Thread blockedThread;
-
-    public BlockingScriptError(Thread blockedThread){
+    public BlockingScriptError(){
         super();
-        this.blockedThread = blockedThread;
-    }
-
-    public Thread getBlockedThread(){
-        return blockedThread;
     }
 }

@@ -26,6 +26,7 @@ public class TimedContextFactory extends ContextFactory{
     public boolean hasFeature(Context cx, int featureIndex){
         // Turn on maximum compatibility with MSIE scripts
         switch(featureIndex){
+            case Context.FEATURE_DYNAMIC_SCOPE:
             case Context.FEATURE_NON_ECMA_GET_YEAR:
             case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
             case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
@@ -49,7 +50,7 @@ public class TimedContextFactory extends ContextFactory{
         TimedContext tcx = (TimedContext)cx;
         long currentTime = System.currentTimeMillis();
         if(currentTime - tcx.startTime > maxRuntimeDuration * 1000L){
-            throw new BlockingScriptError(Thread.currentThread());
+            throw new BlockingScriptError();
         }
     }
 

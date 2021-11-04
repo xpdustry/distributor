@@ -9,7 +9,6 @@ import fr.xpdustry.distributor.command.LambdaCommand.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.context.*;
 
-import io.leangen.geantyref.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -19,20 +18,19 @@ import java.util.*;
  * Utility class to keep track of commands for a given plugin.
  */
 public class CommandRegistry{
-    public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
 
     public static final ContextValidator<Playerc> DEFAULT_ADMIN_VALIDATOR = ctx -> {
-        MindustryCaller caller = new MindustryCaller(ctx.getCaller());
-
-        if(!caller.isAdmin()){
-            caller.send("You need to be an admin to run this command.");
+        Playerc caller = ctx.getCaller();
+        if(caller != Commands.SERVER_PLAYER && !caller.admin()){
+            caller.sendMessage("You need to be an admin to run this command.");
             return false;
         }else{
             return true;
         }
     };
-    private final SortedMap<String, Command<Playerc>> commands = new TreeMap<>();
+
     private @NotNull CommandWrapperFactory wrapperFactory = CommandWrapper::new;
+    private final SortedMap<String, Command<Playerc>> commands = new TreeMap<>();
 
     public Command<Playerc> register(@NotNull Command<Playerc> command){
         commands.put(command.getName(), command);
@@ -44,7 +42,7 @@ public class CommandRegistry{
     }
 
     public @NotNull LambdaCommandBuilder<Playerc> builder(@NotNull String name){
-        return LambdaCommand.of(name, PLAYER_TYPE);
+        return LambdaCommand.of(name, Commands.PLAYER_TYPE);
     }
 
     public @Nullable Command<Playerc> getCommand(@NotNull String name){
