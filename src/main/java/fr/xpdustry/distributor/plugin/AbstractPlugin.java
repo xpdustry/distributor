@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.template;
+package fr.xpdustry.distributor.plugin;
 
 import arc.util.*;
 
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
 
-public abstract class DistributorPlugin extends Plugin implements Disposable{
+public abstract class AbstractPlugin extends Plugin implements Disposable{
     protected final CommandRegistry serverRegistry = new CommandRegistry();
     protected final CommandRegistry clientRegistry = new CommandRegistry();
 
@@ -31,12 +31,7 @@ public abstract class DistributorPlugin extends Plugin implements Disposable{
     @Override
     public void dispose(){
         CommandHandler handler;
-
-        if((handler = Commands.getServerCommands()) != null){
-            serverRegistry.dispose(handler);
-        }
-        if((handler = Commands.getClientCommands()) != null){
-            clientRegistry.dispose(handler);
-        }
+        if((handler = Commands.getServerCommands()) != null) serverRegistry.dispose(handler);
+        if((handler = Commands.getClientCommands()) != null) clientRegistry.dispose(handler);
     }
 }

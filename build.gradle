@@ -44,7 +44,7 @@ dependencies{
     compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
     // Xpdustry
-    implementation 'fr.xpdustry:XCommand:v1.6'
+    implementation 'fr.xpdustry:XCommand:v1.6.1'
 
     // Scripting
     implementation "org.mozilla:rhino:1.7.13"
@@ -137,14 +137,6 @@ task getArtifactPath{
     doLast{ println jar.archiveFile.get().toString() }
 }
 
-task zipBundles(type: Zip){
-    archiveFileName = "bundles.zip"
-    destinationDirectory = layout.projectDirectory.dir("static")
-
-    from(layout.buildDirectory.dir("$rootDir/static")){
-        include "bundle*.properties"
-    }
-}
 
 // Utility task :^)
 task generateReadmeHeader{

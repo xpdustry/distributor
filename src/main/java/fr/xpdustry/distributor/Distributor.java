@@ -1,18 +1,18 @@
 package fr.xpdustry.distributor;
 
+import arc.*;
 import arc.files.*;
-import arc.math.geom.*;
 import arc.util.*;
-import arc.util.Timer;
 
 import mindustry.*;
+import mindustry.game.EventType.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.plugin.*;
+import fr.xpdustry.distributor.plugin.internal.*;
 import fr.xpdustry.distributor.script.*;
-import fr.xpdustry.distributor.template.*;
 import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.distributor.util.loader.*;
 import fr.xpdustry.xcommand.parameter.string.*;
@@ -29,7 +29,7 @@ import java.util.*;
 import static fr.xpdustry.distributor.command.CommandRegistry.*;
 
 
-public class Distributor extends DistributorPlugin{
+public class Distributor extends AbstractPlugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
 
     private static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
@@ -146,14 +146,12 @@ public class Distributor extends DistributorPlugin{
             ScriptEngine engine = new ScriptEngine(context);
             engine.setupRequire(scriptLoader);
 
-            for(String scriptName : settings.getStartupScripts()){
-                try{
-                    engine.exec(settings.getScriptsPath().child(scriptName));
-                }catch(IOException | ScriptException e){
-                    handleException(Strings.format(
-                        "Failed to run the startup script '@' for the engine of the thread '@'.",
-                        scriptName, Thread.currentThread().getName()), e);
-                }
+            try{
+                engine.exec(settings.getScriptsPath().child(settings.getInitScript()));
+            }catch(IOException | ScriptException e){
+                handleException(Strings.format(
+                    "Failed to run the init script '@' for the engine of the thread '@'.",
+                    settings.getInitScript(), Thread.currentThread().getName()), e);
             }
 
             return engine;

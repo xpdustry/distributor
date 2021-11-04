@@ -140,4 +140,14 @@ public class ScriptEngine{
     public String toString(){
         return "engine@" + Integer.toHexString(hashCode()) + ".js";
     }
+
+    public interface ScriptEngineFactory{
+        ScriptEngineFactory DEFAULT = () -> {
+            Context context = Context.getCurrentContext();
+            if(context == null) context = Context.enter();
+            return new ScriptEngine(context);
+        };
+
+        ScriptEngine makeEngine();
+    }
 }

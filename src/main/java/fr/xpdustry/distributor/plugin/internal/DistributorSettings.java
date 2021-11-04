@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.plugin;
+package fr.xpdustry.distributor.plugin.internal;
 
 import arc.files.*;
 
@@ -19,8 +19,16 @@ public interface DistributorSettings extends Config, Accessible{
     Fi getScriptsPath();
 
     @DefaultValue("init.js")
+    @Key("distributor.scripts.init")
+    String getInitScript();
+
+    @DefaultValue("")
     @Key("distributor.scripts.startup")
     List<String> getStartupScripts();
+
+    @DefaultValue("")
+    @Key("distributor.scripts.shutdown")
+    List<String> getShutdownScripts();
 
     @DefaultValue("10")
     @Key("distributor.scripts.max-runtime-duration")
@@ -33,7 +41,6 @@ public interface DistributorSettings extends Config, Accessible{
     @DefaultValue("LOG")
     @Key("distributor.policy.runtime")
     RuntimePolicy getRuntimePolicy();
-
 
     enum RuntimePolicy{
         LOG, SILENT, THROW

@@ -60,5 +60,9 @@ public class TimedContextFactory extends ContextFactory{
         public TimedContext(ContextFactory factory){
             super(factory);
         }
+
+        public long getStartTime(){
+            return startTime;
+        }
     }
 }
