@@ -118,7 +118,7 @@ public class Distributor extends AbstractPlugin{
     @Override
     public void registerClientCommands(CommandHandler handler){
         clientRegistry.register(jsCommand);
-        serverRegistry.export(handler);
+        clientRegistry.export(handler);
     }
 
     public void initRhino(){
