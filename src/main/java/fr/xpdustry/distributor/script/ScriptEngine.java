@@ -76,7 +76,7 @@ public class ScriptEngine{
     public Object eval(Scriptable scope, String source, String sourceName) throws ScriptException{
         try{
             return ctx.evaluateString(scope, source, sourceName, 1, null);
-        }catch(JavaScriptException | BlockingScriptError e){
+        }catch(Exception | BlockingScriptError e){
             throw new ScriptException(e);
         }
     }
@@ -100,7 +100,7 @@ public class ScriptEngine{
     public Object invoke(Function function, Scriptable scope, Object... args) throws ScriptException{
         try{
             return function.call(ctx, scope, scope, args);
-        }catch(JavaScriptException | BlockingScriptError e){
+        }catch(Exception | BlockingScriptError e){
             throw new ScriptException(e);
         }
     }
@@ -112,7 +112,7 @@ public class ScriptEngine{
     public Object exec(Script script, Scriptable scope) throws ScriptException{
         try{
             return script.exec(ctx, scope);
-        }catch(JavaScriptException | BlockingScriptError e){
+        }catch(Exception | BlockingScriptError e){
             throw new ScriptException(e);
         }
     }
@@ -138,6 +138,6 @@ public class ScriptEngine{
 
     @Override
     public String toString(){
-        return "engine@" + Thread.currentThread().getName() + ".js";
+        return "engine@" + Integer.toHexString(hashCode()) + ".js";
     }
 }
