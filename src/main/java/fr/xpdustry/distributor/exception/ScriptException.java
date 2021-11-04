@@ -1,11 +1,10 @@
 package fr.xpdustry.distributor.exception;
 
-public class ScriptException extends Exception{
-    public ScriptException(String message, Throwable cause){
-        super(message, cause);
-    }
+import org.jetbrains.annotations.*;
 
-    public ScriptException(Throwable cause){
+
+public class ScriptException extends Exception{
+    public ScriptException(@NotNull Throwable cause){
         super(cause);
     }
 

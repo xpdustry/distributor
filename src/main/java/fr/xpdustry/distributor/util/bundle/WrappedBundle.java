@@ -16,15 +16,19 @@ public class WrappedBundle{
     }
 
     public static WrappedBundle from(@NotNull String baseName, @NotNull Locale locale){
-        if(RouterBundle.ROUTER_LOCALE.equals(locale))
+        if(RouterBundle.ROUTER_LOCALE.equals(locale)){
             return new RouterBundle(ResourceBundle.getBundle(baseName, locale));
-        return new WrappedBundle(ResourceBundle.getBundle(baseName, locale));
+        }else{
+            return new WrappedBundle(ResourceBundle.getBundle(baseName, locale));
+        }
     }
 
     public static WrappedBundle from(@NotNull String baseName, @NotNull Locale locale, ClassLoader loader){
-        if(RouterBundle.ROUTER_LOCALE.equals(locale))
+        if(RouterBundle.ROUTER_LOCALE.equals(locale)){
             return new RouterBundle(ResourceBundle.getBundle(baseName, locale, loader));
-        return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
+        }else{
+            return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
+        }
     }
 
     public @NotNull Locale getLocale(){

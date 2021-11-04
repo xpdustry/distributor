@@ -18,7 +18,6 @@ import java.util.*;
  * Utility class to keep track of commands for a given plugin.
  */
 public class CommandRegistry{
-
     public static final ContextValidator<Playerc> DEFAULT_ADMIN_VALIDATOR = ctx -> {
         Playerc caller = ctx.getCaller();
         if(caller != Commands.SERVER_PLAYER && !caller.admin()){

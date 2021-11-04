@@ -11,12 +11,16 @@ import java.util.*;
 @Sources("file:./config/distributor.properties")
 public interface DistributorSettings extends Config, Accessible{
     @DefaultValue("./distributor")
-    @Key("distributor.path.root")
+    @Key("distributor.path")
     Fi getRootPath();
 
-    @DefaultValue("${distributor.path.root}/scripts")
-    @Key("distributor.path.scripts")
-    Fi getScriptsPath();
+    default Fi getScriptsPath(){
+        return getRootPath().child("scripts");
+    }
+
+    default Fi getLogsPath(){
+        return getRootPath().child("logs");
+    }
 
     @DefaultValue("init.js")
     @Key("distributor.scripts.init")
@@ -34,9 +38,7 @@ public interface DistributorSettings extends Config, Accessible{
     @Key("distributor.scripts.max-runtime-duration")
     int getMaxRuntimeDuration();
 
-    @DefaultValue("${distributor.path.root}/logs")
-    @Key("distributor.path.logs")
-    Fi getLogsPath();
+    //TODO optimize this thing down here
 
     @DefaultValue("LOG")
     @Key("distributor.policy.runtime")

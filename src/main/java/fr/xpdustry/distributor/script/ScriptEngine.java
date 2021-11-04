@@ -59,9 +59,10 @@ public class ScriptEngine{
 
         require = new RequireBuilder()
             .setSandboxed(false)
-            .setModuleScriptProvider(new SoftCachingModuleScriptProvider(
-                new ScriptLoader(loader)))
+            .setModuleScriptProvider(
+                new SoftCachingModuleScriptProvider(new ScriptLoader(loader)))
             .createRequire(ctx, importer);
+
         require.install(importer);
     }
 

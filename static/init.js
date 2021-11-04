@@ -2,8 +2,6 @@
 
 "use strict";
 
-importPackage(Packages.java.lang)
-
 //these are not strictly necessary, but are kept for edge cases
 const run = method => new Runnable(){run: method}
 const boolf = method => new Boolf(){get: method}
@@ -34,6 +32,8 @@ function extend(/*Base, ..., def*/){
     }
     return instance
 }
+
+importPackage(Packages.java.lang)
 
 importPackage(Packages.arc)
 importPackage(Packages.arc.func)
