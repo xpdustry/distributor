@@ -25,7 +25,7 @@ import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
 
-import static fr.xpdustry.distributor.command.CommandRegistry.DEFAULT_ADMIN_VALIDATOR;
+import static fr.xpdustry.distributor.command.Commands.*;
 
 
 public class Distributor extends AbstractPlugin{

@@ -40,3 +40,9 @@ Distributor will also deploy its file tree and download some resources from this
 - To not overwrite the default `js` command, use `jscript` to run javascript with distributor instead.
 - The `require` function is set up to the root of the `scripts` directory inside the root directory of Distributor. Use it to load your scripts.
 - If you are scared of blocking scripts, don't worry, distributor automatically kills it after 10 seconds of runtime by default, you can change that setting in the property file.
+
+## TODO
+
+[ ] - Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
+[ ] - Create standard API (better API bindings for mindustry, especially for moderation)
+[ ] - Create JavaScript Debugger

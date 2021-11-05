@@ -9,6 +9,7 @@ import mindustry.server.*;
 
 import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.xcommand.*;
+import fr.xpdustry.xcommand.context.*;
 import fr.xpdustry.xcommand.parameter.*;
 
 import io.leangen.geantyref.*;
@@ -32,6 +33,16 @@ public final class Commands{
 
         @Override public String locale(){
             return Locale.getDefault().toString();
+        }
+    };
+
+    public static final ContextValidator<Playerc> DEFAULT_ADMIN_VALIDATOR = ctx -> {
+        Playerc caller = ctx.getCaller();
+        if(caller != Commands.SERVER_PLAYER && !caller.admin()){
+            caller.sendMessage("You need to be an admin to run this command.");
+            return false;
+        }else{
+            return true;
         }
     };
 

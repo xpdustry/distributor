@@ -7,7 +7,6 @@ import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.LambdaCommand.*;
 import fr.xpdustry.xcommand.*;
-import fr.xpdustry.xcommand.context.*;
 
 import org.jetbrains.annotations.*;
 
@@ -18,16 +17,6 @@ import java.util.*;
  * Utility class to keep track of commands for a given plugin.
  */
 public class CommandRegistry{
-    public static final ContextValidator<Playerc> DEFAULT_ADMIN_VALIDATOR = ctx -> {
-        Playerc caller = ctx.getCaller();
-        if(caller != Commands.SERVER_PLAYER && !caller.admin()){
-            caller.sendMessage("You need to be an admin to run this command.");
-            return false;
-        }else{
-            return true;
-        }
-    };
-
     private @NotNull CommandWrapperFactory wrapperFactory = CommandWrapper::new;
     private final SortedMap<String, Command<Playerc>> commands = new TreeMap<>();
 
