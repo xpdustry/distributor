@@ -46,5 +46,3 @@ Distributor will also deploy its file tree and download some resources from this
 [ ] - Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
 [ ] - Create standard API (better API bindings for mindustry, especially for moderation)
 [ ] - Create JavaScript Debugger
-
-test
