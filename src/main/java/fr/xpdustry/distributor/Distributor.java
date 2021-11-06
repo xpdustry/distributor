@@ -37,7 +37,7 @@ public class Distributor extends AbstractPlugin{
         LambdaCommand.of("jscript", Commands.PLAYER_TYPE)
             .validator(DEFAULT_ADMIN_VALIDATOR)
             .description("Run some random js code.")
-            .parameter(StringParameter.of("script").variadic().splitter(Collections::singletonList))
+            .parameter(StringParameter.of("script").variadic().tokenizer(Collections::singletonList))
             .runner(ctx -> {
                 List<String> script = ctx.get("script");
 
@@ -136,6 +136,8 @@ public class Distributor extends AbstractPlugin{
                 context.setOptimizationLevel(9);
                 context.setLanguageVersion(Context.VERSION_ES6);
                 context.setApplicationClassLoader(getSharedClassLoader());
+                // Trust me, auto primitive boxing/unboxing is EXTREMELY frustrating in js, especially with booleans
+                context.getWrapFactory().setJavaPrimitiveWrap(false);
             }
 
             ScriptEngine engine = new ScriptEngine(context);

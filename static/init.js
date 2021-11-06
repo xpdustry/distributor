@@ -174,9 +174,10 @@ importPackage(Packages.fr.xpdustry.xcommand)
 importPackage(Packages.fr.xpdustry.xcommand.context)
 importPackage(Packages.fr.xpdustry.xcommand.exception)
 importPackage(Packages.fr.xpdustry.xcommand.parameter)
-importPackage(Packages.fr.xpdustry.xcommand.parameter.number)
+importPackage(Packages.fr.xpdustry.xcommand.parameter.bool)
+importPackage(Packages.fr.xpdustry.xcommand.parameter.numeric)
 importPackage(Packages.fr.xpdustry.xcommand.parameter.string)
-importPackage(Packages.fr.xpdustry.xcommand.util)
+
 
 importPackage(Packages.fr.xpdustry.distributor)
 importPackage(Packages.fr.xpdustry.distributor.command)

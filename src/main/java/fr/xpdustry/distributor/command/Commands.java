@@ -9,7 +9,6 @@ import mindustry.server.*;
 
 import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.xcommand.*;
-import fr.xpdustry.xcommand.context.*;
 import fr.xpdustry.xcommand.parameter.*;
 
 import io.leangen.geantyref.*;
@@ -17,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.function.*;
 
 
 public final class Commands{
@@ -36,7 +36,7 @@ public final class Commands{
         }
     };
 
-    public static final ContextValidator<Playerc> DEFAULT_ADMIN_VALIDATOR = ctx -> {
+    public static final Predicate<CommandContext<Playerc>> DEFAULT_ADMIN_VALIDATOR = ctx -> {
         Playerc caller = ctx.getCaller();
         if(caller != Commands.SERVER_PLAYER && !caller.admin()){
             caller.sendMessage("You need to be an admin to run this command.");

@@ -9,7 +9,7 @@ import fr.xpdustry.distributor.util.*;
 import fr.xpdustry.xcommand.Command;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.exception.*;
-import fr.xpdustry.xcommand.parameter.number.*;
+import fr.xpdustry.xcommand.parameter.numeric.*;
 
 import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.Nullable;
