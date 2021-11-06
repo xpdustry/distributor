@@ -2,7 +2,6 @@ package fr.xpdustry.distributor.util.struct;
 
 import org.jetbrains.annotations.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -83,7 +82,8 @@ public class Holder<T>{
 
     @Override
     public boolean equals(@Nullable Object o){
-        return Objects.equals(value, o);
+        if(o instanceof Holder) return Objects.equals(value, o);
+        else return false;
     }
 
     @Override

@@ -1,12 +1,10 @@
-package fr.xpdustry.distributor.util.loader;
+package fr.xpdustry.distributor.internal;
 
 import arc.struct.*;
 
 import mindustry.mod.Mods.*;
 
 import org.jetbrains.annotations.*;
-
-import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
@@ -53,9 +51,5 @@ public class SharedClassLoader extends ClassLoader{
         }
 
         throw (last == null ? new ClassNotFoundException(name) : last);
-    }
-
-    public @NotNull Seq<LoadedMod> getChildren(){
-        return new Seq<>(children);
     }
 }

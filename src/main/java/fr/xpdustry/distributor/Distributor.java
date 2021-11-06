@@ -5,16 +5,13 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.gen.*;
 
-import fr.xpdustry.distributor.command.*;
+import fr.xpdustry.distributor.event.*;
 import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
-import fr.xpdustry.distributor.plugin.internal.*;
 import fr.xpdustry.distributor.script.*;
-import fr.xpdustry.distributor.util.*;
-import fr.xpdustry.distributor.util.loader.*;
-import fr.xpdustry.xcommand.parameter.string.*;
+import fr.xpdustry.distributor.script.TimedContextFactory.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -23,61 +20,125 @@ import org.mozilla.javascript.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.util.*;
 
-import static fr.xpdustry.distributor.command.Commands.*;
+import static fr.xpdustry.distributor.internal.commands.Lambdas.jscriptCommand;
 
 
 public class Distributor extends AbstractPlugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
 
     private static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
-    private static final ResourceLoader scriptLoader = new ResourceLoader(Distributor.class.getClassLoader());
-    private static final LambdaCommand<Playerc> jsCommand =
-        LambdaCommand.of("jscript", Commands.PLAYER_TYPE)
-            .validator(DEFAULT_ADMIN_VALIDATOR)
-            .description("Run some random js code.")
-            .parameter(StringParameter.of("script").variadic().tokenizer(Collections::singletonList))
-            .runner(ctx -> {
-                List<String> script = ctx.get("script");
-
-                try{
-                    Object obj = ScriptEngine.getInstance().eval(script.get(0));
-                    ctx.getCaller().sendMessage(">>> " + ToolBox.scriptObjectToString(obj));
-                    ctx.setResult(obj);
-                }catch(ScriptException e){
-                    ctx.getCaller().sendMessage(e.getMessage());
-                    ctx.setResult(Undefined.instance);
-                }
-            }).build();
-
-    private static SharedClassLoader sharedClassLoader;
     private static final DistributorListener listener = new DistributorListener();
+    private static final TimedContextFactory contextFactory = new TimedContextFactory(settings.getMaxRuntimeDuration());
+
+    private static final Script initScript;
+    private static final ClassLoader scriptLoader;
+    private static final ClassLoader sharedClassLoader = new SharedClassLoader(Distributor.class.getClassLoader(), Vars.mods.list());
+
+    static{
+        // File tree setup ------------------------------------------------------------------------
+
+        Fi directory;
+
+        if(!(directory = settings.getRootPath()).exists()){
+            directory.mkdirs();
+        }
+
+        if(!(directory = settings.getScriptsPath()).exists()){
+            directory.mkdirs();
+
+            // Copy the default init script
+            try(var in = Distributor.class.getClassLoader().getResourceAsStream("init.js")){
+                directory.child("init.js").write(in, false);
+            }catch(IOException e){
+                throw new RuntimeException("Failed to create the default init script.", e);
+            }
+
+            // Create 2 empty scripts (startup/shutdown)
+            directory.child(settings.getStartupScript()).writeString("// Put your startup code here...\n");
+            directory.child(settings.getShutdownScript()).writeString("// Put your shutdown code here...\n");
+
+            // Creates the property file inside the server config directory
+            try(var out = new FileOutputStream("./config/distributor.properties")){
+                settings.store(out, "The config file. If a key is messing, it will fallback to the default one.");
+            }catch(IOException e){
+                throw new RuntimeException("Failed to create the default config file.", e);
+            }
+        }
+
+        // Loader setup ---------------------------------------------------------------------------
+
+        try{
+            scriptLoader = new URLClassLoader(
+                new URL[]{settings.getScriptsPath().file().toURI().toURL()}, Distributor.class.getClassLoader());
+        }catch(MalformedURLException e){
+            throw new RuntimeException("Failed to initialize the script loader.", e);
+        }
+
+        // Rhino setup ----------------------------------------------------------------------------
+
+        ContextFactory.initGlobal(contextFactory);
+
+        // Applies the required settings
+        PostMan.on(ContextCreateEvent.class, e -> {
+            e.context().setOptimizationLevel(9);
+            e.context().setLanguageVersion(Context.VERSION_ES6);
+            e.context().setApplicationClassLoader(getSharedClassLoader());
+            e.context().getWrapFactory().setJavaPrimitiveWrap(false);
+        });
+
+        // Compiles the init script for faster loading time
+        initScript = contextFactory.call(ctx -> {
+            try(Reader reader = settings.getScriptsPath().child(settings.getInitScript()).reader()){
+                return ctx.compileReader(reader, settings.getInitScript(), 0, null);
+            }catch(IOException e){
+                throw new RuntimeException("Failed to compile the init script.", e);
+            }
+        });
+
+        ScriptEngine.setGlobalFactory(() -> {
+            Context context = Context.getCurrentContext();
+
+            if(context == null){
+                context = Context.enter();
+            }
+
+            ScriptEngine engine = new ScriptEngine(context);
+            engine.setupRequire(scriptLoader);
+
+            try{
+                engine.exec(initScript);
+            }catch(ScriptException e){
+                throw new RuntimeException(Strings.format("Failed to run the init script '@' for the engine of the thread '@'.",
+                    settings.getInitScript(), Thread.currentThread().getName()), e);
+            }
+
+            return engine;
+        });
+
+        // Extra ----------------------------------------------------------------------------------
+
+        Core.app.addListener(listener);
+    }
 
     public static Distributor getInstance(){
         return (Distributor)Vars.mods.getMod(INTERNAL_NAME).main;
     }
 
-    public static SharedClassLoader getSharedClassLoader(){
+    public static ClassLoader getSharedClassLoader(){
         return sharedClassLoader;
+    }
+
+    public static ClassLoader getScriptLoader(){
+        return scriptLoader;
     }
 
     public static DistributorSettings getSettings(){
         return settings;
     }
 
-    //TODO make a cleaner implementation to support SilentCrashes and more...
-    private static void handleException(String message, Throwable t){
-        switch(settings.getRuntimePolicy()){
-            case LOG -> Log.err(message, t);
-            case THROW -> throw new RuntimeException(message, t);
-        }
-    }
-
     @Override
     public void init(){
-        // Show a nice banner :^)
-
         try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("Asset not found.");
             IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
@@ -85,115 +146,42 @@ public class Distributor extends AbstractPlugin{
         }catch(IOException e){
             Log.info("Initialized DistributorPlugin !");
         }
-
-        // Begin the loading
-
-        Time.mark();
-        Log.info("Begin Distributor loading...");
-
-        // FileTree setup
-
-        Fi file;
-
-        if(!(file = settings.getRootPath()).exists()){
-            file.mkdirs();
-        }
-
-        if(!(file = settings.getScriptsPath()).exists()){
-            file.mkdirs();
-
-            try{
-                URL url = new URL("https://raw.githubusercontent.com/Xpdustry/Distributor/master/static/init.js");
-                IOUtils.copy(url, file.child("init.js").file());
-            }catch(IOException e){
-                throw new RuntimeException("Failed to create the default init script.", e);
-            }
-
-            try(OutputStream stream = new FileOutputStream("./config/distributor.properties")){
-                settings.store(stream, "The config file. If a key is messing, it will fallback to the default one.");
-            }catch(IOException e){
-                throw new RuntimeException("Failed to create the default config file.", e);
-            }
-        }
-
-        // Rhino init
-
-        sharedClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
-
-        try{
-            scriptLoader.addResource(settings.getScriptsPath().file());
-        }catch(MalformedURLException e){
-            throw new RuntimeException("Failed to setup the script path for the Require.", e);
-        }
-
-        ContextFactory.initGlobal(new TimedContextFactory(settings.getMaxRuntimeDuration()));
-
-        ScriptEngine.setGlobalFactory(() -> {
-            Context context = Context.getCurrentContext();
-
-            if(context == null){
-                context = Context.enter();
-                context.setOptimizationLevel(9);
-                context.setLanguageVersion(Context.VERSION_ES6);
-                context.setApplicationClassLoader(getSharedClassLoader());
-                // Trust me, auto primitive boxing/unboxing is EXTREMELY frustrating in js, especially with booleans
-                context.getWrapFactory().setJavaPrimitiveWrap(false);
-            }
-
-            ScriptEngine engine = new ScriptEngine(context);
-            engine.setupRequire(scriptLoader);
-
-            try{
-                engine.exec(settings.getScriptsPath().child(settings.getInitScript()));
-            }catch(IOException | ScriptException e){
-                handleException(Strings.format("Failed to run the init script '@' for the engine of the thread '@'.",
-                    settings.getInitScript(), Thread.currentThread().getName()), e);
-            }
-
-            return engine;
-        });
-
-        // Listeners and EventWatchers
-
-        Core.app.addListener(listener);
-
-        // End loading
-
-        Log.info("End Distributor loading : " + Time.elapsed() + " milliseconds");
     }
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        serverRegistry.register(jsCommand);
+        serverRegistry.register(jscriptCommand);
         serverRegistry.export(handler);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        clientRegistry.register(jsCommand);
+        clientRegistry.register(jscriptCommand);
         clientRegistry.export(handler);
     }
 
     private static class DistributorListener implements ApplicationListener{
         @Override
         public void init(){
-            for(String script : settings.getStartupScripts()){
-                try{
-                    ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
-                }catch(ScriptException | IOException e){
-                    throw new RuntimeException("Failed to run the startup script " + script + ".", e);
-                }
+            String script = settings.getStartupScript();
+            if(script == null) return;
+
+            try{
+                ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
+            }catch(ScriptException | IOException e){
+                throw new RuntimeException("Failed to run the startup script " + script + ".", e);
             }
         }
 
         @Override
         public void dispose(){
-            for(String script : settings.getShutdownScripts()){
-                try{
-                    ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
-                }catch(ScriptException | IOException e){
-                    Log.err("Failed to run the shutdown script " + script + ".", e);
-                }
+            String script = settings.getShutdownScript();
+            if(script == null) return;
+
+            try{
+                ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
+            }catch(ScriptException | IOException e){
+                Log.err("Failed to run the shutdown script " + script + ".", e);
             }
         }
     }

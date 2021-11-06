@@ -23,8 +23,8 @@ public class ScriptLoader extends UrlModuleSourceProvider{
         if(url == null){
             return null;
         }else{
-            return new ModuleSource(new InputStreamReader(
-                url.openStream()), null, url.toURI(), url.toURI().resolve(".."), validator);
+            return new ModuleSource(
+                new InputStreamReader(url.openStream()), null, url.toURI(), url.toURI().resolve(".."), validator);
         }
     }
 }

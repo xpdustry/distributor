@@ -17,8 +17,8 @@ import java.util.*;
  * Utility class to keep track of commands for a given plugin.
  */
 public class CommandRegistry{
-    private @NotNull CommandWrapperFactory wrapperFactory = CommandWrapper::new;
     private final SortedMap<String, Command<Playerc>> commands = new TreeMap<>();
+    private @NotNull CommandWrapperFactory wrapperFactory = CommandWrapper::new;
 
     public Command<Playerc> register(@NotNull Command<Playerc> command){
         commands.put(command.getName(), command);

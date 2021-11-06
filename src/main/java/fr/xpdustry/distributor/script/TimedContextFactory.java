@@ -1,8 +1,13 @@
 package fr.xpdustry.distributor.script;
 
+import fr.xpdustry.distributor.event.*;
 import fr.xpdustry.distributor.exception.*;
 
+import org.jetbrains.annotations.*;
 import org.mozilla.javascript.*;
+
+import static java.util.Objects.requireNonNull;
+import static org.mozilla.javascript.Context.*;
 
 
 /** @see org.mozilla.javascript.ContextFactory */
@@ -15,23 +20,20 @@ public class TimedContextFactory extends ContextFactory{
 
     @Override
     protected Context makeContext(){
-        TimedContext cx = new TimedContext(this);
-        // Make Rhino runtime to call observeInstructionCount
-        // each 10000 bytecode instructions
-        cx.setInstructionObserverThreshold(10000);
-        return cx;
+        TimedContext ctx = new TimedContext(this);
+        ctx.setInstructionObserverThreshold(10000);
+        return ctx;
     }
 
     @Override
     public boolean hasFeature(Context cx, int featureIndex){
-        // Turn on maximum compatibility with MSIE scripts
         switch(featureIndex){
-            case Context.FEATURE_DYNAMIC_SCOPE:
-            case Context.FEATURE_NON_ECMA_GET_YEAR:
-            case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
-            case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
+            case FEATURE_DYNAMIC_SCOPE:
+            case FEATURE_NON_ECMA_GET_YEAR:
+            case FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
+            case FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
                 return true;
-            case Context.FEATURE_PARENT_PROTO_PROPERTIES:
+            case FEATURE_PARENT_PROTO_PROPERTIES:
                 return false;
             default:
                 return super.hasFeature(cx, featureIndex);
@@ -39,19 +41,29 @@ public class TimedContextFactory extends ContextFactory{
     }
 
     @Override
-    protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args){
-        TimedContext tcx = (TimedContext)cx;
+    protected Object doTopCall(Callable callable, Context ctx, Scriptable scope, Scriptable thisObj, Object[] args){
+        TimedContext tcx = (TimedContext)ctx;
         tcx.startTime = System.currentTimeMillis();
-        return super.doTopCall(callable, cx, scope, thisObj, args);
+        return super.doTopCall(callable, tcx, scope, thisObj, args);
     }
 
     @Override
-    protected void observeInstructionCount(Context cx, int instructionCount){
-        TimedContext tcx = (TimedContext)cx;
+    protected void observeInstructionCount(Context ctx, int instructionCount){
+        TimedContext tcx = (TimedContext)ctx;
         long currentTime = System.currentTimeMillis();
         if(currentTime - tcx.startTime > maxRuntimeDuration * 1000L){
             throw new BlockingScriptError();
         }
+    }
+
+    @Override
+    protected void onContextCreated(Context cx){
+        PostMan.fire(new ContextCreateEvent(cx));
+    }
+
+    @Override
+    protected void onContextReleased(Context cx){
+        PostMan.fire(new ContextReleaseEvent(cx));
     }
 
     /** Custom Context to store execution time. */
@@ -64,6 +76,18 @@ public class TimedContextFactory extends ContextFactory{
 
         public long getStartTime(){
             return startTime;
+        }
+    }
+
+    public record ContextCreateEvent(@NotNull Context context){
+        public ContextCreateEvent{
+            requireNonNull(context, "context can't be null.");
+        }
+    }
+
+    public record ContextReleaseEvent(@NotNull Context context){
+        public ContextReleaseEvent{
+            requireNonNull(context, "context can't be null.");
         }
     }
 }

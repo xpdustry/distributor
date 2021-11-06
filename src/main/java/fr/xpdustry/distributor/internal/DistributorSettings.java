@@ -1,11 +1,9 @@
-package fr.xpdustry.distributor.plugin.internal;
+package fr.xpdustry.distributor.internal;
 
 import arc.files.*;
 
 import org.aeonbits.owner.*;
 import org.aeonbits.owner.Config.*;
-
-import java.util.*;
 
 
 @Sources("file:./config/distributor.properties")
@@ -26,25 +24,15 @@ public interface DistributorSettings extends Config, Accessible{
     @Key("distributor.scripts.init")
     String getInitScript();
 
-    @DefaultValue("")
+    @DefaultValue("startup.js")
     @Key("distributor.scripts.startup")
-    List<String> getStartupScripts();
+    String getStartupScript();
 
-    @DefaultValue("")
+    @DefaultValue("shutdown.js")
     @Key("distributor.scripts.shutdown")
-    List<String> getShutdownScripts();
+    String getShutdownScript();
 
     @DefaultValue("10")
     @Key("distributor.scripts.max-runtime-duration")
     int getMaxRuntimeDuration();
-
-    //TODO optimize this thing down here
-
-    @DefaultValue("LOG")
-    @Key("distributor.policy.runtime")
-    RuntimePolicy getRuntimePolicy();
-
-    enum RuntimePolicy{
-        LOG, SILENT, THROW
-    }
 }

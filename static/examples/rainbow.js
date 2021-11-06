@@ -1,6 +1,6 @@
 /*
-    This script creates an admin command that makes every player fart a rainbow smoke :^)
-*/
+ * This script creates an admin command that makes every player fart a rainbow smoke :^)
+ */
 
 const rainbow = extend(Timer.Task, {
     effects: Seq.with(Fx.mine, Fx.mineBig, Fx.mineHuge),
@@ -21,7 +21,7 @@ const rainbow = extend(Timer.Task, {
     }
 });
 
-const registry = new CommandRegistry();
+let registry = new CommandRegistry();
 
 const command = registry.register(registry.builder("rainbow")
     .validator(Commands.DEFAULT_ADMIN_VALIDATOR)

@@ -42,7 +42,7 @@ public final class PostMan{
     }
 
     public static <T> EventWatcher<T> on(EventWatcher<T> listener){
-        events.computeIfAbsent(listener.getEvent(), key -> ConcurrentHashMap.newKeySet(8)).add(listener);
+        events.computeIfAbsent(listener.getEvent(), key -> ConcurrentHashMap.newKeySet(4)).add(listener);
         return listener;
     }
 

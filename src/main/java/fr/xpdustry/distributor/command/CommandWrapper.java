@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.command;
 
-import arc.util.*;
 import arc.util.CommandHandler.*;
 
 import mindustry.gen.*;
@@ -12,10 +11,10 @@ import fr.xpdustry.xcommand.exception.*;
 import fr.xpdustry.xcommand.parameter.numeric.*;
 
 import org.jetbrains.annotations.*;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static fr.xpdustry.distributor.util.ToolBox.getSimpleTypeName;
 import static java.util.Objects.requireNonNull;
 
 
@@ -32,30 +31,28 @@ public class CommandWrapper implements CommandRunner<Playerc>{
             player = Commands.SERVER_PLAYER;
         }
 
-        CommandContext<Playerc> context = new CommandContext<>(player, Arrays.asList(args), command);
+        WrappedBundle bundle = WrappedBundle.from("bundles/bundle", ToolBox.getLocale(player));
+        CommandContext<Playerc> context = new CommandContext<>(player, List.of(args), command);
 
         try{
             context.invoke();
         }catch(ArgumentSizeException e){
-            player.sendMessage(Strings.format(
-                "The expected argument size for this command is at least @ or at most @, got @.",
-                e.getMinArgumentSize(), e.getMaxArgumentSize(), e.getActualArgumentSize()));
+            if(e.getMaxArgumentSize() < e.getActualArgumentSize()){
+                player.sendMessage(bundle.get("ex.command.arg.size.many", e.getMaxArgumentSize(), e.getActualArgumentSize()));
+            }else{
+                player.sendMessage(bundle.get("ex.command.arg.size.few", e.getMinArgumentSize(), e.getActualArgumentSize()));
+            }
         }catch(ArgumentParsingException e){
-            player.sendMessage(Strings.format(
-                "The argument '@' is invalid. The parameter '@' expects argument of type @.",
-                e.getArgument(), e.getParameter().getName(), ToolBox.getSimpleTypeName(e.getParameter().getValueType())));
+            player.sendMessage(bundle.get("ex.command.arg.parsing", e.getParameter().getName(),
+                getSimpleTypeName(e.getParameter().getValueType()), e.getArgument()));
         }catch(ArgumentValidationException e){
             if(e.getParameter() instanceof NumericParameter p){
-                player.sendMessage(Strings.format(
-                    "The numeric parameter '@' only accepts arguments between @ and @, got @.",
-                    p.getName(), p.getMin(), p.getMax(), e.getArgument()));
+                player.sendMessage(bundle.get("ex.command.arg.validation.int", p.getName(), p.getMin(), p.getMax(), e.getArgument()));
             }else{
-                player.sendMessage(Strings.format(
-                    "The argument '@' does not meet the requirements of the parameter '@'",
-                    e.getArgument(), e.getParameter().getName()));
+                player.sendMessage(bundle.get("ex.command.arg.validation", e.getParameter().getName(), e.getArgument()));
             }
         }catch(ArgumentException e){
-            player.sendMessage(Strings.format("An unknown exception happened. Please report it to us."));
+            player.sendMessage(bundle.get("ex.command.arg"));
         }
     }
 

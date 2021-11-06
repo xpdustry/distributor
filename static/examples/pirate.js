@@ -1,7 +1,7 @@
 /*
-    https://github.com/BasedUser/PirateBrazilifier
-    Best script ever...
-*/
+ * https://github.com/BasedUser/PirateBrazilifier
+ * Best script ever...
+ */
 
 const pirates = Seq.with(
     "VALVE",

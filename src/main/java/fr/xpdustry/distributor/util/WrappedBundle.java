@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.util.bundle;
+package fr.xpdustry.distributor.util;
 
 import arc.util.*;
 
@@ -37,7 +37,7 @@ public class WrappedBundle{
 
     public @NotNull String get(@NotNull String key, Object... args){
         if(bundle.containsKey(key)){
-            return Strings.format(bundle.getString(key), args);
+            return String.format(bundle.getString(key), args);
         }else{
             return "???" + key + "???";
         }
@@ -52,6 +52,44 @@ public class WrappedBundle{
     }
 
     public @NotNull String getNotNull(@NotNull String key, Object... args){
-        return Strings.format(bundle.getString(key), args);
+        return String.format(bundle.getString(key), args);
+    }
+
+    /** Router */
+    public static class RouterBundle extends WrappedBundle{
+        public static final Locale ROUTER_LOCALE = new Locale("router");
+
+        /** Router */
+        protected RouterBundle(@NotNull ResourceBundle bundle){
+            super(bundle);
+        }
+
+        /** Router */
+        @Override
+        public @NotNull Locale getLocale(){
+            return ROUTER_LOCALE;
+        }
+
+        /** Router */
+        @Override
+        public @NotNull String get(@NotNull String key, Object... args){
+            if(containsKey(key)){
+                return "router";
+            }else{
+                return "???" + key + "???";
+            }
+        }
+
+        /** Router */
+        @Override
+        public @NotNull String getNotNull(@NotNull String key, Object... args){
+            if(containsKey(key)){
+                return "router";
+            }else{
+                throw new MissingResourceException(Strings.format(
+                    "Can't find resource for bundle @, key @", bundle.getClass().getName(), key),
+                    bundle.getClass().getName(), key);
+            }
+        }
     }
 }

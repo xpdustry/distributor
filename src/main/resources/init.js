@@ -4,7 +4,7 @@
 
 importPackage(Packages.java.lang)
 
-//these are not strictly necessary, but are kept for edge cases
+// these are not strictly necessary, but are kept for edge cases
 const run = method => new Runnable(){run: method}
 const boolf = method => new Boolf(){get: method}
 const boolp = method => new Boolp(){get: method}

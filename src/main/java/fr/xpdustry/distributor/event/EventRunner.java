@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.event;
 
 
-interface EventRunner<T>{
+public interface EventRunner<T>{
     void run(T event);
 }

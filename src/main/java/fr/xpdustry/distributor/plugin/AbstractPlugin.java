@@ -12,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
 
+/**
+ * Plugins using Distributor should extend this class.
+ */
 public abstract class AbstractPlugin extends Plugin implements Disposable{
     protected final CommandRegistry serverRegistry = new CommandRegistry();
     protected final CommandRegistry clientRegistry = new CommandRegistry();

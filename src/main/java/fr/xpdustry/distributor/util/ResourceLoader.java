@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.util.loader;
+package fr.xpdustry.distributor.util;
 
 import org.jetbrains.annotations.*;
 
