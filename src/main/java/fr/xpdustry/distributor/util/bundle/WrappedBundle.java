@@ -1,6 +1,8 @@
-package fr.xpdustry.distributor.util;
+package fr.xpdustry.distributor.util.bundle;
 
 import arc.util.*;
+
+import mindustry.gen.*;
 
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
@@ -23,12 +25,24 @@ public class WrappedBundle{
         }
     }
 
-    public static WrappedBundle from(@NotNull String baseName, @NotNull Locale locale, ClassLoader loader){
+    public static WrappedBundle from(@NotNull String baseName, @NotNull Playerc player){
+        return from(baseName, getPlayerLocale(player));
+    }
+
+    public static WrappedBundle from(@NotNull String baseName, @NotNull Locale locale, @NotNull ClassLoader loader){
         if(RouterBundle.ROUTER_LOCALE.equals(locale)){
             return new RouterBundle(ResourceBundle.getBundle(baseName, locale, loader));
         }else{
             return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
         }
+    }
+
+    public static WrappedBundle from(@NotNull String baseName, @NotNull Playerc player, @NotNull ClassLoader loader){
+        return from(baseName, getPlayerLocale(player), loader);
+    }
+
+    public static Locale getPlayerLocale(Playerc player){
+        return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
     public @NotNull Locale getLocale(){
@@ -37,7 +51,7 @@ public class WrappedBundle{
 
     public @NotNull String get(@NotNull String key, Object... args){
         if(bundle.containsKey(key)){
-            return String.format(bundle.getString(key), args);
+            return Strings.format(bundle.getString(key), args);
         }else{
             return "???" + key + "???";
         }
@@ -52,44 +66,10 @@ public class WrappedBundle{
     }
 
     public @NotNull String getNotNull(@NotNull String key, Object... args){
-        return String.format(bundle.getString(key), args);
+        return Strings.format(bundle.getString(key), args);
     }
 
-    /** Router */
-    public static class RouterBundle extends WrappedBundle{
-        public static final Locale ROUTER_LOCALE = new Locale("router");
-
-        /** Router */
-        protected RouterBundle(@NotNull ResourceBundle bundle){
-            super(bundle);
-        }
-
-        /** Router */
-        @Override
-        public @NotNull Locale getLocale(){
-            return ROUTER_LOCALE;
-        }
-
-        /** Router */
-        @Override
-        public @NotNull String get(@NotNull String key, Object... args){
-            if(containsKey(key)){
-                return "router";
-            }else{
-                return "???" + key + "???";
-            }
-        }
-
-        /** Router */
-        @Override
-        public @NotNull String getNotNull(@NotNull String key, Object... args){
-            if(containsKey(key)){
-                return "router";
-            }else{
-                throw new MissingResourceException(Strings.format(
-                    "Can't find resource for bundle @, key @", bundle.getClass().getName(), key),
-                    bundle.getClass().getName(), key);
-            }
-        }
+    public void send(@NotNull Playerc player, String text, Object... args){
+        player.sendMessage(get(text, args));
     }
 }

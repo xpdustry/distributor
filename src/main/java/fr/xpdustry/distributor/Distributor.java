@@ -5,13 +5,15 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
+import mindustry.gen.*;
+import mindustry.server.*;
 
-import fr.xpdustry.distributor.event.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.script.TimedContextFactory.*;
+import fr.xpdustry.xcommand.parameter.numeric.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -21,7 +23,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
-import static fr.xpdustry.distributor.internal.commands.Lambdas.jscriptCommand;
+import static fr.xpdustry.distributor.plugin.commands.Lambdas.jsx;
 
 
 public class Distributor extends AbstractPlugin{
@@ -80,16 +82,16 @@ public class Distributor extends AbstractPlugin{
         ContextFactory.initGlobal(contextFactory);
 
         // Applies the required settings
-        PostMan.on(ContextCreateEvent.class, e -> {
+        Events.on(ContextCreateEvent.class, e -> {
             e.context().setOptimizationLevel(9);
             e.context().setLanguageVersion(Context.VERSION_ES6);
-            e.context().setApplicationClassLoader(getSharedClassLoader());
+            e.context().setApplicationClassLoader(sharedClassLoader);
             e.context().getWrapFactory().setJavaPrimitiveWrap(false);
         });
 
         // Compiles the init script for faster loading time
         initScript = contextFactory.call(ctx -> {
-            try(Reader reader = settings.getScriptsPath().child(settings.getInitScript()).reader()){
+            try(var reader = settings.getScriptsPath().child(settings.getInitScript()).reader()){
                 return ctx.compileReader(reader, settings.getInitScript(), 0, null);
             }catch(IOException e){
                 throw new RuntimeException("Failed to compile the init script.", e);
@@ -97,11 +99,7 @@ public class Distributor extends AbstractPlugin{
         });
 
         ScriptEngine.setGlobalFactory(() -> {
-            Context context = Context.getCurrentContext();
-
-            if(context == null){
-                context = Context.enter();
-            }
+            Context context = Context.enter();
 
             ScriptEngine engine = new ScriptEngine(context);
             engine.setupRequire(scriptLoader);
@@ -150,13 +148,13 @@ public class Distributor extends AbstractPlugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        serverRegistry.register(jscriptCommand);
+        serverRegistry.register(jsx);
         serverRegistry.export(handler);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        clientRegistry.register(jscriptCommand);
+        clientRegistry.register(jsx);
         clientRegistry.export(handler);
     }
 

@@ -9,21 +9,15 @@ import io.leangen.geantyref.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
-import java.util.function.*;
 
 
 public class LambdaCommand<C> extends Command<C>{
     private final ContextRunner<C> runner;
 
     public LambdaCommand(@NotNull String name, @NotNull String description, @NotNull List<CommandParameter<?>> parameters,
-                         @NotNull TypeToken<? extends C> callerType, @NotNull Predicate<CommandContext<C>> validator, @NotNull ContextRunner<C> runner){
+                         @NotNull TypeToken<? extends C> callerType, @NotNull ContextValidator<C> validator, @NotNull ContextRunner<C> runner){
         super(name, description, parameters, callerType, validator);
         this.runner = runner;
-    }
-
-    public LambdaCommand(@NotNull String name, @NotNull String description, @NotNull TypeToken<? extends C> callerType,
-                         @NotNull Predicate<CommandContext<C>> validator, @NotNull ContextRunner<C> runner){
-        this(name, description, Collections.emptyList(), callerType, validator, runner);
     }
 
     public static <C> LambdaCommandBuilder<C> of(@NotNull String name, @NotNull TypeToken<? extends C> callerType){
@@ -42,7 +36,7 @@ public class LambdaCommand<C> extends Command<C>{
         private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
 
         private @NotNull String description = "";
-        private @NotNull Predicate<CommandContext<C>> validator = ctx -> true;
+        private @NotNull ContextValidator<C> validator = (ContextValidator<C>)ContextValidator.NONE;
         private @NotNull ContextRunner<C> runner = (ContextRunner<C>)ContextRunner.NONE;
 
         public LambdaCommandBuilder(@NotNull String name, @NotNull TypeToken<? extends C> type){
@@ -69,7 +63,7 @@ public class LambdaCommand<C> extends Command<C>{
             return this;
         }
 
-        public LambdaCommandBuilder<C> validator(@NotNull Predicate<CommandContext<C>> validator){
+        public LambdaCommandBuilder<C> validator(@NotNull ContextValidator<C> validator){
             this.validator = validator;
             return this;
         }

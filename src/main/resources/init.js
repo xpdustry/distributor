@@ -2,8 +2,6 @@
 
 "use strict";
 
-importPackage(Packages.java.lang)
-
 // these are not strictly necessary, but are kept for edge cases
 const run = method => new Runnable(){run: method}
 const boolf = method => new Boolf(){get: method}
@@ -14,9 +12,14 @@ const cons = method => new Cons(){get: method}
 const prov = method => new Prov(){get: method}
 const func = method => new Func(){get: method}
 
-const log = function(/*text, args...*/){
-    Log.info(arguments[0], Array.from(arguments).splice(1, arguments.length));
-}
+const debug = function(/*text, args...*/) Log.debug(arguments[0], Array.from(arguments).splice(1, arguments.length));
+const info = function(/*text, args...*/) Log.info(arguments[0], Array.from(arguments).splice(1, arguments.length));
+const warn = function(/*text, args...*/) Log.warn(arguments[0], Array.from(arguments).splice(1, arguments.length));
+const err = function(/*text, args...*/) Log.err(arguments[0], Array.from(arguments).splice(1, arguments.length));
+
+const print = text => Packages.java.lang.System.out.print(text);
+const println = text => Packages.java.lang.System.out.println(text);
+const printf = function(/*text, args...*/) Packages.java.lang.System.out.printf(arguments[0], Array.from(arguments).splice(1, arguments.length));
 
 const jCall = Call
 Call = Packages.mindustry.gen.Call
@@ -185,11 +188,9 @@ importPackage(Packages.fr.xpdustry.xcommand.parameter.string)
 
 importPackage(Packages.fr.xpdustry.distributor)
 importPackage(Packages.fr.xpdustry.distributor.command)
-importPackage(Packages.fr.xpdustry.distributor.event)
 importPackage(Packages.fr.xpdustry.distributor.exception)
 importPackage(Packages.fr.xpdustry.distributor.plugin)
 importPackage(Packages.fr.xpdustry.distributor.script)
 importPackage(Packages.fr.xpdustry.distributor.util)
 importPackage(Packages.fr.xpdustry.distributor.util.bundle)
-importPackage(Packages.fr.xpdustry.distributor.util.loader)
 importPackage(Packages.fr.xpdustry.distributor.util.struct)

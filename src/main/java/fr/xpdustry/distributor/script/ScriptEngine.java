@@ -13,7 +13,7 @@ import java.io.*;
 import java.util.concurrent.atomic.*;
 
 
-public class ScriptEngine{
+public class ScriptEngine implements AutoCloseable{
     private static final AtomicReference<ScriptEngineFactory> factory =
         new AtomicReference<>(ScriptEngineFactory.DEFAULT);
 
@@ -39,6 +39,18 @@ public class ScriptEngine{
 
     public static ScriptEngine getInstance(){
         return threadInstance.get();
+    }
+
+    /**
+     * Extract the toString value of a javaScript object.
+     *
+     * @param obj the output object of a javascript function/script/evaluation.
+     * @return a string representation of the object
+     */
+    public static String toString(@Nullable Object obj){
+        if(obj instanceof NativeJavaObject n) obj = n.unwrap();
+        if(obj instanceof Undefined) obj = "undefined";
+        return String.valueOf(obj);
     }
 
     public @NotNull Scriptable newScope(){
@@ -140,6 +152,12 @@ public class ScriptEngine{
     @Override
     public String toString(){
         return "engine@" + Integer.toHexString(hashCode()) + ".js";
+    }
+
+    @Override
+    public void close(){
+        Context.exit();
+        threadInstance.remove();
     }
 
     public interface ScriptEngineFactory{

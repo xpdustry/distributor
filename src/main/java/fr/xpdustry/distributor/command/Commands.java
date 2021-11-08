@@ -7,8 +7,9 @@ import mindustry.*;
 import mindustry.gen.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.util.*;
+import fr.xpdustry.distributor.util.bundle.*;
 import fr.xpdustry.xcommand.*;
+import fr.xpdustry.xcommand.context.*;
 import fr.xpdustry.xcommand.parameter.*;
 
 import io.leangen.geantyref.*;
@@ -16,11 +17,17 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
-import java.util.function.*;
 
 
 public final class Commands{
     public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
+
+    public static final ArgumentParser<Boolean> EXTENDED_BOOLEAN_PARSER = arg -> {
+        return switch(arg.toLowerCase()){
+            case "true", "on", "enabled" -> true;
+            default -> false;
+        };
+    };
 
     public static final Playerc SERVER_PLAYER = new Player(){
         @Override public void sendMessage(String text){
@@ -36,10 +43,11 @@ public final class Commands{
         }
     };
 
-    public static final Predicate<CommandContext<Playerc>> DEFAULT_ADMIN_VALIDATOR = ctx -> {
-        Playerc caller = ctx.getCaller();
-        if(caller != Commands.SERVER_PLAYER && !caller.admin()){
-            caller.sendMessage("You need to be an admin to run this command.");
+    public static final ContextValidator<Playerc> ADMIN_VALIDATOR = ctx -> {
+        Playerc player = ctx.getCaller();
+
+        if(player != Commands.SERVER_PLAYER && !player.admin()){
+            WrappedBundle.from("bundles/bundle", player).send(player, "prm.command.admin");
             return false;
         }else{
             return true;
@@ -76,7 +84,7 @@ public final class Commands{
             builder.append(parameter.isVariadic() ? "..." : "");
 
             if(advancedSyntax){
-                builder.append(":").append(ToolBox.getSimpleTypeName(parameter.getValueType()));
+                builder.append(":").append(getSimpleTypeName(parameter.getValueType()));
                 // Add the default value if it's not an empty string
                 if(!parameter.getDefaultValue().isEmpty()){
                     builder.append("=").append(parameter.getDefaultValue());
@@ -88,5 +96,14 @@ public final class Commands{
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Basically, get the lower case name of the type
+     * java.lang.String -> string
+     */
+    public static String getSimpleTypeName(@NotNull TypeToken<?> type){
+        String[] fullName = type.getType().getTypeName().split("\\.");
+        return fullName[fullName.length - 1];
     }
 }

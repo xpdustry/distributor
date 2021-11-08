@@ -10,32 +10,32 @@ const rainbow = extend(Timer.Task, {
         if(this.r > 0 && this.b === 0){this.r--; this.g++;}
         if(this.g > 0 && this.r === 0){this.g--; this.b++;}
         if(this.b > 0 && this.g === 0){this.r++; this.b--;}
-        return new Color(this.r / 255, this.g / 255, this.b / 255);
+        return new Color(this.r / 255, this.g / 255, this.b / 255)
     },
 
     run(){
         Groups.player.each(p => {
-            let color = this.next();
-            Call.effect(this.effects.random(), p.x(), p.y(), 0, color);
+            let color = this.next()
+            Call.effect(this.effects.random(), p.x(), p.y(), 0, color)
         });
     }
 });
 
-let registry = new CommandRegistry();
+const registry = new CommandRegistry();
 
 const command = registry.register(registry.builder("rainbow")
     .validator(Commands.DEFAULT_ADMIN_VALIDATOR)
     .description("Make everyone fart a rainbow.")
-    .parameter(new BooleanParameter("active"))
+    .parameter(BooleanParameter.of("status", Commands.EXTENDED_BOOLEAN_PARSER))
     .runner(ctx => {
-        if(ctx.get("active")){
+        if(ctx.get("status")){
             if(!rainbow.isScheduled()) Timer.schedule(rainbow, 0, 0.1);
-            ctx.getCaller().sendMessage("You enabled the rainbow fart.");
+            ctx.getCaller().sendMessage("You enabled the rainbow fart.")
         }else{
-            if(rainbow.isScheduled()) rainbow.cancel();
-            ctx.getCaller().sendMessage("You disabled the rainbow fart.");
+            if(rainbow.isScheduled()) rainbow.cancel()
+            ctx.getCaller().sendMessage("You disabled the rainbow fart.")
         }
     })
-);
+)
 
 registry.export(Commands.getClientCommands())

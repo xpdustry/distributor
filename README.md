@@ -20,11 +20,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'fr.xpdustry.Distributor:1.5'
+    compileOnly 'fr.xpdustry.Distributor:1.7'
 }
 ```
 
-No proper javadoc for now, but feel free to ask me stuff through the pr or discord at Phinner#0867 (Make sure you join the mindustry discord first).
+No proper javadoc for now, but feel free to ask me stuff through the pr or discord at Phinner#0867 (Make sure you join the Mindustry discord first).
 
 ### As a Plugin
 
@@ -43,6 +43,7 @@ Distributor will also deploy its file tree and download some resources from this
 
 ## TODO
 
-[ ] - Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
+[x] - Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
 [ ] - Create standard API (better API bindings for mindustry, especially for moderation)
 [ ] - Create JavaScript Debugger
+[ ] - Create the dynamic plugin loader (Pretty advanced stuff)

@@ -18,4 +18,4 @@ Events.on(PlayerConnect, e => {
             "Mindustry is free on [royal]https://anuke.itch.io/mindustry[]\n" +
             "[red]Go get a legit copy of the game before coming in this server.");
     }
-});
+})

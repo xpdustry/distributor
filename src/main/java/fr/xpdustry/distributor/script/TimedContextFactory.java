@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.script;
 
-import fr.xpdustry.distributor.event.*;
+import arc.*;
+
 import fr.xpdustry.distributor.exception.*;
 
 import org.jetbrains.annotations.*;
@@ -58,12 +59,12 @@ public class TimedContextFactory extends ContextFactory{
 
     @Override
     protected void onContextCreated(Context cx){
-        PostMan.fire(new ContextCreateEvent(cx));
+        Events.fire(new ContextCreateEvent(cx));
     }
 
     @Override
     protected void onContextReleased(Context cx){
-        PostMan.fire(new ContextReleaseEvent(cx));
+        Events.fire(new ContextReleaseEvent(cx));
     }
 
     /** Custom Context to store execution time. */
