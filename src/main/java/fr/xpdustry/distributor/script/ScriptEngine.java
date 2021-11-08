@@ -37,6 +37,7 @@ public class ScriptEngine implements AutoCloseable{
         ScriptEngine.factory.set(factory);
     }
 
+    /** @return the current or a new instance of {@code ScriptEngine}*/
     public static ScriptEngine getInstance(){
         return threadInstance.get();
     }
@@ -156,6 +157,7 @@ public class ScriptEngine implements AutoCloseable{
 
     @Override
     public void close(){
+        System.out.println("close");
         Context.exit();
         threadInstance.remove();
     }

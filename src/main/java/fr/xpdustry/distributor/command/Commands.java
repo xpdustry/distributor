@@ -32,7 +32,10 @@ public final class Commands{
             default -> false;
         };
 
-    /** A dummy player instance for servers. */
+    /**
+     * A dummy player instance which represent the server,
+     * usually used for commands that are server-side and client-side.
+     */
     public static final Playerc SERVER_PLAYER = new Player(){
         @Override public void sendMessage(String text){
             Log.info(text);
@@ -63,23 +66,40 @@ public final class Commands{
         /* No. */
     }
 
-    /** @return the client {@code CommandHandler}. */
+    /** @return the client {@code CommandHandler} */
     public static @Nullable CommandHandler getClientCommands(){
         return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
     }
 
-    /** @return the server {@code CommandHandler}. */
+    /** @return the server {@code CommandHandler} */
     public static @Nullable CommandHandler getServerCommands(){
         if(Core.app == null) return null;
         ServerControl server = (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
         return (server != null) ? server.handler : null;
     }
 
-    public static String getParameterText(@NotNull Command<?> command){
-        return getParameterText(command, false);
-    }
-
-    public static String getParameterText(@NotNull Command<?> command, boolean advancedSyntax){
+    /**
+     * Creates a parameterText representation of a {@code Command}.
+     * <p>
+     * This method has 2 kind of parameterText.
+     * <ul>
+     *     <li>
+     *         If metadata is set to false, it will output the regular parameterText you would find in any mindustry plugin, such as:
+     *         <br>
+     *         {@code [name...]}
+     *     </li>
+     *     <li>
+     *         If metadata is set to false, it will output a parameterText that includes metadata about the parameter, such as:
+     *         <br>
+     *         {@code [name:type...=default]}
+     *     </li>
+     * </ul>
+     *
+     * @param command the command, not null
+     * @param metadata whether you include parameter metadata in the parameterText
+     * @return the parameterText of the command
+     */
+    public static String getParameterText(@NotNull Command<?> command, boolean metadata){
         StringBuilder builder = new StringBuilder();
         Iterator<CommandParameter<?>> iterator = command.getParameters().listIterator();
 
@@ -88,16 +108,17 @@ public final class Commands{
             builder.append(parameter.isOptional() ? "[" : "<");
 
             builder.append(parameter.getName());
-            builder.append(parameter.isVariadic() ? "..." : "");
 
-            if(advancedSyntax){
-                builder.append(":").append(getSimpleTypeName(parameter.getValueType()));
+            if(metadata){
+                builder.append(":").append(getParameterTypeName(parameter));
+                builder.append(parameter.isVariadic() ? "..." : "");
                 // Add the default value if it's not an empty string
                 if(!parameter.getDefaultValue().isEmpty()){
                     builder.append("=").append(parameter.getDefaultValue());
                 }
             }
 
+            if(!metadata) builder.append(parameter.isVariadic() ? "..." : "");
             builder.append(parameter.isOptional() ? "]" : ">");
             if(iterator.hasNext()) builder.append(" ");
         }
@@ -105,12 +126,41 @@ public final class Commands{
         return builder.toString();
     }
 
+    public static String getParameterText(@NotNull Command<?> command){
+        return getParameterText(command, false);
+    }
+
     /**
-     * Basically, get the lower case name of the type
-     * java.lang.String -> string
+     * Extracts the type name of a given parameter such as:
+     * <br>
+     * {@code java.lang.String -> string}
+     *
+     * @param parameter the parameter, not null
+     * @return the extracted name of the parameter valueType
      */
-    public static String getSimpleTypeName(@NotNull TypeToken<?> type){
-        String[] fullName = type.getType().getTypeName().split("\\.");
+    public static String getParameterTypeName(@NotNull CommandParameter<?> parameter){
+        String[] fullName = parameter.getValueType().getType().getTypeName().split("\\.");
         return fullName[fullName.length - 1];
+    }
+
+    /**
+     * Registers a wrapped command to the given handler.
+     *
+     * @param handler the handler, not null
+     * @param adapter the wrapped command, not null
+     */
+    public static void register(@NotNull CommandHandler handler, @NotNull CommandAdapter adapter){
+        Command<Playerc> command = adapter.getCommand();
+        handler.register(command.getName(), getParameterText(command), command.getDescription(), adapter);
+    }
+
+    /**
+     * Registers a command with the default {@code CommandAdapter} to the given handler.
+     *
+     * @param handler the handler, not null
+     * @param command the command, not null
+     */
+    public static void register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
+        register(handler, new CommandAdapter(command));
     }
 }

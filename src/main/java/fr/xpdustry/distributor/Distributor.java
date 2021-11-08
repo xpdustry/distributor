@@ -10,11 +10,12 @@ import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
-import fr.xpdustry.distributor.script.TimedContextFactory.*;
+import fr.xpdustry.distributor.util.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
 import org.mozilla.javascript.*;
+import org.mozilla.javascript.ContextFactory.*;
 
 import java.io.*;
 import java.net.*;
@@ -26,18 +27,73 @@ import static fr.xpdustry.distributor.internal.commands.Lambdas.jsx;
 public class Distributor extends AbstractPlugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
 
-    private static final DistributorSettings settings = ConfigFactory.create(DistributorSettings.class);
-    private static final DistributorListener listener = new DistributorListener();
-    private static final TimedContextFactory contextFactory = new TimedContextFactory(settings.getMaxRuntimeDuration());
+    private static DistributorSettings settings;
 
-    private static final Script initScript;
-    private static final ClassLoader scriptLoader;
-    private static final ClassLoader sharedClassLoader = new SharedClassLoader(Distributor.class.getClassLoader(), Vars.mods.list());
+    private static Script initScript;
+    private static TimedContextFactory contextFactory;
 
-    static{
-        // File tree setup ------------------------------------------------------------------------
+    private static ResourceLoader scriptLoader;
+    private static ClassLoader sharedClassLoader;
 
-        Fi directory;
+    public static Distributor getInstance(){
+        return (Distributor)Vars.mods.getMod(INTERNAL_NAME).main;
+    }
+
+    public static ClassLoader getSharedClassLoader(){
+        return sharedClassLoader;
+    }
+
+    public static ResourceLoader getScriptLoader(){
+        return scriptLoader;
+    }
+
+    public static DistributorSettings getSettings(){
+        return settings;
+    }
+
+    public static TimedContextFactory getContextFactory(){
+        return contextFactory;
+    }
+
+    @Override
+    public void init(){
+        // A nice Banner :^)
+        try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
+            if(in == null) throw new IOException("Asset not found.");
+            IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
+            Log.info(" > ");
+        }catch(IOException e){
+            Log.info("Initialized Distributor !");
+        }
+
+        Time.mark();
+        Log.info("Loading Distributor...");
+
+        settings = ConfigFactory.create(DistributorSettings.class);
+
+        initFileTree();
+        initLoaders();
+        initRhino();
+
+        Core.app.addListener(new DistributorApplication());
+
+        Log.info("Loaded Distributor in @ milliseconds.", Time.elapsed());
+    }
+
+    @Override
+    public void registerServerCommands(CommandHandler handler){
+        serverRegistry.register(jsx);
+        serverRegistry.export(handler);
+    }
+
+    @Override
+    public void registerClientCommands(CommandHandler handler){
+        clientRegistry.register(jsx);
+        clientRegistry.export(handler);
+    }
+
+    public void initFileTree(){
+        Fi directory; // Temporary variable for checking each directory
 
         if(!(directory = settings.getRootPath()).exists()){
             directory.mkdirs();
@@ -53,7 +109,7 @@ public class Distributor extends AbstractPlugin{
                 throw new RuntimeException("Failed to create the default init script.", e);
             }
 
-            // Create 2 empty scripts (startup/shutdown)
+            // Creates 2 empty scripts (startup/shutdown)
             directory.child(settings.getStartupScript()).writeString("// Put your startup code here...\n");
             directory.child(settings.getShutdownScript()).writeString("// Put your shutdown code here...\n");
 
@@ -64,27 +120,23 @@ public class Distributor extends AbstractPlugin{
                 throw new RuntimeException("Failed to create the default config file.", e);
             }
         }
+    }
 
-        // Loader setup ---------------------------------------------------------------------------
+    public void initLoaders(){
+        sharedClassLoader = new SharedClassLoader(Distributor.class.getClassLoader(), Vars.mods.list());
 
         try{
-            scriptLoader = new URLClassLoader(
+            scriptLoader = new ResourceLoader(
                 new URL[]{settings.getScriptsPath().file().toURI().toURL()}, Distributor.class.getClassLoader());
         }catch(MalformedURLException e){
             throw new RuntimeException("Failed to initialize the script loader.", e);
         }
+    }
 
-        // Rhino setup ----------------------------------------------------------------------------
-
+    public void initRhino(){
+        contextFactory = new TimedContextFactory(settings.getMaxRuntimeDuration());
+        contextFactory.addListener(new DistributorContextListener());
         ContextFactory.initGlobal(contextFactory);
-
-        // Applies the required settings
-        Events.on(ContextCreateEvent.class, e -> {
-            e.context().setOptimizationLevel(9);
-            e.context().setLanguageVersion(Context.VERSION_ES6);
-            e.context().setApplicationClassLoader(sharedClassLoader);
-            e.context().getWrapFactory().setJavaPrimitiveWrap(false);
-        });
 
         // Compiles the init script for faster loading time
         initScript = contextFactory.call(ctx -> {
@@ -96,7 +148,8 @@ public class Distributor extends AbstractPlugin{
         });
 
         ScriptEngine.setGlobalFactory(() -> {
-            Context context = Context.enter();
+            Context context = Context.getCurrentContext();
+            if(context == null) context = Context.enter();
             ScriptEngine engine = new ScriptEngine(context);
             engine.setupRequire(scriptLoader);
 
@@ -109,74 +162,46 @@ public class Distributor extends AbstractPlugin{
 
             return engine;
         });
-
-        // Extra ----------------------------------------------------------------------------------
-
-        Core.app.addListener(listener);
     }
 
-    public static Distributor getInstance(){
-        return (Distributor)Vars.mods.getMod(INTERNAL_NAME).main;
-    }
-
-    public static ClassLoader getSharedClassLoader(){
-        return sharedClassLoader;
-    }
-
-    public static ClassLoader getScriptLoader(){
-        return scriptLoader;
-    }
-
-    public static DistributorSettings getSettings(){
-        return settings;
-    }
-
-    @Override
-    public void init(){
-        try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
-            if(in == null) throw new IOException("Asset not found.");
-            IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
-            Log.info(" > ");
-        }catch(IOException e){
-            Log.info("Initialized DistributorPlugin !");
-        }
-    }
-
-    @Override
-    public void registerServerCommands(CommandHandler handler){
-        serverRegistry.register(jsx);
-        serverRegistry.export(handler);
-    }
-
-    @Override
-    public void registerClientCommands(CommandHandler handler){
-        clientRegistry.register(jsx);
-        clientRegistry.export(handler);
-    }
-
-    private static class DistributorListener implements ApplicationListener{
+    private static class DistributorApplication implements ApplicationListener{
         @Override
         public void init(){
             String script = settings.getStartupScript();
-            if(script == null) return;
 
-            try{
-                ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
-            }catch(ScriptException | IOException e){
-                throw new RuntimeException("Failed to run the startup script " + script + ".", e);
+            if(script != null){
+                try{
+                    ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
+                }catch(ScriptException | IOException e){
+                    throw new RuntimeException("Failed to run the startup script " + script + ".", e);
+                }
             }
         }
 
         @Override
         public void dispose(){
             String script = settings.getShutdownScript();
-            if(script == null) return;
 
-            try{
-                ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
-            }catch(ScriptException | IOException e){
-                Log.err("Failed to run the shutdown script " + script + ".", e);
+            if(script != null){
+                try{
+                    ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
+                }catch(ScriptException | IOException e){
+                    Log.err("Failed to run the shutdown script " + script + ".", e);
+                }
             }
+        }
+    }
+
+    private static class DistributorContextListener implements Listener{
+        @Override
+        public void contextCreated(Context ctx){
+            ctx.setOptimizationLevel(9);
+            ctx.setLanguageVersion(Context.VERSION_ES6);
+            ctx.setApplicationClassLoader(getSharedClassLoader());
+            ctx.getWrapFactory().setJavaPrimitiveWrap(false);
+        }
+
+        @Override public void contextReleased(Context ctx){
         }
     }
 }

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.*;
 
 import java.util.*;
 
-import static fr.xpdustry.distributor.command.Commands.getSimpleTypeName;
+import static fr.xpdustry.distributor.command.Commands.getParameterTypeName;
 import static java.util.Objects.requireNonNull;
 
 
@@ -50,7 +50,7 @@ public class CommandAdapter implements CommandRunner<Playerc>{
                 bundle.send(player, "exc.command.arg.size.few", e.getMinArgumentSize(), e.getActualArgumentSize());
             }
         }catch(ArgumentParsingException e){
-            bundle.send(player, "exc.command.arg.parsing", e.getParameter().getName(), getSimpleTypeName(e.getParameter().getValueType()), e.getArgument());
+            bundle.send(player, "exc.command.arg.parsing", e.getParameter().getName(), getParameterTypeName(e.getParameter()), e.getArgument());
         }catch(ArgumentValidationException e){
             if(e.getParameter() instanceof NumericParameter p){
                 bundle.send(player, "exc.command.arg.validation.numeric", p.getName(), p.getMin(), p.getMax(), e.getArgument());
