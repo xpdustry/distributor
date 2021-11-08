@@ -18,10 +18,19 @@ import static fr.xpdustry.distributor.command.Commands.getSimpleTypeName;
 import static java.util.Objects.requireNonNull;
 
 
-public class CommandWrapper implements CommandRunner<Playerc>{
+/**
+ * This class wraps a {@code Command} for a {@code CommandHandler}.
+ *
+ * <blockquote>
+ * <strong>Implementation notes</strong>
+ * <br>
+ * You should only subclass it if you add more parameter types.
+ * </blockquote>
+ */
+public class CommandAdapter implements CommandRunner<Playerc>{
     private final @NotNull Command<Playerc> command;
 
-    public CommandWrapper(@NotNull Command<Playerc> command){
+    public CommandAdapter(@NotNull Command<Playerc> command){
         this.command = requireNonNull(command, "command can't be null.");
     }
 
@@ -53,6 +62,7 @@ public class CommandWrapper implements CommandRunner<Playerc>{
         }
     }
 
+    /** @return the wrapped command */
     public @NotNull Command<Playerc> getCommand(){
         return command;
     }

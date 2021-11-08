@@ -5,15 +5,12 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.gen.*;
-import mindustry.server.*;
 
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.script.TimedContextFactory.*;
-import fr.xpdustry.xcommand.parameter.numeric.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -23,7 +20,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
-import static fr.xpdustry.distributor.plugin.commands.Lambdas.jsx;
+import static fr.xpdustry.distributor.internal.commands.Lambdas.jsx;
 
 
 public class Distributor extends AbstractPlugin{
@@ -100,7 +97,6 @@ public class Distributor extends AbstractPlugin{
 
         ScriptEngine.setGlobalFactory(() -> {
             Context context = Context.enter();
-
             ScriptEngine engine = new ScriptEngine(context);
             engine.setupRequire(scriptLoader);
 

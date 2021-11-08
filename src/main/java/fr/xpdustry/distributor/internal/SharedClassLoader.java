@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 
 /**
- * Use the same technique as the ModClassLoader of v7
+ * This {@code ClassLoader} uses same technique as the ModClassLoader of V7.
  */
 public class SharedClassLoader extends ClassLoader{
     /** Shared mod list */

@@ -22,13 +22,17 @@ import java.util.*;
 public final class Commands{
     public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
 
-    public static final ArgumentParser<Boolean> EXTENDED_BOOLEAN_PARSER = arg -> {
-        return switch(arg.toLowerCase()){
+    /**
+     * The default boolean {@code ArgumentParser} only accepts "true" as true,
+     * use this if you want to have more options.
+     */
+    public static final ArgumentParser<Boolean> EXTENDED_BOOLEAN_PARSER =
+        arg -> switch(arg.toLowerCase()){
             case "true", "on", "enabled" -> true;
             default -> false;
         };
-    };
 
+    /** A dummy player instance for servers. */
     public static final Playerc SERVER_PLAYER = new Player(){
         @Override public void sendMessage(String text){
             Log.info(text);
@@ -43,6 +47,7 @@ public final class Commands{
         }
     };
 
+    /** A simple validator for admin commands. */
     public static final ContextValidator<Playerc> ADMIN_VALIDATOR = ctx -> {
         Playerc player = ctx.getCaller();
 
@@ -58,10 +63,12 @@ public final class Commands{
         /* No. */
     }
 
+    /** @return the client {@code CommandHandler}. */
     public static @Nullable CommandHandler getClientCommands(){
         return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
     }
 
+    /** @return the server {@code CommandHandler}. */
     public static @Nullable CommandHandler getServerCommands(){
         if(Core.app == null) return null;
         ServerControl server = (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);

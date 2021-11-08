@@ -13,7 +13,7 @@ import org.jetbrains.annotations.*;
 
 
 /**
- * Plugins using Distributor should extend this class.
+ * If you want to use distributor features, you should extend this class.
  */
 public abstract class AbstractPlugin extends Plugin implements Disposable{
     protected final CommandRegistry serverRegistry = new CommandRegistry();

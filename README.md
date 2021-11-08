@@ -15,11 +15,11 @@
 Add these in your build.gradle
 
 ```gradle
-repositories {
+repositories{
     maven { url 'https://jitpack.io' }
 }
 
-dependencies {
+dependencies{
     compileOnly 'fr.xpdustry.Distributor:1.7'
 }
 ```
@@ -44,6 +44,9 @@ Distributor will also deploy its file tree and download some resources from this
 ## TODO
 
 [x] - Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
+
 [ ] - Create standard API (better API bindings for mindustry, especially for moderation)
+
 [ ] - Create JavaScript Debugger
+
 [ ] - Create the dynamic plugin loader (Pretty advanced stuff)

@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.plugin.commands;
+package fr.xpdustry.distributor.internal.commands;
 
 import mindustry.gen.*;
 
