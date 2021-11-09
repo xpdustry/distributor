@@ -67,8 +67,6 @@ You can get it [here](https://github.com/Phinner/Mindustry/releases/tag/v126.3).
 
 ## TODO
 
-- [x] Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
-
 - [ ] Complete Distributor stdlib:
     - [X] Localization
     - [X] Commands
