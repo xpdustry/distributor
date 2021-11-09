@@ -157,7 +157,6 @@ public class ScriptEngine implements AutoCloseable{
 
     @Override
     public void close(){
-        System.out.println("close");
         Context.exit();
         threadInstance.remove();
     }

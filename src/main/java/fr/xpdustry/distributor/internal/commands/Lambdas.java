@@ -19,8 +19,8 @@ public final class Lambdas{
             .description("Run some javascript with Distributor.")
             .parameter(StringParameter.of("script").variadic().tokenizer(ParameterTokenizer.NONE))
             .runner(ctx -> {
-                try(var engine = ScriptEngine.getInstance()){
-                    var obj = engine.eval(ctx.getArgument(0));
+                try{
+                    var obj = ScriptEngine.getInstance().eval(ctx.getArgument(0));
                     ctx.getCaller().sendMessage(">>> " + ScriptEngine.toString(obj));
                     ctx.setResult(obj);
                 }catch(ScriptException e){

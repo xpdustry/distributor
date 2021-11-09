@@ -30,17 +30,11 @@ public class Distributor extends AbstractPlugin{
     private static DistributorSettings settings;
 
     private static Script initScript;
-    private static TimedContextFactory contextFactory;
-
     private static ResourceLoader scriptLoader;
     private static ClassLoader sharedClassLoader;
 
     public static Distributor getInstance(){
         return (Distributor)Vars.mods.getMod(INTERNAL_NAME).main;
-    }
-
-    public static ClassLoader getSharedClassLoader(){
-        return sharedClassLoader;
     }
 
     public static ResourceLoader getScriptLoader(){
@@ -49,10 +43,6 @@ public class Distributor extends AbstractPlugin{
 
     public static DistributorSettings getSettings(){
         return settings;
-    }
-
-    public static TimedContextFactory getContextFactory(){
-        return contextFactory;
     }
 
     @Override
@@ -69,13 +59,28 @@ public class Distributor extends AbstractPlugin{
         Time.mark();
         Log.info("Loading Distributor...");
 
+        // BEGIN LOADING --------------------------------------------------------------------------
+
         settings = ConfigFactory.create(DistributorSettings.class);
+        System.out.println(settings.getRootPath());
+        System.out.println(settings.getScriptsPath());
 
         initFileTree();
-        initLoaders();
+
+        sharedClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
+        scriptLoader = new ResourceLoader(getClass().getClassLoader());
+
+        try{
+            scriptLoader.addResource(settings.getScriptsPath().file());
+        }catch(MalformedURLException e){
+            throw new RuntimeException("Failed to initialize the script loader.", e);
+        }
+
         initRhino();
 
         Core.app.addListener(new DistributorApplication());
+
+        // END LOADING ----------------------------------------------------------------------------
 
         Log.info("Loaded Distributor in @ milliseconds.", Time.elapsed());
     }
@@ -99,6 +104,7 @@ public class Distributor extends AbstractPlugin{
             directory.mkdirs();
         }
 
+        // FIXME NPE HERE ???? WHAT THE FUCK ?????
         if(!(directory = settings.getScriptsPath()).exists()){
             directory.mkdirs();
 
@@ -112,35 +118,18 @@ public class Distributor extends AbstractPlugin{
             // Creates 2 empty scripts (startup/shutdown)
             directory.child(settings.getStartupScript()).writeString("// Put your startup code here...\n");
             directory.child(settings.getShutdownScript()).writeString("// Put your shutdown code here...\n");
-
-            // Creates the property file inside the server config directory
-            try(var out = new FileOutputStream("./config/distributor.properties")){
-                settings.store(out, "The config file. If a key is messing, it will fallback to the default one.");
-            }catch(IOException e){
-                throw new RuntimeException("Failed to create the default config file.", e);
-            }
-        }
-    }
-
-    public void initLoaders(){
-        sharedClassLoader = new SharedClassLoader(Distributor.class.getClassLoader(), Vars.mods.list());
-
-        try{
-            scriptLoader = new ResourceLoader(
-                new URL[]{settings.getScriptsPath().file().toURI().toURL()}, Distributor.class.getClassLoader());
-        }catch(MalformedURLException e){
-            throw new RuntimeException("Failed to initialize the script loader.", e);
         }
     }
 
     public void initRhino(){
-        contextFactory = new TimedContextFactory(settings.getMaxRuntimeDuration());
-        contextFactory.addListener(new DistributorContextListener());
-        ContextFactory.initGlobal(contextFactory);
+        ContextFactory factory = new TimedContextFactory(settings.getMaxScriptRuntime());
+        factory.addListener(new DistributorContextListener());
+
+        ContextFactory.initGlobal(factory);
 
         // Compiles the init script for faster loading time
-        initScript = contextFactory.call(ctx -> {
-            try(var reader = settings.getScriptsPath().child(settings.getInitScript()).reader()){
+        initScript = factory.call(ctx -> {
+            try(var reader = settings.getScript(settings.getInitScript()).reader()){
                 return ctx.compileReader(reader, settings.getInitScript(), 0, null);
             }catch(IOException e){
                 throw new RuntimeException("Failed to compile the init script.", e);
@@ -150,6 +139,7 @@ public class Distributor extends AbstractPlugin{
         ScriptEngine.setGlobalFactory(() -> {
             Context context = Context.getCurrentContext();
             if(context == null) context = Context.enter();
+
             ScriptEngine engine = new ScriptEngine(context);
             engine.setupRequire(scriptLoader);
 
@@ -171,7 +161,7 @@ public class Distributor extends AbstractPlugin{
 
             if(script != null){
                 try{
-                    ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
+                    ScriptEngine.getInstance().exec(settings.getScript(script));
                 }catch(ScriptException | IOException e){
                     throw new RuntimeException("Failed to run the startup script " + script + ".", e);
                 }
@@ -184,7 +174,7 @@ public class Distributor extends AbstractPlugin{
 
             if(script != null){
                 try{
-                    ScriptEngine.getInstance().exec(settings.getScriptsPath().child(script));
+                    ScriptEngine.getInstance().exec(settings.getScript(script));
                 }catch(ScriptException | IOException e){
                     Log.err("Failed to run the shutdown script " + script + ".", e);
                 }
@@ -197,7 +187,7 @@ public class Distributor extends AbstractPlugin{
         public void contextCreated(Context ctx){
             ctx.setOptimizationLevel(9);
             ctx.setLanguageVersion(Context.VERSION_ES6);
-            ctx.setApplicationClassLoader(getSharedClassLoader());
+            ctx.setApplicationClassLoader(sharedClassLoader);
             ctx.getWrapFactory().setJavaPrimitiveWrap(false);
         }
 

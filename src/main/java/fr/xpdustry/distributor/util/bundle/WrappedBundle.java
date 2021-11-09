@@ -49,6 +49,7 @@ public class WrappedBundle{
         return bundle.getLocale();
     }
 
+
     public @NotNull String get(@NotNull String key, Object... args){
         if(bundle.containsKey(key)){
             return Strings.format(bundle.getString(key), args);

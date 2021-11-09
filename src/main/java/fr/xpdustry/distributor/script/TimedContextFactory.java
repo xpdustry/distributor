@@ -1,13 +1,9 @@
 package fr.xpdustry.distributor.script;
 
-import arc.*;
-
 import fr.xpdustry.distributor.exception.*;
 
-import org.jetbrains.annotations.*;
 import org.mozilla.javascript.*;
 
-import static java.util.Objects.requireNonNull;
 import static org.mozilla.javascript.Context.*;
 
 
@@ -57,16 +53,6 @@ public class TimedContextFactory extends ContextFactory{
         }
     }
 
-    @Override
-    protected void onContextCreated(Context cx){
-        Events.fire(new ContextCreateEvent(cx));
-    }
-
-    @Override
-    protected void onContextReleased(Context cx){
-        Events.fire(new ContextReleaseEvent(cx));
-    }
-
     /** Custom Context to store execution time. */
     public static class TimedContext extends Context{
         private long startTime;
@@ -77,18 +63,6 @@ public class TimedContextFactory extends ContextFactory{
 
         public long getStartTime(){
             return startTime;
-        }
-    }
-
-    public record ContextCreateEvent(@NotNull Context context){
-        public ContextCreateEvent{
-            requireNonNull(context, "context can't be null.");
-        }
-    }
-
-    public record ContextReleaseEvent(@NotNull Context context){
-        public ContextReleaseEvent{
-            requireNonNull(context, "context can't be null.");
         }
     }
 }

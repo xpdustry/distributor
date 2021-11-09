@@ -1,3 +1,4 @@
+//file:noinspection GradlePackageUpdate
 import groovy.json.JsonSlurper
 import java.nio.charset.StandardCharsets
 
@@ -6,7 +7,7 @@ buildscript{
     ext{
         // Properties
         mindustryVersion = property("props.mindustry-version")
-        serverDirectoryPath = property("props.mindustry-server-directory")
+        serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
         // Plugin metadata extracted from plugin.json
         metadata = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
     }
@@ -43,6 +44,9 @@ dependencies{
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
     compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
+    // Annotations
+    compileOnly 'org.jetbrains:annotations:22.0.0'
+
     // Xpdustry
     implementation 'fr.xpdustry:XCommand:v1.8'
 
@@ -51,16 +55,22 @@ dependencies{
 
     // Helper
     implementation 'commons-io:commons-io:2.11.0'
-    implementation 'org.aeonbits.owner:owner-java8:1.0.12'
+    implementation 'org.aeonbits.owner:owner:1.0.12'
     implementation 'io.leangen.geantyref:geantyref:1.3.11'
-    implementation 'org.javatuples:javatuples:1.2'
 
+    // Tests
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.1"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-    // Maybe...
-    // implementation 'org.apache.commons:commons-lang3:3.12.0'
+    testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+    testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
 
-    // Annotations
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    testImplementation 'fr.xpdustry:XCommand:v1.8'
+    testImplementation "org.mozilla:rhino:1.7.13"
+    testImplementation 'org.aeonbits.owner:owner:1.0.12'
+    testImplementation 'io.leangen.geantyref:geantyref:1.3.11'
+
 }
 
 
@@ -97,39 +107,41 @@ jar{
 }
 
 
-task moveJar{
-    dependsOn jar
+if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
+    task moveJar{
+        dependsOn jar
 
-    doLast{
-        // Deletes all the jar files that begins with the base artifact name
-        delete file("$serverDirectoryPath/config/mods").listFiles({
-            it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
-        } as FileFilter)
+        doLast{
+            if(!file("$serverDirectoryPath/config").exists()){
+                throw new GradleException("Initialize the server files first.")
+            }
 
-        copy{
-            from jar.archiveFile.get()
-            into file("$serverDirectoryPath/config/mods")
+            // Deletes all the jar files that begins with the base artifact name
+            delete file("$serverDirectoryPath/config/mods").listFiles({
+                it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
+            } as FileFilter)
+
+            copy{
+                from jar.archiveFile.get()
+                into file("$serverDirectoryPath/config/mods")
+            }
         }
     }
-}
 
-task runServer(type: JavaExec){
-    workingDir = serverDirectoryPath
-    classpath = files("$serverDirectoryPath/server.jar")
-    mainClass = "mindustry.server.ServerLauncher"
-    standardInput = System.in
-}
 
-task deployJar{
-    dependsOn moveJar
-    dependsOn runServer
-}
-
-// Makes sure the task are only available if the props.mindustry-server-directory is set correctly
-for(Task serverTask : [moveJar, runServer, deployJar]){
-    serverTask.configure{
-        onlyIf{ file(serverDirectoryPath).exists() }
+    task runServer(type: JavaExec){
+        workingDir = serverDirectoryPath
+        classpath = files("$serverDirectoryPath/server.jar")
+        mainClass = "mindustry.server.ServerLauncher"
+        standardInput = System.in
     }
+
+    task deployJar{
+        dependsOn moveJar
+        dependsOn runServer
+    }
+}else{
+    println "Attention, MINDUSTRY_SERVER_HOME environment variable is not set. You won't be able to deploy the plugin from Gradle!"
 }
 
 // Required if you want to use the Release GitHub action

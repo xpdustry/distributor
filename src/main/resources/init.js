@@ -12,14 +12,14 @@ const cons = method => new Cons(){get: method}
 const prov = method => new Prov(){get: method}
 const func = method => new Func(){get: method}
 
-const debug = function(/*text, args...*/) Log.debug(arguments[0], Array.from(arguments).splice(1, arguments.length));
-const info = function(/*text, args...*/) Log.info(arguments[0], Array.from(arguments).splice(1, arguments.length));
-const warn = function(/*text, args...*/) Log.warn(arguments[0], Array.from(arguments).splice(1, arguments.length));
-const err = function(/*text, args...*/) Log.err(arguments[0], Array.from(arguments).splice(1, arguments.length));
+const debug = function(/*text, args...*/){Log.debug(arguments[0], Array.from(arguments).splice(1, arguments.length))}
+const info = function(/*text, args...*/){Log.info(arguments[0], Array.from(arguments).splice(1, arguments.length))}
+const warn = function(/*text, args...*/){Log.warn(arguments[0], Array.from(arguments).splice(1, arguments.length))}
+const err = function(/*text, args...*/){Log.err(arguments[0], Array.from(arguments).splice(1, arguments.length))}
 
-const print = text => Packages.java.lang.System.out.print(text);
-const println = text => Packages.java.lang.System.out.println(text);
-const printf = function(/*text, args...*/) Packages.java.lang.System.out.printf(arguments[0], Array.from(arguments).splice(1, arguments.length));
+const print = text => Packages.java.lang.System.out.print(text)
+const println = text => Packages.java.lang.System.out.println(text)
+const printf = function(/*text, args...*/){java.lang.System.out.printf(arguments[0], Array.from(arguments).splice(1, arguments.length))}
 
 const jCall = Call
 Call = Packages.mindustry.gen.Call
@@ -41,7 +41,6 @@ const extend = function(/*Base, ..., def*/){
     }
     return instance
 }
-
 
 importPackage(Packages.arc)
 importPackage(Packages.arc.func)

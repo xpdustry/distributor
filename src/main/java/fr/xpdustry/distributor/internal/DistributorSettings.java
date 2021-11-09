@@ -7,13 +7,17 @@ import org.aeonbits.owner.Config.*;
 
 
 @Sources("file:./config/distributor.properties")
-public interface DistributorSettings extends Config, Accessible{
+public interface DistributorSettings extends Accessible{
     @DefaultValue("./distributor")
     @Key("distributor.path")
     Fi getRootPath();
 
     default Fi getScriptsPath(){
         return getRootPath().child("scripts");
+    }
+
+    default Fi getScript(String script){
+        return getScriptsPath().child(script);
     }
 
     default Fi getLogsPath(){
@@ -33,6 +37,6 @@ public interface DistributorSettings extends Config, Accessible{
     String getShutdownScript();
 
     @DefaultValue("10")
-    @Key("distributor.scripts.max-runtime-duration")
-    int getMaxRuntimeDuration();
+    @Key("distributor.scripts.max-runtime")
+    int getMaxScriptRuntime();
 }
