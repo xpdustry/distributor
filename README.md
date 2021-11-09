@@ -6,13 +6,37 @@
 
 ## Description
 
-**Distributor** is a Mindustry plugin that can be used as a library to make plugin development easier, or as a Server Manager to automate your server tasks via javascript.
+**Distributor** is a Plugin that provides better Mindustry API bindings and features that can be implemented in Java or JavaScript, making development time much faster.
+
+[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v1.6/javadoc/)
 
 ## Usage
 
-### As a Library
+### As a Plugin
 
-Add these in your build.gradle
+#### Installation
+
+- Launch your server with the plugin to deploy its file tree, for now it's only the `scripts` subdirectory.
+
+- It will also create a property file inside the `config` directory, edit it to change the boot options of Distributor.
+
+#### Scripting
+
+Distributor brings its own JavaScript runtime so no worries about V6-V7 compatibilities issues. Here are some things to know:
+
+- The init script will run once, for every `ScriptEngine` instance created (one per thread), so include your global imports and functions there.
+
+- The startup script will run once in the main thread, same for the shutdown script.
+
+- To not overwrite the default `js` command, use `jsx` to run javascript in the terminal with Distributor.
+
+- The `require` function is set up to the root of the `scripts` subdirectory inside the root directory of Distributor.
+
+- Distributor automatically kills blocking scripts after 10 seconds of runtime by default, you can change that behavior in the property file.
+
+### As a Dependency
+
+First, add these in your build.gradle
 
 ```gradle
 repositories{
@@ -20,26 +44,22 @@ repositories{
 }
 
 dependencies{
-    compileOnly 'fr.xpdustry.Distributor:1.7'
+    compileOnly 'fr.xpdustry.Distributor:1.6'
 }
 ```
 
-No proper javadoc for now, but feel free to ask me stuff through the pr or discord at Phinner#0867 (Make sure you join the Mindustry discord first).
+Now, if you are running a V7 server, you will just have to add distributor in the dependency list of your plugin with:
+```json
+{
+  "dependencies": ["xpdustry-distributor-plugin"]
+}
+```
+Making sure you have the Distributor jar in the `mods` directory of your server, and you'll be good.
 
-### As a Plugin
+But If you are running a V6 server, since it doesn't use the same class loader for each plugin, you will have funny `ClassNotFoundException` all over the place.
 
-#### First use
-
-When you will launch this plugin for the first time, it will create a property file inside the config directory that Distributor will use as its config.
-Distributor will also deploy its file tree and download some resources from this repo such as the default init script.
-
-#### Scripting with Distributor
-
-- The init script will run for every ScriptEngine created (one per thread), so include your global imports and functions there.
-- The startup scripts will run only once in the main thread, same for the shutdown scripts.
-- To not overwrite the default `js` command, use `jscript` to run javascript with distributor instead.
-- The `require` function is set up to the root of the `scripts` directory inside the root directory of Distributor. Use it to load your scripts.
-- If you are scared of blocking scripts, don't worry, distributor automatically kills it after 10 seconds of runtime by default, you can change that setting in the property file.
+Fortunately for you, you won't have to fork this plugin to just apply your stuff, you just have to use the custom build I made that adds the shared class loader + unlocking the default `js` command.
+You can get it [here](https://github.com/Phinner/Mindustry/releases/tag/v126.3).
 
 ## TODO
 
