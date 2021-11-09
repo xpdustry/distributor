@@ -61,12 +61,21 @@ But If you are running a V6 server, since it doesn't use the same class loader f
 Fortunately for you, you won't have to fork this plugin to just apply your stuff, you just have to use the custom build I made that adds the shared class loader + unlocking the default `js` command.
 You can get it [here](https://github.com/Phinner/Mindustry/releases/tag/v126.3).
 
+## Nice tips
+
+- If you have a multiple servers on the same vps, you can share Distributor files between each server by changing the value of `distributor.path` inside each `distributor.properties`. Very handy :^)
+
 ## TODO
 
-[x] - Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
+- [x] Implement localization in distributor (The tools are available and the base files done, just need to implement it directly).
 
-[ ] - Create standard API (better API bindings for mindustry, especially for moderation)
+- [ ] Complete Distributor stdlib:
+    - [X] Localization
+    - [X] Commands
+    - [ ] Moderation
+    - [ ] Network (Socket API)
+    - [ ] Queries on the `settings.bin` database
 
-[ ] - Create JavaScript Debugger
+- [ ] Create JavaScript Debugger
 
-[ ] - Create the dynamic plugin loader (Pretty advanced stuff)
+- [ ] Create the dynamic plugin loader (Pretty advanced stuff)
