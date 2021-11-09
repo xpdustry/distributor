@@ -6,6 +6,7 @@ import arc.util.*;
 
 import mindustry.*;
 
+import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
@@ -26,9 +27,9 @@ import static fr.xpdustry.distributor.internal.commands.Lambdas.jsx;
 
 public class Distributor extends AbstractPlugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
+    public static final String SETTINGS_PATH = "./config/distributor.properties";
 
     private static DistributorSettings settings;
-
     private static Script initScript;
     private static ResourceLoader scriptLoader;
     private static ClassLoader sharedClassLoader;
@@ -62,8 +63,6 @@ public class Distributor extends AbstractPlugin{
         // BEGIN LOADING --------------------------------------------------------------------------
 
         settings = ConfigFactory.create(DistributorSettings.class);
-        System.out.println(settings.getRootPath());
-        System.out.println(settings.getScriptsPath());
 
         initFileTree();
 
@@ -87,37 +86,43 @@ public class Distributor extends AbstractPlugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        serverRegistry.register(jsx);
-        serverRegistry.export(handler);
+        Commands.register(handler, jsx);
     }
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        clientRegistry.register(jsx);
-        clientRegistry.export(handler);
+        Commands.register(handler, jsx);
     }
 
     public void initFileTree(){
-        Fi directory; // Temporary variable for checking each directory
+        Fi file; // Temporary variable for checking each directory/file existence
 
-        if(!(directory = settings.getRootPath()).exists()){
-            directory.mkdirs();
+        if(!(file = settings.getRootPath()).exists()){
+            file.mkdirs();
         }
 
-        // FIXME NPE HERE ???? WHAT THE FUCK ?????
-        if(!(directory = settings.getScriptsPath()).exists()){
-            directory.mkdirs();
+        if(!(file = settings.getScriptsPath()).exists()){
+            file.mkdirs();
 
             // Copy the default init script
-            try(var in = Distributor.class.getClassLoader().getResourceAsStream("init.js")){
-                directory.child("init.js").write(in, false);
+            try(var in = getClass().getClassLoader().getResourceAsStream("init.js")){
+                file.child("init.js").write(in, false);
             }catch(IOException e){
                 throw new RuntimeException("Failed to create the default init script.", e);
             }
 
             // Creates 2 empty scripts (startup/shutdown)
-            directory.child(settings.getStartupScript()).writeString("// Put your startup code here...\n");
-            directory.child(settings.getShutdownScript()).writeString("// Put your shutdown code here...\n");
+            file.child(settings.getStartupScript()).writeString("// Put your startup code here...\n");
+            file.child(settings.getShutdownScript()).writeString("// Put your shutdown code here...\n");
+        }
+
+        if(!(file = new Fi(SETTINGS_PATH)).exists()){
+            // Creates the property file inside the server config directory
+            try(var out = file.write()){
+                settings.store(out, "This is the config file. If a key is messing, it will fallback to the default one.");
+            }catch(IOException e){
+                throw new RuntimeException("Failed to create the default config file.", e);
+            }
         }
     }
 
@@ -159,7 +164,7 @@ public class Distributor extends AbstractPlugin{
         public void init(){
             String script = settings.getStartupScript();
 
-            if(script != null){
+            if(script != null && !script.isBlank()){
                 try{
                     ScriptEngine.getInstance().exec(settings.getScript(script));
                 }catch(ScriptException | IOException e){
@@ -172,7 +177,7 @@ public class Distributor extends AbstractPlugin{
         public void dispose(){
             String script = settings.getShutdownScript();
 
-            if(script != null){
+            if(script != null && !script.isBlank()){
                 try{
                     ScriptEngine.getInstance().exec(settings.getScript(script));
                 }catch(ScriptException | IOException e){

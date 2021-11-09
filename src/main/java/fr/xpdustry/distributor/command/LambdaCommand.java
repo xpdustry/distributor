@@ -20,10 +20,6 @@ public class LambdaCommand<C> extends Command<C>{
         this.runner = runner;
     }
 
-    public static <C> LambdaCommandBuilder<C> of(@NotNull String name, @NotNull TypeToken<? extends C> callerType){
-        return new LambdaCommandBuilder<>(name, callerType);
-    }
-
     @Override
     protected void execute(@NotNull CommandContext<C> context){
         runner.handleContext(context);

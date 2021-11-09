@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.util;
 
-
 import arc.*;
 import arc.func.*;
 

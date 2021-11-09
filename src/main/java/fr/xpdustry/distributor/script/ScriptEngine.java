@@ -37,7 +37,7 @@ public class ScriptEngine implements AutoCloseable{
         ScriptEngine.factory.set(factory);
     }
 
-    /** @return the current or a new instance of {@code ScriptEngine}*/
+    /** @return the current or a new instance of {@code ScriptEngine} */
     public static ScriptEngine getInstance(){
         return threadInstance.get();
     }
@@ -58,7 +58,7 @@ public class ScriptEngine implements AutoCloseable{
         return newScope(importer);
     }
 
-    public @NotNull Scriptable newScope(Scriptable parent){
+    public @NotNull Scriptable newScope(@NotNull Scriptable parent){
         Scriptable scope = ctx.newObject(parent);
         // Ensures that definitions in the root scope are found.
         scope.setPrototype(parent);
@@ -67,7 +67,7 @@ public class ScriptEngine implements AutoCloseable{
         return scope;
     }
 
-    public void setupRequire(ClassLoader loader){
+    public void setupRequire(@NotNull ClassLoader loader){
         if(hasRequire()) throw new IllegalStateException("The require is already set up for this engine");
 
         require = new RequireBuilder()
@@ -83,11 +83,11 @@ public class ScriptEngine implements AutoCloseable{
         return require != null;
     }
 
-    public Object eval(String source) throws ScriptException{
+    public Object eval(@NotNull String source) throws ScriptException{
         return eval(importer, source, toString());
     }
 
-    public Object eval(Scriptable scope, String source, String sourceName) throws ScriptException{
+    public Object eval(@NotNull Scriptable scope, @NotNull String source, @NotNull String sourceName) throws ScriptException{
         try{
             return ctx.evaluateString(scope, source, sourceName, 1, null);
         }catch(Exception | BlockingScriptError e){
@@ -95,23 +95,23 @@ public class ScriptEngine implements AutoCloseable{
         }
     }
 
-    public Script compileScript(String source, String sourceName){
+    public Script compileScript(@NotNull String source, @NotNull String sourceName){
         return ctx.compileString(source, sourceName, 1, null);
     }
 
-    public Script compileScript(Reader reader, String sourceName) throws IOException{
+    public Script compileScript(@NotNull Reader reader, @NotNull String sourceName) throws IOException{
         return ctx.compileReader(reader, sourceName, 1, null);
     }
 
-    public Function compileFunction(Scriptable scope, String source, String sourceName){
+    public Function compileFunction(@NotNull Scriptable scope, @NotNull String source, @NotNull String sourceName){
         return ctx.compileFunction(scope, source, sourceName, 1, null);
     }
 
-    public Object invoke(Function function, Object... args) throws ScriptException{
+    public Object invoke(@NotNull Function function, Object... args) throws ScriptException{
         return invoke(function, importer, args);
     }
 
-    public Object invoke(Function function, Scriptable scope, Object... args) throws ScriptException{
+    public Object invoke(@NotNull Function function, @NotNull Scriptable scope, Object... args) throws ScriptException{
         try{
             return function.call(ctx, scope, scope, args);
         }catch(Exception | BlockingScriptError e){
@@ -119,11 +119,11 @@ public class ScriptEngine implements AutoCloseable{
         }
     }
 
-    public Object exec(Script script) throws ScriptException{
+    public Object exec(@NotNull Script script) throws ScriptException{
         return exec(script, importer);
     }
 
-    public Object exec(Script script, Scriptable scope) throws ScriptException{
+    public Object exec(@NotNull Script script, @NotNull Scriptable scope) throws ScriptException{
         try{
             return script.exec(ctx, scope);
         }catch(Exception | BlockingScriptError e){
@@ -131,27 +131,27 @@ public class ScriptEngine implements AutoCloseable{
         }
     }
 
-    public Object exec(Fi file) throws IOException, ScriptException{
+    public Object exec(@NotNull Fi file) throws IOException, ScriptException{
         return exec(file.file());
     }
 
-    public Object exec(File file) throws IOException, ScriptException{
+    public Object exec(@NotNull File file) throws IOException, ScriptException{
         try(InputStream stream = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(stream)){
             return exec(compileScript(reader, file.getName()));
         }
     }
 
-    public Context getContext(){
+    public @NotNull Context getContext(){
         return ctx;
     }
 
-    public ImporterTopLevel getImporter(){
+    public @NotNull ImporterTopLevel getImporter(){
         return importer;
     }
 
     @Override
-    public String toString(){
+    public @NotNull String toString(){
         return "engine@" + Integer.toHexString(hashCode()) + ".js";
     }
 

@@ -6,7 +6,9 @@ import java.util.*;
 import java.util.function.*;
 
 
-/** Holds a value and nothing else... */
+/**
+ * Holds a value and nothing else...
+ */
 public class Holder<T>{
     protected @Nullable T value;
 

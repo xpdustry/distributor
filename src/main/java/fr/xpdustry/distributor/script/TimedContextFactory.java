@@ -9,10 +9,10 @@ import static org.mozilla.javascript.Context.*;
 
 /** @see org.mozilla.javascript.ContextFactory */
 public class TimedContextFactory extends ContextFactory{
-    private final int maxRuntimeDuration;
+    private final int maxRuntime;
 
-    public TimedContextFactory(int maxRuntimeDuration){
-        this.maxRuntimeDuration = maxRuntimeDuration;
+    public TimedContextFactory(int maxRuntime){
+        this.maxRuntime = maxRuntime;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TimedContextFactory extends ContextFactory{
     protected void observeInstructionCount(Context ctx, int instructionCount){
         TimedContext tcx = (TimedContext)ctx;
         long currentTime = System.currentTimeMillis();
-        if(currentTime - tcx.startTime > maxRuntimeDuration * 1000L){
+        if(currentTime - tcx.startTime > maxRuntime * 1000L){
             throw new BlockingScriptError();
         }
     }

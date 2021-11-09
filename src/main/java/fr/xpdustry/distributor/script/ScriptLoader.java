@@ -1,5 +1,6 @@
 package fr.xpdustry.distributor.script;
 
+import org.jetbrains.annotations.*;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.commonjs.module.provider.*;
 
@@ -11,13 +12,13 @@ import java.util.*;
 public class ScriptLoader extends UrlModuleSourceProvider{
     private final ClassLoader loader;
 
-    public ScriptLoader(ClassLoader loader){
+    public ScriptLoader(@NotNull ClassLoader loader){
         super(null, null);
         this.loader = Objects.requireNonNull(loader, "The loader is null.");
     }
 
     @Override
-    public ModuleSource loadSource(String moduleId, Scriptable paths, Object validator) throws IOException, URISyntaxException{
+    public ModuleSource loadSource(@NotNull String moduleId, @NotNull Scriptable paths, @NotNull Object validator) throws IOException, URISyntaxException{
         URL url = loader.getResource(moduleId + ".js");
 
         if(url == null){

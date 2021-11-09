@@ -7,6 +7,7 @@ import mindustry.*;
 import mindustry.gen.*;
 import mindustry.server.*;
 
+import fr.xpdustry.distributor.command.LambdaCommand.*;
 import fr.xpdustry.distributor.util.bundle.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.context.*;
@@ -95,7 +96,7 @@ public final class Commands{
      *     </li>
      * </ul>
      *
-     * @param command the command, not null
+     * @param command  the command, not null
      * @param metadata whether you include parameter metadata in the parameterText
      * @return the parameterText of the command
      */
@@ -140,7 +141,7 @@ public final class Commands{
      */
     public static String getParameterTypeName(@NotNull CommandParameter<?> parameter){
         String[] fullName = parameter.getValueType().getType().getTypeName().split("\\.");
-        return fullName[fullName.length - 1];
+        return fullName[fullName.length - 1].toLowerCase();
     }
 
     /**
@@ -148,10 +149,12 @@ public final class Commands{
      *
      * @param handler the handler, not null
      * @param adapter the wrapped command, not null
+     * @return the command
      */
-    public static void register(@NotNull CommandHandler handler, @NotNull CommandAdapter adapter){
+    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull CommandAdapter adapter){
         Command<Playerc> command = adapter.getCommand();
         handler.register(command.getName(), getParameterText(command), command.getDescription(), adapter);
+        return command;
     }
 
     /**
@@ -159,8 +162,30 @@ public final class Commands{
      *
      * @param handler the handler, not null
      * @param command the command, not null
+     * @return the command
      */
-    public static void register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
-        register(handler, new CommandAdapter(command));
+    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
+        return register(handler, new CommandAdapter(command));
+    }
+
+    /**
+     * Registers a command from a {@code LambdaCommandBuilder}.
+     *
+     * @param handler the handler, not null
+     * @param builder the builder of the command, not null
+     * @return the built command
+     */
+    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull LambdaCommandBuilder<Playerc> builder){
+        return register(handler, builder.build());
+    }
+
+    /**
+     * Utility method that returns a new {@code LambdaCommandBuilder} with the player type.
+     *
+     * @param name the name of the command, not null
+     * @return a new {@code LambdaCommandBuilder}
+     */
+    public static LambdaCommandBuilder<Playerc> builder(@NotNull String name){
+        return new LambdaCommandBuilder<>(name, PLAYER_TYPE);
     }
 }

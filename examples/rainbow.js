@@ -21,10 +21,9 @@ const rainbow = extend(Timer.Task, {
     }
 });
 
-const registry = new CommandRegistry();
 
-const command = registry.register(registry.builder("rainbow")
-    .validator(Commands.DEFAULT_ADMIN_VALIDATOR)
+Commands.register(Commands.getClientCommands(), Commands.builder("rainbow")
+    .validator(Commands.ADMIN_VALIDATOR)
     .description("Make everyone fart a rainbow.")
     .parameter(BooleanParameter.of("status", Commands.EXTENDED_BOOLEAN_PARSER))
     .runner(ctx => {
@@ -37,5 +36,3 @@ const command = registry.register(registry.builder("rainbow")
         }
     })
 )
-
-registry.export(Commands.getClientCommands())

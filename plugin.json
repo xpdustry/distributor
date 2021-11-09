@@ -3,7 +3,7 @@
   "displayName": "Xpdustry Distributor Plugin",
   "author": "Phinner",
   "description": "A template plugin for easier development, enjoy.",
-  "version": "1.5",
+  "version": "1.6",
   "minGameVersion": "105",
   "hidden": true,
   "java": true,

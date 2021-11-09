@@ -2,7 +2,7 @@
  * A simple script to add auto-pause to your server.
  */
 
-// FIXME the autopause don't pause the server, it might to do something with the lastPauseStatus
+// TODO the autopause don't pause the server, it might to do something with the lastPauseStatus
 
 var active = true
 var lastPauseStatus = Vars.state.serverPaused

@@ -13,19 +13,18 @@ import org.mozilla.javascript.*;
 
 
 public final class Lambdas{
-    public static final Command<Playerc> jsx =
-        LambdaCommand.of("jsx", Commands.PLAYER_TYPE)
-            .validator(Commands.ADMIN_VALIDATOR)
-            .description("Run some javascript with Distributor.")
-            .parameter(StringParameter.of("script").variadic().tokenizer(ParameterTokenizer.NONE))
-            .runner(ctx -> {
-                try{
-                    var obj = ScriptEngine.getInstance().eval(ctx.getArgument(0));
-                    ctx.getCaller().sendMessage(">>> " + ScriptEngine.toString(obj));
-                    ctx.setResult(obj);
-                }catch(ScriptException e){
-                    ctx.getCaller().sendMessage(e.getMessage());
-                    ctx.setResult(Undefined.SCRIPTABLE_UNDEFINED);
-                }
-            }).build();
+    public static final Command<Playerc> jsx = Commands.builder("jsx")
+        .validator(Commands.ADMIN_VALIDATOR)
+        .description("Run some javascript with Distributor.")
+        .parameter(StringParameter.of("script").variadic().tokenizer(ParameterTokenizer.NONE))
+        .runner(ctx -> {
+            try{
+                var obj = ScriptEngine.getInstance().eval(ctx.getArgument(0));
+                ctx.getCaller().sendMessage(">>> " + ScriptEngine.toString(obj));
+                ctx.setResult(obj);
+            }catch(ScriptException e){
+                ctx.getCaller().sendMessage(e.getMessage());
+                ctx.setResult(Undefined.SCRIPTABLE_UNDEFINED);
+            }
+        }).build();
 }
