@@ -30,6 +30,7 @@ jobs:
           tag=$(echo $tag | tr -d \"," ")                   # Trim the " and , and spaces
           echo '::set-output name=RELEASE_TAG::'$tag        # Set the environment variable
           echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
+          echo $(./gradlew getArtifactPath -q)
 
       - name: Set up the changelog
         id: changelog
