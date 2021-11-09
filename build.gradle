@@ -125,8 +125,6 @@ if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
         dependsOn moveJar
         dependsOn runServer
     }
-}else{
-    println "Attention, MINDUSTRY_SERVER_HOME environment variable is not set. You won't be able to deploy the plugin from Gradle!"
 }
 
 // Required if you want to use the Release GitHub action
