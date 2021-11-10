@@ -7,11 +7,14 @@ import mindustry.*;
 import mindustry.gen.*;
 import mindustry.server.*;
 
+import fr.xpdustry.distributor.*;
 import fr.xpdustry.distributor.command.LambdaCommand.*;
 import fr.xpdustry.distributor.util.bundle.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.context.*;
+import fr.xpdustry.xcommand.exception.*;
 import fr.xpdustry.xcommand.parameter.*;
+import fr.xpdustry.xcommand.parameter.numeric.*;
 
 import io.leangen.geantyref.*;
 import org.jetbrains.annotations.Nullable;
@@ -56,10 +59,34 @@ public final class Commands{
         Playerc player = ctx.getCaller();
 
         if(player != Commands.SERVER_PLAYER && !player.admin()){
-            WrappedBundle.from("bundles/bundle", player).send(player, "prm.command.admin");
+            Distributor.getInstance().getBundle(player).send(player, "prm.command.admin");
             return false;
         }else{
             return true;
+        }
+    };
+
+    public static final ContextRunner<Playerc> COMMAND_INVOKER = ctx -> {
+        WrappedBundle bundle = Distributor.getInstance().getBundle(ctx.getCaller());
+
+        try{
+            ctx.invoke();
+        }catch(ArgumentSizeException e){
+            if(e.getMaxArgumentSize() < e.getActualArgumentSize()){
+                bundle.send(ctx.getCaller(), "exc.command.arg.size.many", e.getMaxArgumentSize(), e.getActualArgumentSize());
+            }else{
+                bundle.send(ctx.getCaller(), "exc.command.arg.size.few", e.getMinArgumentSize(), e.getActualArgumentSize());
+            }
+        }catch(ArgumentParsingException e){
+            bundle.send(ctx.getCaller(), "exc.command.arg.parsing", e.getParameter().getName(), getParameterTypeName(e.getParameter()), e.getArgument());
+        }catch(ArgumentValidationException e){
+            if(e.getParameter() instanceof NumericParameter p){
+                bundle.send(ctx.getCaller(), "exc.command.arg.validation.numeric", p.getName(), p.getMin(), p.getMax(), e.getArgument());
+            }else{
+                bundle.send(ctx.getCaller(), "exc.command.arg.validation", e.getParameter().getName(), e.getArgument());
+            }
+        }catch(ArgumentException e){
+            bundle.send(ctx.getCaller(), "exc.command.arg");
         }
     };
 
@@ -145,31 +172,24 @@ public final class Commands{
     }
 
     /**
-     * Registers a wrapped command to the given handler.
-     *
-     * @param handler the handler, not null
-     * @param adapter the wrapped command, not null
-     * @return the command
-     */
-    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull CommandAdapter adapter){
-        Command<Playerc> command = adapter.getCommand();
-        handler.register(command.getName(), getParameterText(command), command.getDescription(), adapter);
-        return command;
-    }
-
-    /**
-     * Registers a command with the default {@code CommandAdapter} to the given handler.
+     * Registers a command to the given handler.
      *
      * @param handler the handler, not null
      * @param command the command, not null
      * @return the command
      */
     public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
-        return register(handler, new CommandAdapter(command));
+        handler.<Playerc>register(command.getName(), getParameterText(command), command.getDescription(), (args, player) -> {
+            if(player == null) player = Commands.SERVER_PLAYER;
+            CommandContext<Playerc> context = new CommandContext<>(player, List.of(args), command);
+            COMMAND_INVOKER.handleContext(context);
+        });
+
+        return command;
     }
 
     /**
-     * Registers a command from a {@code LambdaCommandBuilder}.
+     * Registers a command from a {@code LambdaCommandBuilder} to the given handler.
      *
      * @param handler the handler, not null
      * @param builder the builder of the command, not null

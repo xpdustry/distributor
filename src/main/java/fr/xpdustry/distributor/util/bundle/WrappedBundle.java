@@ -17,32 +17,12 @@ public class WrappedBundle{
         this.bundle = bundle;
     }
 
-    public static WrappedBundle from(@NotNull String baseName, @NotNull Locale locale){
-        if(RouterBundle.ROUTER_LOCALE.equals(locale)){
-            return new RouterBundle(ResourceBundle.getBundle(baseName, locale));
-        }else{
-            return new WrappedBundle(ResourceBundle.getBundle(baseName, locale));
-        }
-    }
-
-    public static WrappedBundle from(@NotNull String baseName, @NotNull Playerc player){
-        return from(baseName, getPlayerLocale(player));
-    }
-
     public static WrappedBundle from(@NotNull String baseName, @NotNull Locale locale, @NotNull ClassLoader loader){
         if(RouterBundle.ROUTER_LOCALE.equals(locale)){
             return new RouterBundle(ResourceBundle.getBundle(baseName, locale, loader));
         }else{
             return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
         }
-    }
-
-    public static WrappedBundle from(@NotNull String baseName, @NotNull Playerc player, @NotNull ClassLoader loader){
-        return from(baseName, getPlayerLocale(player), loader);
-    }
-
-    public static Locale getPlayerLocale(Playerc player){
-        return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
     public @NotNull Locale getLocale(){
