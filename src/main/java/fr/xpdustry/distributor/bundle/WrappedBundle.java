@@ -46,7 +46,7 @@ public class WrappedBundle{
         return bundle.getLocale();
     }
 
-    public ResourceBundle getWrappedBundle(){
+    public @NotNull ResourceBundle getBundle(){
         return bundle;
     }
 }

@@ -36,15 +36,15 @@ public class BundleProvider{
     /**
      * The base constructor of the {@code BundleProvider} class.
      *
-     * @param loader
-     * @param baseName
+     * @param loader the class loader that will load the content, not null
+     * @param baseName the base name of the bundles, not null
      */
     public BundleProvider(@NotNull ClassLoader loader, @NotNull String baseName){
         this.loader = requireNonNull(loader, "plugin can't be null.");
         this.baseName = requireNonNull(baseName, "baseName can't be null.");
     }
 
-    public WrappedBundle getBundle(Locale locale){
+    public @NotNull WrappedBundle getBundle(@NotNull Locale locale){
         if(ROUTER_LOCALE.equals(locale)){
             return new WrappedBundle(ROUTER_RESOURCE_BUNDLE);
         }else{
@@ -52,7 +52,7 @@ public class BundleProvider{
         }
     }
 
-    public PlayerBundle getBundle(Playerc player){
+    public @NotNull PlayerBundle getBundle(@NotNull Playerc player){
         Locale locale = getPlayerLocale(player);
 
         if(ROUTER_LOCALE.equals(locale)){
@@ -62,7 +62,7 @@ public class BundleProvider{
         }
     }
 
-    public static Locale getPlayerLocale(Playerc player){
+    public static @NotNull Locale getPlayerLocale(@NotNull Playerc player){
         return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 }
