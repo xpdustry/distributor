@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.util;
+package fr.xpdustry.distributor.event;
 
 import arc.*;
 import arc.func.*;

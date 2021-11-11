@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.util.struct;
+package fr.xpdustry.distributor.struct;
 
 import org.jetbrains.annotations.*;
 

@@ -5,13 +5,14 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
+import mindustry.mod.*;
 
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
-import fr.xpdustry.distributor.plugin.*;
+import fr.xpdustry.distributor.io.*;
 import fr.xpdustry.distributor.script.*;
-import fr.xpdustry.distributor.util.*;
+import fr.xpdustry.distributor.bundle.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -25,7 +26,7 @@ import java.nio.charset.*;
 import static fr.xpdustry.distributor.internal.commands.Lambdas.jsx;
 
 
-public class Distributor extends AbstractPlugin{
+public class Distributor extends Plugin{
     public static final String INTERNAL_NAME = "xpdustry-distributor-plugin";
     public static final String SETTINGS_PATH = "./config/distributor.properties";
 
@@ -33,10 +34,7 @@ public class Distributor extends AbstractPlugin{
     private static Script initScript;
     private static ResourceLoader scriptLoader;
     private static ClassLoader sharedClassLoader;
-
-    public static Distributor getInstance(){
-        return (Distributor)Vars.mods.getMod(INTERNAL_NAME).main;
-    }
+    private static BundleProvider bundleProvider;
 
     public static ResourceLoader getScriptLoader(){
         return scriptLoader;
@@ -44,6 +42,14 @@ public class Distributor extends AbstractPlugin{
 
     public static DistributorSettings getSettings(){
         return settings;
+    }
+
+    public static ClassLoader getSharedClassLoader(){
+        return sharedClassLoader;
+    }
+
+    public static BundleProvider getBundleProvider(){
+        return bundleProvider;
     }
 
     @Override
@@ -68,6 +74,7 @@ public class Distributor extends AbstractPlugin{
 
         sharedClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
         scriptLoader = new ResourceLoader(getClass().getClassLoader());
+        bundleProvider = new BundleProvider(getClass().getClassLoader(), "bundles/bundle");
 
         try{
             scriptLoader.addResource(settings.getScriptsPath().file());

@@ -9,7 +9,7 @@ import mindustry.server.*;
 
 import fr.xpdustry.distributor.*;
 import fr.xpdustry.distributor.command.LambdaCommand.*;
-import fr.xpdustry.distributor.util.bundle.*;
+import fr.xpdustry.distributor.bundle.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.context.*;
 import fr.xpdustry.xcommand.exception.*;
@@ -59,7 +59,7 @@ public final class Commands{
         Playerc player = ctx.getCaller();
 
         if(player != Commands.SERVER_PLAYER && !player.admin()){
-            Distributor.getInstance().getBundle(player).send(player, "prm.command.admin");
+            Distributor.getBundleProvider().getBundle(player).send("prm.command.admin");
             return false;
         }else{
             return true;
@@ -67,26 +67,26 @@ public final class Commands{
     };
 
     public static final ContextRunner<Playerc> COMMAND_INVOKER = ctx -> {
-        WrappedBundle bundle = Distributor.getInstance().getBundle(ctx.getCaller());
+        PlayerBundle bundle = Distributor.getBundleProvider().getBundle(ctx.getCaller());
 
         try{
             ctx.invoke();
         }catch(ArgumentSizeException e){
             if(e.getMaxArgumentSize() < e.getActualArgumentSize()){
-                bundle.send(ctx.getCaller(), "exc.command.arg.size.many", e.getMaxArgumentSize(), e.getActualArgumentSize());
+                bundle.send("exc.command.arg.size.many", e.getMaxArgumentSize(), e.getActualArgumentSize());
             }else{
-                bundle.send(ctx.getCaller(), "exc.command.arg.size.few", e.getMinArgumentSize(), e.getActualArgumentSize());
+                bundle.send("exc.command.arg.size.few", e.getMinArgumentSize(), e.getActualArgumentSize());
             }
         }catch(ArgumentParsingException e){
-            bundle.send(ctx.getCaller(), "exc.command.arg.parsing", e.getParameter().getName(), getParameterTypeName(e.getParameter()), e.getArgument());
+            bundle.send("exc.command.arg.parsing", e.getParameter().getName(), getParameterTypeName(e.getParameter()), e.getArgument());
         }catch(ArgumentValidationException e){
             if(e.getParameter() instanceof NumericParameter p){
-                bundle.send(ctx.getCaller(), "exc.command.arg.validation.numeric", p.getName(), p.getMin(), p.getMax(), e.getArgument());
+                bundle.send("exc.command.arg.validation.numeric", p.getName(), p.getMin(), p.getMax(), e.getArgument());
             }else{
-                bundle.send(ctx.getCaller(), "exc.command.arg.validation", e.getParameter().getName(), e.getArgument());
+                bundle.send("exc.command.arg.validation", e.getParameter().getName(), e.getArgument());
             }
         }catch(ArgumentException e){
-            bundle.send(ctx.getCaller(), "exc.command.arg");
+            bundle.send("exc.command.arg");
         }
     };
 
