@@ -8,7 +8,7 @@
 
 **Distributor** is a Plugin that provides better Mindustry API bindings and features that can be implemented in Java or JavaScript, making development time much faster.
 
-[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v1.6/javadoc/)
+[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v1.7/javadoc/)
 
 ## Usage
 
