@@ -4,6 +4,7 @@ import arc.files.*;
 
 import org.aeonbits.owner.*;
 import org.aeonbits.owner.Config.*;
+import org.jetbrains.annotations.*;
 
 
 @Sources("file:./config/distributor.properties")
@@ -16,7 +17,7 @@ public interface DistributorSettings extends Accessible{
         return getRootPath().child("scripts");
     }
 
-    default Fi getScript(String script){
+    default Fi getScript(@NotNull String script){
         return getScriptsPath().child(script);
     }
 

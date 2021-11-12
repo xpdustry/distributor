@@ -3,15 +3,17 @@ package fr.xpdustry.distributor.event;
 import arc.*;
 import arc.func.*;
 
+import org.jetbrains.annotations.*;
+
 import java.util.*;
 
 
 public class EventWatcher<T> implements EventListener{
-    private final Class<T> event;
-    private final Cons<T> listener;
+    private final @NotNull Class<T> event;
+    private final @NotNull Cons<T> listener;
     private boolean listening = false;
 
-    public EventWatcher(Class<T> event, Cons<T> listener){
+    public EventWatcher(@NotNull Class<T> event, @NotNull Cons<T> listener){
         this.event = event;
         this.listener = listener;
     }

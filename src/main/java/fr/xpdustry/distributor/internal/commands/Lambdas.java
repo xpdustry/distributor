@@ -23,7 +23,7 @@ public final class Lambdas{
                 ctx.getCaller().sendMessage(">>> " + JavaScriptEngine.toString(obj));
                 ctx.setResult(obj);
             }catch(ScriptException e){
-                ctx.getCaller().sendMessage(e.getMessage());
+                ctx.getCaller().sendMessage(">>> " + e.getMessage());
                 ctx.setResult(Undefined.SCRIPTABLE_UNDEFINED);
             }
         }).build();

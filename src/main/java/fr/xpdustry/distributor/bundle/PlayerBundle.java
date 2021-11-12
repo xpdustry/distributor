@@ -20,7 +20,7 @@ public class PlayerBundle extends WrappedBundle{
         this.player = requireNonNull(player, "player can't be null.");
     }
 
-    public void send(String key, Object... args){
+    public void send(@NotNull String key, Object... args){
         player.sendMessage(get(key, args));
     }
 

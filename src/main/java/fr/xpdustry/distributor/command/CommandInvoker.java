@@ -1,12 +1,12 @@
 package fr.xpdustry.distributor.command;
 
-
 import arc.util.CommandHandler.*;
 
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.*;
 import fr.xpdustry.distributor.bundle.*;
+import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.Command;
 import fr.xpdustry.xcommand.context.*;
