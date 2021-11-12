@@ -9,6 +9,9 @@ import java.util.*;
 import static java.util.Objects.requireNonNull;
 
 
+/**
+ * Utility class to send localized messages directly to players.
+ */
 public class PlayerBundle extends WrappedBundle{
     private final @NotNull Playerc player;
 

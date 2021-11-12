@@ -24,6 +24,10 @@ import java.util.*;
 
 
 public final class Commands{
+    private Commands(){
+        /* No. */
+    }
+
     public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
 
     /**
@@ -65,34 +69,6 @@ public final class Commands{
             return true;
         }
     };
-
-    public static final ContextRunner<Playerc> COMMAND_INVOKER = ctx -> {
-        PlayerBundle bundle = Distributor.getBundleProvider().getBundle(ctx.getCaller());
-
-        try{
-            ctx.invoke();
-        }catch(ArgumentSizeException e){
-            if(e.getMaxArgumentSize() < e.getActualArgumentSize()){
-                bundle.send("exc.command.arg.size.many", e.getMaxArgumentSize(), e.getActualArgumentSize());
-            }else{
-                bundle.send("exc.command.arg.size.few", e.getMinArgumentSize(), e.getActualArgumentSize());
-            }
-        }catch(ArgumentParsingException e){
-            bundle.send("exc.command.arg.parsing", e.getParameter().getName(), getParameterTypeName(e.getParameter()), e.getArgument());
-        }catch(ArgumentValidationException e){
-            if(e.getParameter() instanceof NumericParameter p){
-                bundle.send("exc.command.arg.validation.numeric", p.getName(), p.getMin(), p.getMax(), e.getArgument());
-            }else{
-                bundle.send("exc.command.arg.validation", e.getParameter().getName(), e.getArgument());
-            }
-        }catch(ArgumentException e){
-            bundle.send("exc.command.arg");
-        }
-    };
-
-    private Commands(){
-        /* No. */
-    }
 
     /** @return the client {@code CommandHandler} */
     public static @Nullable CommandHandler getClientCommands(){
@@ -171,30 +147,16 @@ public final class Commands{
         return fullName[fullName.length - 1].toLowerCase();
     }
 
-    /**
-     * Registers a command to the given handler.
-     *
-     * @param handler the handler, not null
-     * @param command the command, not null
-     * @return the command
-     */
-    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
-        handler.<Playerc>register(command.getName(), getParameterText(command), command.getDescription(), (args, player) -> {
-            if(player == null) player = Commands.SERVER_PLAYER;
-            CommandContext<Playerc> context = new CommandContext<>(player, List.of(args), command);
-            COMMAND_INVOKER.handleContext(context);
-        });
-
+    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull CommandInvoker invoker){
+        var command = invoker.getCommand();
+        handler.register(command.getName(), getParameterText(command), command.getDescription(), invoker);
         return command;
     }
 
-    /**
-     * Registers a command from a {@code LambdaCommandBuilder} to the given handler.
-     *
-     * @param handler the handler, not null
-     * @param builder the builder of the command, not null
-     * @return the built command
-     */
+    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
+        return register(handler, new CommandInvoker(command));
+    }
+
     public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull LambdaCommandBuilder<Playerc> builder){
         return register(handler, builder.build());
     }

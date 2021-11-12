@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.script;
+package fr.xpdustry.distributor.script.js;
 
 import org.jetbrains.annotations.*;
 import org.mozilla.javascript.*;
@@ -9,10 +9,10 @@ import java.net.*;
 import java.util.*;
 
 
-public class ScriptLoader extends UrlModuleSourceProvider{
+public class JavaScriptLoader extends UrlModuleSourceProvider{
     private final ClassLoader loader;
 
-    public ScriptLoader(@NotNull ClassLoader loader){
+    public JavaScriptLoader(@NotNull ClassLoader loader){
         super(null, null);
         this.loader = Objects.requireNonNull(loader, "The loader is null.");
     }

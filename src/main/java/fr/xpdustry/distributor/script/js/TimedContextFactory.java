@@ -1,7 +1,8 @@
-package fr.xpdustry.distributor.script;
+package fr.xpdustry.distributor.script.js;
 
 import fr.xpdustry.distributor.exception.*;
 
+import org.jetbrains.annotations.*;
 import org.mozilla.javascript.*;
 
 import static org.mozilla.javascript.Context.*;
@@ -57,7 +58,7 @@ public class TimedContextFactory extends ContextFactory{
     public static class TimedContext extends Context{
         private long startTime;
 
-        public TimedContext(ContextFactory factory){
+        public TimedContext(@NotNull ContextFactory factory){
             super(factory);
         }
 

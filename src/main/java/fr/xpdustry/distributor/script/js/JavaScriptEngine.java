@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.script;
+package fr.xpdustry.distributor.script.js;
 
 import arc.files.*;
 
@@ -13,18 +13,18 @@ import java.io.*;
 import java.util.concurrent.atomic.*;
 
 
-public class ScriptEngine implements AutoCloseable{
+public class JavaScriptEngine implements AutoCloseable{
     private static final AtomicReference<ScriptEngineFactory> factory =
         new AtomicReference<>(ScriptEngineFactory.DEFAULT);
 
-    private static final ThreadLocal<ScriptEngine> threadInstance =
+    private static final ThreadLocal<JavaScriptEngine> threadInstance =
         ThreadLocal.withInitial(() -> factory.get().makeEngine());
 
     private final @NotNull Context ctx;
     private final ImporterTopLevel importer;
     private @Nullable Require require = null;
 
-    public ScriptEngine(@NotNull Context context){
+    public JavaScriptEngine(@NotNull Context context){
         this.ctx = context;
         this.importer = new ImporterTopLevel(ctx);
     }
@@ -34,11 +34,11 @@ public class ScriptEngine implements AutoCloseable{
     }
 
     public static void setGlobalFactory(ScriptEngineFactory factory){
-        ScriptEngine.factory.set(factory);
+        JavaScriptEngine.factory.set(factory);
     }
 
     /** @return the current or a new instance of {@code ScriptEngine} */
-    public static ScriptEngine getInstance(){
+    public static JavaScriptEngine getInstance(){
         return threadInstance.get();
     }
 
@@ -73,7 +73,7 @@ public class ScriptEngine implements AutoCloseable{
         require = new RequireBuilder()
             .setSandboxed(false)
             .setModuleScriptProvider(
-                new SoftCachingModuleScriptProvider(new ScriptLoader(loader)))
+                new SoftCachingModuleScriptProvider(new JavaScriptLoader(loader)))
             .createRequire(ctx, importer);
 
         require.install(importer);
@@ -161,13 +161,14 @@ public class ScriptEngine implements AutoCloseable{
         threadInstance.remove();
     }
 
+    @FunctionalInterface
     public interface ScriptEngineFactory{
         ScriptEngineFactory DEFAULT = () -> {
             Context context = Context.getCurrentContext();
             if(context == null) context = Context.enter();
-            return new ScriptEngine(context);
+            return new JavaScriptEngine(context);
         };
 
-        ScriptEngine makeEngine();
+        @NotNull JavaScriptEngine makeEngine();
     }
 }

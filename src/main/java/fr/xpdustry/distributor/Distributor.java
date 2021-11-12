@@ -11,8 +11,8 @@ import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.io.*;
-import fr.xpdustry.distributor.script.*;
 import fr.xpdustry.distributor.bundle.*;
+import fr.xpdustry.distributor.script.js.*;
 
 import org.aeonbits.owner.*;
 import org.apache.commons.io.*;
@@ -56,11 +56,12 @@ public class Distributor extends Plugin{
     public void init(){
         // A nice Banner :^)
         try(InputStream in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
-            if(in == null) throw new IOException("Asset not found.");
-            IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
-            Log.info(" > ");
+            if(in != null){
+                IOUtils.readLines(in, StandardCharsets.UTF_8).forEach(line -> Log.info(" > " + line));
+                Log.info(" > ");
+            }
         }catch(IOException e){
-            Log.info("Initialized Distributor !");
+            Log.info(" > Initialized Distributor !");
         }
 
         Time.mark();
@@ -148,11 +149,11 @@ public class Distributor extends Plugin{
             }
         });
 
-        ScriptEngine.setGlobalFactory(() -> {
+        JavaScriptEngine.setGlobalFactory(() -> {
             Context context = Context.getCurrentContext();
             if(context == null) context = Context.enter();
 
-            ScriptEngine engine = new ScriptEngine(context);
+            JavaScriptEngine engine = new JavaScriptEngine(context);
             engine.setupRequire(scriptLoader);
 
             try{
@@ -173,7 +174,7 @@ public class Distributor extends Plugin{
 
             if(script != null && !script.isBlank()){
                 try{
-                    ScriptEngine.getInstance().exec(settings.getScript(script));
+                    JavaScriptEngine.getInstance().exec(settings.getScript(script));
                 }catch(ScriptException | IOException e){
                     throw new RuntimeException("Failed to run the startup script " + script + ".", e);
                 }
@@ -186,7 +187,7 @@ public class Distributor extends Plugin{
 
             if(script != null && !script.isBlank()){
                 try{
-                    ScriptEngine.getInstance().exec(settings.getScript(script));
+                    JavaScriptEngine.getInstance().exec(settings.getScript(script));
                 }catch(ScriptException | IOException e){
                     Log.err("Failed to run the shutdown script " + script + ".", e);
                 }

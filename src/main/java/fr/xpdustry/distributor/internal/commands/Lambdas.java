@@ -4,7 +4,7 @@ import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
-import fr.xpdustry.distributor.script.*;
+import fr.xpdustry.distributor.script.js.*;
 import fr.xpdustry.xcommand.*;
 import fr.xpdustry.xcommand.parameter.*;
 import fr.xpdustry.xcommand.parameter.string.*;
@@ -19,8 +19,8 @@ public final class Lambdas{
         .parameter(StringParameter.of("script").variadic().tokenizer(ParameterTokenizer.NONE))
         .runner(ctx -> {
             try{
-                var obj = ScriptEngine.getInstance().eval(ctx.getArgument(0));
-                ctx.getCaller().sendMessage(">>> " + ScriptEngine.toString(obj));
+                var obj = JavaScriptEngine.getInstance().eval(ctx.getArgument(0));
+                ctx.getCaller().sendMessage(">>> " + JavaScriptEngine.toString(obj));
                 ctx.setResult(obj);
             }catch(ScriptException e){
                 ctx.getCaller().sendMessage(e.getMessage());
