@@ -8,6 +8,10 @@ import org.jetbrains.annotations.*;
 import java.util.*;
 
 
+/**
+ * A utility class to dynamically register/unregister an event listener from {@link Events}.
+ * @param <T> the class of the event to listen to
+ */
 public class EventWatcher<T> implements EventListener{
     private final @NotNull Class<T> event;
     private final @NotNull Cons<T> listener;

@@ -75,7 +75,7 @@ public class Distributor extends Plugin{
 
         sharedClassLoader = new SharedClassLoader(getClass().getClassLoader(), Vars.mods.list());
         scriptLoader = new ResourceLoader(getClass().getClassLoader());
-        bundleProvider = new BundleProvider(getClass().getClassLoader(), "bundles/bundle");
+        bundleProvider = new BundleProvider("bundles/bundle", getClass().getClassLoader());
 
         try{
             scriptLoader.addResource(settings.getScriptsPath().file());

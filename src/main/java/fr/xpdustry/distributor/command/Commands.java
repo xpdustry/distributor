@@ -144,16 +144,37 @@ public final class Commands{
         return fullName[fullName.length - 1].toLowerCase();
     }
 
+    /**
+     * Registers a {@code CommandInvoker} to the given handler.
+     *
+     * @param handler the handler, not null
+     * @param invoker the invoker of the command, not null
+     * @return the command
+     */
     public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull CommandInvoker invoker){
         var command = invoker.getCommand();
         handler.register(command.getName(), getParameterText(command), command.getDescription(), invoker);
         return command;
     }
 
+    /**
+     * Registers a command with the default {@code CommandInvoker} to the given handler.
+     *
+     * @param handler the handler, not null
+     * @param command the command, not null
+     * @return the command
+     */
     public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
         return register(handler, new CommandInvoker(command));
     }
 
+    /**
+     * Registers a command from a {@code LambdaCommandBuilder} to the given handler.
+     *
+     * @param handler the handler, not null
+     * @param builder the builder of the command, not null
+     * @return the built command
+     */
     public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull LambdaCommandBuilder<Playerc> builder){
         return register(handler, builder.build());
     }

@@ -30,8 +30,8 @@ public class BundleProvider{
         }
     };
 
-    private final @NotNull ClassLoader loader;
     private final @NotNull String baseName;
+    private final @NotNull ClassLoader loader;
 
     /**
      * The base constructor of the {@code BundleProvider} class.
@@ -39,7 +39,7 @@ public class BundleProvider{
      * @param loader the class loader that will load the content, not null
      * @param baseName the base name of the bundles, not null
      */
-    public BundleProvider(@NotNull ClassLoader loader, @NotNull String baseName){
+    public BundleProvider(@NotNull String baseName, @NotNull ClassLoader loader){
         this.loader = requireNonNull(loader, "plugin can't be null.");
         this.baseName = requireNonNull(baseName, "baseName can't be null.");
     }

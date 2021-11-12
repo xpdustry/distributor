@@ -24,7 +24,7 @@ public final class Lambdas{
                 ctx.setResult(obj);
             }catch(ScriptException e){
                 ctx.getCaller().sendMessage(">>> " + e.getMessage());
-                ctx.setResult(Undefined.SCRIPTABLE_UNDEFINED);
+                ctx.setResult(Undefined.instance);
             }
         }).build();
 }
