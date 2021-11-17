@@ -26,14 +26,14 @@ public class LambdaCommand<C> extends Command<C>{
     }
 
     @SuppressWarnings("unchecked")
-    public static final class LambdaCommandBuilder<C>{
-        private final @NotNull String name;
-        private final @NotNull TypeToken<? extends C> type;
-        private final List<CommandParameter<?>> parameters = new ArrayList<>(4);
+    public static class LambdaCommandBuilder<C>{
+        protected final @NotNull String name;
+        protected final @NotNull TypeToken<? extends C> type;
+        protected final List<CommandParameter<?>> parameters = new ArrayList<>(4);
 
-        private @NotNull String description = "";
-        private @NotNull ContextValidator<C> validator = (ContextValidator<C>)ContextValidator.NONE;
-        private @NotNull ContextRunner<C> runner = (ContextRunner<C>)ContextRunner.NONE;
+        protected @NotNull String description = "";
+        protected @NotNull ContextValidator<C> validator = (ContextValidator<C>)ContextValidator.NONE;
+        protected @NotNull ContextRunner<C> runner = (ContextRunner<C>)ContextRunner.NONE;
 
         public LambdaCommandBuilder(@NotNull String name, @NotNull TypeToken<? extends C> type){
             this.name = name;

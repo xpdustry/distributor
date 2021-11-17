@@ -27,7 +27,7 @@ buildscript{
 plugins{
     id "java"
     id "maven-publish"
-    // id 'org.jetbrains.kotlin.jvm' version '1.6.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
 }
 
 group property("props.project-group")
@@ -185,7 +185,6 @@ publishing{
 }
 
 
-/* Me trying Kotlin be like...
 compileKotlin{
     kotlinOptions{
         jvmTarget = "1.8"
@@ -197,4 +196,3 @@ compileTestKotlin{
         jvmTarget = "1.8"
     }
 }
- */
