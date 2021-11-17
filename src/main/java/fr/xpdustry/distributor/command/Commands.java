@@ -42,6 +42,10 @@ public final class Commands{
      * usually used for commands that are server-side and client-side.
      */
     public static final Playerc SERVER_PLAYER = new Player(){
+        @Override public String name(){
+            return "[red]Server";
+        }
+
         @Override public void sendMessage(String text){
             Log.info(text);
         }
