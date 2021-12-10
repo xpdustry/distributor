@@ -19,6 +19,8 @@ import java.util.*;
 import static fr.xpdustry.distributor.command.Commands.getParameterTypeName;
 import static java.util.Objects.requireNonNull;
 
+import arc.util.CommandHandler.*;
+
 
 /**
  * Invokes a command. No more...

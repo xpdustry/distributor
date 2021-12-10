@@ -1,15 +1,15 @@
-//file:noinspection GradlePackageUpdate
 import groovy.json.JsonSlurper
+import groovy.json.JsonBuilder
 import java.nio.charset.StandardCharsets
-
+import arc.util.Strings
 
 buildscript{
     ext{
         // Properties
         mindustryVersion = property("props.mindustry-version")
         serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
-        // Plugin metadata extracted from plugin.json
-        metadata = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
+        // Shared plugin.json
+        shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
     }
 
     repositories{
@@ -23,158 +23,106 @@ buildscript{
     }
 }
 
+allprojects{
+    apply plugin: "java"
+    apply plugin: "maven-publish"
 
-plugins{
-    id "java"
-    id "maven-publish"
-}
+    group property("props.project-group")
+    version shared.version
 
-group property("props.project-group")
-version metadata.version
-
-
-repositories{
-    mavenCentral()
-    maven{ url "https://www.jitpack.io" }
-}
-
-dependencies{
-    // Mindustry
-    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
-    compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
-
-    // Annotations
-    compileOnly 'org.jetbrains:annotations:22.0.0'
-
-    // Xpdustry
-    implementation 'fr.xpdustry:XCommand:v1.8'
-
-    // Scripting
-    implementation "org.mozilla:rhino:1.7.13"
-
-    // Helper
-    implementation 'commons-io:commons-io:2.11.0'
-    implementation 'org.aeonbits.owner:owner-java8:1.0.12'
-    implementation 'io.leangen.geantyref:geantyref:1.3.11'
-}
-
-
-java{
-    withSourcesJar()
-    withJavadocJar()
-}
-
-compileJava{
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
-    options.encoding = StandardCharsets.UTF_8
-}
-
-test{
-    useJUnitPlatform()
-}
-
-compileTestJava{
-    options.encoding = StandardCharsets.UTF_8
-}
-
-
-jar{
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveBaseName = project.property("props.project-name")
-
-    //The following line is required
-    from configurations.runtimeClasspath.collect{
-        it.isDirectory() ? it : zipTree(it)
+    java{
+        withSourcesJar()
+        withJavadocJar()
     }
 
-    from "$rootDir/plugin.json"
+    compileJava{
+        sourceCompatibility = JavaVersion.VERSION_16
+        targetCompatibility = JavaVersion.VERSION_16
+        options.encoding = StandardCharsets.UTF_8
+    }
+
+    test{
+        useJUnitPlatform()
+    }
+
+    compileTestJava{
+        options.encoding = StandardCharsets.UTF_8
+    }
+
+    repositories{
+        mavenCentral()
+        maven{ url "https://www.jitpack.io" }
+    }
+
+    dependencies{
+        // Mindustry
+        compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+        compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+        compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
+
+        // Annotations
+        compileOnly 'org.jetbrains:annotations:22.0.0'
+
+        // Unit Testing
+        testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+        testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.1"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+    }
 }
 
+subprojects{
+    ext{
+        // Plugin metadata extracted from plugin.json
+        metadata = new JsonSlurper().parseText(file("$projectDir/plugin.json").text)
+    }
 
-if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
-    task moveJar{
-        dependsOn jar
-
-        doLast{
-            if(!file("$serverDirectoryPath/config").exists()){
-                throw new GradleException("Initialize the server files first.")
+    jar{
+        doFirst{
+            def file = new File("${getTemporaryDir().path}/plugin.json")
+            file.withWriter{
+                it.write(new JsonBuilder(metadata + shared).toPrettyString())
             }
 
-            // Deletes all the jar files that begins with the base artifact name
-            delete file("$serverDirectoryPath/config/mods").listFiles({
-                it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
-            } as FileFilter)
+            println file.text
 
-            copy{
-                from jar.archiveFile.get()
-                into file("$serverDirectoryPath/config/mods")
+            from file
+        }
+
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        // archiveBaseName = project.property("props.project-name")
+
+        doLast{
+            //The following line is required
+            from configurations.runtimeClasspath.collect{
+                it.isDirectory() ? it : zipTree(it)
             }
         }
     }
 
-    task runServer(type: JavaExec){
-        workingDir = serverDirectoryPath
-        classpath = files("$serverDirectoryPath/server.jar")
-        mainClass = "mindustry.server.ServerLauncher"
-        standardInput = System.in
-    }
+    publishing{
+        publications{
+            jitpack(MavenPublication){
+                from components.java
 
-    task deployJar{
-        dependsOn moveJar
-        dependsOn runServer
-    }
-}
+                pom{
+                    // name = metadata.displayName
+                    // artifactId = metadata.name
+                    // description = metadata.description
+                    url = "https://github.com/$shared.repo"
 
-// Required if you want to use the Release GitHub action
-task getArtifactPath{
-    doLast{ println jar.archiveFile.get().toString() }
-}
-
-
-// Utility task :^)
-task generateReadmeHeader{
-    doLast{
-        StringBuilder builder = new StringBuilder(512)
-
-        builder.append("# ").append(project.property("props.project-name")).append("\n\n")
-        builder.append("[![Jitpack latest version](https://jitpack.io/v/${metadata.repo}.svg)](https://jitpack.io/#${metadata.repo})\n")
-        builder.append("[![Build status](https://github.com/${metadata.repo}/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/${metadata.repo}/actions/workflows/build.yml)\n")
-        builder.append("[![Mindustry 6.0 | 7.0 ](https://img.shields.io/badge/Mindustry-6.0%20%7C%207.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)\n")
-
-        if(!file("$rootDir/generated").exists()) file("$rootDir/generated").mkdir()
-        file("$rootDir/generated/README.md").write(builder.toString())
-    }
-}
-
-
-clean{
-    delete file("$rootDir/generated")
-}
-
-
-publishing{
-    publications{
-        maven(MavenPublication){
-            from components.java
-
-            pom{
-                name = metadata.displayName
-                artifactId = metadata.name
-                description = metadata.description
-                url = "https://github.com/$metadata.repo"
-
-                licenses{
-                    license{
-                        name = "MIT License as Publication"
-                        url = "https://www.opensource.org/licenses/mit-license.php"
+                    licenses{
+                        license{
+                            name = "MIT License as Publication"
+                            url = "https://www.opensource.org/licenses/mit-license.php"
+                        }
                     }
-                }
 
-                developers{
-                    developer{
-                        id = metadata.author
+                    developers{
+                        developer{
+                            id = Strings.stripColors(shared.author)
+                        }
                     }
                 }
             }

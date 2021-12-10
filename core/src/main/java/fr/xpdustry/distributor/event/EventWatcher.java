@@ -40,7 +40,7 @@ public class EventWatcher<T> implements EventListener{
         listener.get(type);
     }
 
-    public Object getEvent(){
+    public @NotNull Object getEvent(){
         return event;
     }
 

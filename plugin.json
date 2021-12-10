@@ -1,13 +1,8 @@
 {
-  "name": "xpdustry-distributor-plugin",
-  "displayName": "Xpdustry Distributor Plugin",
-  "author": "Phinner",
-  "description": "A plugin/library to make plugin development easier and faster, enjoy.",
   "version": "1.7",
+  "author": "[cyan]Xpdustry",
   "minGameVersion": "105",
   "hidden": true,
   "java": true,
-  "main": "fr.xpdustry.distributor.Distributor",
-  "repo": "Xpdustry/Distributor",
-  "dependencies": []
+  "repo": "Xpdustry/Distributor"
 }
