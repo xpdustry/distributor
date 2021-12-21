@@ -2,3 +2,9 @@ dependencies{
     compileOnly project(":core")
     implementation "org.mozilla:rhino:1.7.13"
 }
+
+jar{
+    from configurations.runtimeClasspath.collect{
+        it.isDirectory() ? it : zipTree(it)
+    }
+}

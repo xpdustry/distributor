@@ -3,9 +3,11 @@ package fr.xpdustry.distributor.event;
 import arc.*;
 import arc.func.*;
 
-import org.jetbrains.annotations.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
+
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -13,13 +15,13 @@ import java.util.*;
  * @param <T> the class of the event to listen to
  */
 public class EventWatcher<T> implements EventListener{
-    private final @NotNull Class<T> event;
-    private final @NotNull Cons<T> listener;
+    private final @NonNull Class<T> event;
+    private final @NonNull Cons<T> listener;
     private boolean listening = false;
 
-    public EventWatcher(@NotNull Class<T> event, @NotNull Cons<T> listener){
-        this.event = event;
-        this.listener = listener;
+    public EventWatcher(@NonNull Class<T> event, @NonNull Cons<T> listener){
+        this.event = requireNonNull(event, "event can't be null.");
+        this.listener = requireNonNull(listener, "listener can't be null.");
     }
 
     public void listen(){
@@ -36,11 +38,11 @@ public class EventWatcher<T> implements EventListener{
         }
     }
 
-    protected void trigger(T type){
+    protected void trigger(@NonNull T type){
         listener.get(type);
     }
 
-    public @NotNull Object getEvent(){
+    public @NonNull Object getEvent(){
         return event;
     }
 

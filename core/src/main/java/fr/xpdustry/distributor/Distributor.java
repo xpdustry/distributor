@@ -6,8 +6,10 @@ import arc.util.*;
 import mindustry.mod.*;
 
 import fr.xpdustry.distributor.bundle.*;
+import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.internal.*;
 
+import cloud.commandframework.arguments.standard.*;
 import org.aeonbits.owner.*;
 
 import java.io.*;
@@ -66,5 +68,23 @@ public class Distributor extends Plugin{
         // END LOADING ----------------------------------------------------------------------------
 
         Log.info("Loaded Distributor in @ milliseconds.", Time.elapsed());
+    }
+
+    @Override
+    public void registerServerCommands(CommandHandler handler){
+        var manager = new ArcCommandManager(handler);
+
+        manager.command(manager.commandBuilder("test")
+            .argument(StringArgument.of("yay"))
+            .handler(ctx -> {
+                ctx.getSender().send("Hello @", ctx.get("yay"));
+            })
+        );
+
+        /*
+        var cache = CacheManagerBuilder.newCacheManagerBuilder().build();
+        cache.createCache("vov", CacheConfigurationBuilder.ne)
+
+         */
     }
 }

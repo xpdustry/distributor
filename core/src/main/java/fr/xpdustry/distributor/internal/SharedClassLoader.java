@@ -4,7 +4,7 @@ import arc.struct.*;
 
 import mindustry.mod.Mods.*;
 
-import org.jetbrains.annotations.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,16 +14,16 @@ import static java.util.Objects.requireNonNull;
  */
 public class SharedClassLoader extends ClassLoader{
     /** Shared mod list */
-    private final @NotNull Seq<LoadedMod> children;
+    private final @NonNull Seq<LoadedMod> children;
     private final ThreadLocal<Boolean> inChild = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
-    public SharedClassLoader(ClassLoader parent, @NotNull Seq<LoadedMod> children){
+    public SharedClassLoader(@NonNull ClassLoader parent, @NonNull Seq<LoadedMod> children){
         super(parent);
         this.children = requireNonNull(children, "children can't be null.");
     }
 
     @Override
-    protected Class<?> findClass(@NotNull String name) throws ClassNotFoundException{
+    protected Class<?> findClass(@NonNull String name) throws ClassNotFoundException{
         // A child may try to delegate class loading to its parent, which is *this class loader* - do not let that happen
         if(inChild.get()){
             inChild.set(false);

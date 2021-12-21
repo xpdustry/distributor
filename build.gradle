@@ -61,14 +61,15 @@ allprojects{
         compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
         // Annotations
-        compileOnly 'org.jetbrains:annotations:22.0.0'
+        compileOnly "org.checkerframework:checker-qual:3.20.0"
+        compileOnly "com.github.Anuken.Mindustry:annotations:$mindustryVersion"
 
         // Unit Testing
         testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
         testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
-        testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.1"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.2"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
     }
 }
 
@@ -85,20 +86,51 @@ subprojects{
                 it.write(new JsonBuilder(metadata + shared).toPrettyString())
             }
 
-            println file.text
-
             from file
         }
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         // archiveBaseName = project.property("props.project-name")
+    }
 
-        doLast{
-            //The following line is required
-            from configurations.runtimeClasspath.collect{
-                it.isDirectory() ? it : zipTree(it)
+    if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
+        task moveJar{
+            dependsOn jar
+
+            doLast{
+                if(!file("$serverDirectoryPath/config").exists()){
+                    throw new GradleException("Initialize the server files first.")
+                }
+
+                // Deletes all the jar files that begins with the base artifact name
+                delete file("$serverDirectoryPath/config/mods").listFiles({
+                    it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
+                } as FileFilter)
+
+                copy{
+                    from jar.archiveFile.get()
+                    into file("$serverDirectoryPath/config/mods")
+                }
             }
         }
+
+        task runServer(type: JavaExec){
+            println serverDirectoryPath
+            workingDir = serverDirectoryPath
+            classpath = files("$serverDirectoryPath/server.jar")
+            mainClass = "mindustry.server.ServerLauncher"
+            standardInput = System.in
+        }
+
+        task deployJar{
+            dependsOn moveJar
+            dependsOn runServer
+        }
+    }
+
+    // Required if you want to use the Release GitHub action
+    task getArtifactPath{
+        doLast{ println jar.archiveFile.get().toString() }
     }
 
     publishing{

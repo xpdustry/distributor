@@ -8,11 +8,10 @@ import mindustry.gen.*;
 import mindustry.server.*;
 
 import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.command.LambdaCommand.*;
-import fr.xpdustry.xcommand.*;
-import fr.xpdustry.xcommand.context.*;
-import fr.xpdustry.xcommand.parameter.*;
 
+
+import cloud.commandframework.*;
+import cloud.commandframework.arguments.*;
 import io.leangen.geantyref.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
@@ -24,52 +23,6 @@ public final class Commands{
     private Commands(){
         /* No. */
     }
-
-    public static final TypeToken<Playerc> PLAYER_TYPE = TypeToken.get(Playerc.class);
-
-    /**
-     * The default boolean {@code ArgumentParser} only accepts "true" as true,
-     * use this if you want to have more options.
-     */
-    public static final ArgumentParser<Boolean> EXTENDED_BOOLEAN_PARSER =
-        arg -> switch(arg.toLowerCase()){
-            case "true", "on", "enabled" -> true;
-            default -> false;
-        };
-
-    /**
-     * A dummy player instance which represent the server,
-     * usually used for commands that are server-side and client-side.
-     */
-    public static final Playerc SERVER_PLAYER = new Player(){
-        @Override public String name(){
-            return "[red]Server";
-        }
-
-        @Override public void sendMessage(String text){
-            Log.info(text);
-        }
-
-        @Override public boolean admin(){
-            return true;
-        }
-
-        @Override public String locale(){
-            return Locale.getDefault().toString();
-        }
-    };
-
-    /** A simple validator for admin commands. */
-    public static final ContextValidator<Playerc> ADMIN_VALIDATOR = ctx -> {
-        Playerc player = ctx.getCaller();
-
-        if(player != Commands.SERVER_PLAYER && !player.admin()){
-            Distributor.getBundleProvider().getBundle(player).send("prm.command.admin");
-            return false;
-        }else{
-            return true;
-        }
-    };
 
     /** @return the client {@code CommandHandler} */
     public static @Nullable CommandHandler getClientCommands(){
@@ -105,26 +58,26 @@ public final class Commands{
      * @return the parameterText of the command
      */
     public static String getParameterText(@NotNull Command<?> command, boolean metadata){
-        StringBuilder builder = new StringBuilder();
-        Iterator<CommandParameter<?>> iterator = command.getParameters().listIterator();
+        var builder = new StringBuilder();
+        var iterator = command.getArguments().listIterator();
+        iterator.next();
 
         while(iterator.hasNext()){
-            CommandParameter<?> parameter = iterator.next();
-            builder.append(parameter.isOptional() ? "[" : "<");
-
-            builder.append(parameter.getName());
+            var argument = iterator.next();
+            builder.append(argument.isRequired() ? "<" : "[");
+            builder.append(argument.getName());
 
             if(metadata){
-                builder.append(":").append(getParameterTypeName(parameter));
-                builder.append(parameter.isVariadic() ? "..." : "");
+                builder.append(":").append(getParameterTypeName(argument));
+                builder.append(argument.getParser().getRequestedArgumentCount() > 1 ? "..." : "");
                 // Add the default value if it's not an empty string
-                if(!parameter.getDefaultValue().isEmpty()){
-                    builder.append("=").append(parameter.getDefaultValue());
+                if(!argument.getDefaultValue().isEmpty()){
+                    builder.append("=").append(argument.getDefaultValue());
                 }
             }
 
-            if(!metadata) builder.append(parameter.isVariadic() ? "..." : "");
-            builder.append(parameter.isOptional() ? "]" : ">");
+            if(!metadata) builder.append(argument.getParser().getRequestedArgumentCount() > 1 ? "..." : "");
+            builder.append(argument.isRequired() ? ">" : "]");
             if(iterator.hasNext()) builder.append(" ");
         }
 
@@ -143,53 +96,8 @@ public final class Commands{
      * @param parameter the parameter, not null
      * @return the extracted name of the parameter valueType
      */
-    public static String getParameterTypeName(@NotNull CommandParameter<?> parameter){
+    public static String getParameterTypeName(@NotNull CommandArgument<?, ?> parameter){
         String[] fullName = parameter.getValueType().getType().getTypeName().split("\\.");
         return fullName[fullName.length - 1].toLowerCase();
-    }
-
-    /**
-     * Registers a {@code CommandInvoker} to the given handler.
-     *
-     * @param handler the handler, not null
-     * @param invoker the invoker of the command, not null
-     * @return the command
-     */
-    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull CommandInvoker invoker){
-        var command = invoker.getCommand();
-        handler.register(command.getName(), getParameterText(command), command.getDescription(), invoker);
-        return command;
-    }
-
-    /**
-     * Registers a command with the default {@code CommandInvoker} to the given handler.
-     *
-     * @param handler the handler, not null
-     * @param command the command, not null
-     * @return the command
-     */
-    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull Command<Playerc> command){
-        return register(handler, new CommandInvoker(command));
-    }
-
-    /**
-     * Registers a command from a {@code LambdaCommandBuilder} to the given handler.
-     *
-     * @param handler the handler, not null
-     * @param builder the builder of the command, not null
-     * @return the built command
-     */
-    public static Command<Playerc> register(@NotNull CommandHandler handler, @NotNull LambdaCommandBuilder<Playerc> builder){
-        return register(handler, builder.build());
-    }
-
-    /**
-     * Utility method that returns a new {@code LambdaCommandBuilder} with the player type.
-     *
-     * @param name the name of the command, not null
-     * @return a new {@code LambdaCommandBuilder}
-     */
-    public static LambdaCommandBuilder<Playerc> builder(@NotNull String name){
-        return new LambdaCommandBuilder<>(name, PLAYER_TYPE);
     }
 }
