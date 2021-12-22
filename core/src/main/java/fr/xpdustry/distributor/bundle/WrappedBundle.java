@@ -1,9 +1,9 @@
 package fr.xpdustry.distributor.bundle;
 
 import arc.util.*;
+import arc.util.Nullable;
 
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
 
@@ -16,13 +16,13 @@ import static java.util.Objects.requireNonNull;
  * It mainly provides safer methods that does not throw {@link MissingResourceException}.
  */
 public class WrappedBundle{
-    private final @NotNull ResourceBundle bundle;
+    private final @NonNull ResourceBundle bundle;
 
-    public WrappedBundle(@NotNull ResourceBundle bundle){
+    public WrappedBundle(@NonNull ResourceBundle bundle){
         this.bundle = requireNonNull(bundle, "bundle can't be null.");
     }
 
-    public @NotNull String get(@NotNull String key, Object... args){
+    public @NonNull String get(@NonNull String key, Object... args){
         if(bundle.containsKey(key)){
             return Strings.format(bundle.getString(key), args);
         }else{
@@ -30,23 +30,23 @@ public class WrappedBundle{
         }
     }
 
-    public boolean containsKey(@NotNull String key){
+    public boolean containsKey(@NonNull String key){
         return bundle.containsKey(key);
     }
 
-    public @Nullable String getOrNull(@NotNull String key, Object... args){
+    public @Nullable String getOrNull(@NonNull String key, Object... args){
         return containsKey(key) ? get(key, args) : null;
     }
 
-    public @NotNull String getNotNull(@NotNull String key, Object... args){
+    public @NonNull String getNonNull(@NonNull String key, Object... args){
         return Strings.format(bundle.getString(key), args);
     }
 
-    public @NotNull Locale getLocale(){
+    public @NonNull Locale getLocale(){
         return bundle.getLocale();
     }
 
-    public @NotNull ResourceBundle getBundle(){
+    public @NonNull ResourceBundle getBundle(){
         return bundle;
     }
 }

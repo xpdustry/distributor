@@ -5,24 +5,18 @@ import arc.util.*;
 import mindustry.gen.*;
 
 import cloud.commandframework.*;
-import cloud.commandframework.captions.*;
 import cloud.commandframework.execution.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
 import org.checkerframework.checker.nullness.qual.*;
-import org.checkerframework.checker.units.qual.*;
 
 import java.lang.reflect.*;
 import java.util.function.*;
 
-import static java.util.Objects.requireNonNull;
+import static java.util.Objects.*;
 
 
 public class ArcCommandManager extends CommandManager<ArcCommandSender>{
-    public static final String MESSAGE_INTERNAL_ERROR = "An internal error occurred while attempting to perform this command.";
-    public static final String MESSAGE_INVALID_SYNTAX = "Invalid Command Syntax. Correct command syntax is: ";
-    public static final String MESSAGE_NO_PERMS = "You do not have permission to perform this command.";
-    public static final String MESSAGE_UNKNOWN_COMMAND = "Unknown command";
     public static final Field COMMAND_RUNNER_ACCESSOR;
 
     static{
@@ -34,30 +28,53 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         }
     }
 
-    private @NonNull Function<Playerc, ArcCommandSender> mapper;
+    private @NonNull Function<Playerc, ArcCommandSender> commandSenderMapper = ArcCommandSender::new;
+    private @NonNull BiConsumer<CommandResult<ArcCommandSender>, Throwable> commandResultHandler;
+    private @NonNull BiPredicate<ArcCommandSender, String> permissionHandler = (s, p) -> switch(p){
+        case "admin" -> s.isAdmin();
+        case "" -> true;
+        default -> false;
+    };
 
     public ArcCommandManager(@NonNull CommandHandler handler){
-        this(handler, ArcCommandSender::new);
-        requireState(RegistrationState.BEFORE_REGISTRATION);
-    }
-
-    public ArcCommandManager(@NonNull CommandHandler handler, @NonNull Function<Playerc, ArcCommandSender> mapper){
         super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
-        this.mapper = mapper;
         setCommandRegistrationHandler(new ArcRegistrationHandler(handler, this));
+        this.commandResultHandler = (r, t) -> {};
     }
 
-    @Override
-    public boolean hasPermission(@NonNull ArcCommandSender sender, @NonNull String permission){
-        return switch(permission){
-            case "admin" -> sender.isAdmin();
-            default -> true;
-        };
+    @Override public @NonNull ArcRegistrationHandler getCommandRegistrationHandler(){
+        return (ArcRegistrationHandler)super.getCommandRegistrationHandler();
     }
 
-    @Override
-    public @NonNull CommandMeta createDefaultCommandMeta(){
+    public @NonNull Function<Playerc, ArcCommandSender> getCommandSenderMapper(){
+        return commandSenderMapper;
+    }
+
+    public void setCommandSenderMapper(@NonNull Function<Playerc, ArcCommandSender> commandSenderMapper){
+        this.commandSenderMapper = requireNonNull(commandSenderMapper, "commandSenderMapper can't be null.");
+    }
+
+    public @NonNull BiConsumer<CommandResult<ArcCommandSender>, Throwable> getCommandResultHandler(){
+        return commandResultHandler;
+    }
+
+    public void setCommandResultHandler(@NonNull BiConsumer<CommandResult<ArcCommandSender>, Throwable> commandResultHandler){
+        this.commandResultHandler = requireNonNull(commandResultHandler, "commandResultHandler can't be null.");
+    }
+
+    public @NonNull BiPredicate<ArcCommandSender, String> getPermissionHandler(){
+        return permissionHandler;
+    }
+
+    public void setPermissionHandler(@NonNull BiPredicate<ArcCommandSender, String> permissionHandler){
+        this.permissionHandler = requireNonNull(permissionHandler, "permissionHandler can't be null.");
+    }
+
+    @Override public boolean hasPermission(@NonNull ArcCommandSender sender, @NonNull String permission){
+        return permissionHandler.test(sender, permission);
+    }
+
+    @Override public @NonNull CommandMeta createDefaultCommandMeta(){
         return CommandMeta.simple().build();
     }
-
 }

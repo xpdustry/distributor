@@ -8,6 +8,7 @@ buildscript{
         // Properties
         mindustryVersion = property("props.mindustry-version")
         serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
+        serverDirectoryPath = "C:\\Users\\Finley\\Documents\\MEGA\\Mindustry\\Server\\mindustry-server-v126.3"
         // Shared plugin.json
         shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
     }
@@ -115,7 +116,6 @@ subprojects{
         }
 
         task runServer(type: JavaExec){
-            println serverDirectoryPath
             workingDir = serverDirectoryPath
             classpath = files("$serverDirectoryPath/server.jar")
             mainClass = "mindustry.server.ServerLauncher"

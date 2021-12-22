@@ -6,6 +6,7 @@ import mindustry.gen.*;
 
 import fr.xpdustry.distributor.string.*;
 
+import cloud.commandframework.permission.*;
 import org.checkerframework.checker.nullness.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -19,7 +20,7 @@ public class ArcCommandSender{
     protected final @NonNull StringFormatter formatter;
 
     public ArcCommandSender(@Nullable Playerc player){
-        this(player, player != null ? StringFormatter.MINDUSTRY_DEFAULT : StringFormatter.MINDUSTRY_SERVER);
+        this(player, StringFormatter.MINDUSTRY_DEFAULT);
     }
 
     public ArcCommandSender(@Nullable Playerc player, @NonNull StringFormatter formatter){

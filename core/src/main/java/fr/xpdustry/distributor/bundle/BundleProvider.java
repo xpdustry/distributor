@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.bundle;
 
 import mindustry.gen.*;
 
-import org.jetbrains.annotations.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
 
@@ -21,17 +21,17 @@ public class BundleProvider{
             return ROUTER_LOCALE;
         }
 
-        @Override protected Object handleGetObject(@NotNull String key){
+        @Override protected Object handleGetObject(@NonNull String key){
             return "router";
         }
 
-        @Override @NotNull public Enumeration<String> getKeys(){
+        @Override @NonNull public Enumeration<String> getKeys(){
             return Collections.enumeration(List.of("router"));
         }
     };
 
-    private final @NotNull String baseName;
-    private final @NotNull ClassLoader loader;
+    private final @NonNull String baseName;
+    private final @NonNull ClassLoader loader;
 
     /**
      * The base constructor of the {@code BundleProvider} class.
@@ -39,12 +39,12 @@ public class BundleProvider{
      * @param loader the class loader that will load the content, not null
      * @param baseName the base name of the bundles, not null
      */
-    public BundleProvider(@NotNull String baseName, @NotNull ClassLoader loader){
+    public BundleProvider(@NonNull String baseName, @NonNull ClassLoader loader){
         this.loader = requireNonNull(loader, "plugin can't be null.");
         this.baseName = requireNonNull(baseName, "baseName can't be null.");
     }
 
-    public @NotNull WrappedBundle getBundle(@NotNull Locale locale){
+    public @NonNull WrappedBundle getBundle(@NonNull Locale locale){
         if(ROUTER_LOCALE.equals(locale)){
             return new WrappedBundle(ROUTER_RESOURCE_BUNDLE);
         }else{
@@ -52,7 +52,7 @@ public class BundleProvider{
         }
     }
 
-    public @NotNull PlayerBundle getBundle(@NotNull Playerc player){
+    public @NonNull PlayerBundle getBundle(@NonNull Playerc player){
         Locale locale = getPlayerLocale(player);
 
         if(ROUTER_LOCALE.equals(locale)){
@@ -62,7 +62,7 @@ public class BundleProvider{
         }
     }
 
-    public static @NotNull Locale getPlayerLocale(@NotNull Playerc player){
+    public static @NonNull Locale getPlayerLocale(@NonNull Playerc player){
         return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 }

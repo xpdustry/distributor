@@ -1,28 +1,31 @@
 package fr.xpdustry.distributor.command;
 
+import arc.struct.*;
 import arc.util.*;
+import arc.util.CommandHandler.CommandRunner;
 
 import mindustry.gen.*;
 
 import cloud.commandframework.*;
-import cloud.commandframework.exceptions.*;
+import cloud.commandframework.CommandManager.*;
+import cloud.commandframework.arguments.*;
 import cloud.commandframework.internal.*;
 import org.checkerframework.checker.nullness.qual.*;
-
-import java.util.*;
-import java.util.function.*;
 
 import static java.util.Objects.requireNonNull;
 
 
 class ArcRegistrationHandler implements CommandRegistrationHandler{
+    public final String CLOUD_ARGUMENTS = "[args...]";
+
     private final @NonNull CommandHandler handler;
     private final @NonNull ArcCommandManager manager;
-    private final Map<String, Set<Command<ArcCommandSender>>> commands = new HashMap<>();
+    private final ObjectMap<String, CommandHandler.Command> commands;
 
     public ArcRegistrationHandler(@NonNull CommandHandler handler, @NonNull ArcCommandManager manager){
         this.handler = requireNonNull(handler, "handler can't be null.");
         this.manager = requireNonNull(manager, "manager can't be null.");
+        this.commands = Reflect.get(handler, "commands");
     }
 
     public @NonNull CommandHandler getHandler(){
@@ -34,59 +37,51 @@ class ArcRegistrationHandler implements CommandRegistrationHandler{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean registerCommand(@NonNull Command<?> command){
-        // CommandComponent.of(StaticArgument.of(commandName, aliases), description
-        final var info = command.getComponents().get(0);
-        final var name = info.getArgument().getName();
-        final var desc = info.getArgumentDescription().getDescription();
+        final var info = (StaticArgument<ArcCommandSender>)command.getArguments().get(0);
+        final var name = info.getName();
+        final var aliases = info.getAlternativeAliases();
 
-        handler.
+        if(manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)){
+            handler.removeCommand(name);
+            aliases.forEach(handler::removeCommand);
+        }
 
-        /*
-        handler.<Playerc>register(name, Commands.getParameterText(command), desc, (args, player) -> {
-            manager.executeCommand(new ArcCommandSender(player), name + " " + String.join(" ", args))
-                .whenComplete((result, t) -> {
-                    if(t == null) return;
+        if(!commands.containsKey(name)){
+            registerCommandPath(name);
+            aliases.stream().filter(a -> !commands.containsKey(a)).forEach(this::registerCommandPath);
+            return true;
+        }else{
+            return false;
+        }
+    }
 
-                    t.printStackTrace();
+    public void registerCommandPath(@NonNull String name){
+        handler.register(name, CLOUD_ARGUMENTS, "", new ArcCommandRunner(name, manager));
+    }
 
-                    final var sender = result.getCommandContext().getSender();
+    public static final class ArcCommandRunner implements CommandRunner<Playerc>{
+        private final @NonNull String commandName;
+        private final @NonNull ArcCommandManager manager;
 
-                    if(t instanceof InvalidSyntaxException){
-                        manager.handleException(sender, InvalidSyntaxException.class, (InvalidSyntaxException)t,
-                            (s, e) -> s.send(ArcCommandManager.MESSAGE_INVALID_SYNTAX + e.getCorrectSyntax())
-                        );
-                    }else if(t instanceof InvalidCommandSenderException){
-                        manager.handleException(sender, InvalidCommandSenderException.class, (InvalidCommandSenderException)t,
-                            (s, e) -> s.send(e.getMessage())
-                        );
-                    }else if(t instanceof NoPermissionException){
-                        manager.handleException(sender, NoPermissionException.class, (NoPermissionException)t,
-                            (s, e) -> s.send(ArcCommandManager.MESSAGE_NO_PERMS)
-                        );
-                    }else if(t instanceof NoSuchCommandException){
-                        manager.handleException(sender, NoSuchCommandException.class, (NoSuchCommandException)t,
-                            (s, e) -> s.send(ArcCommandManager.MESSAGE_UNKNOWN_COMMAND)
-                        );
-                    }else if(t instanceof ArgumentParseException){
-                        manager.handleException(sender, ArgumentParseException.class, (ArgumentParseException)t,
-                            (c, e) -> c.send("Invalid Command Argument: " + e.getCause().getMessage())
-                        );
-                    }else if(t instanceof CommandExecutionException){
-                        manager.handleException(sender, CommandExecutionException.class, (CommandExecutionException)t,
-                            (c, e) -> {
-                                c.send(ArcCommandManager.MESSAGE_INTERNAL_ERROR);
-                                e.printStackTrace();
-                            }
-                        );
-                    }else{
-                        sender.send(t.getMessage());
-                    }
-                });
-        });
+        public ArcCommandRunner(@NonNull String commandName, @NonNull ArcCommandManager manager){
+            this.commandName = requireNonNull(commandName, "command can't be null.");
+            this.manager = requireNonNull(manager, "manager can't be null.");
+        }
 
-         */
+        public @NonNull String getCommandName(){
+            return commandName;
+        }
 
-        return true;
+        public @NonNull ArcCommandManager getManager(){
+            return manager;
+        }
+
+        @Override
+        public void accept(String[] args, Playerc playerc){
+            manager.executeCommand(manager.getCommandSenderMapper().apply(playerc), commandName + " " + String.join(" ", args))
+                .whenComplete(manager.getCommandResultHandler());
+        }
     }
 }

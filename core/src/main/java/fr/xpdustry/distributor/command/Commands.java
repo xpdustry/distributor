@@ -4,39 +4,19 @@ import arc.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.gen.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.*;
-
-
-import cloud.commandframework.*;
-import cloud.commandframework.arguments.*;
-import io.leangen.geantyref.*;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.*;
-
-import java.util.*;
 
 
 public final class Commands{
     private Commands(){
         /* No. */
+        // ServerLauncher
     }
 
-    /** @return the client {@code CommandHandler} */
-    public static @Nullable CommandHandler getClientCommands(){
-        return (Vars.netServer != null) ? Vars.netServer.clientCommands : null;
-    }
 
-    /** @return the server {@code CommandHandler} */
-    public static @Nullable CommandHandler getServerCommands(){
-        if(Core.app == null) return null;
-        ServerControl server = (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
-        return (server != null) ? server.handler : null;
-    }
 
-    /**
+    /*
      * Creates a parameterText representation of a {@code Command}.
      * <p>
      * This method has 2 kind of parameterText.
@@ -56,8 +36,8 @@ public final class Commands{
      * @param command  the command, not null
      * @param metadata whether you include parameter metadata in the parameterText
      * @return the parameterText of the command
-     */
-    public static String getParameterText(@NotNull Command<?> command, boolean metadata){
+
+    public static String getParameterText(@NonNull Command<?> command, boolean metadata){
         var builder = new StringBuilder();
         var iterator = command.getArguments().listIterator();
         iterator.next();
@@ -84,20 +64,23 @@ public final class Commands{
         return builder.toString();
     }
 
-    public static String getParameterText(@NotNull Command<?> command){
+    public static String getParameterText(@NonNull Command<?> command){
         return getParameterText(command, false);
     }
 
-    /**
+
+
+
      * Extracts the type name of a given parameter such as:
      * <br>
      * {@code java.lang.String -> string}
      *
      * @param parameter the parameter, not null
      * @return the extracted name of the parameter valueType
-     */
-    public static String getParameterTypeName(@NotNull CommandArgument<?, ?> parameter){
+
+    public static String getParameterTypeName(@NonNull CommandArgument<?, ?> parameter){
         String[] fullName = parameter.getValueType().getType().getTypeName().split("\\.");
         return fullName[fullName.length - 1].toLowerCase();
     }
+    */
 }
