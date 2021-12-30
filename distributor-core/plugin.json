@@ -1,0 +1,7 @@
+{
+  "name": "xpdustry-distributor-core",
+  "displayName": "Distributor Framework core",
+  "description": "A Framework to make plugin development easier and faster, enjoy.",
+  "main": "fr.xpdustry.distributor.Distributor",
+  "dependencies": []
+}

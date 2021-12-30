@@ -1,7 +1,0 @@
-{
-  "name": "xpdustry-distributor-script",
-  "displayName": "Distributor JavaScript engine",
-  "description": "A plugin that provides better a better JavaScript runtime",
-  "main": "fr.xpdustry.distributor.Distributor",
-  "dependencies": ["xpdustry-distributor-core"]
-}

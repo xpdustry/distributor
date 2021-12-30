@@ -2,31 +2,36 @@ import groovy.json.JsonSlurper
 import groovy.json.JsonBuilder
 import java.nio.charset.StandardCharsets
 import arc.util.Strings
+import net.ltgt.gradle.errorprone.CheckSeverity
+
 
 buildscript{
     ext{
         // Properties
         mindustryVersion = property("props.mindustry-version")
+        arcVersion = property("props.arc-version")
         serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
-        serverDirectoryPath = "C:\\Users\\Finley\\Documents\\MEGA\\Mindustry\\Server\\mindustry-server-v126.3"
         // Shared plugin.json
         shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
     }
 
     repositories{
         mavenCentral()
+        gradlePluginPortal()
         maven{ url "https://www.jitpack.io" }
     }
 
     dependencies{
         classpath "org.codehaus.groovy:groovy-json:3.0.8" // <- For JsonSlurper syntax highlighting
-        classpath "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+        classpath "com.github.Anuken.Arc:arc-core:$arcVersion"
+        classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.2"
     }
 }
 
 allprojects{
-    apply plugin: "java"
+    apply plugin: "java-library"
     apply plugin: "maven-publish"
+    apply plugin: "net.ltgt.errorprone"
 
     group property("props.project-group")
     version shared.version
@@ -36,18 +41,27 @@ allprojects{
         withJavadocJar()
     }
 
-    compileJava{
-        sourceCompatibility = JavaVersion.VERSION_16
-        targetCompatibility = JavaVersion.VERSION_16
-        options.encoding = StandardCharsets.UTF_8
-    }
-
     test{
         useJUnitPlatform()
     }
 
-    compileTestJava{
-        options.encoding = StandardCharsets.UTF_8
+    tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_16
+        targetCompatibility = JavaVersion.VERSION_16
+
+        options.with {
+            encoding = StandardCharsets.UTF_8
+            errorprone.with{
+                disableWarningsInGeneratedCode = true
+                disable "MissingSummary"
+                // remove the if condition if you want to run NullAway on test code
+                if(!name.toLowerCase().contains("test")){
+                    check("NullAway", CheckSeverity.ERROR)
+                    option("NullAway:AnnotatedPackages", "fr.xpdustry.distributor")
+                }
+            }
+
+        }
     }
 
     repositories{
@@ -57,20 +71,25 @@ allprojects{
 
     dependencies{
         // Mindustry
-        compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+        compileOnly "com.github.Anuken.Arc:arc-core:$arcVersion"
         compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
         compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
         // Annotations
-        compileOnly "org.checkerframework:checker-qual:3.20.0"
-        compileOnly "com.github.Anuken.Mindustry:annotations:$mindustryVersion"
+        compileOnly 'org.checkerframework:checker-qual:3.21.0'
+        // compileOnly "com.github.Anuken.Mindustry:annotations:$mindustryVersion"
 
         // Unit Testing
-        testImplementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+        testImplementation "com.github.Anuken.Arc:arc-core:$arcVersion"
         testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
         testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.2"
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+
+        // Static
+        annotationProcessor "com.uber.nullaway:nullaway:0.9.4"
+        errorprone "com.google.errorprone:error_prone_core:2.10.0"
+        errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
     }
 }
 
@@ -91,7 +110,6 @@ subprojects{
         }
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        // archiveBaseName = project.property("props.project-name")
     }
 
     if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
@@ -139,9 +157,8 @@ subprojects{
                 from components.java
 
                 pom{
-                    // name = metadata.displayName
-                    // artifactId = metadata.name
-                    // description = metadata.description
+                    name = metadata.displayName
+                    description = metadata.description
                     url = "https://github.com/$shared.repo"
 
                     licenses{

@@ -1,7 +1,0 @@
-{
-  "name": "xpdustry-distributor-core",
-  "displayName": "Distributor Core library",
-  "description": "A Library to make plugin development easier and faster, enjoy.",
-  "main": "fr.xpdustry.distributor.Distributor",
-  "dependencies": []
-}
