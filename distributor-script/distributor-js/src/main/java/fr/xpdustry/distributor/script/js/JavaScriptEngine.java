@@ -1,14 +1,12 @@
 package fr.xpdustry.distributor.script.js;
 
 import arc.files.*;
-import arc.util.*;
 
 import fr.xpdustry.distributor.exception.*;
 
 import org.checkerframework.checker.nullness.qual.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import rhino.*;
 import rhino.Function;
+import rhino.*;
 import rhino.module.*;
 import rhino.module.provider.*;
 
@@ -19,21 +17,21 @@ import java.util.function.*;
 
 public class JavaScriptEngine implements AutoCloseable{
     private static @NonNull Supplier<JavaScriptEngine> factory = () -> {
-        Log.info("Default called");
         Context context = Context.getCurrentContext();
         if(context == null) context = Context.enter();
         return new JavaScriptEngine(context);
     };
 
-    private static final ThreadLocal<JavaScriptEngine> instance = ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
+    private static final ThreadLocal<JavaScriptEngine> instance =
+        ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
 
     private final @NonNull Context ctx;
-    private final @NonNull ImporterTopLevel importer;
+    private final @NonNull Scriptable scope;
     private @Nullable Require require = null;
 
-    public JavaScriptEngine(@NonNull Context context, @NonNull ImporterTopLevel importer){
+    public JavaScriptEngine(@NonNull Context context, @NonNull Scriptable scope){
         this.ctx = context;
-        this.importer = importer;
+        this.scope = scope;
     }
 
     public JavaScriptEngine(@NonNull Context context){
@@ -66,7 +64,7 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @NonNull Scriptable newScope(){
-        return newScope(importer);
+        return newScope(scope);
     }
 
     public @NonNull Scriptable newScope(@NonNull Scriptable parent){
@@ -84,17 +82,17 @@ public class JavaScriptEngine implements AutoCloseable{
         require = new RequireBuilder()
             .setSandboxed(false)
             .setModuleScriptProvider(new SoftCachingModuleScriptProvider(new JavaScriptLoader(loader)))
-            .createRequire(ctx, importer);
+            .createRequire(ctx, scope);
 
-        require.install(importer);
+        require.install(scope);
     }
 
-    public boolean hasRequire(){
+    public final boolean hasRequire(){
         return require != null;
     }
 
     public Object eval(@NonNull String source) throws ScriptException{
-        return eval(importer, source, toString());
+        return eval(scope, source, toString());
     }
 
     public Object eval(@NonNull Scriptable scope, @NonNull String source, @NonNull String sourceName) throws ScriptException{
@@ -118,7 +116,7 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public Object invoke(@NonNull Function function, Object... args) throws ScriptException{
-        return invoke(function, importer, args);
+        return invoke(function, scope, args);
     }
 
     public Object invoke(@NonNull Function function, @NonNull Scriptable scope, Object... args) throws ScriptException{
@@ -130,7 +128,7 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public Object exec(@NonNull Script script) throws ScriptException{
-        return exec(script, importer);
+        return exec(script, scope);
     }
 
     public Object exec(@NonNull Script script, @NonNull Scriptable scope) throws ScriptException{
@@ -156,12 +154,11 @@ public class JavaScriptEngine implements AutoCloseable{
         return ctx;
     }
 
-    public @NonNull ImporterTopLevel getImporter(){
-        return importer;
+    public @NonNull Scriptable getScope(){
+        return scope;
     }
 
-    @Override
-    public @NonNull String toString(){
+    @Override public @NonNull String toString(){
         return "engine@" + Integer.toHexString(hashCode()) + ".js";
     }
 

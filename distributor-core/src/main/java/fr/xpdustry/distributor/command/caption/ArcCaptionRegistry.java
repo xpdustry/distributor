@@ -19,11 +19,10 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
     }
 
     public static final class BundleProviderMessageFactory implements BiFunction<Caption, ArcCommandSender, String>{
-        private final @NonNull BundleProvider provider;
-
         private BundleProviderMessageFactory(@NonNull BundleProvider provider){
             this.provider = provider;
         }
+        private final @NonNull BundleProvider provider;
 
         @Override public String apply(@NonNull Caption caption, @NonNull ArcCommandSender sender){
             return provider.getBundle(sender).get(caption);

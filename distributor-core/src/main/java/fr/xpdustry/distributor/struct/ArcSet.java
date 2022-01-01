@@ -7,8 +7,6 @@ import org.checkerframework.checker.nullness.qual.*;
 import java.util.*;
 import java.util.function.*;
 
-import static java.util.Objects.requireNonNull;
-
 
 /**
  * A {@code Set} view of a {@code ObjectSet}.
@@ -17,7 +15,7 @@ public class ArcSet<E> extends AbstractSet<E>{
     private final @NonNull ObjectSet<E> set;
 
     public ArcSet(@NonNull ObjectSet<E> set){
-        this.set = requireNonNull(set, "set can't be null.");
+        this.set = set;
     }
 
     @Override public void forEach(Consumer<? super E> action){

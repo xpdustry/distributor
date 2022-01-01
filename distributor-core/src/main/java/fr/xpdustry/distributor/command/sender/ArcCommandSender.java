@@ -2,38 +2,25 @@ package fr.xpdustry.distributor.command.sender;
 
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.string.*;
-
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
 
-import static java.util.Objects.requireNonNull;
-
 
 public abstract class ArcCommandSender{
-    protected final @NonNull StringFormatter formatter;
     protected final @NonNull CaptionRegistry<ArcCommandSender> captions;
-    protected final @NonNull Collection<String> permissions = new HashSet<>();
-
-    public ArcCommandSender(@NonNull StringFormatter formatter, @NonNull CaptionRegistry<ArcCommandSender> captions){
-        this.formatter = requireNonNull(formatter, "formatter can't be null.");
-        this.captions = requireNonNull(captions, "manager can't be null.");
-    }
+    private final Collection<String> permissions = new HashSet<>();
 
     public ArcCommandSender(@NonNull CaptionRegistry<ArcCommandSender> captions){
-        this(StringFormatter.MINDUSTRY, captions);
+        this.captions = captions;
     }
 
     public abstract void send(@NonNull String message, Object... args);
 
-    public void send(@NonNull Caption caption, CaptionVariable... variables){
+    public void send(@NonNull Caption caption, CaptionVariable... vars){
         String message = captions.getCaption(caption, this);
-        for (final var variable : variables) {
-            message = message.replace(String.format("{%s}", variable.getKey()), variable.getValue());
-        }
-
+        for(final var cv : vars) message = message.replace("{" + cv.getKey() + "}", cv.getValue());
         send(message);
     }
 
@@ -53,9 +40,5 @@ public abstract class ArcCommandSender{
 
     public boolean removePermission(@NonNull String permission){
         return permissions.remove(permission);
-    }
-
-    public @NonNull StringFormatter getFormatter(){
-        return formatter;
     }
 }

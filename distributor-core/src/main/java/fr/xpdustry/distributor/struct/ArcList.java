@@ -7,18 +7,17 @@ import org.checkerframework.checker.nullness.qual.*;
 import java.util.*;
 import java.util.function.*;
 
-import static java.util.Objects.requireNonNull;
-
 
 /**
  * A {@code List} view of a {@code Seq}.
+ *
  * @param <E> the element type
  */
 public class ArcList<E> extends AbstractList<E>{
     private final @NonNull Seq<E> seq;
 
     public ArcList(@NonNull Seq<E> seq){
-        this.seq = requireNonNull(seq, "seq can't be null.");
+        this.seq = seq;
     }
 
     @Override public void replaceAll(UnaryOperator<E> operator){

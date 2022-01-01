@@ -23,8 +23,7 @@ public class TimedContextFactory extends ContextFactory{
         return ctx;
     }
 
-    @Override
-    public boolean hasFeature(Context cx, int featureIndex){
+    @Override public boolean hasFeature(Context cx, int featureIndex){
         switch(featureIndex){
             case FEATURE_DYNAMIC_SCOPE:
             case FEATURE_NON_ECMA_GET_YEAR:
@@ -38,15 +37,13 @@ public class TimedContextFactory extends ContextFactory{
         }
     }
 
-    @Override
-    protected Object doTopCall(Callable callable, Context ctx, Scriptable scope, Scriptable thisObj, Object[] args){
+    @Override protected Object doTopCall(Callable callable, Context ctx, Scriptable scope, Scriptable thisObj, Object[] args){
         TimedContext tcx = (TimedContext)ctx;
         tcx.startTime = System.currentTimeMillis();
         return super.doTopCall(callable, tcx, scope, thisObj, args);
     }
 
-    @Override
-    protected void observeInstructionCount(Context ctx, int instructionCount){
+    @Override protected void observeInstructionCount(Context ctx, int instructionCount){
         TimedContext tcx = (TimedContext)ctx;
         long currentTime = System.currentTimeMillis();
         if(currentTime - tcx.startTime > maxRuntime * 1000L){

@@ -80,13 +80,11 @@ public class Holder<T>{
         return (Holder<R>)this;
     }
 
-    @Override
-    public int hashCode(){
+    @Override public int hashCode(){
         return Objects.hashCode(value);
     }
 
-    @Override
-    public boolean equals(@Nullable Object o){
+    @Override public boolean equals(@Nullable Object o){
         if(o instanceof Holder h){
             return Objects.equals(value, h.value);
         }else{
@@ -94,8 +92,7 @@ public class Holder<T>{
         }
     }
 
-    @Override
-    public @NonNull String toString(){
+    @Override public @NonNull String toString(){
         return String.valueOf(value);
     }
 }

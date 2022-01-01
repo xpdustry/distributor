@@ -30,7 +30,7 @@ public final class ArcCaptionKeys{
         return caption;
     }
 
-    public static @NonNull Collection<@NonNull Caption> getArcCaptionKeys(){
+    public static @NonNull Collection<Caption> getArcCaptionKeys(){
         return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);
     }
 }

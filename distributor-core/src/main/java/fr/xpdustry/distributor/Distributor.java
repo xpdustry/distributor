@@ -6,9 +6,7 @@ import arc.struct.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.game.EventType.*;
 import mindustry.mod.*;
-import mindustry.net.Administration.*;
 import mindustry.server.*;
 
 import fr.xpdustry.distributor.bundle.*;
@@ -17,46 +15,32 @@ import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.internal.*;
 
 import cloud.commandframework.captions.*;
-import cloud.commandframework.types.tuples.*;
-import org.aeonbits.owner.Config;
 import org.aeonbits.owner.*;
-import org.checkerframework.checker.nullness.qual.*;
 
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
-import java.util.function.*;
 
 
 public final class Distributor extends Plugin{
-    public static final DistributorConfig config = getConfig("distributor", DistributorConfig.class);
+    public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
+    public static final Fi PLUGIN_DIRECTORY = ROOT_DIRECTORY.child("plugin");
+    public static final Fi SCRIPT_DIRECTORY = ROOT_DIRECTORY.child("script");
+
     public static final DistributorApplication app = new DistributorApplication();
-    public static final BundleProvider bundles =
-        l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
+    public static final BundleProvider bundles = l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
-    public static final ArcCommandManager serverCommandManager = new ArcCommandManager();
-    public static final ArcCommandManager clientCommandManager = new ArcCommandManager();
+    public static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
+    public static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
 
-    private static final ChatFilter CLIENT_COMMAND_INPUT = (player, message) -> {
-        if(message.startsWith(clientCommandManager.getPrefix()))
-            Log.info("<&fi@: @&fr>", "&lk" + player.name(), "&lw" + message);
-        return clientCommandManager.handleMessage(message) ? null : message;
-    };
+    static{
+        ROOT_DIRECTORY.mkdirs();
+        PLUGIN_DIRECTORY.mkdirs();
+        SCRIPT_DIRECTORY.mkdirs();
+    }
 
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
-    }
-
-    public static Fi getRootDirectory(){
-        final var dir = new Fi("./distributor");
-        dir.mkdirs();
-        return dir;
-    }
-
-    public static Fi getPluginDirectory(){
-        final var dir = getRootDirectory().child("plugin");
-        dir.mkdirs();
-        return dir;
     }
 
     public static CommandHandler getClientCommandHandler(){
@@ -67,19 +51,9 @@ public final class Distributor extends Plugin{
         return getServer().handler;
     }
 
-    public static void configureCommands(@NonNull BiConsumer<ArcCommandManager, CommandHandler> consumer){
-        List.of(
-            Pair.of(serverCommandManager, getServerCommandHandler()),
-            Pair.of(clientCommandManager, getClientCommandHandler())
-        ).forEach(pair -> consumer.accept(pair.getFirst(), pair.getSecond()));
-    }
-
     public static <T extends Config&Accessible> T getConfig(String name, Class<T> clazz){
         final var properties = new Properties();
-        var file = getRootDirectory().child("plugin");
-
-        file.mkdirs();
-        file = file.child(name + ".properties");
+        final var file = PLUGIN_DIRECTORY.child(name + ".properties");
 
         if(file.exists()){
             try(final var in = file.read()){
@@ -102,8 +76,10 @@ public final class Distributor extends Plugin{
         return config;
     }
 
-    @Override
-    public void init(){
+    @Override public void init(){
+        serverCommandManager = new ArcCommandManager(getServerCommandHandler());
+        clientCommandManager = new ArcCommandManager(getClientCommandHandler());
+
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("banner.txt not found...");
@@ -120,43 +96,18 @@ public final class Distributor extends Plugin{
 
         // Commands -----------------------------
 
-        // Applies shared config
-        configureCommands((manager, handler) -> {
-            // Makes impossible to use the default CommandHandler
-            handler.setPrefix("\0");
+        // Add localization support via Captions
+        final var captions = new Seq<Caption>()
+            .addAll(StandardCaptionKeys.getStandardCaptionKeys())
+            .addAll(ArcCaptionKeys.getArcCaptionKeys());
 
-            // Add localization support via Captions
-            final var registry = (ArcCaptionRegistry)manager.getCaptionRegistry();
-            final var captions = new Seq<Caption>()
-                .addAll(StandardCaptionKeys.getStandardCaptionKeys())
-                .addAll(ArcCaptionKeys.getArcCaptionKeys());
-            captions.forEach(c -> registry.registerMessageFactory(c, bundles));
-
-            // Command import
-            Events.on(ServerLoadEvent.class, e -> {
-                handler.getCommandList().copy()
-                    .filter(c -> manager.getCommandTree().getNamedNode(c.text) == null)    // Avoid overrides
-                    .map(manager::convertNativeCommand)                                    // Convert native to cloud command
-                    .forEach(manager::command);                                            // Register the command
-            });
+        captions.forEach(c -> {
+            ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
+            ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
         });
-
-        // Server input redirection
-        serverCommandManager.setPrefix("");
-        getServer().serverInput = Distributor::serverCommandInput;
-        // Client input redirection
-        Vars.netServer.admins.chatFilters.insert(1, CLIENT_COMMAND_INPUT);
 
         // END LOADING ----------------------------------------------------------------------------
 
         Log.info("Loaded Distributor in @ milliseconds.", Time.elapsed());
-    }
-
-    private static void serverCommandInput(){
-        final var scanner = new Scanner(System.in, StandardCharsets.UTF_8);
-        while(scanner.hasNext()){
-            final var line = scanner.nextLine();
-            Core.app.post(() -> serverCommandManager.handleMessage(line));
-        }
     }
 }

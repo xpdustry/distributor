@@ -10,8 +10,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 
-import static java.util.Objects.requireNonNull;
-
 
 /**
  * A simple wrapper class for the {@code ResourceBundle}.
@@ -22,14 +20,14 @@ public class WrappedBundle{
     public static final Locale ROUTER_LOCALE = new Locale("router");
 
     /** Router... */
-    public static final WrappedBundle ROUTER = WrappedBundle.of(new ResourceBundle(){
+    public static final WrappedBundle ROUTER_BUNDLE = WrappedBundle.of(new ResourceBundle(){
         @Override public Locale getLocale(){return ROUTER_LOCALE;}
         @Override protected Object handleGetObject(@NonNull String key){return "router";}
         @Override public @NonNull Enumeration<String> getKeys(){return Collections.enumeration(List.of("router"));}
     });
 
     /** Nothing... */
-    public static final WrappedBundle EMPTY = WrappedBundle.of(new ResourceBundle(){
+    public static final WrappedBundle EMPTY_BUNDLE = WrappedBundle.of(new ResourceBundle(){
         @Override public Locale getLocale(){return Locale.ROOT;}
         @Override protected @Nullable Object handleGetObject(@NonNull String key){return null;}
         @Override public @NonNull Enumeration<String> getKeys(){return Collections.emptyEnumeration();}
@@ -46,23 +44,16 @@ public class WrappedBundle{
     }
 
     public static WrappedBundle of(@NonNull String baseName, @NonNull Locale locale, @NonNull ClassLoader loader){
-        try{
-            return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
-        }catch(MissingResourceException e){
-            return WrappedBundle.EMPTY;
-        }
+        if(locale.equals(ROUTER_LOCALE)) return ROUTER_BUNDLE;
+        return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
     }
 
     public static @NonNull Locale getPlayerLocale(@NonNull Playerc player){
         return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
-    public @NonNull String get(@NonNull String key, Object... args){
-        if(bundle.containsKey(key)){
-            return Strings.format(bundle.getString(key), args);
-        }else{
-            return "???" + key + "???";
-        }
+    public @NonNull String get(@NonNull String key, @Nullable Object... args){
+        return bundle.containsKey(key) ? Strings.format(bundle.getString(key), args) : "???" + key + "???";
     }
 
     public @NonNull String get(@NonNull Caption caption){
@@ -73,11 +64,11 @@ public class WrappedBundle{
         return bundle.containsKey(key);
     }
 
-    public @Nullable String getOrNull(@NonNull String key, Object... args){
+    public @Nullable String getOrNull(@NonNull String key, @Nullable Object... args){
         return containsKey(key) ? get(key, args) : null;
     }
 
-    public @NonNull String getNonNull(@NonNull String key, Object... args){
+    public @NonNull String getNonNull(@NonNull String key, @Nullable Object... args){
         return Strings.format(bundle.getString(key), args);
     }
 

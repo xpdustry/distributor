@@ -4,8 +4,6 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.string.*;
-
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.*;
 
@@ -13,16 +11,12 @@ import java.util.*;
 
 
 public class ArcConsoleSender extends ArcCommandSender{
-    public ArcConsoleSender(@NonNull StringFormatter formatter, @NonNull CaptionRegistry<ArcCommandSender> captions){
-        super(formatter, captions);
-    }
-
     public ArcConsoleSender(@NonNull CaptionRegistry<ArcCommandSender> captions){
         super(captions);
     }
 
     @Override public void send(@NonNull String message, Object... args){
-        Log.info(formatter.format(message, args));
+        Log.info(message, args);
     }
 
     @Override public boolean isPlayer(){
@@ -35,5 +29,9 @@ public class ArcConsoleSender extends ArcCommandSender{
 
     @Override public @NonNull Locale getLocale(){
         return Locale.getDefault();
+    }
+
+    @Override public boolean hasPermission(@NonNull String permission){
+        return true;
     }
 }

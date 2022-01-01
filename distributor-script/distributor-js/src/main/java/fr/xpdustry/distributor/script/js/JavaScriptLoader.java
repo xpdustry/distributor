@@ -1,13 +1,15 @@
 package fr.xpdustry.distributor.script.js;
 
+import arc.util.*;
+
 import org.checkerframework.checker.nullness.qual.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import rhino.*;
 import rhino.module.provider.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.util.*;
 
 
 public class JavaScriptLoader extends UrlModuleSourceProvider{
@@ -26,7 +28,9 @@ public class JavaScriptLoader extends UrlModuleSourceProvider{
         if(url == null){
             return null;
         }else{
-            return new ModuleSource(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8), url.toURI(), url.toURI().resolve(".."), validator);
+            return new ModuleSource(
+                new InputStreamReader(url.openStream(), StandardCharsets.UTF_8),
+                url.toURI(), url.toURI().resolve(".."), validator);
         }
     }
 }
