@@ -12,6 +12,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.internal.*;
+import cloud.commandframework.meta.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
@@ -39,6 +40,7 @@ public class ArcRegistrationHandler implements CommandRegistrationHandler{
     @Override public boolean registerCommand(@NonNull Command<?> command){
         final var info = (StaticArgument<ArcCommandSender>)command.getArguments().get(0);
         final var names = info.getAliases();
+        final var desc = command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, "");
 
         if(manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)){
             names.forEach(handler::removeCommand);
@@ -47,7 +49,7 @@ public class ArcRegistrationHandler implements CommandRegistrationHandler{
         var modified = false;
         for(final var name : names){
             if(!commands.containsKey(name)){
-                handler.register(name, "[args...]", "", new ArcCommandRunner(name));
+                handler.register(name, "[args...]", desc, new ArcCommandRunner(name));
                 modified = true;
             }
         }

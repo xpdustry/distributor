@@ -2,13 +2,13 @@
 
 [![Jitpack latest version](https://jitpack.io/v/Xpdustry/Distributor.svg)](https://jitpack.io/#Xpdustry/Distributor)
 [![Build](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
-[![Mindustry 6.0 | 7.0 ](https://img.shields.io/badge/Mindustry-6.0%20%7C%207.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
+[![Mindustry 7.0 ](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Description
 
-**Distributor** is a Plugin that provides better Mindustry API bindings and features that can be implemented in Java or JavaScript, making development time much faster.
+**Distributor** is a Plugin that provides better Mindustry API bindings and other nice features, making development time much faster.
 
-[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v1.6/javadoc/)
+[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v/javadoc/)
 
 ## Usage
 
@@ -44,7 +44,7 @@ repositories{
 }
 
 dependencies{
-    compileOnly 'fr.xpdustry.Distributor:1.6'
+    compileOnly 'fr.xpdustry:Distributor:1.6'
 }
 ```
 
@@ -72,8 +72,5 @@ You can get it [here](https://github.com/Phinner/Mindustry/releases/tag/v126.3).
     - [X] Commands
     - [ ] Moderation
     - [ ] Network (Socket API)
-    - [ ] Queries on the `settings.bin` database
 
 - [ ] Create JavaScript Debugger
-
-- [ ] Create the dynamic plugin loader (Pretty advanced stuff)

@@ -13,15 +13,22 @@ jobs:
         with:
           java-version: 16
 
-      - name: Build plugin jar
+      - name: Build jars
         id: build
         run: |
           chmod +x ./gradlew
-          ./gradlew jar
-          echo '::set-output name=ARTIFACT_PATH::'$(./gradlew getArtifactPath -q)
+          ./gradlew build
+          echo '::set-output name=ARTIFACT_CORE_PATH::'$(./gradlew distributor-core:getArtifactPath -q)
+          echo '::set-output name=ARTIFACT_SCRIPT_JS_PATH::'$(./gradlew distributor-js:getArtifactPath -q)
 
-      - name: Upload built jar file
+      - name: Upload distributor-core
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.event.repository.name }}
-          path: ${{ steps.build.outputs.ARTIFACT_PATH }}
+          path: ${{ steps.build.outputs.ARTIFACT_CORE_PATH }}
+
+      - name: Upload distributor-js
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}
+          path: ${{ steps.build.outputs.ARTIFACT_SCRIPT_JS_PATH }}

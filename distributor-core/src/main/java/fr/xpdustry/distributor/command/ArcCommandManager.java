@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.command;
 
-import arc.func.*;
 import arc.util.*;
 
 import mindustry.gen.*;
@@ -95,6 +94,10 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
 
     @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull String... aliases){
         return super.commandBuilder(name, aliases).senderType(ArcCommandSender.class);
+    }
+
+    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull CommandMeta meta, @NonNull String... aliases){
+        return super.commandBuilder(name, meta, aliases).senderType(ArcCommandSender.class);
     }
 
     @Override public @NonNull CommandMeta createDefaultCommandMeta(){

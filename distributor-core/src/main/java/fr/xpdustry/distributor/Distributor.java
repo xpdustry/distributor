@@ -30,28 +30,22 @@ public final class Distributor extends Plugin{
     public static final DistributorApplication app = new DistributorApplication();
     public static final BundleProvider bundles = l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
-    public static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
-    public static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
-
-    static{
-        ROOT_DIRECTORY.mkdirs();
-        PLUGIN_DIRECTORY.mkdirs();
-        SCRIPT_DIRECTORY.mkdirs();
-    }
+    private static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
+    private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
 
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
     }
 
-    public static CommandHandler getClientCommandHandler(){
-        return Vars.netServer.clientCommands;
+    public static ArcCommandManager getServerCommandManager(){
+        return serverCommandManager;
     }
 
-    public static CommandHandler getServerCommandHandler(){
-        return getServer().handler;
+    public static ArcCommandManager getClientCommandManager(){
+        return clientCommandManager;
     }
 
-    public static <T extends Config&Accessible> T getConfig(String name, Class<T> clazz){
+    public static <T extends Config&Accessible> T getConfig(String name, Class<T> clazz, boolean create){
         final var properties = new Properties();
         final var file = PLUGIN_DIRECTORY.child(name + ".properties");
 
@@ -65,7 +59,7 @@ public final class Distributor extends Plugin{
 
         final T config = ConfigFactory.create(clazz, properties);
 
-        if(!file.exists()){
+        if(create && !file.exists()){
             try(final var out = file.write()){
                 config.store(out, "Configuration file.");
             }catch(IOException e){
@@ -76,10 +70,16 @@ public final class Distributor extends Plugin{
         return config;
     }
 
-    @Override public void init(){
-        serverCommandManager = new ArcCommandManager(getServerCommandHandler());
-        clientCommandManager = new ArcCommandManager(getClientCommandHandler());
+    public static <T extends Config&Accessible> T getConfig(String name, Class<T> clazz){
+        return getConfig(name, clazz, true);
+    }
 
+    public Distributor(){
+        ROOT_DIRECTORY.mkdirs();
+        SCRIPT_DIRECTORY.mkdirs();
+    }
+
+    @Override public void init(){
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("banner.txt not found...");
@@ -89,12 +89,14 @@ public final class Distributor extends Plugin{
             Log.debug("Distributor failed to show the banner.", e);
         }
 
-        Time.mark();
-        Log.info("Loading Distributor...");
+        Log.info("Loaded Distributor core v@", Vars.mods.getMod(this.getClass()).meta.version);
+        Core.app.addListener(app);
+    }
 
-        // BEGIN LOADING --------------------------------------------------------------------------
-
-        // Commands -----------------------------
+    @Override public void registerServerCommands(CommandHandler handler){
+        // Creating commands here because it is what it is...
+        serverCommandManager = new ArcCommandManager(handler);
+        clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
 
         // Add localization support via Captions
         final var captions = new Seq<Caption>()
@@ -105,9 +107,5 @@ public final class Distributor extends Plugin{
             ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
             ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
         });
-
-        // END LOADING ----------------------------------------------------------------------------
-
-        Log.info("Loaded Distributor in @ milliseconds.", Time.elapsed());
     }
 }

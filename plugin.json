@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "author": "[cyan]Xpdustry",
-  "minGameVersion": "105",
+  "minGameVersion": "127",
   "hidden": true,
   "java": true,
   "repo": "Xpdustry/Distributor"

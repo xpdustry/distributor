@@ -85,11 +85,7 @@ public class Holder<T>{
     }
 
     @Override public boolean equals(@Nullable Object o){
-        if(o instanceof Holder h){
-            return Objects.equals(value, h.value);
-        }else{
-            return false;
-        }
+        return (o instanceof Holder h) && Objects.equals(value, h.value);
     }
 
     @Override public @NonNull String toString(){

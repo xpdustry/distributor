@@ -8,7 +8,6 @@ import org.checkerframework.checker.nullness.qual.*;
 import rhino.Function;
 import rhino.*;
 import rhino.module.*;
-import rhino.module.provider.*;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -22,7 +21,7 @@ public class JavaScriptEngine implements AutoCloseable{
         return new JavaScriptEngine(context);
     };
 
-    private static final ThreadLocal<JavaScriptEngine> instance =
+    private static final ThreadLocal<JavaScriptEngine> INSTANCE =
         ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
 
     private final @NonNull Context ctx;
@@ -48,7 +47,7 @@ public class JavaScriptEngine implements AutoCloseable{
 
     /** @return the current or a new instance of {@code ScriptEngine} */
     public static JavaScriptEngine getInstance(){
-        return instance.get();
+        return INSTANCE.get();
     }
 
     /**
@@ -76,19 +75,20 @@ public class JavaScriptEngine implements AutoCloseable{
         return scope;
     }
 
-    public void setupRequire(@NonNull ClassLoader loader){
-        if(hasRequire()) throw new IllegalStateException("The require is already set up for this engine");
-
+    public void setupRequire(@NonNull ModuleScriptProvider provider){
         require = new RequireBuilder()
             .setSandboxed(false)
-            .setModuleScriptProvider(new SoftCachingModuleScriptProvider(new JavaScriptLoader(loader)))
+            .setModuleScriptProvider(provider)
             .createRequire(ctx, scope);
-
         require.install(scope);
     }
 
     public final boolean hasRequire(){
         return require != null;
+    }
+
+    public @Nullable Require getRequire(){
+        return require;
     }
 
     public Object eval(@NonNull String source) throws ScriptException{
@@ -162,9 +162,8 @@ public class JavaScriptEngine implements AutoCloseable{
         return "engine@" + Integer.toHexString(hashCode()) + ".js";
     }
 
-    @Override
-    public void close(){
+    @Override public void close(){
         Context.exit();
-        instance.remove();
+        INSTANCE.remove();
     }
 }

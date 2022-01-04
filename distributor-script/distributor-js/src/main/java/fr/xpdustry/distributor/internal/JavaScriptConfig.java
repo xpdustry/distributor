@@ -2,6 +2,8 @@ package fr.xpdustry.distributor.internal;
 
 import org.aeonbits.owner.*;
 
+import java.util.*;
+
 
 public interface JavaScriptConfig extends Config, Accessible{
     @DefaultValue("init.js")
@@ -15,6 +17,14 @@ public interface JavaScriptConfig extends Config, Accessible{
     @DefaultValue("shutdown.js")
     @Key("distributor.script.js.shutdown")
     String getShutdownScript();
+
+    @DefaultValue("")
+    @Key("distributor.script.js.blacklist")
+    List<String> getBlackList();
+
+    @DefaultValue("")
+    @Key("distributor.script.js.whitelist")
+    List<String> getWhiteList();
 
     @DefaultValue("10")
     @Key("distributor.script.js.max-runtime")
