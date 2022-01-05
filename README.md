@@ -1,6 +1,6 @@
 # Distributor
 
-[![Jitpack latest version](https://jitpack.io/v/Xpdustry/Distributor.svg)](https://jitpack.io/#Xpdustry/Distributor)
+[![Jitpack latest version](https://jitpack.io/v2.0/Xpdustry/Distributor.svg)](https://jitpack.io/#Xpdustry/Distributor)
 [![Build](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
 [![Mindustry 7.0 ](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
@@ -8,35 +8,24 @@
 
 **Distributor** is a Plugin that provides better Mindustry API bindings and other nice features, making development time much faster.
 
-[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v/javadoc/)
+[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v2.0/javadoc/)
 
 ## Usage
 
-### As a Plugin
+### For plugin development
 
-#### Installation
+**Attention**: You can't use this plugin as a dependency right now, until [#6328](https://github.com/Anuken/Mindustry/pull/6328) is merged...
 
-- Launch your server with the plugin to deploy its file tree, for now it's only the `scripts` subdirectory.
+Let's say you want the core plugin.
 
-- It will also create a property file inside the `config` directory, edit it to change the boot options of Distributor.
+First, include the internal name in your `plugin.json`, such as:
+```json
+{
+  "dependencies": ["xpdustry-distributor-core"]
+}
+```
 
-#### Scripting
-
-Distributor brings its own JavaScript runtime so no worries about V6-V7 compatibilities issues. Here are some things to know:
-
-- The init script will run once, for every `ScriptEngine` instance created (one per thread), so include your global imports and functions there.
-
-- The startup script will run once in the main thread, same for the shutdown script.
-
-- To not overwrite the default `js` command, use `jsx` to run javascript in the terminal with Distributor.
-
-- The `require` function is set up to the root of the `scripts` subdirectory inside the root directory of Distributor.
-
-- Distributor automatically kills blocking scripts after 10 seconds of runtime by default, you can change that behavior in the property file.
-
-### As a Dependency
-
-First, add these in your build.gradle
+Then, get the dependency for your project:
 
 ```gradle
 repositories{
@@ -44,26 +33,25 @@ repositories{
 }
 
 dependencies{
-    compileOnly 'fr.xpdustry:Distributor:1.6'
+    compileOnly 'fr.xpdustry.Distributor:distributor-core:{version}'
 }
 ```
 
-Now, if you are running a V7 server, you will just have to add distributor in the dependency list of your plugin with:
-```json
-{
-  "dependencies": ["xpdustry-distributor-plugin"]
-}
-```
-Making sure you have the Distributor jar in the `mods` directory of your server, and you'll be good.
+When you have finished your plugin, grab the needed [artifacts](https://github.com/Xpdustry/Distributor/releases) for your version. Put them in your `config/mods` with your plugin, and enjoy.
 
-But If you are running a V6 server, since it doesn't use the same class loader for each plugin, you will have funny `ClassNotFoundException` all over the place.
+### For scripting
 
-Fortunately for you, you won't have to fork this plugin to just apply your stuff, you just have to use the custom build I made that adds the shared class loader + unlocking the default `js` command.
-You can get it [here](https://github.com/Phinner/Mindustry/releases/tag/v126.3).
+`distributor-js` provides a better js runtime on top of the mindustry one. Here are some things to know:
 
-## Nice tips
+- The init script will run once, for every `JavaScriptEngine` instance created (one per thread), so include your global imports and functions there.
 
-- If you have a multiple servers on the same vps, you can share Distributor files between each server by changing the value of `distributor.path` inside each `distributor.properties`. Very handy :^)
+- The startup script will run once in the main thread, same for the shutdown script.
+
+- The `js` command is overridden to use the `JavaScriptEngine`.
+
+- The `require` function is set up to the root of the `distributor/script/js` subdirectory inside the root directory of Distributor.
+
+- Distributor automatically kills blocking scripts after 10 seconds of runtime by default, you can change that behavior in the property file.
 
 ## TODO
 

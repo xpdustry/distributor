@@ -1,13 +1,15 @@
-Yay, another day, another update...
+HUGE UPDATE... *Distributor will be much more stable from now on...*
 
-- Removed `AbstractPlugin` and its `plugin` package, until Mindustry handle dependencies correctly...
+- Distributor have been split to satisfy the specific needs of everyone:Split the project:
+  - `distributor-core`: Contains the core utilities and the command framework.
+  - `distributor-js`: Contains JavaScript utilities and better control over the runtime.
 
-- Replaced `CommandAdapter` with `CommandInvoker`, a class that can invoke a command in a `CommandHandler` and anywhere else that can provide a `CommandContext`.
+- Added unit tests for the command framework.
 
-- Removed the `util` package and distributed the utilities in the root package `fr.xpdustry.distributor`:
-  - `io` -> `ResourceLoader`
-  - `bundle` -> Contains new Localization utilities
-  - `struct` -> Contains some handy structures, might include tuples... 
-  - `event` -> `EventWatcher` for dynamically add/removed event listeners.
+- `EventWatcher` now supports both `Events.on` and `Events.run`.
 
-- Renamed `ScriptEngine` to `JavaScriptEngine` and `ScriptLoader` to `JavaScriptLoader` and moved them into a sub package `js` to add futures packages with other scripting languages, Kotlin might be next.
+- Implemented java collections views for the arc collections:
+  - `ArcList`: This list can take advantage of the performances of the `Seq` while enjoying java features.
+  - `ArcSet`: Same for the list
+
+- A lot of stuff I might have forgotten...
