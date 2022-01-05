@@ -7,6 +7,7 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.mod.*;
 
+import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.script.js.*;
@@ -111,16 +112,25 @@ public final class JavaScriptPlugin extends Plugin{
 
     @Override public void registerServerCommands(CommandHandler handler){
         final var manager = Distributor.getServerCommandManager();
+        registerSharedCommands(manager);
+    }
 
+    @Override public void registerClientCommands(CommandHandler handler){
+        final var manager = Distributor.getClientCommandManager();
+        registerSharedCommands(manager);
+    }
+
+    private void registerSharedCommands(ArcCommandManager manager){
         manager.command(manager.commandBuilder("js")
-            .meta(CommandMeta.DESCRIPTION, "Run some js")
+            .meta(CommandMeta.DESCRIPTION, "Run arbitrary Javascript.")
+            .permission(ArcCommandManager.ADMIN_PERMISSION)
             .argument(StringArgument.greedy("script"))
             .handler(ctx -> {
                 try{
                     var obj = JavaScriptEngine.getInstance().eval(ctx.get("script"));
-                    ctx.getSender().send(">>> " + JavaScriptEngine.toString(obj));
+                    ctx.getSender().send(JavaScriptEngine.toString(obj));
                 }catch(ScriptException e){
-                    ctx.getSender().send(">>> " + e.getMessage());
+                    ctx.getSender().send(e.getMessage());
                 }
             })
         );
