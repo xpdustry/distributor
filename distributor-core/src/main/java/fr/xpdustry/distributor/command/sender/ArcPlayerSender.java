@@ -8,6 +8,7 @@ import fr.xpdustry.distributor.bundle.*;
 
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 
@@ -20,8 +21,25 @@ public class ArcPlayerSender extends ArcCommandSender{
         this.player = player;
     }
 
-    @Override public void send(@NonNull String message, Object... args){
-        player.sendMessage(Strings.format(message, args));
+    @Override public void send(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+        player.sendMessage(switch(intent){
+            case DEBUG -> "[gray]" + Strings.format(message.replace("@", "[lightgray]@[]"), args);
+            case ERROR -> "[scarlet]" + Strings.format(message.replace("@", "[orange]@[]"), args);
+            default -> Strings.format(message, args);
+        });
+    }
+
+    @Override public void send(@NonNull MessageIntent intent, @NonNull Caption caption, @NonNull CaptionVariable... vars){
+        var message = captions.getCaption(caption, this);
+        for(final var cv : vars){
+            message = message.replace("{" + cv.getKey() + "}", switch(intent){
+                case DEBUG -> "[lightgray]" + cv.getValue() + "[]";
+                case ERROR -> "[orange]" + cv.getValue() + "[]";
+                default -> cv.getValue();
+            });
+        }
+
+        send(intent, message);
     }
 
     @Override public boolean isPlayer(){

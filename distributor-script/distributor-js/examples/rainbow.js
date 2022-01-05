@@ -16,23 +16,17 @@ const rainbow = extend(Timer.Task, {
     run(){
         Groups.player.each(p => {
             let color = this.next()
-            Call.effect(this.effects.random(), p.x(), p.y(), 0, color)
+            Call.effect(this.effects.random(), p.x, p.y, 0, color)
         });
     }
 });
 
-
-Commands.register(Commands.getClientCommands(), Commands.builder("rainbow")
-    .validator(Commands.ADMIN_VALIDATOR)
-    .description("Make everyone fart a rainbow.")
-    .parameter(BooleanParameter.of("status", Commands.EXTENDED_BOOLEAN_PARSER))
-    .runner(ctx => {
-        if(ctx.get("status")){
-            if(!rainbow.isScheduled()) Timer.schedule(rainbow, 0, 0.1);
-            ctx.getCaller().sendMessage("You enabled the rainbow fart.")
-        }else{
-            if(rainbow.isScheduled()) rainbow.cancel()
-            ctx.getCaller().sendMessage("You disabled the rainbow fart.")
-        }
-    })
-)
+Vars.netServer.clientCommands.register("rainbow", "Make everyone fart a rainbow.", runner((args, player) => {
+    if(!rainbow.isScheduled()){
+        Timer.schedule(rainbow, 0, 0.1);
+        player.sendMessage("You enabled the rainbow fart.")
+    }else{
+        rainbow.cancel()
+        player.sendMessage("You disabled the rainbow fart.")
+    }
+}))

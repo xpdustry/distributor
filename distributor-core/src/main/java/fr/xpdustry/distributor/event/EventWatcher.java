@@ -11,9 +11,9 @@ import java.util.*;
 
 
 /**
- * A utility class to dynamically register/unregister an event listener from {@link Events}.
+ * A utility class to dynamically register/unregister an event listener from {@code Events}.
  *
- * @param <T> the class of the event to listen to
+ * @param <T> the type of the event to listen to
  */
 public class EventWatcher<T> implements EventListener, Cons<T>{
     private static final ObjectMap<Object, Seq<Cons<?>>> events = Reflect.get(Events.class, "events");

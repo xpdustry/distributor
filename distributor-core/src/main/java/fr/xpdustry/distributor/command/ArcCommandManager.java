@@ -8,7 +8,6 @@ import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.command.sender.*;
 
 import cloud.commandframework.*;
-import cloud.commandframework.Command;
 import cloud.commandframework.captions.*;
 import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
@@ -22,8 +21,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.function.*;
-
-import static fr.xpdustry.distributor.command.caption.ArcCaptionKeys.*;
 
 
 public class ArcCommandManager extends CommandManager<ArcCommandSender>{
@@ -48,30 +45,44 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
 
             if(throwable instanceof InvalidSyntaxException t){
                 handleException(sender, InvalidSyntaxException.class, t, (s, e) -> {
-                    s.send(COMMAND_INVALID_SYNTAX, CaptionVariable.of("syntax", e.getCorrectSyntax()));
+                    s.send(
+                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_INVALID_SYNTAX,
+                        CaptionVariable.of("syntax", e.getCorrectSyntax()));
                 });
             }else if(throwable instanceof NoPermissionException t){
                 handleException(sender, NoPermissionException.class, t, (s, e) -> {
-                    s.send(COMMAND_INVALID_PERMISSION, CaptionVariable.of("permission", e.getMissingPermission()));
+                    s.send(
+                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_INVALID_PERMISSION,
+                        CaptionVariable.of("permission", e.getMissingPermission()));
                 });
             }else if(throwable instanceof NoSuchCommandException t){
                 handleException(sender, NoSuchCommandException.class, t, (s, e) -> {
-                    s.send(COMMAND_FAILURE_NO_SUCH_COMMAND, CaptionVariable.of("command", e.getSuppliedCommand()));
+                    s.send(
+                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
+                        CaptionVariable.of("command", e.getSuppliedCommand()));
                 });
             }else if(throwable instanceof ArgumentParseException t){
                 handleException(sender, ArgumentParseException.class, t, (s, e) -> {
                     if(e.getCause() instanceof ParserException p){
-                        s.send(p.errorCaption(), p.captionVariables());
+                        s.send(
+                            MessageIntent.ERROR, p.errorCaption(),
+                            p.captionVariables());
                     }else{
-                        s.send(ARGUMENT_PARSE_FAILURE, CaptionVariable.of("message", e.getCause().getMessage()));
+                        s.send(
+                            MessageIntent.ERROR, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE,
+                            CaptionVariable.of("message", e.getCause().getMessage()));
                     }
                 });
             }else if(throwable instanceof CommandExecutionException t){
                 handleException(sender, CommandExecutionException.class, t, (s, e) -> {
-                    s.send(COMMAND_FAILURE_EXECUTION, CaptionVariable.of("cause", e.getCause().getMessage()));
+                    s.send(
+                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
+                        CaptionVariable.of("cause", e.getCause().getMessage()));
                 });
             }else{
-                sender.send(COMMAND_FAILURE, CaptionVariable.of("message", throwable.getMessage()));
+                sender.send(
+                    MessageIntent.ERROR, ArcCaptionKeys.COMMAND_FAILURE,
+                    CaptionVariable.of("message", throwable.getMessage()));
             }
         });
     }
@@ -92,12 +103,12 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         return sender.hasPermission(permission);
     }
 
-    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull String... aliases){
-        return super.commandBuilder(name, aliases).senderType(ArcCommandSender.class);
-    }
-
     @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull CommandMeta meta, @NonNull String... aliases){
         return super.commandBuilder(name, meta, aliases).senderType(ArcCommandSender.class);
+    }
+
+    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull String... aliases){
+        return super.commandBuilder(name, aliases).senderType(ArcCommandSender.class);
     }
 
     @Override public @NonNull CommandMeta createDefaultCommandMeta(){

@@ -48,19 +48,15 @@ allprojects{
     tasks.withType(JavaCompile).configureEach {
         sourceCompatibility = JavaVersion.VERSION_16
         targetCompatibility = JavaVersion.VERSION_16
+        options.encoding = StandardCharsets.UTF_8
 
-        options.with {
-            encoding = StandardCharsets.UTF_8
-            errorprone.with{
-                disableWarningsInGeneratedCode = true
-                disable "MissingSummary"
-                // remove the if condition if you want to run NullAway on test code
-                if(!name.toLowerCase().contains("test")){
-                    check("NullAway", CheckSeverity.ERROR)
-                    option("NullAway:AnnotatedPackages", "fr.xpdustry.distributor")
-                }
+        options.errorprone.with{
+            disableWarningsInGeneratedCode = true
+            disable "MissingSummary"
+            if(!name.containsIgnoreCase("test")){
+                check("NullAway", CheckSeverity.ERROR)
+                option("NullAway:AnnotatedPackages", "fr.xpdustry.distributor")
             }
-
         }
     }
 
@@ -72,21 +68,23 @@ allprojects{
     dependencies{
         // Mindustry
         compileOnly "com.github.Anuken.Arc:arc-core:$arcVersion"
+        compileOnly "com.github.Anuken.Arc:backend-headless:$arcVersion"
         compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
         compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
 
-        // Annotations
-        compileOnly 'org.checkerframework:checker-qual:3.21.0'
-        // compileOnly "com.github.Anuken.Mindustry:annotations:$mindustryVersion"
-
         // Unit Testing
         testImplementation "com.github.Anuken.Arc:arc-core:$arcVersion"
+        testImplementation "com.github.Anuken.Arc:backend-headless:$arcVersion"
         testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
+        testImplementation "com.github.Anuken.Mindustry:server:$mindustryVersion"
+
         testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.2"
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+        testImplementation "org.mockito:mockito-core:4.2.0"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
 
-        // Static
+        // Annotations
+        compileOnly 'org.checkerframework:checker-qual:3.21.0'
         annotationProcessor "com.uber.nullaway:nullaway:0.9.4"
         errorprone "com.google.errorprone:error_prone_core:2.10.0"
         errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
@@ -110,40 +108,6 @@ subprojects{
         }
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-
-    if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
-        task moveJar{
-            dependsOn jar
-
-            doLast{
-                if(!file("$serverDirectoryPath/config").exists()){
-                    throw new GradleException("Initialize the server files first.")
-                }
-
-                // Deletes all the jar files that begins with the base artifact name
-                delete file("$serverDirectoryPath/config/mods").listFiles({
-                    it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
-                } as FileFilter)
-
-                copy{
-                    from jar.archiveFile.get()
-                    into file("$serverDirectoryPath/config/mods")
-                }
-            }
-        }
-
-        task runServer(type: JavaExec){
-            workingDir = serverDirectoryPath
-            classpath = files("$serverDirectoryPath/server.jar")
-            mainClass = "mindustry.server.ServerLauncher"
-            standardInput = System.in
-        }
-
-        task deployJar{
-            dependsOn moveJar
-            dependsOn runServer
-        }
     }
 
     // Required if you want to use the Release GitHub action
@@ -175,6 +139,42 @@ subprojects{
                     }
                 }
             }
+        }
+    }
+}
+
+if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
+    task runServer(type: JavaExec){
+        workingDir = serverDirectoryPath
+        classpath = files("$serverDirectoryPath/server.jar")
+        mainClass = "mindustry.server.ServerLauncher"
+        standardInput = System.in
+    }
+
+    subprojects{
+        task moveJar{
+            dependsOn jar
+
+            doLast{
+                if(!file("$serverDirectoryPath/config").exists()){
+                    throw new GradleException("Initialize the server files first.")
+                }
+
+                // Deletes all the jar files that begins with the base artifact name
+                delete file("$serverDirectoryPath/config/mods").listFiles({
+                    it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
+                } as FileFilter)
+
+                copy{
+                    from jar.archiveFile.get()
+                    into file("$serverDirectoryPath/config/mods")
+                }
+            }
+        }
+
+        task deployJar{
+            dependsOn moveJar
+            dependsOn runServer
         }
     }
 }

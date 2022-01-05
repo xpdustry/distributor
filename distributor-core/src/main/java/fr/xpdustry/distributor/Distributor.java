@@ -33,6 +33,12 @@ public final class Distributor extends Plugin{
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
 
+    public Distributor(){
+        ROOT_DIRECTORY.mkdirs();
+        PLUGIN_DIRECTORY.mkdirs();
+        SCRIPT_DIRECTORY.mkdirs();
+    }
+
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
     }
@@ -74,11 +80,6 @@ public final class Distributor extends Plugin{
         return getConfig(name, clazz, true);
     }
 
-    public Distributor(){
-        ROOT_DIRECTORY.mkdirs();
-        SCRIPT_DIRECTORY.mkdirs();
-    }
-
     @Override public void init(){
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
@@ -89,7 +90,7 @@ public final class Distributor extends Plugin{
             Log.debug("Distributor failed to show the banner.", e);
         }
 
-        Log.info("Loaded Distributor core v@", Vars.mods.getMod(this.getClass()).meta.version);
+        Log.info(" > Loaded Distributor core @", Vars.mods.getMod(this.getClass()).meta.version);
         Core.app.addListener(app);
     }
 
