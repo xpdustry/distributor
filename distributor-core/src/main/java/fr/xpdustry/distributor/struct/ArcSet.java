@@ -18,6 +18,18 @@ public class ArcSet<E> extends AbstractSet<E>{
         this.set = set;
     }
 
+    public ArcSet(int initial, float loadFactor){
+        this(new ObjectSet<>(initial, loadFactor));
+    }
+
+    public ArcSet(int initial){
+        this(new ObjectSet<>(initial));
+    }
+
+    public ArcSet(){
+        this(new ObjectSet<>());
+    }
+
     @Override public void forEach(Consumer<? super E> action){
         set.forEach(action);
     }

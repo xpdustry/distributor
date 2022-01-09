@@ -13,7 +13,6 @@ import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
 
@@ -24,12 +23,10 @@ import org.checkerframework.checker.nullness.qual.*;
 public class ArcRegistrationHandler implements CommandRegistrationHandler{
     private final @NonNull CommandHandler handler;
     private final @NonNull ArcCommandManager manager;
-    private final ObjectMap<String, CommandHandler.Command> commands;
 
     public ArcRegistrationHandler(@NonNull CommandHandler handler, @NonNull ArcCommandManager manager){
         this.handler = handler;
         this.manager = manager;
-        this.commands = Reflect.get(handler, "commands");
     }
 
     public @NonNull CommandHandler getHandler(){
@@ -50,10 +47,14 @@ public class ArcRegistrationHandler implements CommandRegistrationHandler{
             names.forEach(handler::removeCommand);
         }
 
+        final ObjectMap<String, CommandHandler.Command> commands = Reflect.get(handler, "commands");
+
         var modified = false;
         for(final var name : names){
             if(!commands.containsKey(name)){
-                handler.register(name, "[args...]", desc, new ArcCommandRunner(name));
+                final var nativeCommand = new ArcNativeCommand(name, desc);
+                commands.put(name, nativeCommand);
+                handler.getCommandList().add(nativeCommand);
                 modified = true;
             }
         }
@@ -61,19 +62,11 @@ public class ArcRegistrationHandler implements CommandRegistrationHandler{
         return modified;
     }
 
-    public final class ArcCommandRunner implements CommandRunner<Playerc>{
-        private final @NonNull String name;
-
-        public ArcCommandRunner(@NonNull String name){
-            this.name = name;
-        }
-
-        public @NonNull String getName(){
-            return name;
-        }
-
-        @Override public void accept(@NonNull String[] args, @Nullable Playerc playerc){
-            manager.handleCommand(playerc, args.length == 0 ? name : name + " " + args[0]);
+    public final class ArcNativeCommand extends CommandHandler.Command{
+        public ArcNativeCommand(String name, String description){
+            super(name, "[args...]", description, (CommandRunner<Playerc>)(args, player) -> {
+                manager.handleCommand(player, args.length == 0 ? name : name + " " + args[0]);
+            });
         }
     }
 }

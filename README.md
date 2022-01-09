@@ -39,26 +39,17 @@ dependencies{
 
 When you have finished your plugin, grab the needed [artifacts](https://github.com/Xpdustry/Distributor/releases) for your version. Put them in your `config/mods` with your plugin, and enjoy.
 
-### For scripting
-
-`distributor-js` provides a better js runtime on top of the mindustry one. Here are some things to know:
-
-- The init script will run once, for every `JavaScriptEngine` instance created (one per thread), so include your global imports and functions there.
-
-- The startup script will run once in the main thread, same for the shutdown script.
-
-- The `js` command is overridden to use the `JavaScriptEngine`.
-
-- The `require` function is set up to the root of the `distributor/script/js` subdirectory inside the root directory of Distributor.
-
-- Distributor automatically kills blocking scripts after 10 seconds of runtime by default, you can change that behavior in the property file.
-
 ## TODO
+    
+- Tools
+  - [X] Localization
+  - [ ] Moderation
+  - [ ] Network (Socket API)
+  - [ ] Services (Anti-VPN)
 
-- [ ] Complete Distributor stdlib:
-    - [X] Localization
-    - [X] Commands
-    - [ ] Moderation
-    - [ ] Network (Socket API)
+- Command framework
+  - [ ] Async execution
 
-- [ ] Create JavaScript Debugger
+- Helper
+  - [ ] Implement ArcMap
+  - [ ] JavaScript Debugger

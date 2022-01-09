@@ -2,9 +2,3 @@ dependencies{
     api "org.aeonbits.owner:owner-java8:1.0.12"
     api "cloud.commandframework:cloud-core:1.6.1"
 }
-
-jar{
-    from configurations.runtimeClasspath.collect{
-        it.isDirectory() ? it : zipTree(it)
-    }
-}

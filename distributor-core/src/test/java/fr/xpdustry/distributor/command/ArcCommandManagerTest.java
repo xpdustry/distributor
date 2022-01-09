@@ -1,8 +1,6 @@
 package fr.xpdustry.distributor.command;
 
-import arc.struct.*;
 import arc.util.*;
-import arc.util.CommandHandler.*;
 
 import mindustry.gen.*;
 

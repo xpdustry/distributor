@@ -1,40 +1,86 @@
 import groovy.json.JsonSlurper
 import groovy.json.JsonBuilder
+import org.apache.groovy.json.internal.LazyMap
 import java.nio.charset.StandardCharsets
-import arc.util.Strings
 import net.ltgt.gradle.errorprone.CheckSeverity
 
 
 buildscript{
-    ext{
-        // Properties
-        mindustryVersion = property("props.mindustry-version")
-        arcVersion = property("props.arc-version")
-        serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
-        // Shared plugin.json
-        shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
-    }
-
     repositories{
         mavenCentral()
-        gradlePluginPortal()
-        maven{ url "https://www.jitpack.io" }
     }
 
     dependencies{
         classpath "org.codehaus.groovy:groovy-json:3.0.8" // <- For JsonSlurper syntax highlighting
-        classpath "com.github.Anuken.Arc:arc-core:$arcVersion"
-        classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.2"
     }
 }
+
+plugins{
+    id "net.ltgt.errorprone" version "2.0.2"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+
+ext{
+    serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
+    shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text) as LazyMap
+
+    versions = [
+            "mindustry": property("props.mindustry-version"),
+            "arc": property("props.arc-version"),
+            "junit": "5.8.2"
+    ]
+}
+
+task runServer{
+    doLast{
+        javaexec{
+            workingDir = serverDirectoryPath
+            classpath = files("$serverDirectoryPath/server.jar")
+            mainClass = "mindustry.server.ServerLauncher"
+            standardInput = System.in
+        }
+    }
+}
+
 
 allprojects{
     apply plugin: "java-library"
     apply plugin: "maven-publish"
     apply plugin: "net.ltgt.errorprone"
+    apply plugin: "com.github.johnrengelman.shadow"
 
     group property("props.project-group")
     version shared.version
+
+    repositories{
+        mavenCentral()
+        maven{ url "https://www.jitpack.io" }
+    }
+
+    dependencies{
+        // Mindustry
+        compileOnly "com.github.Anuken.Arc:arc-core:${versions.arc}"
+        compileOnly "com.github.Anuken.Arc:backend-headless:${versions.arc}"
+        compileOnly "com.github.Anuken.Mindustry:core:${versions.mindustry}"
+        compileOnly "com.github.Anuken.Mindustry:server:${versions.mindustry}"
+
+        // Unit Testing
+        testImplementation "com.github.Anuken.Arc:arc-core:${versions.arc}"
+        testImplementation "com.github.Anuken.Arc:backend-headless:${versions.arc}"
+        testImplementation "com.github.Anuken.Mindustry:core:${versions.mindustry}"
+        testImplementation "com.github.Anuken.Mindustry:server:${versions.mindustry}"
+
+        testImplementation "org.junit.jupiter:junit-jupiter-params:${versions.junit}"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit}"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.junit}"
+
+        // Annotations
+        compileOnly 'org.checkerframework:checker-qual:3.21.0'
+        annotationProcessor "com.uber.nullaway:nullaway:0.9.4"
+        errorprone "com.google.errorprone:error_prone_core:2.10.0"
+        errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+    }
 
     java{
         withSourcesJar()
@@ -43,6 +89,10 @@ allprojects{
 
     test{
         useJUnitPlatform()
+    }
+
+    build{
+        dependsOn shadowJar
     }
 
     tasks.withType(JavaCompile).configureEach {
@@ -59,71 +109,46 @@ allprojects{
             }
         }
     }
-
-    repositories{
-        mavenCentral()
-        maven{ url "https://www.jitpack.io" }
-    }
-
-    dependencies{
-        // Mindustry
-        compileOnly "com.github.Anuken.Arc:arc-core:$arcVersion"
-        compileOnly "com.github.Anuken.Arc:backend-headless:$arcVersion"
-        compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
-        compileOnly "com.github.Anuken.Mindustry:server:$mindustryVersion"
-
-        // Unit Testing
-        testImplementation "com.github.Anuken.Arc:arc-core:$arcVersion"
-        testImplementation "com.github.Anuken.Arc:backend-headless:$arcVersion"
-        testImplementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
-        testImplementation "com.github.Anuken.Mindustry:server:$mindustryVersion"
-
-        testImplementation "org.junit.jupiter:junit-jupiter-params:5.8.2"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
-        testImplementation "org.mockito:mockito-core:4.2.0"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
-
-        // Annotations
-        compileOnly 'org.checkerframework:checker-qual:3.21.0'
-        annotationProcessor "com.uber.nullaway:nullaway:0.9.4"
-        errorprone "com.google.errorprone:error_prone_core:2.10.0"
-        errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
-    }
 }
+
 
 subprojects{
     ext{
-        // Plugin metadata extracted from plugin.json
         metadata = new JsonSlurper().parseText(file("$projectDir/plugin.json").text)
     }
 
-    jar{
-        doFirst{
-            def file = new File("${getTemporaryDir().path}/plugin.json")
-            file.withWriter{
-                it.write(new JsonBuilder(metadata + shared).toPrettyString())
+    shadowJar{
+        def file = new File("${getTemporaryDir().path}/plugin.json")
+        file.write(new JsonBuilder(metadata + shared).toPrettyString(), StandardCharsets.UTF_8.name())
+        from file
+    }
+
+    task moveJar(dependsOn: shadowJar){
+        doLast{
+            delete file("$serverDirectoryPath/config/mods").listFiles({
+                it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) shadowJar.archiveBaseName.get())
+            } as FileFilter)
+
+            copy{
+                from shadowJar.archiveFile.get()
+                into file("$serverDirectoryPath/config/mods")
             }
-
-            from file
         }
-
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     // Required if you want to use the Release GitHub action
     task getArtifactPath{
-        doLast{ println jar.archiveFile.get().toString() }
+        doLast{ println shadowJar.archiveFile.get().toString() }
     }
 
     publishing{
         publications{
-            jitpack(MavenPublication){
+            create("jitpack", MavenPublication){
                 from components.java
 
                 pom{
-                    name = metadata.displayName
                     description = metadata.description
-                    url = "https://github.com/$shared.repo"
+                    url = "https://github.com/$metadata.repo"
 
                     licenses{
                         license{
@@ -134,47 +159,11 @@ subprojects{
 
                     developers{
                         developer{
-                            id = Strings.stripColors(shared.author)
+                            id = metadata.author
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-if(serverDirectoryPath != null && file(serverDirectoryPath).exists()){
-    task runServer(type: JavaExec){
-        workingDir = serverDirectoryPath
-        classpath = files("$serverDirectoryPath/server.jar")
-        mainClass = "mindustry.server.ServerLauncher"
-        standardInput = System.in
-    }
-
-    subprojects{
-        task moveJar{
-            dependsOn jar
-
-            doLast{
-                if(!file("$serverDirectoryPath/config").exists()){
-                    throw new GradleException("Initialize the server files first.")
-                }
-
-                // Deletes all the jar files that begins with the base artifact name
-                delete file("$serverDirectoryPath/config/mods").listFiles({
-                    it.isFile() && it.name.endsWith(".jar") && it.name.startsWith((String) jar.archiveBaseName.get())
-                } as FileFilter)
-
-                copy{
-                    from jar.archiveFile.get()
-                    into file("$serverDirectoryPath/config/mods")
-                }
-            }
-        }
-
-        task deployJar{
-            dependsOn moveJar
-            dependsOn runServer
         }
     }
 }

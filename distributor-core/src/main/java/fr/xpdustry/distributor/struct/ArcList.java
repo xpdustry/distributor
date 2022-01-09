@@ -13,12 +13,21 @@ import java.util.function.*;
  *
  * @param <E> the element type
  */
-public class ArcList<E> extends AbstractList<E>{
+public class ArcList<E> extends AbstractList<E> implements RandomAccess{
     private final @NonNull Seq<E> seq;
 
     public ArcList(@NonNull Seq<E> seq){
         this.seq = seq;
     }
+
+    public ArcList(int initial){
+        this(new Seq<>(initial));
+    }
+
+    public ArcList(){
+        this(new Seq<>());
+    }
+
 
     @Override public void replaceAll(UnaryOperator<E> operator){
         seq.replace(operator::apply);
@@ -105,3 +114,20 @@ public class ArcList<E> extends AbstractList<E>{
         seq.clear();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
