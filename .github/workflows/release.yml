@@ -17,7 +17,7 @@ jobs:
         with:
           java-version: 16
 
-      - name: Build jars
+      - name: Build artifacs
         run: |
           chmod +x ./gradlew
           ./gradlew build
@@ -43,15 +43,15 @@ jobs:
           r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
           echo "::set-output name=CHANGELOG::$r"
 
-      - name: Upload core distributor-core
+      - name: Upload distributor-core
         uses: svenstaro/upload-release-action@v2
         with:
           release_name: v${{ steps.release.outputs.RELEASE_TAG }} release
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
+
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.release.outputs.ARTIFACT_CORE_PATH }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
-          body: |
-            ${{ steps.changelog.outputs.CHANGELOG }}
 
       - name: Upload distributor-js
         uses: svenstaro/upload-release-action@v2

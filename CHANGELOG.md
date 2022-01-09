@@ -12,4 +12,6 @@ HUGE UPDATE... *Distributor will be much more stable from now on...*
   - `ArcList`: This list can take advantage of the performances of the `Seq` while enjoying java features.
   - `ArcSet`: Same for the list
 
+- Added `AbstractPlugin` which provides a better config method and registration methods for the `ArcCommandManager`
+
 - A lot of stuff I might have forgotten...
