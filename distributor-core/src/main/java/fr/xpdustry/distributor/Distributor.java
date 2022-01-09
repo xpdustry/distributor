@@ -6,38 +6,29 @@ import arc.struct.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.mod.*;
+import mindustry.game.EventType.*;
 import mindustry.server.*;
 
 import fr.xpdustry.distributor.bundle.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.internal.*;
+import fr.xpdustry.distributor.plugin.*;
 
 import cloud.commandframework.captions.*;
-import org.aeonbits.owner.*;
 
 import java.io.*;
 import java.nio.charset.*;
-import java.util.*;
 
 
-public final class Distributor extends Plugin{
+public final class Distributor extends AbstractPlugin{
     public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
-    public static final Fi PLUGIN_DIRECTORY = ROOT_DIRECTORY.child("plugin");
-    public static final Fi SCRIPT_DIRECTORY = ROOT_DIRECTORY.child("script");
 
     public static final DistributorApplication app = new DistributorApplication();
     public static final BundleProvider bundles = l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
-
-    public Distributor(){
-        ROOT_DIRECTORY.mkdirs();
-        PLUGIN_DIRECTORY.mkdirs();
-        SCRIPT_DIRECTORY.mkdirs();
-    }
 
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
@@ -51,46 +42,19 @@ public final class Distributor extends Plugin{
         return clientCommandManager;
     }
 
-    public static <T extends Config&Accessible> T getConfig(String name, Class<T> clazz, boolean create){
-        final var properties = new Properties();
-        final var file = PLUGIN_DIRECTORY.child(name + ".properties");
-
-        if(file.exists()){
-            try(final var in = file.read()){
-                properties.load(in);
-            }catch(IOException e){
-                throw new RuntimeException("Failed to load the config " + clazz.getName() + " at " + file.absolutePath(), e);
-            }
-        }
-
-        final T config = ConfigFactory.create(clazz, properties);
-
-        if(create && !file.exists()){
-            try(final var out = file.write()){
-                config.store(out, "Configuration file.");
-            }catch(IOException e){
-                throw new RuntimeException("Failed to save the config " + clazz.getName() + " at " + file.absolutePath(), e);
-            }
-        }
-
-        return config;
-    }
-
-    public static <T extends Config&Accessible> T getConfig(String name, Class<T> clazz){
-        return getConfig(name, clazz, true);
-    }
-
     @Override public void init(){
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("banner.txt not found...");
             final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-            for(var line = reader.readLine(); line != null; line = reader.readLine()) Log.info(" > " + line);
+            for(var line = reader.readLine(); line != null; line = reader.readLine())
+                Log.info(" > " + line);
+            Log.info(" > Loaded Distributor core @", asLoadedMod().meta.version);
         }catch(IOException e){
             Log.debug("Distributor failed to show the banner.", e);
         }
 
-        Log.info(" > Loaded Distributor core @", Vars.mods.getMod(this.getClass()).meta.version);
+        ROOT_DIRECTORY.mkdirs();
         Core.app.addListener(app);
     }
 
@@ -107,6 +71,17 @@ public final class Distributor extends Plugin{
         captions.forEach(c -> {
             ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
             ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
+        });
+
+        Events.on(ServerLoadEvent.class, e -> {
+            Vars.mods.eachClass(mod -> {
+                if(mod instanceof AbstractPlugin p){
+                    p.registerServerCommands(serverCommandManager);
+                    p.registerClientCommands(clientCommandManager);
+                    p.registerSharedCommands(serverCommandManager);
+                    p.registerSharedCommands(clientCommandManager);
+                }
+            });
         });
     }
 }

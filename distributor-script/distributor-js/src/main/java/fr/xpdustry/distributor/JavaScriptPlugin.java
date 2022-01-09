@@ -5,11 +5,11 @@ import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
-import mindustry.mod.*;
 
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
+import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.js.*;
 
 import cloud.commandframework.arguments.standard.*;
@@ -24,16 +24,17 @@ import java.io.*;
 import java.util.*;
 
 
-public final class JavaScriptPlugin extends Plugin{
-    public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.SCRIPT_DIRECTORY.child("js");
+@SuppressWarnings("NullAway.Init")
+public final class JavaScriptPlugin extends AbstractPlugin{
+    public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 
-    private final JavaScriptConfig config;
-    private final Script initScript;
-    private final ClassShutter shutter;
-    private final ModuleScriptProvider provider;
+    private static JavaScriptConfig config;
+    private static ClassShutter shutter;
+    private static ModuleScriptProvider provider;
+    private static Script initScript;
 
-    public JavaScriptPlugin(){
-        config = Distributor.getConfig("xpdustry-distributor-script-js", JavaScriptConfig.class);
+    @Override public void init(){
+        config = getConfig(JavaScriptConfig.class);
         shutter = new RegexClassShutter(config.getBlackList(), config.getWhiteList());
         provider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null));
@@ -72,9 +73,7 @@ public final class JavaScriptPlugin extends Plugin{
                 throw new RuntimeException("Failed to compile the init script.", e);
             }
         });
-    }
 
-    @Override public void init(){
         JavaScriptEngine.setGlobalFactory(() -> {
             var ctx = Context.getCurrentContext();
             if(ctx == null) ctx = Context.enter();
@@ -110,17 +109,7 @@ public final class JavaScriptPlugin extends Plugin{
         });
     }
 
-    @Override public void registerServerCommands(CommandHandler handler){
-        final var manager = Distributor.getServerCommandManager();
-        registerSharedCommands(manager);
-    }
-
-    @Override public void registerClientCommands(CommandHandler handler){
-        final var manager = Distributor.getClientCommandManager();
-        registerSharedCommands(manager);
-    }
-
-    private void registerSharedCommands(ArcCommandManager manager){
+    @Override public void registerSharedCommands(ArcCommandManager manager){
         manager.command(manager.commandBuilder("js")
             .meta(CommandMeta.DESCRIPTION, "Run arbitrary Javascript.")
             .permission(ArcCommandManager.ADMIN_PERMISSION)
