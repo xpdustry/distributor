@@ -1,7 +1,5 @@
 package fr.xpdustry.distributor.bundle;
 
-import arc.util.*;
-
 import mindustry.gen.*;
 
 import cloud.commandframework.captions.*;
@@ -45,15 +43,15 @@ public class WrappedBundle{
 
     public static WrappedBundle of(@NonNull String baseName, @NonNull Locale locale, @NonNull ClassLoader loader){
         if(locale.equals(ROUTER_LOCALE)) return ROUTER_BUNDLE;
-        return new WrappedBundle(ResourceBundle.getBundle(baseName, locale, loader));
+        return of(ResourceBundle.getBundle(baseName, locale, loader));
     }
 
     public static @NonNull Locale getPlayerLocale(@NonNull Playerc player){
         return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
-    public @NonNull String get(@NonNull String key, @Nullable Object... args){
-        return bundle.containsKey(key) ? Strings.format(bundle.getString(key), args) : "???" + key + "???";
+    public @NonNull String get(@NonNull String key){
+        return bundle.containsKey(key) ? bundle.getString(key) : "???" + key + "???";
     }
 
     public @NonNull String get(@NonNull Caption caption){
@@ -64,12 +62,12 @@ public class WrappedBundle{
         return bundle.containsKey(key);
     }
 
-    public @Nullable String getOrNull(@NonNull String key, @Nullable Object... args){
-        return containsKey(key) ? get(key, args) : null;
+    public @Nullable String getOrNull(@NonNull String key){
+        return containsKey(key) ? get(key) : null;
     }
 
-    public @NonNull String getNonNull(@NonNull String key, @Nullable Object... args){
-        return Strings.format(bundle.getString(key), args);
+    public @NonNull String getNonNull(@NonNull String key){
+        return bundle.getString(key);
     }
 
     public @NonNull Locale getLocale(){
