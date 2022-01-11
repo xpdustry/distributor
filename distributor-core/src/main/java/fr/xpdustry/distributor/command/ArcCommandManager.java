@@ -24,7 +24,7 @@ import java.util.function.*;
 
 
 public class ArcCommandManager extends CommandManager<ArcCommandSender>{
-    public static final Key<String> PLUGIN_KEY = Key.of(String.class, "distributor:plugin", m -> "unknown");
+    public static final Key<String> META_PLUGIN = Key.of(String.class, "distributor:plugin", m -> "unknown");
     public static final PredicatePermission<ArcCommandSender> ADMIN_PERMISSION =
         PredicatePermission.of(SimpleCloudKey.of("admin"), s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin()));
 
