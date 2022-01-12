@@ -1,7 +1,6 @@
 package fr.xpdustry.distributor;
 
 import arc.*;
-import arc.backend.headless.*;
 import arc.files.*;
 import arc.util.*;
 
@@ -17,7 +16,6 @@ import fr.xpdustry.distributor.script.js.*;
 import cloud.commandframework.arguments.standard.*;
 import org.checkerframework.checker.nullness.qual.*;
 import rhino.*;
-import rhino.ContextFactory.*;
 import rhino.module.*;
 import rhino.module.provider.*;
 
@@ -100,12 +98,14 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             }
         });
 
-        Distributor.app.addShutdownHook(() -> {
-            try{
-                if(config.getShutdownScript().isBlank()) return;
-                JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config.getShutdownScript()));
-            }catch(ScriptException | IOException e){
-                Log.err("Failed to run the shutdown script.", e);
+        Core.app.addListener(new ApplicationListener(){
+            @Override public void exit(){
+                try{
+                    if(config.getShutdownScript().isBlank()) return;
+                    JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config.getShutdownScript()));
+                }catch(ScriptException | IOException e){
+                    Log.err("Failed to run the shutdown script.", e);
+                }
             }
         });
     }
@@ -126,7 +126,10 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         );
     }
 
-    public static final class ArcContextListener implements Listener{
+    public static final class ArcContextListener implements ContextFactory.Listener{
+        private ArcContextListener(){
+        }
+
         @Override public void contextCreated(@NonNull Context ctx){
             Events.fire(new ContextCreatedEvent(ctx));
         }
@@ -136,9 +139,9 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         }
     }
 
-    public record ContextCreatedEvent(@NonNull Context ctx){
+    public static record ContextCreatedEvent(@NonNull Context ctx){
     }
 
-    public record ContextReleasedEvent(@NonNull Context ctx){
+    public static record ContextReleasedEvent(@NonNull Context ctx){
     }
 }

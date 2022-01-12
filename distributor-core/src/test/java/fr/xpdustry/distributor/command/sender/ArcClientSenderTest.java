@@ -4,8 +4,8 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.command.caption.*;
+import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.util.*;
 
 import cloud.commandframework.captions.*;
@@ -16,14 +16,14 @@ import org.junit.jupiter.params.provider.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class ArcPlayerSenderTest{
+public class ArcClientSenderTest{
     private Playerc player;
-    private ArcPlayerSender sender;
+    private ArcClientSender sender;
 
     @BeforeEach
     public void setup(){
         player = new MockPlayer();
-        sender = new ArcPlayerSender(player, new ArcCaptionRegistry());
+        sender = new ArcClientSender(player, new ArcCaptionRegistry());
     }
 
     @ParameterizedTest

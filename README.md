@@ -19,6 +19,7 @@
 Let's say you want the core plugin.
 
 First, include the internal name in your `plugin.json`, such as:
+
 ```json
 {
   "dependencies": ["xpdustry-distributor-core"]
@@ -40,16 +41,16 @@ dependencies{
 When you have finished your plugin, grab the needed [artifacts](https://github.com/Xpdustry/Distributor/releases) for your version. Put them in your `config/mods` with your plugin, and enjoy.
 
 ## TODO
-    
+
 - Tools
-  - [X] Localization
-  - [ ] Moderation
-  - [ ] Network (Socket API)
-  - [ ] Services (Anti-VPN)
+    - [X] Localization
+    - [ ] Moderation
+    - [ ] Network (Socket API)
+    - [ ] Services (Anti-VPN)
 
 - Command framework
-  - [ ] Async execution
+    - [ ] Async execution
 
 - Helper
-  - [ ] Implement ArcMap
-  - [ ] JavaScript Debugger
+    - [ ] Implement ArcMap
+    - [ ] JavaScript Debugger

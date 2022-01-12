@@ -3,8 +3,8 @@ package fr.xpdustry.distributor.plugin;
 import arc.*;
 
 import mindustry.*;
-import mindustry.mod.*;
 import mindustry.mod.Mods.*;
+import mindustry.mod.*;
 
 import fr.xpdustry.distributor.command.*;
 
@@ -20,7 +20,7 @@ public abstract class AbstractPlugin extends Plugin{
         return Vars.mods.getMod(getClass());
     }
 
-    /** Creates or retrieves a config file located in config/plugins */
+    /** Create or retrieve a config file located in config/plugins */
     @SuppressWarnings("SameParameterValue")
     protected <T extends Config&Accessible> T getConfig(@NonNull Class<T> clazz){
         final var directory = Core.settings.getDataDirectory().child("plugins");

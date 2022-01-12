@@ -22,8 +22,8 @@ import java.util.function.*;
 
 
 public class ArcCommandManager extends CommandManager<ArcCommandSender>{
-    private @NonNull BiFunction<Playerc, CaptionRegistry<ArcCommandSender>, ArcCommandSender> commandSenderMapper =
-        (p, c) -> p == null ? new ArcServerSender(c) : new ArcPlayerSender(p, c);
+    private @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, @Nullable Playerc, @NonNull ArcCommandSender> commandSenderMapper =
+        (c, p) -> p == null ? new ArcServerSender(c) : new ArcClientSender(p, c);
 
     public ArcCommandManager(@NonNull CommandHandler handler){
         super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
@@ -36,6 +36,8 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     public void handleCommand(@NonNull ArcCommandSender sender, @NonNull String input){
         executeCommand(sender, input).whenComplete((result, throwable) -> {
             if(throwable == null) return;
+
+            // TODO better code formatting ???
 
             if(throwable instanceof InvalidSyntaxException t){
                 handleException(sender, InvalidSyntaxException.class, t, (s, e) -> {
@@ -82,14 +84,14 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     }
 
     public void handleCommand(@Nullable Playerc player, @NonNull String input){
-        handleCommand(commandSenderMapper.apply(player, getCaptionRegistry()), input);
+        handleCommand(commandSenderMapper.apply(getCaptionRegistry(), player), input);
     }
 
-    public @NonNull BiFunction<Playerc, CaptionRegistry<ArcCommandSender>, ArcCommandSender> getCommandSenderMapper(){
+    public @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, @Nullable Playerc, @NonNull ArcCommandSender> getCommandSenderMapper(){
         return commandSenderMapper;
     }
 
-    public void setCommandSenderMapper(@NonNull BiFunction<Playerc, CaptionRegistry<ArcCommandSender>, ArcCommandSender> commandSenderMapper){
+    public void setCommandSenderMapper(@NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, @Nullable Playerc, @NonNull ArcCommandSender> commandSenderMapper){
         this.commandSenderMapper = commandSenderMapper;
     }
 
@@ -97,22 +99,22 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         return sender.hasPermission(permission);
     }
 
-    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull CommandMeta meta, @NonNull String... aliases){
+    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(
+        final @NonNull String name,
+        final @NonNull CommandMeta meta,
+        final @NonNull String... aliases
+    ){
         return super.commandBuilder(name, meta, aliases).senderType(ArcCommandSender.class);
     }
 
-    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(@NonNull String name, @NonNull String... aliases){
+    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(
+        final @NonNull String name,
+        final @NonNull String... aliases
+    ){
         return super.commandBuilder(name, aliases).senderType(ArcCommandSender.class);
     }
 
     @Override public @NonNull CommandMeta createDefaultCommandMeta(){
-        return CommandMeta.simple()
-            .with(ArcMeta.PARAM, "[args...]")
-            .with(ArcMeta.PLUGIN, "unknown")
-            .with(ArcMeta.DESCRIPTION, "")
-            .with(ArcMeta.LONG_DESCRIPTION, "")
-            .with(ArcMeta.HIDDEN, false)
-            .with(ArcMeta.CONFIRMATION, false)
-            .build();
+        return SimpleCommandMeta.empty();
     }
 }

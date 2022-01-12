@@ -21,12 +21,12 @@ import java.util.function.*;
 
 
 /**
- * A command argument for {@link Player}
+ * A command argument for an online {@link Player}.
  *
  * @param <C> the command sender type
  */
 public class PlayerArgument<C> extends CommandArgument<C, Player>{
-    public PlayerArgument(
+    private PlayerArgument(
         final boolean required,
         final @NonNull String name,
         final @NonNull String defaultValue,
@@ -39,7 +39,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
 
 
     /**
-     * Create a new builder
+     * Create a new {@link Builder}.
      *
      * @param name the name of the argument
      * @param <C>  the command sender type
@@ -50,7 +50,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
     }
 
     /**
-     * Create a new required player argument
+     * Create a new required {@link PlayerArgument}.
      *
      * @param name the name of the argument
      * @param <C>  the command sender type
@@ -61,11 +61,11 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
     }
 
     /**
-     * Create a new optional command component
+     * Create a new optional {@link PlayerArgument}.
      *
-     * @param name Component name
-     * @param <C>  Command sender type
-     * @return Created component
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
      */
     public static <C> @NonNull CommandArgument<C, Player> optional(final @NonNull String name){
         return PlayerArgument.<C>newBuilder(name).asOptional().build();
@@ -77,7 +77,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
         }
 
         /**
-         * Build a new player argument
+         * Build a new {@link PlayerArgument}.
          *
          * @return the constructed player argument
          */
@@ -100,7 +100,6 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
         ){
             final var input = inputQueue.peek();
             if(input == null) return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));
-            inputQueue.remove();
 
             final var player = Groups.player.find(p ->
                 Strings.stripColors(p.name()).equalsIgnoreCase(input) || p.id() == Strings.parseInt(input)
@@ -109,6 +108,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
             if(player == null){
                 return ArgumentParseResult.failure(new PlayerParseException(input, ctx));
             }else{
+                inputQueue.remove();
                 return ArgumentParseResult.success(player);
             }
         }
@@ -124,7 +124,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
         private final String input;
 
         /**
-         * Construct a new PlayerParseException
+         * Create a new {@link PlayerParseException}.
          *
          * @param input the input string
          * @param ctx   the command context
@@ -137,7 +137,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
             this.input = input;
         }
 
-        /** @return the supplied input */
+        /** @return the input string */
         public @NonNull String getInput(){
             return this.input;
         }

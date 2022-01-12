@@ -12,12 +12,11 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.internal.*;
-import cloud.commandframework.meta.*;
 import org.checkerframework.checker.nullness.qual.*;
 
 
 /**
- * This class acts as a bridge between the {@code ArcCommandManager} and the {@code CommandHandler},
+ * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
  * by registering cloud commands as native commands.
  */
 public class ArcRegistrationHandler implements CommandRegistrationHandler{
@@ -40,33 +39,39 @@ public class ArcRegistrationHandler implements CommandRegistrationHandler{
     @SuppressWarnings("unchecked")
     @Override public boolean registerCommand(@NonNull Command<?> command){
         final var info = (StaticArgument<ArcCommandSender>)command.getArguments().get(0);
-        final var names = info.getAliases();
-        final var desc = command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, "");
+        final var desc = command.getCommandMeta().getOrDefault(ArcMeta.DESCRIPTION, "");
+        final var params = command.getCommandMeta().getOrDefault(ArcMeta.PARAMETERS, "[args...]");
 
         if(manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)){
-            names.forEach(handler::removeCommand);
+            info.getAliases().forEach(handler::removeCommand);
         }
 
         final ObjectMap<String, CommandHandler.Command> commands = Reflect.get(handler, "commands");
 
-        var modified = false;
-        for(final var name : names){
-            if(!commands.containsKey(name)){
-                final var nativeCommand = new ArcNativeCommand(name, desc);
-                commands.put(name, nativeCommand);
-                handler.getCommandList().add(nativeCommand);
-                modified = true;
+        var added = false;
+        for(final var alias : info.getAliases()){
+            if(!commands.containsKey(alias)){
+                final var cmd = new ArcNativeCommand(alias, params, desc, !alias.equals(info.getName()));
+                commands.put(alias, cmd);
+                handler.getCommandList().add(cmd);
+                added = true;
             }
         }
 
-        return modified;
+        return added;
     }
 
     public final class ArcNativeCommand extends CommandHandler.Command{
-        public ArcNativeCommand(String name, String description){
-            super(name, "[args...]", description, (CommandRunner<Playerc>)(args, player) -> {
-                manager.handleCommand(player, args.length == 0 ? name : name + " " + args[0]);
-            });
+        private final boolean alias;
+
+        public ArcNativeCommand(@NonNull String name, @NonNull String params, @NonNull String description, boolean alias){
+            super(name, params, description, (CommandRunner<Playerc>)(args, player) ->
+                manager.handleCommand(player, args.length == 0 ? name : name + " " + args[0]));
+            this.alias = alias;
+        }
+
+        public boolean isAlias(){
+            return alias;
         }
     }
 }

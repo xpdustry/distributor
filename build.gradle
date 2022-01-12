@@ -1,9 +1,8 @@
-import groovy.json.JsonSlurper
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+import net.ltgt.gradle.errorprone.CheckSeverity
 import org.apache.groovy.json.internal.LazyMap
 import java.nio.charset.StandardCharsets
-import net.ltgt.gradle.errorprone.CheckSeverity
-
 
 buildscript{
     repositories{
@@ -27,8 +26,8 @@ ext{
 
     versions = [
             "mindustry": property("props.mindustry-version"),
-            "arc": property("props.arc-version"),
-            "junit": "5.8.2"
+            "arc"      : property("props.arc-version"),
+            "junit"    : "5.8.2"
     ]
 }
 
@@ -95,7 +94,7 @@ allprojects{
         dependsOn shadowJar
     }
 
-    tasks.withType(JavaCompile).configureEach {
+    tasks.withType(JavaCompile).configureEach{
         sourceCompatibility = JavaVersion.VERSION_16
         targetCompatibility = JavaVersion.VERSION_16
         options.encoding = StandardCharsets.UTF_8

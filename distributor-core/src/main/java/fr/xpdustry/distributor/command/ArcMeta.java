@@ -10,7 +10,7 @@ import cloud.commandframework.meta.CommandMeta.*;
  */
 public final class ArcMeta{
     /** Equivalent to {@link arc.util.CommandHandler.Command#paramText}. */
-    public static final Key<String> PARAM = Key.of(String.class, "distributor:param");
+    public static final Key<String> PARAMETERS = Key.of(String.class, "distributor:param");
     /** The owning plugin of the command. */
     public static final Key<String> PLUGIN = Key.of(String.class, "distributor:plugin");
     /** The simple description of a command. */

@@ -4,7 +4,9 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.command.ArcRegistrationHandler.*;
 import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.command.sender.ArcCommandSender.*;
 
 import org.junit.jupiter.api.*;
 
@@ -22,16 +24,6 @@ public class ArcCommandManagerTest{
     }
 
     @Test
-    public void test_server_sender_mapping(){
-        assertInstanceOf(ArcServerSender.class, manager.getCommandSenderMapper().apply(null, manager.getCaptionRegistry()));
-    }
-
-    @Test
-    public void test_player_sender_mapping(){
-        assertInstanceOf(ArcPlayerSender.class, manager.getCommandSenderMapper().apply(Player.create(), manager.getCaptionRegistry()));
-    }
-
-    @Test
     public void test_register_native_command(){
         manager.command(manager.commandBuilder("bob", "b"));
         manager.command(manager.commandBuilder("marine", "m"));
@@ -41,6 +33,9 @@ public class ArcCommandManagerTest{
         for(final var command : handler.getCommandList()){
             assertNotNull(manager.getCommandTree().getNamedNode(command.text));
         }
+
+        final var alias = (ArcNativeCommand)handler.getCommandList().find(c -> c.text.equals("b"));
+        assertTrue(alias.isAlias());
     }
 
     @Test

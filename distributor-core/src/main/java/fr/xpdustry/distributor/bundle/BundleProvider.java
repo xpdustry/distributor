@@ -12,6 +12,7 @@ import java.util.*;
 /**
  * A simple interface for loading localized content.
  */
+// TODO Implement CachedBundleProvider
 @FunctionalInterface
 public interface BundleProvider{
     @NonNull WrappedBundle getBundle(@NonNull Locale locale);

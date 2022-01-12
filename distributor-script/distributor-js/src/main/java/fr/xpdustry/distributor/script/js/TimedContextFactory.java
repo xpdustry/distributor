@@ -5,8 +5,6 @@ import fr.xpdustry.distributor.exception.*;
 import org.checkerframework.checker.nullness.qual.*;
 import rhino.*;
 
-import static rhino.Context.*;
-
 
 /** @see rhino.ContextFactory */
 public class TimedContextFactory extends ContextFactory{
@@ -23,14 +21,15 @@ public class TimedContextFactory extends ContextFactory{
         return ctx;
     }
 
+    @SuppressWarnings("EnhancedSwitchMigration")
     @Override public boolean hasFeature(Context cx, int featureIndex){
         switch(featureIndex){
-            case FEATURE_DYNAMIC_SCOPE:
-            case FEATURE_NON_ECMA_GET_YEAR:
-            case FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
-            case FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
+            case Context.FEATURE_DYNAMIC_SCOPE:
+            case Context.FEATURE_NON_ECMA_GET_YEAR:
+            case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
+            case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
                 return true;
-            case FEATURE_PARENT_PROTO_PROPERTIES:
+            case Context.FEATURE_PARENT_PROTO_PROPERTIES:
                 return false;
             default:
                 return super.hasFeature(cx, featureIndex);

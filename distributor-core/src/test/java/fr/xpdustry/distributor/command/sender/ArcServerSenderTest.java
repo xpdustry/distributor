@@ -1,11 +1,10 @@
 package fr.xpdustry.distributor.command.sender;
 
-
 import arc.util.*;
 import arc.util.Log.*;
 
-import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.command.caption.*;
+import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.util.*;
 
 import cloud.commandframework.captions.*;

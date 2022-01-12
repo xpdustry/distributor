@@ -48,6 +48,7 @@ public class ArcServerSender extends ArcCommandSender{
         return true;
     }
 
+    // TODO merge with ClientMessageFormatter ?
     public static class ServerMessageFormatter implements MessageFormatter{
         private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 

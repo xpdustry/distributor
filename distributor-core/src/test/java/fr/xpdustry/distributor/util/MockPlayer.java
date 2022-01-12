@@ -4,7 +4,8 @@ import mindustry.gen.*;
 
 
 public class MockPlayer extends Player{
-    public MockPlayer(){}
+    public MockPlayer(){
+    }
 
     @Override public void sendMessage(String text){
         lastText = text;
