@@ -51,14 +51,14 @@ public abstract class AbstractPlugin extends Plugin{
     }
 
     /** Called after init */
-    public void registerServerCommands(ArcCommandManager manager){
+    public void registerServerCommands(@NonNull ArcCommandManager manager){
     }
 
     /** Called after init */
-    public void registerClientCommands(ArcCommandManager manager){
+    public void registerClientCommands(@NonNull ArcCommandManager manager){
     }
 
     /** Called after init */
-    public void registerSharedCommands(ArcCommandManager manager){
+    public void registerSharedCommands(@NonNull ArcCommandManager manager){
     }
 }

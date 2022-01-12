@@ -110,9 +110,11 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         });
     }
 
-    @Override public void registerSharedCommands(ArcCommandManager manager){
+    @Override public void registerSharedCommands(@NonNull ArcCommandManager manager){
         manager.command(manager.commandBuilder("js")
             .meta(ArcMeta.DESCRIPTION, "Run arbitrary Javascript.")
+            .meta(ArcMeta.PARAMETERS, "<script...>")
+            .meta(ArcMeta.PLUGIN, asLoadedMod().name)
             .permission(ArcPermission.ADMIN)
             .argument(StringArgument.greedy("script"))
             .handler(ctx -> {

@@ -23,6 +23,7 @@ import org.checkerframework.checker.nullness.qual.*;
 
 import java.io.*;
 import java.nio.charset.*;
+import java.util.*;
 
 
 public final class Distributor extends AbstractPlugin{
@@ -69,8 +70,6 @@ public final class Distributor extends AbstractPlugin{
             if(in == null) throw new IOException("banner.txt not found...");
             final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             reader.lines().forEach(line -> Log.info(" > " + line));
-            // for(var line = reader.readLine(); line != null; line = reader.readLine())
-            //     Log.info(" > " + line);
             Log.info(" > Loaded Distributor core @", asLoadedMod().meta.version);
         }catch(IOException e){
             Log.debug("Distributor failed to show the banner.", e);
@@ -86,7 +85,7 @@ public final class Distributor extends AbstractPlugin{
 
         // Setup Mappers
         serverCommandManager.setCommandSenderMapper((c, p) -> new ArcServerSender(c, Distributor.serverMessageFormatter));
-        clientCommandManager.setCommandSenderMapper((c, p) -> new ArcClientSender(p, c, Distributor.clientMessageFormatter));
+        clientCommandManager.setCommandSenderMapper((c, p) -> new ArcClientSender(Objects.requireNonNull(p), c, Distributor.clientMessageFormatter));
 
         // Add localization support via Captions
         final var captions = new Seq<Caption>()
@@ -98,6 +97,7 @@ public final class Distributor extends AbstractPlugin{
             ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
         });
 
+        // Register commands
         Events.on(ServerLoadEvent.class, e -> {
             Vars.mods.eachClass(mod -> {
                 if(mod instanceof AbstractPlugin p){

@@ -25,7 +25,7 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
             this.provider = provider;
         }
 
-        @Override public String apply(@NonNull Caption caption, @NonNull ArcCommandSender sender){
+        @Override public @NonNull String apply(@NonNull Caption caption, @NonNull ArcCommandSender sender){
             return provider.getBundle(sender).get(caption);
         }
     }

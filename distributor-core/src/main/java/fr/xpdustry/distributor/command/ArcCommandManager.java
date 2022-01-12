@@ -83,6 +83,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         });
     }
 
+    @SuppressWarnings("NullAway") // TODO For some shady reasons, it throws a warning, check what's going on...
     public void handleCommand(@Nullable Playerc player, @NonNull String input){
         handleCommand(commandSenderMapper.apply(getCaptionRegistry(), player), input);
     }
