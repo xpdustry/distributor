@@ -10,7 +10,7 @@ import java.util.*;
 
 
 /**
- * A simple interface class for loading localized content.
+ * A simple interface for loading localized content.
  */
 @FunctionalInterface
 public interface BundleProvider{

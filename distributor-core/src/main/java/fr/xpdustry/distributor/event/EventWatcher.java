@@ -15,6 +15,7 @@ import java.util.*;
  *
  * @param <T> the type of the event to listen to
  */
+// TODO Implement Subclasses such as TimedEventWatcher
 public class EventWatcher<T> implements EventListener, Cons<T>{
     private static final ObjectMap<Object, Seq<Cons<?>>> events = Reflect.get(Events.class, "events");
 

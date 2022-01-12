@@ -10,12 +10,16 @@ import mindustry.game.EventType.*;
 import mindustry.server.*;
 
 import fr.xpdustry.distributor.bundle.*;
+import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.command.caption.*;
+import fr.xpdustry.distributor.command.sender.ArcServerSender.*;
+import fr.xpdustry.distributor.command.sender.ArcPlayerSender.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 
 import cloud.commandframework.captions.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -30,6 +34,9 @@ public final class Distributor extends AbstractPlugin{
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
 
+    private static @NonNull MessageFormatter serverFormatter = new ServerMessageFormatter();
+    private static @NonNull MessageFormatter clientFormatter = new PlayerMessageFormatter();
+
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
     }
@@ -40,6 +47,22 @@ public final class Distributor extends AbstractPlugin{
 
     public static ArcCommandManager getClientCommandManager(){
         return clientCommandManager;
+    }
+
+    public static @NonNull MessageFormatter getServerFormatter(){
+        return serverFormatter;
+    }
+
+    public static void setServerFormatter(@NonNull MessageFormatter serverFormatter){
+        Distributor.serverFormatter = serverFormatter;
+    }
+
+    public static @NonNull MessageFormatter getClientFormatter(){
+        return clientFormatter;
+    }
+
+    public static void setClientFormatter(@NonNull MessageFormatter clientFormatter){
+        Distributor.clientFormatter = clientFormatter;
     }
 
     @Override public void init(){

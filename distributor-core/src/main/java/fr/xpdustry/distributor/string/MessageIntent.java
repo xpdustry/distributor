@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.command.sender;
+package fr.xpdustry.distributor.string;
 
 public enum MessageIntent{
     /** This intent requires the sender to NOT apply special formatting */

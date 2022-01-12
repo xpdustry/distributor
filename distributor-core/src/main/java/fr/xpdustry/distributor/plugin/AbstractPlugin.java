@@ -21,6 +21,7 @@ public abstract class AbstractPlugin extends Plugin{
     }
 
     /** Creates or retrieves a config file located in config/plugins */
+    @SuppressWarnings("SameParameterValue")
     protected <T extends Config&Accessible> T getConfig(@NonNull Class<T> clazz){
         final var directory = Core.settings.getDataDirectory().child("plugins");
         directory.mkdirs();
@@ -50,14 +51,14 @@ public abstract class AbstractPlugin extends Plugin{
     }
 
     /** Called after init */
-    public void registerServerCommands(ArcCommandManager handler){
+    public void registerServerCommands(ArcCommandManager manager){
     }
 
     /** Called after init */
-    public void registerClientCommands(ArcCommandManager handler){
+    public void registerClientCommands(ArcCommandManager manager){
     }
 
     /** Called after init */
-    public void registerSharedCommands(ArcCommandManager handler){
+    public void registerSharedCommands(ArcCommandManager manager){
     }
 }

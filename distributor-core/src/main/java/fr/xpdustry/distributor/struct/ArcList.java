@@ -28,7 +28,6 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess{
         this(new Seq<>());
     }
 
-
     @Override public void replaceAll(UnaryOperator<E> operator){
         seq.replace(operator::apply);
     }

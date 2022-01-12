@@ -1,10 +1,12 @@
 package fr.xpdustry.distributor;
 
 import arc.*;
+import arc.backend.headless.*;
 import arc.files.*;
 import arc.util.*;
 
 import mindustry.*;
+import mindustry.game.EventType.*;
 
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
@@ -13,7 +15,6 @@ import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.js.*;
 
 import cloud.commandframework.arguments.standard.*;
-import cloud.commandframework.meta.*;
 import org.checkerframework.checker.nullness.qual.*;
 import rhino.*;
 import rhino.ContextFactory.*;
@@ -90,7 +91,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             return engine;
         });
 
-        Distributor.app.addStartupHook(() -> {
+        Events.on(ServerLoadEvent.class, l -> {
             try{
                 if(config.getStartupScript().isBlank()) return;
                 JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config.getStartupScript()));
@@ -111,8 +112,8 @@ public final class JavaScriptPlugin extends AbstractPlugin{
 
     @Override public void registerSharedCommands(ArcCommandManager manager){
         manager.command(manager.commandBuilder("js")
-            .meta(CommandMeta.DESCRIPTION, "Run arbitrary Javascript.")
-            .permission(ArcCommandManager.ADMIN_PERMISSION)
+            .meta(ArcMeta.DESCRIPTION, "Run arbitrary Javascript.")
+            .permission(ArcPermission.ADMIN)
             .argument(StringArgument.greedy("script"))
             .handler(ctx -> {
                 try{

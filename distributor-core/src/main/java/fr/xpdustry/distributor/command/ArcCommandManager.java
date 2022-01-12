@@ -6,6 +6,7 @@ import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.*;
 import cloud.commandframework.captions.*;
@@ -13,10 +14,7 @@ import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.execution.*;
 import cloud.commandframework.internal.*;
-import cloud.commandframework.keys.*;
 import cloud.commandframework.meta.*;
-import cloud.commandframework.meta.CommandMeta.*;
-import cloud.commandframework.permission.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
@@ -24,12 +22,8 @@ import java.util.function.*;
 
 
 public class ArcCommandManager extends CommandManager<ArcCommandSender>{
-    public static final Key<String> META_PLUGIN = Key.of(String.class, "distributor:plugin", m -> "unknown");
-    public static final PredicatePermission<ArcCommandSender> ADMIN_PERMISSION =
-        PredicatePermission.of(SimpleCloudKey.of("admin"), s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin()));
-
     private @NonNull BiFunction<Playerc, CaptionRegistry<ArcCommandSender>, ArcCommandSender> commandSenderMapper =
-        (p, c) -> p == null ? new ArcConsoleSender(c) : new ArcPlayerSender(p, c);
+        (p, c) -> p == null ? new ArcServerSender(c) : new ArcPlayerSender(p, c);
 
     public ArcCommandManager(@NonNull CommandHandler handler){
         super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
@@ -112,6 +106,13 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     }
 
     @Override public @NonNull CommandMeta createDefaultCommandMeta(){
-        return CommandMeta.simple().build();
+        return CommandMeta.simple()
+            .with(ArcMeta.PARAM, "[args...]")
+            .with(ArcMeta.PLUGIN, "unknown")
+            .with(ArcMeta.DESCRIPTION, "")
+            .with(ArcMeta.LONG_DESCRIPTION, "")
+            .with(ArcMeta.HIDDEN, false)
+            .with(ArcMeta.CONFIRMATION, false)
+            .build();
     }
 }

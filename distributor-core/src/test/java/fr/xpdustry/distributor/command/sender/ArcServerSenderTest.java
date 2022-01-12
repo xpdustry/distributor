@@ -4,6 +4,7 @@ package fr.xpdustry.distributor.command.sender;
 import arc.util.*;
 import arc.util.Log.*;
 
+import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.util.*;
 
@@ -15,8 +16,8 @@ import org.junit.jupiter.params.provider.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class ArcConsoleSenderTest{
-    private ArcConsoleSender sender;
+public class ArcServerSenderTest{
+    private ArcServerSender sender;
     private MockLogHandler logger;
 
     @BeforeAll
@@ -27,7 +28,7 @@ public class ArcConsoleSenderTest{
 
     @BeforeEach
     public void setup(){
-        sender = new ArcConsoleSender(new ArcCaptionRegistry());
+        sender = new ArcServerSender(new ArcCaptionRegistry());
         logger = new MockLogHandler();
         Log.logger = logger;
     }

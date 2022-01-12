@@ -1,45 +1,36 @@
 package fr.xpdustry.distributor.command.sender;
 
+import arc.struct.*;
 import arc.util.*;
 
+import mindustry.core.NetServer.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.bundle.*;
+import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
+import java.util.regex.*;
 
 
 public class ArcPlayerSender extends ArcCommandSender{
     private final @NonNull Playerc player;
 
-    public ArcPlayerSender(@NonNull Playerc player, @NonNull CaptionRegistry<ArcCommandSender> captions){
-        super(captions);
+    public ArcPlayerSender(@NonNull Playerc player, @NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){
+        super(captions, formatter);
         this.player = player;
     }
 
-    @Override public void send(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
-        player.sendMessage(switch(intent){
-            case DEBUG -> "[gray]" + Strings.format(message.replace("@", "[lightgray]@[]"), args);
-            case ERROR -> "[scarlet]" + Strings.format(message.replace("@", "[orange]@[]"), args);
-            default -> Strings.format(message, args);
-        });
+    public ArcPlayerSender(@NonNull Playerc player, @NonNull CaptionRegistry<ArcCommandSender> captions){
+        this(player, captions, new PlayerMessageFormatter());
     }
 
-    @Override public void send(@NonNull MessageIntent intent, @NonNull Caption caption, @NonNull CaptionVariable... vars){
-        var message = captions.getCaption(caption, this);
-        for(final var cv : vars){
-            message = message.replace("{" + cv.getKey() + "}", switch(intent){
-                case DEBUG -> "[lightgray]" + cv.getValue() + "[]";
-                case ERROR -> "[orange]" + cv.getValue() + "[]";
-                default -> cv.getValue();
-            });
-        }
-
-        send(intent, message);
+    @Override public void send(@NonNull MessageIntent intent, @NonNull String message){
+        player.sendMessage(message);
     }
 
     @Override public boolean isPlayer(){
@@ -52,5 +43,38 @@ public class ArcPlayerSender extends ArcCommandSender{
 
     @Override public @NonNull Locale getLocale(){
         return WrappedBundle.getPlayerLocale(player);
+    }
+
+    public static class PlayerMessageFormatter implements MessageFormatter{
+        private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
+
+        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message){
+            return switch(intent){
+                case DEBUG -> "[gray]" + message;
+                case ERROR -> "[scarlet]" + message;
+                default -> message;
+            };
+        }
+
+        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+            return format(intent, Strings.format(message.replace("@", colorize(intent, "@")), args));
+        }
+
+        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+            final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
+            final var builder = new StringBuilder();
+            final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);
+            while(matcher.find()) matcher.appendReplacement(builder, colorize(intent, map.get(matcher.group(), "???")));
+            matcher.appendTail(builder);
+            return format(intent, builder.toString());
+        }
+
+        private String colorize(@NonNull MessageIntent intent, @NonNull String value){
+            return switch(intent){
+                case DEBUG -> "[lightgray]" + value + "[]";
+                case ERROR -> "[orange]" + value + "[]";
+                default -> value;
+            };
+        }
     }
 }

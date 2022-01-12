@@ -4,6 +4,7 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.string.*;
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.util.*;
 
@@ -32,7 +33,7 @@ public class ArcPlayerSenderTest{
         final var expected = formatString(intent, message, "Bob");
 
         sender.send(MessageIntent.valueOf(intent), message, "Bob");
-        assertEquals(expected, sender.asPlayer().lastText());
+        assertEquals(expected, player.lastText());
     }
 
     @ParameterizedTest
@@ -47,7 +48,7 @@ public class ArcPlayerSenderTest{
         };
 
         sender.send(MessageIntent.valueOf(intent), caption, variables);
-        assertEquals(expected, sender.asPlayer().lastText());
+        assertEquals(expected, player.lastText());
     }
 
     public String formatString(String intent, String text, Object... args){

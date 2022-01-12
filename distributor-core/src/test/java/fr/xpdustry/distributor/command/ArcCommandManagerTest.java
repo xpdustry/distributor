@@ -23,7 +23,7 @@ public class ArcCommandManagerTest{
 
     @Test
     public void test_server_sender_mapping(){
-        assertInstanceOf(ArcConsoleSender.class, manager.getCommandSenderMapper().apply(null, manager.getCaptionRegistry()));
+        assertInstanceOf(ArcServerSender.class, manager.getCommandSenderMapper().apply(null, manager.getCaptionRegistry()));
     }
 
     @Test

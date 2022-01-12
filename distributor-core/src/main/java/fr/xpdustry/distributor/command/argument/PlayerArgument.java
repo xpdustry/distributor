@@ -21,9 +21,9 @@ import java.util.function.*;
 
 
 /**
- * Command Argument for {@link Player}
+ * A command argument for {@link Player}
  *
- * @param <C> Command sender type
+ * @param <C> the command sender type
  */
 public class PlayerArgument<C> extends CommandArgument<C, Player>{
     public PlayerArgument(
@@ -41,20 +41,20 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
     /**
      * Create a new builder
      *
-     * @param name Name of the component
-     * @param <C>  Command sender type
-     * @return Created builder
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
      */
     public static <C> @NonNull Builder<C> newBuilder(final @NonNull String name){
         return new Builder<>(name);
     }
 
     /**
-     * Create a new required command component
+     * Create a new required player argument
      *
-     * @param name Component name
-     * @param <C>  Command sender type
-     * @return Created component
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
      */
     public static <C> @NonNull CommandArgument<C, Player> of(final @NonNull String name){
         return PlayerArgument.<C>newBuilder(name).asRequired().build();
@@ -77,9 +77,9 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
         }
 
         /**
-         * Builder a new player argument
+         * Build a new player argument
          *
-         * @return Constructed argument
+         * @return the constructed player argument
          */
         @Override
         public @NonNull PlayerArgument<C> build(){
@@ -124,10 +124,10 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
         private final String input;
 
         /**
-         * Construct a new Player parse exception
+         * Construct a new PlayerParseException
          *
-         * @param input String input
-         * @param ctx   Command context
+         * @param input the input string
+         * @param ctx   the command context
          */
         public PlayerParseException(
             final @NonNull String input,
@@ -137,7 +137,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
             this.input = input;
         }
 
-        /** @return Supplied input */
+        /** @return the supplied input */
         public @NonNull String getInput(){
             return this.input;
         }
