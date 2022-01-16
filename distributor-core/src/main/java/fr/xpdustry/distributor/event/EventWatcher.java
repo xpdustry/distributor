@@ -11,11 +11,10 @@ import java.util.*;
 
 
 /**
- * A utility class to dynamically register/unregister an event listener from {@code Events}.
+ * A utility class for dynamically register/unregister an event listener from {@link Events}.
  *
- * @param <T> the type of the event to listen to
+ * @param <T> the event type
  */
-// TODO Implement Subclasses such as TimedEventWatcher
 public class EventWatcher<T> implements EventListener, Cons<T>{
     private static final ObjectMap<Object, Seq<Cons<?>>> events = Reflect.get(Events.class, "events");
 
@@ -49,6 +48,10 @@ public class EventWatcher<T> implements EventListener, Cons<T>{
 
     public @NonNull Object getEvent(){
         return event;
+    }
+
+    public @NonNull Cons<T> getListener(){
+        return listener;
     }
 
     public boolean isListening(){

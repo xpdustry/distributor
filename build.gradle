@@ -17,6 +17,7 @@ buildscript{
 plugins{
     id "net.ltgt.errorprone" version "2.0.2"
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "org.checkerframework" version "0.6.7"
 }
 
 
@@ -27,7 +28,9 @@ ext{
     versions = [
             "mindustry": property("props.mindustry-version"),
             "arc"      : property("props.arc-version"),
-            "junit"    : "5.8.2"
+            "junit"    : "5.8.2",
+            "cloud"    : "1.6.1",
+            "owner"    : "1.0.12"
     ]
 }
 
@@ -75,7 +78,7 @@ allprojects{
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.junit}"
 
         // Annotations
-        compileOnly 'org.checkerframework:checker-qual:3.21.0'
+        compileOnly "org.checkerframework:checker-qual:3.21.1"
         annotationProcessor "com.uber.nullaway:nullaway:0.9.4"
         errorprone "com.google.errorprone:error_prone_core:2.10.0"
         errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
@@ -108,11 +111,18 @@ allprojects{
             }
         }
     }
+
+    checkerFramework {
+        checkers = [
+                "org.checkerframework.checker.index.IndexChecker"
+        ]
+    }
 }
 
 
 subprojects{
     ext{
+        versions = rootProject.ext.versions
         metadata = new JsonSlurper().parseText(file("$projectDir/plugin.json").text)
     }
 
@@ -142,12 +152,12 @@ subprojects{
 
     publishing{
         publications{
-            create("jitpack", MavenPublication){
+            create("maven", MavenPublication){
                 from components.java
 
                 pom{
                     description = metadata.description
-                    url = "https://github.com/$metadata.repo"
+                    url = "https://github.com/$shared.repo"
 
                     licenses{
                         license{
@@ -158,7 +168,7 @@ subprojects{
 
                     developers{
                         developer{
-                            id = metadata.author
+                            id = shared.author
                         }
                     }
                 }

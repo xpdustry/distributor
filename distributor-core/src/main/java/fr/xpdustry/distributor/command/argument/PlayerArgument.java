@@ -37,7 +37,6 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
         super(required, name, new PlayerParser<>(), defaultValue, Player.class, suggestionsProvider, defaultDescription);
     }
 
-
     /**
      * Create a new {@link Builder}.
      *

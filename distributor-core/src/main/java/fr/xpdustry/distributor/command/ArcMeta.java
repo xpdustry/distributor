@@ -21,6 +21,7 @@ public final class ArcMeta{
     public static final Key<Boolean> HIDDEN = CommandMeta.HIDDEN;
     /**
      * Metadata for commands that require a confirmation,
+     *
      * @see CommandConfirmationManager
      */
     public static final Key<Boolean> CONFIRMATION = CommandConfirmationManager.META_CONFIRMATION_REQUIRED;

@@ -36,32 +36,47 @@ public final class Distributor extends AbstractPlugin{
     private static @NonNull MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
     private static @NonNull MessageFormatter clientMessageFormatter = new PlayerMessageFormatter();
 
+    /** @return the {@link ServerControl} instance */
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
     }
 
+    /** @return the server command manager */
     public static ArcCommandManager getServerCommandManager(){
         return serverCommandManager;
     }
 
+    /** @return the client command manager */
     public static ArcCommandManager getClientCommandManager(){
         return clientCommandManager;
     }
 
+    /** @return the global server message formatter */
     public static @NonNull MessageFormatter getServerMessageFormatter(){
         return serverMessageFormatter;
     }
 
-    public static void setServerMessageFormatter(@NonNull MessageFormatter serverMessageFormatter){
-        Distributor.serverMessageFormatter = serverMessageFormatter;
+    /**
+     * Set the global server message formatter.
+     *
+     * @param formatter the message formatter
+     */
+    public static void setServerMessageFormatter(@NonNull MessageFormatter formatter){
+        Distributor.serverMessageFormatter = formatter;
     }
 
+    /** @return the global client message formatter */
     public static @NonNull MessageFormatter getClientMessageFormatter(){
         return clientMessageFormatter;
     }
 
-    public static void setClientMessageFormatter(@NonNull MessageFormatter clientMessageFormatter){
-        Distributor.clientMessageFormatter = clientMessageFormatter;
+    /**
+     * Set the global client message formatter.
+     *
+     * @param formatter the message formatter
+     */
+    public static void setClientMessageFormatter(@NonNull MessageFormatter formatter){
+        Distributor.clientMessageFormatter = formatter;
     }
 
     @Override public void init(){

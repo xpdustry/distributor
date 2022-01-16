@@ -16,9 +16,9 @@ import java.util.function.*;
 
 public class JavaScriptEngine implements AutoCloseable{
     private static @NonNull Supplier<JavaScriptEngine> factory = () -> {
-        Context context = Context.getCurrentContext();
-        if(context == null) context = Context.enter();
-        return new JavaScriptEngine(context);
+        var ctx = Context.getCurrentContext();
+        if(ctx == null) ctx = Context.enter();
+        return new JavaScriptEngine(ctx);
     };
 
     private static final ThreadLocal<JavaScriptEngine> INSTANCE =
@@ -145,7 +145,8 @@ public class JavaScriptEngine implements AutoCloseable{
 
     public Object exec(@NonNull File file) throws IOException, ScriptException{
         try(InputStream stream = new FileInputStream(file);
-            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)){
+            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)
+        ){
             return exec(compileScript(reader, file.getName()));
         }
     }

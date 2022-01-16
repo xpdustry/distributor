@@ -44,7 +44,16 @@ public class ArcClientSender extends ArcCommandSender{
         return WrappedBundle.getPlayerLocale(player);
     }
 
-    // TODO merge with ServerMessageFormatter ?
+    /**
+     * This formatter performs special formatting for players.
+     * Here is an example with the message {@code There are '@' players.}.
+     * <ul>
+     *     <li>{@link MessageIntent#NONE NONE}: {@code There are '@' players.}</li>
+     *     <li>{@link MessageIntent#DEBUG DEBUG}: {@code [gray]There are [lightgray]'@'[] players.}</li>
+     *     <li>{@link MessageIntent#INFO INFO}: {@code There are '@' players.}</li>
+     *     <li>{@link MessageIntent#ERROR ERROR}: {@code [scarlet]There are [orange]'@'[] players.}</li>
+     * </ul>
+     */
     public static class PlayerMessageFormatter implements MessageFormatter{
         private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 

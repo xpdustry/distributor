@@ -16,11 +16,19 @@ import java.util.*;
 
 
 public abstract class AbstractPlugin extends Plugin{
+    /** @return the {@link LoadedMod} containing the plugin, MUST BE CALLED IN OR AFTER {@link #init()}}. */
     public LoadedMod asLoadedMod(){
         return Vars.mods.getMod(getClass());
     }
 
-    /** Create or retrieve a config file located in config/plugins */
+
+    /**
+     * Create or retrieve a config file for the plugin located in config/props.
+     *
+     * @param clazz the class of the config
+     * @param <T>   the type of the config
+     * @return the config object
+     */
     @SuppressWarnings("SameParameterValue")
     protected <T extends Config&Accessible> T getConfig(@NonNull Class<T> clazz){
         final var directory = Core.settings.getDataDirectory().child("plugins");
@@ -50,15 +58,27 @@ public abstract class AbstractPlugin extends Plugin{
         return config;
     }
 
-    /** Called after init */
+    /**
+     * Register a command in the server command manager, called after init.
+     *
+     * @param manager the command manager
+     */
     public void registerServerCommands(@NonNull ArcCommandManager manager){
     }
 
-    /** Called after init */
+    /**
+     * Register a command in the client command manager, called after init.
+     *
+     * @param manager the command manager
+     */
     public void registerClientCommands(@NonNull ArcCommandManager manager){
     }
 
-    /** Called after init */
+    /**
+     * Register a command in the server and client command manager, called after init.
+     *
+     * @param manager the command manager
+     */
     public void registerSharedCommands(@NonNull ArcCommandManager manager){
     }
 }

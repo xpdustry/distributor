@@ -30,7 +30,7 @@ public class ArcSet<E> extends AbstractSet<E>{
         this(new ObjectSet<>());
     }
 
-    @Override public void forEach(Consumer<? super E> action){
+    @Override public void forEach(@NonNull Consumer<? super E> action){
         set.forEach(action);
     }
 

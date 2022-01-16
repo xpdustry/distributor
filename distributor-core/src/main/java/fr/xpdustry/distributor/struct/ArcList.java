@@ -28,20 +28,20 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess{
         this(new Seq<>());
     }
 
-    @Override public void replaceAll(UnaryOperator<E> operator){
+    @Override public void replaceAll(@NonNull UnaryOperator<E> operator){
         seq.replace(operator::apply);
     }
 
-    @Override public void sort(Comparator<? super E> c){
+    @Override public void sort(@NonNull Comparator<? super E> c){
         seq.sort(c);
     }
 
-    @Override public boolean removeIf(Predicate<? super E> filter){
+    @Override public boolean removeIf(@NonNull Predicate<? super E> filter){
         final var size = seq.size;
         return size != seq.removeAll(filter::test).size;
     }
 
-    @Override public void forEach(Consumer<? super E> action){
+    @Override public void forEach(@NonNull Consumer<? super E> action){
         seq.forEach(action);
     }
 

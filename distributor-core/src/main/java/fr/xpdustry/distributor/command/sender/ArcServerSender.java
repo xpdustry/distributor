@@ -40,15 +40,17 @@ public class ArcServerSender extends ArcCommandSender{
         throw new UnsupportedOperationException("Cannot convert console to player");
     }
 
+    /** @return the {@link Locale#getDefault() default locale} of the system. */
     @Override public @NonNull Locale getLocale(){
         return Locale.getDefault();
     }
 
+    /** @return always true */
     @Override public boolean hasPermission(@NonNull String permission){
         return true;
     }
 
-    // TODO merge with ClientMessageFormatter ?
+    /** This formatter performs the formatting of a default mindustry server where arguments are colored. */
     public static class ServerMessageFormatter implements MessageFormatter{
         private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 

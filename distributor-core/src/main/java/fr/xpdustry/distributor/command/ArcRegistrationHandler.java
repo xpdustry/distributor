@@ -17,9 +17,9 @@ import org.checkerframework.checker.nullness.qual.*;
 
 /**
  * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
- * by registering cloud commands as native commands.
+ * by registering cloud commands as native arc commands.
  */
-public class ArcRegistrationHandler implements CommandRegistrationHandler{
+public final class ArcRegistrationHandler implements CommandRegistrationHandler{
     private final @NonNull CommandHandler handler;
     private final @NonNull ArcCommandManager manager;
 

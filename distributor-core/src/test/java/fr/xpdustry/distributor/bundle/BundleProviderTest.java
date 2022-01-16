@@ -49,7 +49,6 @@ public class BundleProviderTest{
         assertEquals(root.get("departure"), "Goodbye");
         assertEquals(root.get("comeback"), "???comeback???");
 
-        assertEquals(root.get(Caption.of("arrival")), "Hello");
         assertNull(root.getOrNull("comeback"));
         assertThrows(MissingResourceException.class, () -> root.getNonNull("comeback"));
     }

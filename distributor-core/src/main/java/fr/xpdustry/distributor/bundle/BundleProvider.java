@@ -10,11 +10,16 @@ import java.util.*;
 
 
 /**
- * A simple interface for loading localized content.
+ * A simple interface for loading locale bundles of a plugin.
  */
-// TODO Implement CachedBundleProvider
 @FunctionalInterface
 public interface BundleProvider{
+    /**
+     * Load a {@link WrappedBundle} for the given locale.
+     *
+     * @param locale the desired locale
+     * @return the bundle for a given locale
+     */
     @NonNull WrappedBundle getBundle(@NonNull Locale locale);
 
     default @NonNull WrappedBundle getBundle(@NonNull Playerc player){

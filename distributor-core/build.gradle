@@ -1,6 +1,6 @@
 dependencies{
-    api "org.aeonbits.owner:owner-java8:1.0.12"
-    api "cloud.commandframework:cloud-core:1.6.1"
-    api "cloud.commandframework:cloud-annotations:1.6.1"
-    api "cloud.commandframework:cloud-tasks:1.6.1"
+    api "org.aeonbits.owner:owner-java8:${versions.owner}"
+    api "cloud.commandframework:cloud-core:${versions.cloud}"
+    api "cloud.commandframework:cloud-annotations:${versions.cloud}"
+    api "cloud.commandframework:cloud-tasks:${versions.cloud}"
 }

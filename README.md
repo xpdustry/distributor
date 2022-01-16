@@ -14,15 +14,15 @@
 
 ### For plugin development
 
-**Attention**: You can't use this plugin as a dependency right now, until [#6328](https://github.com/Anuken/Mindustry/pull/6328) is merged...
-
 Let's say you want the core plugin.
 
 First, include the internal name in your `plugin.json`, such as:
 
 ```json
 {
-  "dependencies": ["xpdustry-distributor-core"]
+  "dependencies": [
+    "xpdustry-distributor-core"
+  ]
 }
 ```
 
@@ -44,8 +44,8 @@ When you have finished your plugin, grab the needed [artifacts](https://github.c
 
 - Tools
     - [X] Localization
+        - [ ] CachedBundleProvider
     - [ ] Moderation
-    - [ ] Network (Socket API)
     - [ ] Services (Anti-VPN)
 
 - Command framework
