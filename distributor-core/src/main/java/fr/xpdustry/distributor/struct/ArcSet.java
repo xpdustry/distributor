@@ -52,7 +52,7 @@ public class ArcSet<E> extends AbstractSet<E>{
     }
 
     @Override public Object[] toArray(){
-        return set.asArray().toArray(toArray();
+        return set.asArray().toArray();
     }
 
     @Override public <T> T[] toArray(@NonNull T[] a){
