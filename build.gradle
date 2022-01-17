@@ -1,7 +1,6 @@
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import net.ltgt.gradle.errorprone.CheckSeverity
-import org.apache.groovy.json.internal.LazyMap
 import java.nio.charset.StandardCharsets
 
 buildscript{
@@ -12,26 +11,25 @@ buildscript{
     dependencies{
         classpath "org.codehaus.groovy:groovy-json:3.0.8" // <- For JsonSlurper syntax highlighting
     }
+
+    ext{
+        serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
+        shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
+
+        versions = [
+                "mindustry": property("props.mindustry-version"),
+                "arc"      : property("props.arc-version"),
+                "junit"    : "5.8.2",
+                "cloud"    : "1.6.1",
+                "owner"    : "1.0.12"
+        ]
+    }
 }
 
 plugins{
     id "net.ltgt.errorprone" version "2.0.2"
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id "org.checkerframework" version "0.6.7"
-}
-
-
-ext{
-    serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
-    shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text) as LazyMap
-
-    versions = [
-            "mindustry": property("props.mindustry-version"),
-            "arc"      : property("props.arc-version"),
-            "junit"    : "5.8.2",
-            "cloud"    : "1.6.1",
-            "owner"    : "1.0.12"
-    ]
 }
 
 task runServer{
@@ -53,7 +51,7 @@ allprojects{
     apply plugin: "com.github.johnrengelman.shadow"
 
     group property("props.project-group")
-    version shared.version
+    version shared.version + (Boolean.parseBoolean(System.getProperty("release", "false")) ? "" : "-SNAPSHOT")
 
     repositories{
         mavenCentral()
@@ -122,7 +120,6 @@ allprojects{
 
 subprojects{
     ext{
-        versions = rootProject.ext.versions
         metadata = new JsonSlurper().parseText(file("$projectDir/plugin.json").text)
     }
 
@@ -150,6 +147,12 @@ subprojects{
         doLast{ println shadowJar.archiveFile.get().toString() }
     }
 
+    // Ugly way to avoid publishing shadow artifacts to maven repos
+    // -> https://github.com/johnrengelman/shadow/issues/651
+    components.withType(AdhocComponentWithVariants).forEach { c ->
+        c.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {skip() }
+    }
+
     publishing{
         publications{
             create("maven", MavenPublication){
@@ -157,7 +160,7 @@ subprojects{
 
                 pom{
                     description = metadata.description
-                    url = "https://github.com/$shared.repo"
+                    url = "https://github.com/Xpdustry/Distributor"
 
                     licenses{
                         license{
@@ -168,9 +171,22 @@ subprojects{
 
                     developers{
                         developer{
-                            id = shared.author
+                            id = "Xpdustry"
+                            url = "https://www.xpdustry.fr"
                         }
                     }
+                }
+            }
+        }
+
+        repositories{
+            maven{
+                name = "xpdustry-repository"
+                url = "https://repo.xpdustry.fr/${version.toString().endsWith("-SNAPSHOT") ? "snapshots" : "releases"}"
+
+                credentials {
+                    username = System.getenv("XPDUSTRY_MAVEN_NAME") ?: ""
+                    password = System.getenv("XPDUSTRY_MAVEN_TOKEN") ?: ""
                 }
             }
         }

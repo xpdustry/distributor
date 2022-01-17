@@ -33,3 +33,9 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}
           path: ${{ steps.build.outputs.ARTIFACT_SCRIPT_JS_PATH }}
+
+      - name: Publish to Xpdustry
+        run: ./gradlew publish
+        env:
+          XPDUSTRY_MAVEN_NAME: ${{ secrets.XPDUSTRY_MAVEN_NAME }}
+          XPDUSTRY_MAVEN_TOKEN: ${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
