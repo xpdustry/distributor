@@ -22,7 +22,7 @@ public class ArcClientSenderTest{
 
     @BeforeEach
     public void setup(){
-        player = new MockPlayer();
+        player = new TestPlayer();
         sender = new ArcClientSender(player, new ArcCaptionRegistry());
     }
 
@@ -55,7 +55,8 @@ public class ArcClientSenderTest{
         return switch(intent){
             case "DEBUG" -> "[gray]" + Strings.format(text.replace("@", "[lightgray]@[]"), args);
             case "ERROR" -> "[scarlet]" + Strings.format(text.replace("@", "[orange]@[]"), args);
-            default -> Strings.format(text, args);
+            case "NONE", "INFO" -> Strings.format(text, args);
+            default -> throw new IllegalArgumentException("Unable to resolve formatter: " + intent);
         };
     }
 }

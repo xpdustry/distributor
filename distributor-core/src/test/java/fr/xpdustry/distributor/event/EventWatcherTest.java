@@ -5,30 +5,50 @@ import arc.*;
 import fr.xpdustry.distributor.struct.*;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class EventWatcherTest{
-    @Test
-    public void test_event_fire(){
-        final var executed = Holder.getBool();
-        final var event = new EventWatcher<>(EventWatcherTest.class, e -> executed.set(true));
+    private Object event;
+    private Holder<Integer> holder;
 
-        Events.fire(this);
-        assertEquals(Boolean.FALSE, executed.get());
-        assertFalse(event.isListening());
+    @BeforeEach
+    public void setup(){
+        event = new Object();
+        holder = Holder.getInt();
+    }
 
-        event.listen();
-        assertEquals(Boolean.FALSE, executed.get());
-        assertTrue(event.isListening());
+    @ParameterizedTest
+    @ValueSource(strings = {"CONS", "RUNNABLE"})
+    public void test_event_fire(String type){
+        final var watcher = getWatcher(type);
 
-        Events.fire(this);
-        assertEquals(Boolean.TRUE, executed.get());
-        assertTrue(event.isListening());
+        Events.fire(event);
+        assertEquals(0, holder.get());
+        assertFalse(watcher.isListening());
 
-        event.stop();
-        Events.fire(this);
-        assertFalse(event.isListening());
+        watcher.listen();
+        assertEquals(0, holder.get());
+        assertTrue(watcher.isListening());
+
+        Events.fire(event);
+        assertEquals(1, holder.get());
+        assertTrue(watcher.isListening());
+
+        watcher.stop();
+        Events.fire(event);
+        assertFalse(watcher.isListening());
+        assertEquals(1, holder.get());
+    }
+
+    public EventWatcher<Object> getWatcher(String type){
+        return switch(type){
+            case "CONS" -> new EventWatcher<>(Object.class, o -> holder.map(i -> i + 1));
+            case "RUNNABLE" -> new EventWatcher<>(event, () -> holder.map(i -> i + 1));
+            default -> throw new IllegalArgumentException("Unable to resolve constructor: " + type);
+        };
     }
 }

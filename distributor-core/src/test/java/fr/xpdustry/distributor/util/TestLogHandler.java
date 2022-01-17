@@ -5,7 +5,7 @@ import arc.util.Log.*;
 import org.checkerframework.checker.nullness.qual.*;
 
 
-public class MockLogHandler implements LogHandler{
+public class TestLogHandler implements LogHandler{
     private @Nullable LogLevel lastLevel = null;
     private @Nullable String lastText = null;
 

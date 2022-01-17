@@ -5,42 +5,67 @@ import arc.*;
 import fr.xpdustry.distributor.struct.*;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class TimedEventWatcherTest{
-    @Test
-    public void test_event_fire(){
-        final var executed = Holder.getInt().map(i -> 2);
-        final var event = new TimedEventWatcher<>(TimedEventWatcherTest.class, 2, e -> executed.map(i -> i - 1));
+    private Object event;
+    private Holder<Integer> holder;
 
-        Events.fire(this);
-        assertEquals(2, executed.get());
-        assertEquals(2, event.getLifetime());
-
-        event.listen();
-        assertEquals(2, executed.get());
-        assertEquals(2, event.getLifetime());
-
-        Events.fire(this);
-        assertEquals(1, executed.get());
-        assertEquals(1, event.getLifetime());
-
-        Events.fire(this);
-        assertEquals(0, executed.get());
-        assertEquals(0, event.getLifetime());
-
-        Events.fire(this);
-        assertEquals(0, executed.get());
-        assertEquals(0, event.getLifetime());
-        assertFalse(event.isListening());
+    @BeforeEach
+    public void setup(){
+        event = new Object();
+        holder = Holder.getInt();
     }
 
-    @Test
-    public void test_throw_on_negative_lifetime(){
-        assertThrows(IllegalArgumentException.class, () -> new TimedEventWatcher<>(Object.class, -10, e -> {}));
-        final var event = new TimedEventWatcher<>(Object.class, 10, e -> {});
-        assertThrows(IllegalArgumentException.class, () -> event.setLifetime(-3));
+    @ParameterizedTest
+    @ValueSource(strings = {"CONS", "RUNNABLE"})
+    public void test_event_fire(String type){
+        final var watcher = getWatcher(type, 2);
+
+        Events.fire(event);
+        assertEquals(0, holder.get());
+        assertEquals(2, watcher.getLifetime());
+
+        watcher.listen();
+        assertEquals(0, holder.get());
+        assertEquals(2, watcher.getLifetime());
+
+        Events.fire(event);
+        assertEquals(1, holder.get());
+        assertEquals(1, watcher.getLifetime());
+
+        Events.fire(event);
+        assertEquals(2, holder.get());
+        assertEquals(0, watcher.getLifetime());
+
+        Events.fire(event);
+        assertEquals(2, holder.get());
+        assertEquals(0, watcher.getLifetime());
+        assertFalse(watcher.isListening());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"CONS", "RUNNABLE"})
+    public void test_throw_on_negative_lifetime_constructor(String type){
+        assertThrows(IllegalArgumentException.class, () -> getWatcher(type, -10));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"CONS", "RUNNABLE"})
+    public void test_throw_on_negative_lifetime_setter(String type){
+        final var watcher = getWatcher(type, 10);
+        assertThrows(IllegalArgumentException.class, () -> watcher.setLifetime(-3));
+    }
+
+    public TimedEventWatcher<Object> getWatcher(String type, int lifetime){
+        return switch(type){
+            case "CONS" -> new TimedEventWatcher<>(Object.class, lifetime, o -> holder.map(i -> i + 1));
+            case "RUNNABLE" -> new TimedEventWatcher<>(event, lifetime, () -> holder.map(i -> i + 1));
+            default -> throw new IllegalArgumentException("Unable to resolve constructor: " + type);
+        };
     }
 }

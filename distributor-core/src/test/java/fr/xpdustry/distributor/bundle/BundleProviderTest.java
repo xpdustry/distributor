@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.bundle;
 
-import cloud.commandframework.captions.*;
 import org.junit.jupiter.api.*;
 
 import java.util.*;

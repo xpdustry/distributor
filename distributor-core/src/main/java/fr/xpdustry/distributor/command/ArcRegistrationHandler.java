@@ -66,7 +66,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
 
         public ArcNativeCommand(@NonNull String name, @NonNull String params, @NonNull String description, boolean alias){
             super(name, params, description, (CommandRunner<Playerc>)(args, player) ->
-                manager.handleCommand(player, args.length == 0 ? name : name + " " + args[0]));
+                manager.handleCommand(player, args.length == 0 ? name : name + String.join(" ", args[0])));
             this.alias = alias;
         }
 

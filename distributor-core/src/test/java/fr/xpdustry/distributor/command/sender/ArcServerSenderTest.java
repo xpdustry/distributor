@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ArcServerSenderTest{
     private ArcServerSender sender;
-    private MockLogHandler logger;
+    private TestLogHandler logger;
 
     @BeforeAll
     public static void before(){
@@ -28,7 +28,7 @@ public class ArcServerSenderTest{
     @BeforeEach
     public void setup(){
         sender = new ArcServerSender(new ArcCaptionRegistry());
-        logger = new MockLogHandler();
+        logger = new TestLogHandler();
         Log.logger = logger;
     }
 
@@ -63,7 +63,8 @@ public class ArcServerSenderTest{
         assertTrue(switch(intent){
             case "DEBUG" -> logger.getLastLevel() == LogLevel.debug;
             case "ERROR" -> logger.getLastLevel() == LogLevel.err;
-            default -> logger.getLastLevel() == LogLevel.info;
+            case "NONE", "INFO" -> logger.getLastLevel() == LogLevel.info;
+            default -> throw new IllegalArgumentException("Unable to resolve log level: " + intent);
         });
     }
 }

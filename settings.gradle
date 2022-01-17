@@ -1,4 +1,4 @@
-rootProject.name = "Distributor"
+rootProject.name = "distributor"
 
 include "distributor-core"
 include "distributor-js"

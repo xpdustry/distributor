@@ -9,6 +9,9 @@ import cloud.commandframework.meta.CommandMeta.*;
  * Global class for making metadata usage easier.
  */
 public final class ArcMeta{
+    private ArcMeta(){
+    }
+
     /** Equivalent to {@link arc.util.CommandHandler.Command#paramText}. */
     public static final Key<String> PARAMETERS = Key.of(String.class, "distributor:param");
     /** The owning plugin of the command. */

@@ -10,6 +10,9 @@ import cloud.commandframework.permission.*;
  * Global class for making permission usage easier.
  */
 public final class ArcPermission{
+    private ArcPermission(){
+    }
+
     public static final PredicatePermission<ArcCommandSender> ADMIN =
         PredicatePermission.of(SimpleCloudKey.of("admin"), s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin()));
 }
