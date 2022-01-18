@@ -48,6 +48,7 @@ allprojects{
     apply plugin: "java-library"
     apply plugin: "net.ltgt.errorprone"
     apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: "net.kyori.indra.publishing"
 
     group property("props.project-group")
     version shared.version + (indraGit.headTag() == null ? "-SNAPSHOT" : "")
