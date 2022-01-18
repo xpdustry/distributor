@@ -36,7 +36,4 @@ jobs:
 
       - name: Publish to Xpdustry
         if: "${{ github.event_name == 'push' }}"
-        run: ./gradlew publish
-        env:
-          xpdustryUsername: ${{ secrets.XPDUSTRY_MAVEN_NAME }}
-          xpdustryPassword: ${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
+        run: ./gradlew publish -PxpdustryUsername=${{ secrets.XPDUSTRY_MAVEN_NAME }} -PxpdustryPassword=${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
