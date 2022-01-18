@@ -15,7 +15,6 @@ buildscript{
     ext{
         serverDirectoryPath = System.getenv("MINDUSTRY_SERVER_HOME")
         shared = new JsonSlurper().parseText(file("$rootDir/plugin.json").text)
-
         versions = [
                 "mindustry": property("props.mindustry-version"),
                 "arc"      : property("props.arc-version"),
@@ -31,6 +30,7 @@ plugins{
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id "org.checkerframework" version "0.6.7"
     id "net.kyori.indra.publishing" version "2.0.6"
+    id "net.kyori.indra.git" version "2.0.6"
 }
 
 task runServer{
@@ -44,15 +44,14 @@ task runServer{
     }
 }
 
-
 allprojects{
     apply plugin: "java-library"
     apply plugin: "net.ltgt.errorprone"
     apply plugin: "com.github.johnrengelman.shadow"
-    apply plugin: "net.kyori.indra.publishing"
 
     group property("props.project-group")
-    version shared.version
+    version shared.version + (indraGit.headTag() == null ? "-SNAPSHOT" : "")
+    println(version)
 
     repositories{
         mavenCentral()
@@ -86,6 +85,10 @@ allprojects{
     java{
         withSourcesJar()
         withJavadocJar()
+    }
+
+    javadoc{
+        options.addStringOption('Xdoclint:none', '-quiet')
     }
 
     test{
@@ -123,6 +126,8 @@ subprojects{
     ext{
         metadata = new JsonSlurper().parseText(file("$projectDir/plugin.json").text)
     }
+
+    description = ext.metadata.description
 
     shadowJar{
         def file = new File("${getTemporaryDir().path}/plugin.json")

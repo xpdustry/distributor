@@ -1,6 +1,6 @@
 name: Build
 
-on: [push, workflow_dispatch]
+on: [push, workflow_dispatch, pull_request]
 
 jobs:
   build:
@@ -35,7 +35,8 @@ jobs:
           path: ${{ steps.build.outputs.ARTIFACT_SCRIPT_JS_PATH }}
 
       - name: Publish to Xpdustry
+        if: "${{ github.event_name == 'push' }}"
         run: ./gradlew publish
         env:
-          XPDUSTRY_MAVEN_NAME: ${{ secrets.XPDUSTRY_MAVEN_NAME }}
-          XPDUSTRY_MAVEN_TOKEN: ${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
+          xpdustryUsername: ${{ secrets.XPDUSTRY_MAVEN_NAME }}
+          xpdustryPassword: ${{ secrets.XPDUSTRY_MAVEN_TOKEN }}

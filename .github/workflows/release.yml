@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
 
 jobs:
   build:
@@ -61,7 +60,7 @@ jobs:
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
 
       - name: Publish to Xpdustry
-        run: ./gradlew publish -Prelease=true
+        run: ./gradlew publish
         env:
-          XPDUSTRY_MAVEN_NAME: ${{ secrets.XPDUSTRY_MAVEN_NAME }}
-          XPDUSTRY_MAVEN_TOKEN: ${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
+          xpdustryUsername: ${{ secrets.XPDUSTRY_MAVEN_NAME }}
+          xpdustryPassword: ${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
