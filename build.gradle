@@ -33,6 +33,7 @@ plugins{
     id "net.kyori.indra.git" version "2.0.6"
 }
 
+// Skips publishing task for root project
 rootProject.tasks.publish.enabled(false)
 
 task runServer{
