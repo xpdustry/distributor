@@ -30,6 +30,7 @@ plugins{
     id "net.ltgt.errorprone" version "2.0.2"
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id "org.checkerframework" version "0.6.7"
+    id "net.kyori.indra.publishing" version "2.0.6"
 }
 
 task runServer{
@@ -46,12 +47,12 @@ task runServer{
 
 allprojects{
     apply plugin: "java-library"
-    apply plugin: "maven-publish"
     apply plugin: "net.ltgt.errorprone"
     apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: "net.kyori.indra.publishing"
 
     group property("props.project-group")
-    version shared.version + (Boolean.parseBoolean(System.getProperty("release", "false")) ? "" : "-SNAPSHOT")
+    version shared.version
 
     repositories{
         mavenCentral()
@@ -153,42 +154,26 @@ subprojects{
         c.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {skip() }
     }
 
-    publishing{
-        publications{
-            create("maven", MavenPublication){
-                from components.java
+    indra{
+        publishReleasesTo("xpdustry", "https://repo.xpdustry.fr/releases")
+        publishSnapshotsTo("xpdustry", "https://repo.xpdustry.fr/snapshots")
 
-                pom{
-                    description = metadata.description
-                    url = "https://github.com/Xpdustry/Distributor"
-
-                    licenses{
-                        license{
-                            name = "MIT License as Publication"
-                            url = "https://www.opensource.org/licenses/mit-license.php"
-                        }
-                    }
-
-                    developers{
-                        developer{
-                            id = "Xpdustry"
-                            url = "https://www.xpdustry.fr"
-                        }
-                    }
-                }
-            }
+        mitLicense()
+        github("Xpdustry", "Distributor"){
+            ci(true)
+            issues(true)
         }
 
-        repositories{
-            maven{
-                name = "xpdustry-repository"
-                url = "https://repo.xpdustry.fr/${version.toString().endsWith("-SNAPSHOT") ? "snapshots" : "releases"}"
-
-                credentials {
-                    username = System.getenv("XPDUSTRY_MAVEN_NAME") ?: ""
-                    password = System.getenv("XPDUSTRY_MAVEN_TOKEN") ?: ""
+        configurePublications{
+            pom{
+                developers{
+                    developer{
+                        id = "Xpdustry"
+                        url = "https://www.xpdustry.fr"
+                    }
                 }
             }
         }
     }
 }
+
