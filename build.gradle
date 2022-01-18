@@ -185,25 +185,26 @@ subprojects{
     task getArtifactPath{
         doLast{ println shadowJar.archiveFile.get().toString() }
     }
-}
 
+    indra{
+        publishReleasesTo("xpdustry", "https://repo.xpdustry.fr/releases")
+        publishSnapshotsTo("xpdustry", "https://repo.xpdustry.fr/snapshots")
 
-indra{
-    publishReleasesTo("xpdustry", "https://repo.xpdustry.fr/releases")
-    publishSnapshotsTo("xpdustry", "https://repo.xpdustry.fr/snapshots")
+        mitLicense()
+        github("Xpdustry", "Distributor"){
+            ci(true)
+            issues(true)
+        }
 
-    mitLicense()
-    github("Xpdustry", "Distributor"){
-        ci(true)
-        issues(true)
-    }
+        configurePublications{
+            from components.java
 
-    configurePublications{
-        pom{
-            developers{
-                developer{
-                    id = "Xpdustry"
-                    url = "https://www.xpdustry.fr"
+            pom{
+                developers{
+                    developer{
+                        id = "Xpdustry"
+                        url = "https://www.xpdustry.fr"
+                    }
                 }
             }
         }
