@@ -51,7 +51,6 @@ allprojects{
 
     group property("props.project-group")
     version shared.version + (indraGit.headTag() == null ? "-SNAPSHOT" : "")
-    println(version)
 
     repositories{
         mavenCentral()
