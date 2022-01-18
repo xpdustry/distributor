@@ -11,15 +11,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - uses: gradle/wrapper-validation-action@v1
+
       - name: Set up JDK 16
         uses: actions/setup-java@v1
         with:
           java-version: 16
 
       - name: Build artifacs
-        run: |
-          chmod +x ./gradlew
-          ./gradlew build
+        run: ./gradlew build
 
       - name: Set up the release
         id: release
@@ -48,6 +57,7 @@ jobs:
           release_name: v${{ steps.release.outputs.RELEASE_TAG }} release
           body: ${{ steps.changelog.outputs.CHANGELOG }}
 
+          asset_name: ${{ github.event.repository.name }}-core.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.release.outputs.ARTIFACT_CORE_PATH }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
@@ -55,9 +65,13 @@ jobs:
       - name: Upload distributor-js
         uses: svenstaro/upload-release-action@v2
         with:
+          asset_name: ${{ github.event.repository.name }}-js.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.release.outputs.ARTIFACT_SCRIPT_JS_PATH }}
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
 
-      - name: Publish to Xpdustry
-        run: ./gradlew publish -PxpdustryUsername=${{ secrets.XPDUSTRY_MAVEN_NAME }} -PxpdustryPassword=${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
+      - name: Publish release to Xpdustry
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_REPO_USERNAME }}"
+          ORG_GRADLE_PROJECT_xpdustryPassword: "${{ secrets.XPDUSTRY_REPO_PASSWORD }}"

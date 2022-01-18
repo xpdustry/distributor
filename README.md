@@ -1,14 +1,12 @@
 # Distributor
 
-[![Jitpack latest version](https://jitpack.io/v2.0/Xpdustry/Distributor.svg)](https://jitpack.io/#Xpdustry/Distributor)
-[![Build](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
+[![Xpdustry latest](https://repo.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor?color=00FFFF&name=Distributor&prefix=v)](https://github.com/Xpdustry/Distributor/releases)
+[![Build](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml)
 [![Mindustry 7.0 ](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Description
 
 **Distributor** is a Plugin that provides better Mindustry API bindings and other nice features, making development time much faster.
-
-[Javadoc](https://javadoc.jitpack.io/fr/xpdustry/distributor/v2.0/javadoc/)
 
 ## Usage
 

@@ -33,8 +33,6 @@ plugins{
     id "net.kyori.indra.git" version "2.0.6"
 }
 
-// Skips publishing task for root project
-rootProject.tasks.publish.enabled(false)
 
 task runServer{
     doLast{
@@ -46,6 +44,32 @@ task runServer{
         }
     }
 }
+
+task createRelease(dependsOn: requireClean){
+    doLast{
+        // Checks if a signing key is present
+        def signing = new ByteArrayOutputStream().withStream{ out ->
+            exec{
+                commandLine "git"
+                args "config", "--global", "user.signingkey"
+                standardOutput out
+            }.with{it.exitValue == 0 && !out.toString().isBlank() }
+        }
+
+        exec{
+            commandLine "git"
+            def list = ["tag", "v$shared.version", "-F", "./CHANGELOG.md"]
+            if(signing) list.add(1, "-s")
+            args list
+        }
+
+        exec{
+            commandLine "git"
+            args "push", "origin", "--tags"
+        }
+    }
+}
+
 
 allprojects{
     apply plugin: "java-library"
@@ -122,6 +146,12 @@ allprojects{
                 "org.checkerframework.checker.index.IndexChecker"
         ]
     }
+
+    // Ugly way to avoid publishing shadow artifacts to maven repos
+    // -> https://github.com/johnrengelman/shadow/issues/651
+    components.withType(AdhocComponentWithVariants).forEach { c ->
+        c.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {skip() }
+    }
 }
 
 
@@ -155,33 +185,34 @@ subprojects{
     task getArtifactPath{
         doLast{ println shadowJar.archiveFile.get().toString() }
     }
+}
 
-    // Ugly way to avoid publishing shadow artifacts to maven repos
-    // -> https://github.com/johnrengelman/shadow/issues/651
-    components.withType(AdhocComponentWithVariants).forEach { c ->
-        c.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {skip() }
+
+indra{
+    publishReleasesTo("xpdustry", "https://repo.xpdustry.fr/releases")
+    publishSnapshotsTo("xpdustry", "https://repo.xpdustry.fr/snapshots")
+
+    mitLicense()
+    github("Xpdustry", "Distributor"){
+        ci(true)
+        issues(true)
     }
 
-    indra{
-        publishReleasesTo("xpdustry", "https://repo.xpdustry.fr/releases")
-        publishSnapshotsTo("xpdustry", "https://repo.xpdustry.fr/snapshots")
-
-        mitLicense()
-        github("Xpdustry", "Distributor"){
-            ci(true)
-            issues(true)
-        }
-
-        configurePublications{
-            pom{
-                developers{
-                    developer{
-                        id = "Xpdustry"
-                        url = "https://www.xpdustry.fr"
-                    }
+    configurePublications{
+        pom{
+            developers{
+                developer{
+                    id = "Xpdustry"
+                    url = "https://www.xpdustry.fr"
                 }
             }
         }
     }
 }
 
+// Makes sure these tasks doesn't run without a server directory
+def serverTasks = new ArrayList<>(subprojects.stream().map {it.tasks.named("moveJar").get() }.toList())
+serverTasks.add(runServer)
+serverTasks.forEach{
+    it.onlyIf { serverDirectoryPath != null && file(serverDirectoryPath).exists() }
+}

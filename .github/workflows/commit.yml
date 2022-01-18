@@ -1,6 +1,6 @@
-name: Build
+name: Commit
 
-on: [push, workflow_dispatch, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -8,6 +8,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - uses: gradle/wrapper-validation-action@v1
 
       - name: Set up JDK 16
         uses: actions/setup-java@v1
@@ -17,7 +27,6 @@ jobs:
       - name: Build artifacs
         id: build
         run: |
-          chmod +x ./gradlew
           ./gradlew build
           echo '::set-output name=ARTIFACT_CORE_PATH::'$(./gradlew distributor-core:getArtifactPath -q)
           echo '::set-output name=ARTIFACT_SCRIPT_JS_PATH::'$(./gradlew distributor-js:getArtifactPath -q)
@@ -34,6 +43,8 @@ jobs:
           name: ${{ github.event.repository.name }}
           path: ${{ steps.build.outputs.ARTIFACT_SCRIPT_JS_PATH }}
 
-      - name: Publish to Xpdustry
-        if: "${{ github.event_name == 'push' }}"
-        run: ./gradlew publish -PxpdustryUsername=${{ secrets.XPDUSTRY_MAVEN_NAME }} -PxpdustryPassword=${{ secrets.XPDUSTRY_MAVEN_TOKEN }}
+      - name: Publish snapshot to Xpdustry
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_REPO_USERNAME }}"
+          ORG_GRADLE_PROJECT_xpdustryPassword: "${{ secrets.XPDUSTRY_REPO_PASSWORD }}"
