@@ -58,8 +58,8 @@ task createRelease(dependsOn: requireClean){
 
         exec{
             commandLine "git"
-            def list = ["tag", "v$shared.version", "-F", "./CHANGELOG.md"]
-            if(signing) list.add(1, "-s")
+            def list = ["tag", "v$shared.version", "-F", "./CHANGELOG.md", "-a"]
+            if(signing) list.add("-s")
             args list
         }
 

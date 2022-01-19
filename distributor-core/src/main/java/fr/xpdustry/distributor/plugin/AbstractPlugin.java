@@ -21,7 +21,6 @@ public abstract class AbstractPlugin extends Plugin{
         return Vars.mods.getMod(getClass());
     }
 
-
     /**
      * Create or retrieve a config file for the plugin located in config/props.
      *

@@ -2,7 +2,7 @@
 
 ## Description
 
-`distributor-js` provides a better js runtime on top of Mindustry rhino. Here are some things to know:
+`distributor-js` provides a better js runtime on top of Mindustry rhino. Here are some things to know about this module:
 
 - The init script will run once, for every `JavaScriptEngine` instance created (one per thread), so include your global imports and functions there.
 - The startup script will run once in the main thread, same for the shutdown script.
@@ -12,7 +12,7 @@
 
 ## Config
 
-Here is the config you can change in `distributor/plugin/xpdustry-distributor-script-js.properties`
+Here is the config you can change in `distributor/plugins/xpdustry-distributor-script-js.properties`
 
 - `distributor.script.js.init`: Init script, leave empty for no init script.
 - `distributor.script.js.startup`: Startup script (see above for details).
