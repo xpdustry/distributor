@@ -1,6 +1,7 @@
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import net.ltgt.gradle.errorprone.CheckSeverity
+
 import java.nio.charset.StandardCharsets
 
 buildscript{
@@ -131,7 +132,7 @@ allprojects{
         }
     }
 
-    checkerFramework {
+    checkerFramework{
         checkers = [
                 "org.checkerframework.checker.index.IndexChecker"
         ]
@@ -139,8 +140,8 @@ allprojects{
 
     // Ugly way to avoid publishing shadow artifacts to maven repos
     // -> https://github.com/johnrengelman/shadow/issues/651
-    components.withType(AdhocComponentWithVariants).forEach { c ->
-        c.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {skip() }
+    components.withType(AdhocComponentWithVariants).forEach{ c ->
+        c.withVariantsFromConfiguration(configurations.shadowRuntimeElements){ skip() }
     }
 
     // Disables the task cauz honestly, I don't care...
@@ -205,8 +206,8 @@ subprojects{
 }
 
 // Makes sure these tasks doesn't run without a server directory
-def serverTasks = new ArrayList<>(subprojects.stream().map {it.tasks.named("moveJar").get() }.toList())
+def serverTasks = new ArrayList<>(subprojects.stream().map{ it.tasks.named("moveJar").get() }.toList())
 serverTasks.add(runServer)
 serverTasks.forEach{
-    it.onlyIf { serverDirectoryPath != null && file(serverDirectoryPath).exists() }
+    it.onlyIf{ serverDirectoryPath != null && file(serverDirectoryPath).exists() }
 }

@@ -17,6 +17,7 @@ Here is the list of the available modules:
 ## Usage
 
 To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such as:
+
 ```gradle
 repositories{
     // Replace with "https://repo.xpdustry.fr/snapshots" if you want to use snapshots
@@ -25,6 +26,7 @@ repositories{
 ```
 
 Then, add the needed artifacts in your dependencies, such as:
+
 ```gradle
 dependencies{
     // Add "-SNAPSHOT" at the end if you are using the snapshot repository
@@ -33,6 +35,7 @@ dependencies{
 ```
 
 After that, add the internal name of the Distributor module you are using in your `plugin.json`, such as:
+
 ```json
 {
   "dependencies": [

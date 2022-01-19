@@ -24,7 +24,7 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
      * Create a {@link CaptionExceptionHandler} that don't use caption variables.
      *
      * @param caption the caption
-     * @param <E> the exception type
+     * @param <E>     the exception type
      * @return the created caption exception handler
      */
     public static <E extends Throwable> CaptionExceptionHandler<E> ofNone(final @NonNull Caption caption){
@@ -34,9 +34,9 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
     /**
      * Create a {@link CaptionExceptionHandler} that use only one caption variable.
      *
-     * @param caption the caption
+     * @param caption          the caption
      * @param variableProvider the caption variable provider
-     * @param <E> the exception type
+     * @param <E>              the exception type
      * @return the created caption exception handler
      */
     public static <E extends Throwable> CaptionExceptionHandler<E> ofSingle(
@@ -49,9 +49,9 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
     /**
      * Create a {@link CaptionExceptionHandler} that use multiple caption variables.
      *
-     * @param caption the caption
+     * @param caption          the caption
      * @param variableProvider the caption variable provider
-     * @param <E> the exception type
+     * @param <E>              the exception type
      * @return the created caption exception handler
      */
     public static <E extends Throwable> CaptionExceptionHandler<E> ofMultiple(
