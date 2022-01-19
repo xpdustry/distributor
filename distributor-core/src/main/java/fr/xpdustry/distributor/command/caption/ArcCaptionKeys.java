@@ -6,6 +6,9 @@ import org.checkerframework.checker.nullness.qual.*;
 import java.util.*;
 
 
+/**
+ * {@link Caption} instances for messages Distributor.
+ */
 public final class ArcCaptionKeys{
     private ArcCaptionKeys(){
     }
@@ -13,8 +16,6 @@ public final class ArcCaptionKeys{
     private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>();
     /** Variables: {input} */
     public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER = of("argument.parse.failure.player");
-    /** Variables: {message} */
-    public static final Caption ARGUMENT_PARSE_FAILURE = of("argument.parse.failure");
     /** Variables: {syntax} */
     public static final Caption COMMAND_INVALID_SYNTAX = of("command.invalid.syntax");
     /** Variables: {permission} */

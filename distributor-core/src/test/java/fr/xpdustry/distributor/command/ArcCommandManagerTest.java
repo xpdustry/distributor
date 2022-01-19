@@ -4,78 +4,77 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.command.ArcRegistrationHandler.*;
-import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.util.*;
 
 import cloud.commandframework.arguments.standard.*;
+import cloud.commandframework.exceptions.*;
+import cloud.commandframework.exceptions.parsing.*;
+import cloud.commandframework.permission.*;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.*;
-import org.junit.jupiter.params.provider.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class ArcCommandManagerTest{
-    private CommandHandler handler;
     private ArcCommandManager manager;
-    private TestCommandExecutionHandler<ArcCommandSender> executor;
 
     @BeforeEach
     public void setup(){
-        handler = new CommandHandler("/");
-        manager = new ArcCommandManager(handler);
-        executor = new TestCommandExecutionHandler<>();
+        manager = new ArcCommandManager(new CommandHandler("/"));
     }
 
     @Test
-    public void test_register_native_command(){
-        manager.command(manager.commandBuilder("bob", "b"));
-        manager.command(manager.commandBuilder("marine", "m"));
-        manager.command(manager.commandBuilder("ashley", "a"));
+    public void test_command_exception_syntax(){
+        final var exceptionHandler = new TestCommandExceptionHandler<InvalidSyntaxException>();
+        manager.registerExceptionHandler(InvalidSyntaxException.class, exceptionHandler);
 
-        assertEquals(handler.getCommandList().size, 6);
-        for(final var command : handler.getCommandList().<ArcNativeCommand>as()){
-            assertNotNull(manager.getCommandTree().getNamedNode(command.text));
+        manager.command(manager.commandBuilder("test"));
+        manager.handleCommand("test 1 5 9");
 
-            if(command.text.length() == 1){
-                assertTrue(command.isAlias(), command.text + " should be an alias.");
-            }else{
-                assertFalse(command.isAlias(), command.text + " shouldn't be an alias.");
-            }
-        }
+        assertNotNull(exceptionHandler.getLastException());
     }
 
     @Test
-    public void test_native_command_override(){
-        final var command = handler.register("execute", "Execute something...", (args, parameter) -> {});
+    public void test_command_exception_permission(){
+        final var exceptionHandler = new TestCommandExceptionHandler<NoPermissionException>();
+        manager.registerExceptionHandler(NoPermissionException.class, exceptionHandler);
 
-        assertTrue(handler.getCommandList().contains(command));
-        manager.command(manager.commandBuilder("execute"));
-        assertFalse(handler.getCommandList().contains(command));
+        manager.command(manager.commandBuilder("test").permission(Permission.of("wow")));
+        manager.handleCommand(Player.create(), "test");
+
+        assertNotNull(exceptionHandler.getLastException());
     }
 
     @Test
-    public void test_native_command_execution(){
-        manager.command(manager.commandBuilder("test").handler(executor));
-        manager.handleCommand((Playerc)null, "test");
-        assertNotNull(executor.getLastContext());
+    public void test_command_exception_no_such_command(){
+        final var exceptionHandler = new TestCommandExceptionHandler<NoSuchCommandException>();
+        manager.registerExceptionHandler(NoSuchCommandException.class, exceptionHandler);
+
+        // The following stays until https://github.com/Incendo/cloud/issues/337 is solved
+        manager.command(manager.commandBuilder("test1"));
+        manager.handleCommand("test2");
+
+        assertNotNull(exceptionHandler.getLastException());
     }
 
+    @Test
+    public void test_command_exception_parsing(){
+        final var exceptionHandler = new TestCommandExceptionHandler<ParserException>();
+        manager.registerExceptionHandler(ParserException.class, exceptionHandler);
 
-    @ParameterizedTest
-    @ValueSource(strings = {"[args...]", "<a> <b> <c>"})
-    void test_native_command_arguments(String parameters){
-        final var input = "test 12 78 09";
+        manager.command(manager.commandBuilder("test").argument(IntegerArgument.of("num")));
+        manager.handleCommand("test 10.5");
 
-        manager.command(manager.commandBuilder("test")
-            .meta(ArcMeta.PARAMETERS, parameters)
-            .argument(StringArgument.greedy("args"))
-            .handler(executor));
-        manager.handleCommand((Playerc)null, input);
+        assertNotNull(exceptionHandler.getLastException());
+    }
 
-        assertEquals(parameters, handler.getCommandList().get(0).paramText);
-        assertNotNull(executor.getLastContext());
-        assertEquals(input, executor.getLastContext().getRawInputJoined());
+    @Test
+    public void test_command_exception_execution(){
+        final var exceptionHandler = new TestCommandExceptionHandler<CommandExecutionException>();
+        manager.registerExceptionHandler(CommandExecutionException.class, exceptionHandler);
+
+        manager.command(manager.commandBuilder("test").handler(ctx -> {throw new RuntimeException();}));
+        manager.handleCommand("test");
+
+        assertNotNull(exceptionHandler.getLastException());
     }
 }

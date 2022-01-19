@@ -90,6 +90,7 @@ public abstract class ArcCommandSender{
      * This method may only be called safely if {@link #isPlayer()} returns true.
      *
      * @return the player representation of the sender
+     * @throws UnsupportedOperationException if the sender does not support this operation
      */
     public abstract @NonNull Playerc asPlayer();
 

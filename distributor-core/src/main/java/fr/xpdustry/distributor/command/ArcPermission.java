@@ -7,7 +7,7 @@ import cloud.commandframework.permission.*;
 
 
 /**
- * Global class for making permission usage easier.
+ * Global class for making command permission usage easier.
  */
 public final class ArcPermission{
     private ArcPermission(){

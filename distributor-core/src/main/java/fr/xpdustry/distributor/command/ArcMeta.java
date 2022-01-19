@@ -6,7 +6,7 @@ import cloud.commandframework.meta.CommandMeta.*;
 
 
 /**
- * Global class for making metadata usage easier.
+ * Global class for making command metadata usage easier.
  */
 public final class ArcMeta{
     private ArcMeta(){
@@ -22,10 +22,6 @@ public final class ArcMeta{
     public static final Key<String> LONG_DESCRIPTION = CommandMeta.LONG_DESCRIPTION;
     /** Whether the command is hidden or not. */
     public static final Key<Boolean> HIDDEN = CommandMeta.HIDDEN;
-    /**
-     * Metadata for commands that require a confirmation,
-     *
-     * @see CommandConfirmationManager
-     */
+    /** @see CommandConfirmationManager#META_CONFIRMATION_REQUIRED */
     public static final Key<Boolean> CONFIRMATION = CommandConfirmationManager.META_CONFIRMATION_REQUIRED;
 }

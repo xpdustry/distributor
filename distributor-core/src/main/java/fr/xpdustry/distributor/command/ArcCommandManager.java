@@ -5,8 +5,8 @@ import arc.util.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.command.caption.*;
+import fr.xpdustry.distributor.command.exception.*;
 import fr.xpdustry.distributor.command.sender.*;
-import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.*;
 import cloud.commandframework.captions.*;
@@ -22,7 +22,7 @@ import java.util.function.*;
 
 
 public class ArcCommandManager extends CommandManager<ArcCommandSender>{
-    private @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, @Nullable Playerc, @NonNull ArcCommandSender> commandSenderMapper =
+    private @NonNull BiFunction<CaptionRegistry<ArcCommandSender>, Playerc, ArcCommandSender> commandSenderMapper =
         (c, p) -> p == null ? new ArcServerSender(c) : new ArcClientSender(p, c);
 
     public ArcCommandManager(@NonNull CommandHandler handler){
@@ -33,70 +33,48 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
-    public void handleCommand(@NonNull ArcCommandSender sender, @NonNull String input){
+    public void handleCommand(final @NonNull ArcCommandSender sender, final @NonNull String input){
         executeCommand(sender, input).whenComplete((result, throwable) -> {
             if(throwable == null) return;
-
-            // TODO better code formatting ???
+            if(throwable instanceof ArgumentParseException t) throwable = t.getCause();
 
             if(throwable instanceof InvalidSyntaxException t){
-                handleException(sender, InvalidSyntaxException.class, t, (s, e) -> {
-                    s.send(
-                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_INVALID_SYNTAX,
-                        CaptionVariable.of("syntax", e.getCorrectSyntax()));
-                });
+                handleException(sender, InvalidSyntaxException.class, t, StandardExceptionHandlers.COMMAND_INVALID_SYNTAX);
             }else if(throwable instanceof NoPermissionException t){
-                handleException(sender, NoPermissionException.class, t, (s, e) -> {
-                    s.send(
-                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_INVALID_PERMISSION,
-                        CaptionVariable.of("permission", e.getMissingPermission()));
-                });
+                handleException(sender, NoPermissionException.class, t, StandardExceptionHandlers.COMMAND_INVALID_PERMISSION);
             }else if(throwable instanceof NoSuchCommandException t){
-                handleException(sender, NoSuchCommandException.class, t, (s, e) -> {
-                    s.send(
-                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
-                        CaptionVariable.of("command", e.getSuppliedCommand()));
-                });
-            }else if(throwable instanceof ArgumentParseException t){
-                handleException(sender, ArgumentParseException.class, t, (s, e) -> {
-                    if(e.getCause() instanceof ParserException p){
-                        s.send(
-                            MessageIntent.ERROR, p.errorCaption(),
-                            p.captionVariables());
-                    }else{
-                        s.send(
-                            MessageIntent.ERROR, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE,
-                            CaptionVariable.of("message", e.getCause().getMessage()));
-                    }
-                });
+                handleException(sender, NoSuchCommandException.class, t, StandardExceptionHandlers.COMMAND_FAILURE_NO_SUCH_COMMAND);
+            }else if(throwable instanceof ParserException t){
+                handleException(sender, ParserException.class, t, StandardExceptionHandlers.ARGUMENT_PARSE_FAILURE);
             }else if(throwable instanceof CommandExecutionException t){
-                handleException(sender, CommandExecutionException.class, t, (s, e) -> {
-                    s.send(
-                        MessageIntent.ERROR, ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
-                        CaptionVariable.of("cause", e.getCause().getMessage()));
-                });
+                handleException(sender, CommandExecutionException.class, t, StandardExceptionHandlers.COMMAND_FAILURE_EXECUTION);
+                Log.debug(t);
             }else{
-                sender.send(
-                    MessageIntent.ERROR, ArcCaptionKeys.COMMAND_FAILURE,
-                    CaptionVariable.of("message", throwable.getMessage()));
+                StandardExceptionHandlers.COMMAND_FAILURE.accept(sender, throwable);
+                Log.debug(throwable);
             }
         });
     }
 
-    @SuppressWarnings("NullAway") // <- TODO For some shady reasons, it throws a warning, check what's going on...
-    public void handleCommand(@Nullable Playerc player, @NonNull String input){
+    public void handleCommand(final @Nullable Playerc player, final @NonNull String input){
         handleCommand(commandSenderMapper.apply(getCaptionRegistry(), player), input);
     }
 
-    public @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, @Nullable Playerc, @NonNull ArcCommandSender> getCommandSenderMapper(){
+    public void handleCommand(final @NonNull String input){
+        handleCommand(commandSenderMapper.apply(getCaptionRegistry(), null), input);
+    }
+
+    public @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, Playerc, @NonNull ArcCommandSender> getCommandSenderMapper(){
         return commandSenderMapper;
     }
 
-    public void setCommandSenderMapper(@NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, @Nullable Playerc, @NonNull ArcCommandSender> commandSenderMapper){
+    public void setCommandSenderMapper(
+        final @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, Playerc, @NonNull ArcCommandSender> commandSenderMapper
+    ){
         this.commandSenderMapper = commandSenderMapper;
     }
 
-    @Override public boolean hasPermission(@NonNull ArcCommandSender sender, @NonNull String permission){
+    @Override public boolean hasPermission(final @NonNull ArcCommandSender sender, final @NonNull String permission){
         return sender.hasPermission(permission);
     }
 

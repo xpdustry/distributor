@@ -82,6 +82,7 @@ allprojects{
         compileOnly "com.github.Anuken.Mindustry:server:${versions.mindustry}"
 
         // Unit Testing
+        testCompileOnly "org.checkerframework:checker-qual:3.21.1"
         testImplementation "com.github.Anuken.Arc:arc-core:${versions.arc}"
         testImplementation "com.github.Anuken.Arc:backend-headless:${versions.arc}"
         testImplementation "com.github.Anuken.Mindustry:core:${versions.mindustry}"

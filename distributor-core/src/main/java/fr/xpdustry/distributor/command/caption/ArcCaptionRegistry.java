@@ -19,9 +19,9 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
     }
 
     /**
-     * Register a new bundle provider message factory.
+     * Register a new bundle provider as a message factory.
      *
-     * @param caption  a caption containing the key of the localized string
+     * @param caption  the caption containing the key of the localized string
      * @param provider the bundle provider
      */
     public void registerMessageFactory(@NonNull Caption caption, @NonNull BundleProvider provider){
