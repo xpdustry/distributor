@@ -65,6 +65,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         initScript = factory.call(ctx -> {
             if(config.getInitScript().isBlank())
                 return ctx.compileString("\"use strict\";", "init.js", 0);
+
             final var script = JAVA_SCRIPT_DIRECTORY.child(config.getInitScript());
             try(final var reader = script.reader()){
                 return ctx.compileReader(reader, config.getInitScript(), 0);

@@ -48,8 +48,8 @@ public class ArcCommandManagerTest{
 
     @Test
     public void test_native_command_override(){
-        final var command = handler.register("execute", "Execute something...", (args, parameter) -> {
-        });
+        final var command = handler.register("execute", "Execute something...", (args, parameter) -> {});
+
         assertTrue(handler.getCommandList().contains(command));
         manager.command(manager.commandBuilder("execute"));
         assertFalse(handler.getCommandList().contains(command));
@@ -76,7 +76,6 @@ public class ArcCommandManagerTest{
 
         assertEquals(parameters, handler.getCommandList().get(0).paramText);
         assertNotNull(executor.getLastContext());
-        // Cloud considers command name as an argument too so include it in the comparison too
         assertEquals(input, executor.getLastContext().getRawInputJoined());
     }
 }

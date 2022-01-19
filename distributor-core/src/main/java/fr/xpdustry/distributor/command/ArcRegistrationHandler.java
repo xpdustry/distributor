@@ -47,8 +47,8 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
         }
 
         final ObjectMap<String, CommandHandler.Command> commands = Reflect.get(handler, "commands");
-
         var added = false;
+
         for(final var alias : info.getAliases()){
             if(!commands.containsKey(alias)){
                 final var cmd = new ArcNativeCommand(alias, params, desc, !alias.equals(info.getName()));
@@ -65,8 +65,11 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
         private final boolean alias;
 
         public ArcNativeCommand(@NonNull String name, @NonNull String params, @NonNull String description, boolean alias){
-            super(name, params, description, (CommandRunner<Playerc>)(args, player) ->
-                manager.handleCommand(player, args.length == 0 ? name : name + String.join(" ", args[0])));
+            super(name, params, description, (CommandRunner<Playerc>)(args, player) -> {
+                final var components = Seq.with(name).addAll(args);
+                manager.handleCommand(player, String.join(" ", components));
+            });
+
             this.alias = alias;
         }
 
