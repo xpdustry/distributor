@@ -49,7 +49,7 @@ task createRelease(dependsOn: requireClean){
     doLast{
         exec{
             commandLine "git"
-            args "tag", "-a", "-s", "v$shared.version", "-F", "./CHANGELOG.md",
+            args "tag", "-a", "-s", "v$shared.version", "-F", "./CHANGELOG.md"
         }
 
         exec{
