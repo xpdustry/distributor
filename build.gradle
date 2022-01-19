@@ -141,6 +141,9 @@ allprojects{
     components.withType(AdhocComponentWithVariants).forEach { c ->
         c.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {skip() }
     }
+
+    // Disables the task cauz honestly, I don't care...
+    tasks.signMavenPublication.enabled(false)
 }
 
 
