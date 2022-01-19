@@ -47,20 +47,9 @@ task runServer{
 
 task createRelease(dependsOn: requireClean){
     doLast{
-        // Checks if a signing key is present
-        def signing = new ByteArrayOutputStream().withStream{ out ->
-            exec{
-                commandLine "git"
-                args "config", "--global", "user.signingkey"
-                standardOutput out
-            }.with{it.exitValue == 0 && !out.toString().isBlank() }
-        }
-
         exec{
             commandLine "git"
-            def list = ["tag", "v$shared.version", "-F", "./CHANGELOG.md", "-a"]
-            if(signing) list.add("-s")
-            args list
+            args "tag", "-a", "-s", "v$shared.version", "-F", "./CHANGELOG.md",
         }
 
         exec{
