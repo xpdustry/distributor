@@ -9,7 +9,7 @@ import java.util.function.*;
 
 
 /**
- * A {@code Set} view of a {@code ObjectSet}.
+ * A {@link Set} view of a {@link ObjectSet}.
  */
 public class ArcSet<E> extends AbstractSet<E>{
     private final @NonNull ObjectSet<E> set;

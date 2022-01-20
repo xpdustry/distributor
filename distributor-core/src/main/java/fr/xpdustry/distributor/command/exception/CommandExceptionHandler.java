@@ -10,5 +10,6 @@ import java.util.function.*;
  *
  * @param <E> the exception type
  */
+@FunctionalInterface
 public interface CommandExceptionHandler<E extends Throwable> extends BiConsumer<ArcCommandSender, E>{
 }

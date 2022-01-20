@@ -144,9 +144,7 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public Object exec(@NonNull File file) throws IOException, ScriptException{
-        try(InputStream stream = new FileInputStream(file);
-            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)
-        ){
+        try(final var reader = new FileReader(file, StandardCharsets.UTF_8)){
             return exec(compileScript(reader, file.getName()));
         }
     }

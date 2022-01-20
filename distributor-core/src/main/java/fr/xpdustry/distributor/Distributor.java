@@ -34,7 +34,7 @@ public final class Distributor extends AbstractPlugin{
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
 
     private static @NonNull MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
-    private static @NonNull MessageFormatter clientMessageFormatter = new PlayerMessageFormatter();
+    private static @NonNull MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
 
     /** @return the {@link ServerControl} instance */
     public static ServerControl getServer(){

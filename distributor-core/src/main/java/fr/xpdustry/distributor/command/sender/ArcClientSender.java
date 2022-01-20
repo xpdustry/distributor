@@ -25,7 +25,7 @@ public class ArcClientSender extends ArcCommandSender{
     }
 
     public ArcClientSender(@NonNull Playerc player, @NonNull CaptionRegistry<ArcCommandSender> captions){
-        this(player, captions, new PlayerMessageFormatter());
+        this(player, captions, new ClientMessageFormatter());
     }
 
     @Override public void send(@NonNull MessageIntent intent, @NonNull String message){
@@ -54,7 +54,7 @@ public class ArcClientSender extends ArcCommandSender{
      *     <li>{@link MessageIntent#ERROR ERROR}: {@code [scarlet]There are [orange]'@'[] players.}</li>
      * </ul>
      */
-    public static class PlayerMessageFormatter implements MessageFormatter{
+    public static class ClientMessageFormatter implements MessageFormatter{
         private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 
         @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message){
@@ -86,4 +86,10 @@ public class ArcClientSender extends ArcCommandSender{
             };
         }
     }
+
+    /**
+     * I forgot to rename the class...
+     */
+    @Deprecated
+    public static class PlayerMessageFormatter extends ClientMessageFormatter{}
 }

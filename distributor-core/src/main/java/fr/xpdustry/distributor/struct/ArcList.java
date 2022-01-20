@@ -9,7 +9,7 @@ import java.util.function.*;
 
 
 /**
- * A {@code List} view of a {@code Seq}.
+ * A {@link List} view of a {@link Seq}.
  *
  * @param <E> the element type
  */

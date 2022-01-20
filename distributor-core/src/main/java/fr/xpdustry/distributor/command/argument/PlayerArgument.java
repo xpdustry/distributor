@@ -25,6 +25,7 @@ import java.util.function.*;
  *
  * @param <C> the command sender type
  */
+// TODO add "exclude-self", "custom-lookup" options
 public class PlayerArgument<C> extends CommandArgument<C, Player>{
     private PlayerArgument(
         final boolean required,

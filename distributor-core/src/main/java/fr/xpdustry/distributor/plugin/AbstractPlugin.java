@@ -15,6 +15,9 @@ import java.io.*;
 import java.util.*;
 
 
+/**
+ * Abstract plugin class for plugins using Distributor.
+ */
 public abstract class AbstractPlugin extends Plugin{
     /** @return the {@link LoadedMod} containing the plugin, MUST BE CALLED IN OR AFTER {@link #init()}}. */
     public LoadedMod asLoadedMod(){
