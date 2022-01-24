@@ -21,7 +21,8 @@ buildscript{
                 "arc"      : property("props.arc-version"),
                 "junit"    : "5.8.2",
                 "cloud"    : "1.6.1",
-                "owner"    : "1.0.12"
+                "owner"    : "1.0.12",
+                "gson"     : "2.8.9"
         ]
     }
 }
@@ -76,6 +77,8 @@ allprojects{
     }
 
     dependencies{
+        implementation 'com.google.code.gson:gson:2.8.9'
+
         // Mindustry
         compileOnly "com.github.Anuken.Arc:arc-core:${versions.arc}"
         compileOnly "com.github.Anuken.Arc:backend-headless:${versions.arc}"

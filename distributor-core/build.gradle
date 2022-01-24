@@ -3,4 +3,5 @@ dependencies{
     api "cloud.commandframework:cloud-core:${versions.cloud}"
     api "cloud.commandframework:cloud-annotations:${versions.cloud}"
     api "cloud.commandframework:cloud-tasks:${versions.cloud}"
+    api "com.google.code.gson:gson:${versions.gson}"
 }

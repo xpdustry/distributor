@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.plugin;
 
 import arc.*;
+import arc.files.*;
 
 import mindustry.*;
 import mindustry.mod.Mods.*;
@@ -24,6 +25,10 @@ public abstract class AbstractPlugin extends Plugin{
         return Vars.mods.getMod(getClass());
     }
 
+    public Fi getDirectory(){
+        return new Fi("./distributor/plugins/" + asLoadedMod().name);
+    }
+
     /**
      * Create or retrieve a config file for the plugin located in config/props.
      *
@@ -31,8 +36,9 @@ public abstract class AbstractPlugin extends Plugin{
      * @param <T>   the type of the config
      * @return the config object
      */
+    @Deprecated
     @SuppressWarnings("SameParameterValue")
-    protected <T extends Config&Accessible> T getConfig(@NonNull Class<T> clazz){
+    protected <T extends Accessible> T getConfig(@NonNull Class<T> clazz){
         final var directory = Core.settings.getDataDirectory().child("plugins");
         directory.mkdirs();
 

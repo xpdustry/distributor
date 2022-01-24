@@ -28,7 +28,7 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
         registerMessageFactory(caption, new BundleProviderMessageFactory(provider));
     }
 
-    public static class BundleProviderMessageFactory implements BiFunction<Caption, ArcCommandSender, String>{
+    public static final class BundleProviderMessageFactory implements BiFunction<Caption, ArcCommandSender, String>{
         private final @NonNull BundleProvider provider;
 
         private BundleProviderMessageFactory(@NonNull BundleProvider provider){
