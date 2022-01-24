@@ -65,7 +65,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
         private final boolean alias;
 
         public ArcNativeCommand(@NonNull String name, @NonNull String params, @NonNull String description, boolean alias){
-            super(name, params, description, (CommandRunner<Playerc>)(args, player) -> {
+            super(name, params, description, (CommandRunner<Player>)(args, player) -> {
                 final var components = Seq.with(name).addAll(args);
                 manager.handleCommand(player, String.join(" ", components));
             });

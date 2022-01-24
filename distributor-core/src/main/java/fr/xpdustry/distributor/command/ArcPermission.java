@@ -13,6 +13,5 @@ public final class ArcPermission{
     private ArcPermission(){
     }
 
-    public static final PredicatePermission<ArcCommandSender> ADMIN =
-        PredicatePermission.of(SimpleCloudKey.of("admin"), s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin()));
+    public static final CommandPermission ADMIN = Permission.of("distributor:admin");
 }

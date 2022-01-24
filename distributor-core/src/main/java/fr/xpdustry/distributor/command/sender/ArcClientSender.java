@@ -17,14 +17,14 @@ import java.util.regex.*;
 
 
 public class ArcClientSender extends ArcCommandSender{
-    private final @NonNull Playerc player;
+    private final @NonNull Player player;
 
-    public ArcClientSender(@NonNull Playerc player, @NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){
+    public ArcClientSender(@NonNull Player player, @NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){
         super(captions, formatter);
         this.player = player;
     }
 
-    public ArcClientSender(@NonNull Playerc player, @NonNull CaptionRegistry<ArcCommandSender> captions){
+    public ArcClientSender(@NonNull Player player, @NonNull CaptionRegistry<ArcCommandSender> captions){
         this(player, captions, new ClientMessageFormatter());
     }
 
@@ -36,7 +36,7 @@ public class ArcClientSender extends ArcCommandSender{
         return true;
     }
 
-    @Override public @NonNull Playerc asPlayer(){
+    @Override public @NonNull Player asPlayer(){
         return player;
     }
 

@@ -99,18 +99,20 @@ public final class Distributor extends AbstractPlugin{
         clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
 
         // Setup Mappers
-        serverCommandManager.setCommandSenderMapper((c, p) -> new ArcServerSender(c, Distributor.serverMessageFormatter));
-        clientCommandManager.setCommandSenderMapper((c, p) -> new ArcClientSender(Objects.requireNonNull(p), c, Distributor.clientMessageFormatter));
+        serverCommandManager.setCommandSenderMapper((c, p) ->
+            new ArcServerSender(c, Distributor.serverMessageFormatter));
+
+        clientCommandManager.setCommandSenderMapper((c, p) ->
+            new ArcClientSender(Objects.requireNonNull(p), c, Distributor.clientMessageFormatter));
 
         // Add localization support via Captions
-        final var captions = new Seq<Caption>()
+        new Seq<Caption>()
             .addAll(StandardCaptionKeys.getStandardCaptionKeys())
-            .addAll(ArcCaptionKeys.getArcCaptionKeys());
-
-        captions.forEach(c -> {
-            ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
-            ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
-        });
+            .addAll(ArcCaptionKeys.getArcCaptionKeys())
+            .forEach(c -> {
+                ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
+                ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
+            });
 
         // Register commands
         Events.on(ServerLoadEvent.class, e -> {
@@ -123,5 +125,9 @@ public final class Distributor extends AbstractPlugin{
                 }
             });
         });
+    }
+
+    @Override public void registerSharedCommands(@NonNull ArcCommandManager manager){
+        manager.getPermissionInjector().registerInjector(ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin()));
     }
 }

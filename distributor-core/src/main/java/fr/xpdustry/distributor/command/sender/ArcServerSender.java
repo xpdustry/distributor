@@ -36,7 +36,7 @@ public class ArcServerSender extends ArcCommandSender{
         return false;
     }
 
-    @Override public @NonNull Playerc asPlayer(){
+    @Override public @NonNull Player asPlayer(){
         throw new UnsupportedOperationException("Cannot convert console to player");
     }
 

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class ArcClientSenderTest{
-    private Playerc player;
+    private Player player;
     private ArcClientSender sender;
 
     @BeforeEach

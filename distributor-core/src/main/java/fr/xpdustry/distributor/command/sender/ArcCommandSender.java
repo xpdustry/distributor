@@ -93,7 +93,7 @@ public abstract class ArcCommandSender{
      *
      * @throws UnsupportedOperationException if the sender does not support this operation
      */
-    public abstract @NonNull Playerc asPlayer();
+    public abstract @NonNull Player asPlayer();
 
     /** @return the locale of the sender */
     public abstract @NonNull Locale getLocale();

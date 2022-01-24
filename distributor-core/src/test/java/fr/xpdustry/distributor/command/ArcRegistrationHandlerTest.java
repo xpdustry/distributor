@@ -58,7 +58,7 @@ public class ArcRegistrationHandlerTest{
     @Test
     public void test_native_command_execution(){
         manager.command(manager.commandBuilder("test").handler(executor));
-        manager.handleCommand((Playerc)null, "test");
+        manager.handleCommand("test");
         assertNotNull(executor.getLastContext());
     }
 
