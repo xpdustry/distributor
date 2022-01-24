@@ -40,7 +40,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         setCommandRegistrationHandler(new ArcRegistrationHandler(handler, this));
         setCaptionRegistry(new ArcCaptionRegistry());
 
-        registerCommandPostProcessor(permissionInjector);
+        registerCommandPreProcessor(permissionInjector);
         getParserRegistry().registerParserSupplier(TypeToken.get(Player.class), p -> new PlayerParser<>());
     }
 

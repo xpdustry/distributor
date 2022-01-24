@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.admin;
 
 import fr.xpdustry.distributor.command.sender.*;
 
-import cloud.commandframework.execution.postprocessor.*;
+import cloud.commandframework.execution.preprocessor.*;
 import cloud.commandframework.permission.*;
 import org.checkerframework.checker.nullness.qual.*;
 
@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.function.*;
 
 
-public class CommandPermissionInjector implements CommandPostprocessor<ArcCommandSender>{
+public class CommandPermissionInjector implements CommandPreprocessor<ArcCommandSender>{
     private final Map<String, Predicate<ArcCommandSender>> injectors = new HashMap<>();
 
     public void registerInjector(
@@ -28,7 +28,7 @@ public class CommandPermissionInjector implements CommandPostprocessor<ArcComman
     }
 
     @Override
-    public void accept(@NonNull CommandPostprocessingContext<ArcCommandSender> ctx){
+    public void accept(@NonNull CommandPreprocessingContext<ArcCommandSender> ctx){
         injectors.forEach((p, i) -> {
             if(i.test(ctx.getCommandContext().getSender())) ctx.getCommandContext().getSender().addPermission(p);
         });
