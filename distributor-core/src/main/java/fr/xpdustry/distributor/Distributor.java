@@ -98,10 +98,9 @@ public final class Distributor extends AbstractPlugin{
         serverCommandManager = new ArcCommandManager(handler);
         clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
 
-        // Setup Mappers
+        // Setup command sender mappers
         serverCommandManager.setCommandSenderMapper((c, p) ->
             new ArcServerSender(c, Distributor.serverMessageFormatter));
-
         clientCommandManager.setCommandSenderMapper((c, p) ->
             new ArcClientSender(Objects.requireNonNull(p), c, Distributor.clientMessageFormatter));
 

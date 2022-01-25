@@ -12,7 +12,7 @@
 
 ## Config
 
-Here is the config you can change in `distributor/plugins/xpdustry-distributor-script-js.properties`
+Here is the config you can change in `distributor/plugins/xpdustry-distributor-script-js/config.properties`
 
 - `distributor.script.js.init`: Init script, leave empty for no init script.
 - `distributor.script.js.startup`: Startup script (see above for details).

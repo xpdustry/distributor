@@ -10,6 +10,7 @@ import mindustry.game.EventType.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
+import fr.xpdustry.distributor.io.store.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.js.*;
 
@@ -27,30 +28,39 @@ import java.util.*;
 public final class JavaScriptPlugin extends AbstractPlugin{
     public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 
-    private static JavaScriptConfig config;
+    private static FileStore<JavaScriptConfig> store;
     private static ClassShutter shutter;
     private static ModuleScriptProvider provider;
     private static Script initScript;
 
+    private static JavaScriptConfig config(){
+        return store.get();
+    }
+
     @Override public void init(){
-        config = getConfig(JavaScriptConfig.class);
-        shutter = new RegexClassShutter(config.getBlackList(), config.getWhiteList());
+        store = new ConfigFileStore<>(getDirectory().child("config.properties"), JavaScriptConfig.class);
+        shutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
         provider = new SoftCachingModuleScriptProvider(
-            new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null));
+            new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
+        );
+
+        if(!store.getFile().exists()){
+            store.save();
+        }
 
         if(JAVA_SCRIPT_DIRECTORY.mkdirs()){
             // Copy the default init script
             try(final var in = getClass().getClassLoader().getResourceAsStream("init.js")){
-                JAVA_SCRIPT_DIRECTORY.child(config.getInitScript()).write(in, false);
+                JAVA_SCRIPT_DIRECTORY.child(config().getInitScript()).write(in, false);
             }catch(IOException e){
                 throw new RuntimeException("Failed to create the default init script.", e);
             }
 
-            JAVA_SCRIPT_DIRECTORY.child(config.getStartupScript()).writeString("// Put your startup code here...\n");
-            JAVA_SCRIPT_DIRECTORY.child(config.getShutdownScript()).writeString("// Put your shutdown code here...\n");
+            JAVA_SCRIPT_DIRECTORY.child(config().getStartupScript()).writeString("// Put your startup code here...\n");
+            JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()).writeString("// Put your shutdown code here...\n");
         }
 
-        ContextFactory factory = new TimedContextFactory(config.getMaxScriptRuntime());
+        ContextFactory factory = new TimedContextFactory(config().getMaxScriptRuntime());
         factory.addListener(new ArcContextListener());
         ContextFactory.initGlobal(factory);
 
@@ -63,12 +73,11 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         });
 
         initScript = factory.call(ctx -> {
-            if(config.getInitScript().isBlank())
+            if(config().getInitScript().isBlank())
                 return ctx.compileString("\"use strict\";", "init.js", 0);
-
-            final var script = JAVA_SCRIPT_DIRECTORY.child(config.getInitScript());
+            final var script = JAVA_SCRIPT_DIRECTORY.child(config().getInitScript());
             try(final var reader = script.reader()){
-                return ctx.compileReader(reader, config.getInitScript(), 0);
+                return ctx.compileReader(reader, config().getInitScript(), 0);
             }catch(IOException e){
                 throw new RuntimeException("Failed to compile the init script.", e);
             }
@@ -92,8 +101,8 @@ public final class JavaScriptPlugin extends AbstractPlugin{
 
         Events.on(ServerLoadEvent.class, l -> {
             try{
-                if(config.getStartupScript().isBlank()) return;
-                JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config.getStartupScript()));
+                if(config().getStartupScript().isBlank()) return;
+                JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getStartupScript()));
             }catch(ScriptException | IOException e){
                 throw new RuntimeException("Failed to run the startup script.", e);
             }
@@ -102,8 +111,8 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         Core.app.addListener(new ApplicationListener(){
             @Override public void exit(){
                 try{
-                    if(config.getShutdownScript().isBlank()) return;
-                    JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config.getShutdownScript()));
+                    if(config().getShutdownScript().isBlank()) return;
+                    JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()));
                 }catch(ScriptException | IOException e){
                     Log.err("Failed to run the shutdown script.", e);
                 }

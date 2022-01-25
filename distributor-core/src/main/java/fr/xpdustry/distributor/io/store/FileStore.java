@@ -19,8 +19,4 @@ public interface FileStore<T>{
     @NonNull Fi getFile();
 
     void setFile(@NonNull Fi file);
-
-    default void setFile(@NonNull String file){
-        setFile(new Fi(file));
-    }
 }
