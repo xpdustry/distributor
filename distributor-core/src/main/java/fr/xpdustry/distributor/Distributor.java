@@ -9,36 +9,47 @@ import mindustry.*;
 import mindustry.game.EventType.*;
 import mindustry.server.*;
 
-import fr.xpdustry.distributor.bundle.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.command.sender.ArcClientSender.*;
 import fr.xpdustry.distributor.command.sender.ArcServerSender.*;
+import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;
+import cloud.commandframework.services.*;
+import net.mindustry_ddns.store.*;
 import org.checkerframework.checker.nullness.qual.*;
 
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 
 public final class Distributor extends AbstractPlugin{
     public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
     public static final BundleProvider bundles = l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
+    private static @SuppressWarnings("NullAway.Init") FileStore<DistributorConfig> config;
+    private static @SuppressWarnings("NullAway.Init") ServicePipeline servicePipeline;
+
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
     private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
 
-    private static @NonNull MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
-    private static @NonNull MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
+    private static MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
+    private static MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
 
     /** @return the {@link ServerControl} instance */
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);
+    }
+
+    /** @return the service pipeline of distributor */
+    public static ServicePipeline getServicePipeline(){
+        return servicePipeline;
     }
 
     /** @return the server command manager */
@@ -52,7 +63,7 @@ public final class Distributor extends AbstractPlugin{
     }
 
     /** @return the global server message formatter */
-    public static @NonNull MessageFormatter getServerMessageFormatter(){
+    public static MessageFormatter getServerMessageFormatter(){
         return serverMessageFormatter;
     }
 
@@ -66,7 +77,7 @@ public final class Distributor extends AbstractPlugin{
     }
 
     /** @return the global client message formatter */
-    public static @NonNull MessageFormatter getClientMessageFormatter(){
+    public static MessageFormatter getClientMessageFormatter(){
         return clientMessageFormatter;
     }
 
@@ -80,12 +91,17 @@ public final class Distributor extends AbstractPlugin{
     }
 
     @Override public void init(){
+        config = getStoredConfig(DistributorConfig.class);
+        servicePipeline = ServicePipeline.builder()
+            .withExecutor(Executors.newFixedThreadPool(config.get().getServiceThreadCount()))
+            .build();
+
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("banner.txt not found...");
             final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-            reader.lines().forEach(line -> Log.info(" > " + line));
-            Log.info(" > Loaded Distributor core @", asLoadedMod().meta.version);
+            reader.lines().forEach(line -> Log.info(" &c&fb>&fr @", line));
+            Log.info(" &c&fb>&fr Loaded Distributor core @", asLoadedMod().meta.version);
         }catch(IOException e){
             Log.debug("Distributor failed to show the banner.", e);
         }

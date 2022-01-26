@@ -14,7 +14,7 @@ import java.util.function.*;
  * @param <E> the element type
  */
 public class ArcList<E> extends AbstractList<E> implements RandomAccess{
-    private final @NonNull Seq<E> seq;
+    private final Seq<E> seq;
 
     public ArcList(@NonNull Seq<E> seq){
         this.seq = seq;

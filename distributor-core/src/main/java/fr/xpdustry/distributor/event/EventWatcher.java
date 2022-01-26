@@ -18,8 +18,8 @@ import java.util.*;
 public class EventWatcher<T> implements EventListener, Cons<T>{
     private static final ObjectMap<Object, Seq<Cons<?>>> events = Reflect.get(Events.class, "events");
 
-    private final @NonNull Object event;
-    private final @NonNull Cons<T> listener;
+    private final Object event;
+    private final Cons<T> listener;
     private boolean listening = false;
 
     public EventWatcher(@NonNull Class<T> event, @NonNull Cons<T> listener){

@@ -5,7 +5,7 @@ import org.aeonbits.owner.*;
 import java.util.*;
 
 
-public interface JavaScriptConfig extends Config, Accessible{
+public interface JavaScriptConfig extends Accessible{
     @DefaultValue("init.js")
     @Key("distributor.script.js.init")
     String getInitScript();

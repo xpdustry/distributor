@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.bundle;
+package fr.xpdustry.distributor.string;
 
 import org.junit.jupiter.api.*;
 

@@ -17,8 +17,8 @@ import java.util.function.*;
  * @param <E> the exception type
  */
 public final class CaptionExceptionHandler<E extends Throwable> implements CommandExceptionHandler<E>{
-    private final @NonNull Caption caption;
-    private final @NonNull Function<E, CaptionVariable[]> variableProvider;
+    private final Caption caption;
+    private final Function<E, CaptionVariable[]> variableProvider;
 
     /**
      * Create a {@link CaptionExceptionHandler} that don't use caption variables.

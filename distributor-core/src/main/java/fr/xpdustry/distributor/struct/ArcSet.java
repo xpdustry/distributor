@@ -12,7 +12,7 @@ import java.util.function.*;
  * A {@link Set} view of a {@link ObjectSet}.
  */
 public class ArcSet<E> extends AbstractSet<E>{
-    private final @NonNull ObjectSet<E> set;
+    private final ObjectSet<E> set;
 
     public ArcSet(@NonNull ObjectSet<E> set){
         this.set = set;

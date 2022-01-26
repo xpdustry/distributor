@@ -43,7 +43,7 @@ public abstract class AbstractPlugin extends Plugin{
      * @return the config file store
      */
     @SuppressWarnings("SameParameterValue")
-    protected <T extends Accessible> FileStore<T> getStoredConfig(@NonNull String name, Class<T> clazz){
+    protected <T extends Accessible> FileStore<T> getStoredConfig(@NonNull String name, @NonNull Class<T> clazz){
         return new ConfigFileStore<>(getDirectory().child(name + ".properties").file(), clazz);
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractPlugin extends Plugin{
      * @param <T>   the type of the config
      * @return the file store of the config
      */
-    protected <T extends Accessible> FileStore<T> getStoredConfig(Class<T> clazz){
+    protected <T extends Accessible> FileStore<T> getStoredConfig(@NonNull Class<T> clazz){
         return getStoredConfig("config", clazz);
     }
 

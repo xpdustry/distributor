@@ -44,9 +44,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
         );
 
-        if(!store.getFile().exists()){
-            store.save();
-        }
+        if(!store.getFile().exists()) store.save();
 
         if(JAVA_SCRIPT_DIRECTORY.mkdirs()){
             // Copy the default init script

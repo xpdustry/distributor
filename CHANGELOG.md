@@ -1,7 +1,1 @@
-- Removed `ArcCaptionKeys.ARGUMENT_PARSE_FAILURE`.
-- Improved the ArcCommandManager + better formatting.
-- Random javadoc improvements.
-- Moved old ArcCommandManagerTest to ArcRegistrationHandlerTest and created new tests.
-- Added the `CommandExceptionHandler`.
-- Added the `CaptionExceptionHandler`.
-- Put the new standard command exception handlers in `StandardExceptionHandlers`.
+- Added FileStore API for storing and loading files very easily

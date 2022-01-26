@@ -31,7 +31,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     private final AnnotationParser<ArcCommandSender> annotationParser =
         new AnnotationParser<>(this, ArcCommandSender.class, p -> createDefaultCommandMeta());
 
-    private @NonNull BiFunction<CaptionRegistry<ArcCommandSender>, Player, ArcCommandSender> commandSenderMapper =
+    private BiFunction<CaptionRegistry<ArcCommandSender>, Player, ArcCommandSender> commandSenderMapper =
         (c, p) -> p == null ? new ArcServerSender(c) : new ArcClientSender(p, c);
 
     public ArcCommandManager(@NonNull CommandHandler handler){

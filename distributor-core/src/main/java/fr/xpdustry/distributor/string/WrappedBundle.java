@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.bundle;
+package fr.xpdustry.distributor.string;
 
 import mindustry.gen.*;
 
@@ -29,7 +29,7 @@ public class WrappedBundle{
         @Override public @NonNull Enumeration<String> getKeys(){return Collections.emptyEnumeration();}
     });
 
-    private final @NonNull ResourceBundle bundle;
+    private final ResourceBundle bundle;
 
     protected WrappedBundle(@NonNull ResourceBundle bundle){
         this.bundle = bundle;

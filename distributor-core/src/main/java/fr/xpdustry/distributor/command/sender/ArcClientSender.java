@@ -5,7 +5,6 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.bundle.*;
 import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;

@@ -17,8 +17,8 @@ import java.util.*;
  * This class represents the command sender, it can be either the console or a player.
  */
 public abstract class ArcCommandSender{
-    protected final @NonNull CaptionRegistry<ArcCommandSender> captions;
-    protected final @NonNull MessageFormatter formatter;
+    protected final CaptionRegistry<ArcCommandSender> captions;
+    protected final MessageFormatter formatter;
     protected final Collection<String> permissions = new HashSet<>();
 
     public ArcCommandSender(@NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){

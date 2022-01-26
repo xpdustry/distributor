@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.command.caption;
 
-import fr.xpdustry.distributor.bundle.*;
 import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.*;
@@ -29,7 +29,7 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
     }
 
     public static final class BundleProviderMessageFactory implements BiFunction<Caption, ArcCommandSender, String>{
-        private final @NonNull BundleProvider provider;
+        private final BundleProvider provider;
 
         private BundleProviderMessageFactory(@NonNull BundleProvider provider){
             this.provider = provider;

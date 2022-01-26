@@ -20,8 +20,8 @@ import org.checkerframework.checker.nullness.qual.*;
  * by registering cloud commands as native arc commands.
  */
 public final class ArcRegistrationHandler implements CommandRegistrationHandler{
-    private final @NonNull CommandHandler handler;
-    private final @NonNull ArcCommandManager manager;
+    private final CommandHandler handler;
+    private final ArcCommandManager manager;
 
     public ArcRegistrationHandler(@NonNull CommandHandler handler, @NonNull ArcCommandManager manager){
         this.handler = handler;
