@@ -2,8 +2,6 @@ package fr.xpdustry.distributor.command;
 
 import arc.util.*;
 
-import mindustry.gen.*;
-
 import fr.xpdustry.distributor.command.ArcRegistrationHandler.*;
 import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.util.*;

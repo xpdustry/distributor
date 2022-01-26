@@ -1,8 +1,5 @@
 package fr.xpdustry.distributor.command;
 
-import fr.xpdustry.distributor.command.sender.*;
-
-import cloud.commandframework.keys.*;
 import cloud.commandframework.permission.*;
 
 

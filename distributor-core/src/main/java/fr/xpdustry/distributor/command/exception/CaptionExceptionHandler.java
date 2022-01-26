@@ -20,6 +20,14 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
     private final Caption caption;
     private final Function<E, CaptionVariable[]> variableProvider;
 
+    private CaptionExceptionHandler(
+        final @NonNull Caption caption,
+        final @NonNull Function<@NonNull E, @NonNull CaptionVariable[]> variableProvider
+    ){
+        this.caption = caption;
+        this.variableProvider = variableProvider;
+    }
+
     /**
      * Create a {@link CaptionExceptionHandler} that don't use caption variables.
      *
@@ -59,14 +67,6 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
         final @NonNull Function<@NonNull E, @NonNull Iterable<@NonNull CaptionVariable>> variableProvider
     ){
         return new CaptionExceptionHandler<>(caption, variableProvider.andThen(Seq::with).andThen(Seq::toArray));
-    }
-
-    private CaptionExceptionHandler(
-        final @NonNull Caption caption,
-        final @NonNull Function<@NonNull E, @NonNull CaptionVariable[]> variableProvider
-    ){
-        this.caption = caption;
-        this.variableProvider = variableProvider;
     }
 
     @Override public void accept(@NonNull ArcCommandSender sender, @NonNull E e){

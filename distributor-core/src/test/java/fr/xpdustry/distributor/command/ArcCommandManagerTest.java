@@ -12,7 +12,8 @@ import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.permission.*;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 public class ArcCommandManagerTest{
     private ArcCommandManager manager;

@@ -85,10 +85,4 @@ public class ArcClientSender extends ArcCommandSender{
             };
         }
     }
-
-    /**
-     * I forgot to rename the class...
-     */
-    @Deprecated
-    public static class PlayerMessageFormatter extends ClientMessageFormatter{}
 }
