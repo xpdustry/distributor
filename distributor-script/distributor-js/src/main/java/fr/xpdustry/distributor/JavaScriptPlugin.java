@@ -10,11 +10,11 @@ import mindustry.game.EventType.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
-import fr.xpdustry.distributor.io.store.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.js.*;
 
 import cloud.commandframework.arguments.standard.*;
+import net.mindustry_ddns.store.*;
 import org.checkerframework.checker.nullness.qual.*;
 import rhino.*;
 import rhino.module.*;
@@ -38,7 +38,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
     }
 
     @Override public void init(){
-        store = new ConfigFileStore<>(getDirectory().child("config.properties"), JavaScriptConfig.class);
+        store = getStoredConfig(JavaScriptConfig.class);
         shutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
         provider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)

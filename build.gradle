@@ -74,11 +74,10 @@ allprojects{
     repositories{
         mavenCentral()
         maven{ url "https://www.jitpack.io" }
+        maven{ url "https://repo.xpdustry.fr/releases" }
     }
 
     dependencies{
-        implementation 'com.google.code.gson:gson:2.8.9'
-
         // Mindustry
         compileOnly "com.github.Anuken.Arc:arc-core:${versions.arc}"
         compileOnly "com.github.Anuken.Arc:backend-headless:${versions.arc}"

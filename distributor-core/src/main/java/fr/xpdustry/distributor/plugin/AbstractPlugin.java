@@ -7,8 +7,8 @@ import mindustry.mod.Mods.*;
 import mindustry.mod.*;
 
 import fr.xpdustry.distributor.command.*;
-import fr.xpdustry.distributor.io.store.*;
 
+import net.mindustry_ddns.store.*;
 import org.aeonbits.owner.*;
 import org.checkerframework.checker.nullness.qual.*;
 
@@ -44,7 +44,7 @@ public abstract class AbstractPlugin extends Plugin{
      */
     @SuppressWarnings("SameParameterValue")
     protected <T extends Accessible> FileStore<T> getStoredConfig(@NonNull String name, Class<T> clazz){
-        return new ConfigFileStore<>(getDirectory().child(name + ".properties"), clazz);
+        return new ConfigFileStore<>(getDirectory().child(name + ".properties").file(), clazz);
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class AbstractPlugin extends Plugin{
      */
     @SuppressWarnings("SameParameterValue")
     protected <T> FileStore<T> getStoredObject(@NonNull String name, @NonNull Class<T> clazz, @NonNull Supplier<T> supplier){
-        return new JsonFileStore<>(getDirectory().child(name + ".json"), clazz, supplier);
+        return new JsonFileStore<>(getDirectory().child(name + ".json").file(), clazz, supplier);
     }
 
     protected <T> FileStore<T> getStoredObject(@NonNull Class<T> clazz, @NonNull Supplier<T> supplier){
