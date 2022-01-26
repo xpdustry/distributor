@@ -10,7 +10,7 @@ import java.util.function.*;
  * Holds a value and nothing else...
  */
 public class Holder<T>{
-    protected T value;
+    protected @Nullable T value;
 
     public Holder(){
         this.value = null;
