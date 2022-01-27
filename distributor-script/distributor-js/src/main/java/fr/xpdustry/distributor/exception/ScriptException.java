@@ -11,9 +11,8 @@ public class ScriptException extends Exception{
         super(cause);
     }
 
-    @Override
-    public String getMessage(){
-        final var cause = (getCause().getMessage() == null ? "" : ": " + getCause().getMessage());
-        return getCause().getClass().getSimpleName() + cause;
+    @Override public String getMessage(){
+        return getCause().getClass().getSimpleName() +
+            (getCause().getMessage() == null ? "" : ": " + getCause().getMessage());
     }
 }

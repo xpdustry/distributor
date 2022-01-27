@@ -22,7 +22,8 @@ buildscript{
                 "junit"    : "5.8.2",
                 "cloud"    : "1.6.1",
                 "owner"    : "1.0.12",
-                "gson"     : "2.8.9"
+                "gson"     : "2.8.9",
+                "store"    : "1.1.1"
         ]
     }
 }

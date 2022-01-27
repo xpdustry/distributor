@@ -15,7 +15,7 @@ import java.util.function.*;
 
 
 public class JavaScriptEngine implements AutoCloseable{
-    private static @NonNull Supplier<JavaScriptEngine> factory = () -> {
+    private static Supplier<JavaScriptEngine> factory = () -> {
         var ctx = Context.getCurrentContext();
         if(ctx == null) ctx = Context.enter();
         return new JavaScriptEngine(ctx);
@@ -24,8 +24,8 @@ public class JavaScriptEngine implements AutoCloseable{
     private static final ThreadLocal<JavaScriptEngine> INSTANCE =
         ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
 
-    private final @NonNull Context ctx;
-    private final @NonNull Scriptable scope;
+    private final Context ctx;
+    private final Scriptable scope;
     private @Nullable Require require = null;
 
     public JavaScriptEngine(@NonNull Context context, @NonNull Scriptable scope){
@@ -67,7 +67,7 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @NonNull Scriptable newScope(@NonNull Scriptable parent){
-        Scriptable scope = ctx.newObject(parent);
+        final var scope = ctx.newObject(parent);
         // Ensures that definitions in the root scope are found.
         scope.setPrototype(parent);
         // Ensures that new global variables are created in this scope (don't use var for them!)

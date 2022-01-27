@@ -1,5 +1,5 @@
 dependencies{
-    api "net.mindustry_ddns:file-store:1.1.0"
+    api "net.mindustry_ddns:file-store:${versions.store}"
     api "com.google.code.gson:gson:${versions.gson}"
     api "org.aeonbits.owner:owner-java8:${versions.owner}"
     api "cloud.commandframework:cloud-annotations:${versions.cloud}"
