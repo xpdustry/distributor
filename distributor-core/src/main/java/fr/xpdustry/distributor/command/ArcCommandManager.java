@@ -34,7 +34,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     private BiFunction<CaptionRegistry<ArcCommandSender>, Player, ArcCommandSender> commandSenderMapper =
         (c, p) -> p == null ? new ArcServerSender(c) : new ArcClientSender(p, c);
 
-    public ArcCommandManager(@NonNull CommandHandler handler){
+    public ArcCommandManager(final @NonNull CommandHandler handler){
         super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
         setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
         setCommandRegistrationHandler(new ArcRegistrationHandler(handler, this));

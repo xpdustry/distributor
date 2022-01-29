@@ -197,10 +197,14 @@ subprojects{
             from components.java
 
             pom{
+                organization{
+                    name = "Xpdustry"
+                    url = "https://www.xpdustry.fr"
+                }
+
                 developers{
                     developer{
-                        id = "Xpdustry"
-                        url = "https://www.xpdustry.fr"
+                        id = "Phinner"
                     }
                 }
             }

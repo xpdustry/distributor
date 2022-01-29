@@ -37,7 +37,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
     }
 
     @SuppressWarnings("unchecked")
-    @Override public boolean registerCommand(@NonNull Command<?> command){
+    @Override public boolean registerCommand(final @NonNull Command<?> command){
         final var info = (StaticArgument<ArcCommandSender>)command.getArguments().get(0);
         final var desc = command.getCommandMeta().getOrDefault(ArcMeta.DESCRIPTION, "");
         final var params = command.getCommandMeta().getOrDefault(ArcMeta.PARAMETERS, "[args...]");
