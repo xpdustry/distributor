@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.admin;
+package fr.xpdustry.distributor.command.processor;
 
 import fr.xpdustry.distributor.command.sender.*;
 

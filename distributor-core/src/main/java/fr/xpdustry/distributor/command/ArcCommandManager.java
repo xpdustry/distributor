@@ -4,10 +4,10 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
-import fr.xpdustry.distributor.admin.*;
 import fr.xpdustry.distributor.command.argument.PlayerArgument.*;
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.command.exception.*;
+import fr.xpdustry.distributor.command.processor.*;
 import fr.xpdustry.distributor.command.sender.*;
 
 import cloud.commandframework.*;

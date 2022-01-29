@@ -143,6 +143,8 @@ public final class Distributor extends AbstractPlugin{
     }
 
     @Override public void registerSharedCommands(@NonNull ArcCommandManager manager){
-        manager.getPermissionInjector().registerInjector(ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin()));
+        manager.getPermissionInjector().registerInjector(
+            ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin())
+        );
     }
 }
