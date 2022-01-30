@@ -23,7 +23,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
     private final CommandHandler handler;
     private final ArcCommandManager manager;
 
-    public ArcRegistrationHandler(@NonNull CommandHandler handler, @NonNull ArcCommandManager manager){
+    public ArcRegistrationHandler(final @NonNull CommandHandler handler, final @NonNull ArcCommandManager manager){
         this.handler = handler;
         this.manager = manager;
     }
@@ -51,7 +51,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
 
         for(final var alias : info.getAliases()){
             if(!commands.containsKey(alias)){
-                final var cmd = new ArcNativeCommand(alias, params, desc, !alias.equals(info.getName()));
+                final var cmd = new ArcNativeCommand(alias, params, desc, (Command<ArcCommandSender>)command);
                 commands.put(alias, cmd);
                 handler.getCommandList().add(cmd);
                 added = true;
@@ -62,19 +62,24 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
     }
 
     public final class ArcNativeCommand extends CommandHandler.Command{
-        private final boolean alias;
+        private final Command<ArcCommandSender> internalCommand;
 
-        public ArcNativeCommand(@NonNull String name, @NonNull String params, @NonNull String description, boolean alias){
+        public ArcNativeCommand(
+            final @NonNull String name,
+            final @NonNull String params,
+            final @NonNull String description,
+            final @NonNull Command<ArcCommandSender> internalCommand
+        ){
             super(name, params, description, (CommandRunner<Player>)(args, player) -> {
                 final var components = Seq.with(name).addAll(args);
                 manager.handleCommand(player, String.join(" ", components));
             });
 
-            this.alias = alias;
+            this.internalCommand = internalCommand;
         }
 
-        public boolean isAlias(){
-            return alias;
+        public @NonNull Command<ArcCommandSender> getInternalCommand(){
+            return internalCommand;
         }
     }
 }
