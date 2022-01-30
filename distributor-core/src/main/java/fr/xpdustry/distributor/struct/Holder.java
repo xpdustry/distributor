@@ -64,13 +64,13 @@ public class Holder<T>{
         return value;
     }
 
-    public Holder<T> use(@NonNull Consumer<T> cons){
+    public Holder<T> use(final @NonNull Consumer<T> cons){
         cons.accept(value);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public <R extends T> Holder<R> map(@NonNull Function<T, R> func){
+    public <R extends T> Holder<R> map(final @NonNull Function<T, R> func){
         value = func.apply(value);
         return (Holder<R>)this;
     }

@@ -15,21 +15,27 @@ import org.checkerframework.checker.nullness.qual.*;
 public class TimedEventWatcher<T> extends EventWatcher<T>{
     private int lifetime;
 
-    public TimedEventWatcher(@NonNull Class<T> event, @NonNegative int lifetime, @NonNull Cons<T> listener){
+    public TimedEventWatcher(
+        final @NonNull Class<T> event,
+        final @NonNegative int lifetime,
+        final @NonNull Cons<T> listener
+    ){
         super(event, listener);
         this.lifetime = lifetime;
-        if(lifetime < 0) throw new IllegalArgumentException("The lifetime cannot be below zero.");
     }
 
-    public TimedEventWatcher(@NonNull T event, @NonNegative int lifetime, @NonNull Runnable listener){
+    public TimedEventWatcher(
+        final @NonNull T event,
+        final @NonNegative int lifetime,
+        final @NonNull Runnable listener
+    ){
         super(event, listener);
         this.lifetime = lifetime;
-        if(lifetime < 0) throw new IllegalArgumentException("The lifetime cannot be below zero.");
     }
 
-    @Override public void get(T o){
+    @Override public void get(final T event){
         if(lifetime > 0){
-            super.get(o);
+            super.get(event);
             lifetime--;
         }else{
             stop();
@@ -40,8 +46,7 @@ public class TimedEventWatcher<T> extends EventWatcher<T>{
         return lifetime;
     }
 
-    public void setLifetime(@NonNegative int lifetime){
+    public void setLifetime(final @NonNegative int lifetime){
         this.lifetime = lifetime;
-        if(lifetime < 0) throw new IllegalArgumentException("The lifetime cannot be below zero.");
     }
 }

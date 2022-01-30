@@ -18,16 +18,20 @@ import java.util.regex.*;
 public class ArcClientSender extends ArcCommandSender{
     private final @NonNull Player player;
 
-    public ArcClientSender(@NonNull Player player, @NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){
+    public ArcClientSender(
+        final @NonNull Player player,
+        final @NonNull CaptionRegistry<ArcCommandSender> captions,
+        final @NonNull MessageFormatter formatter
+    ){
         super(captions, formatter);
         this.player = player;
     }
 
-    public ArcClientSender(@NonNull Player player, @NonNull CaptionRegistry<ArcCommandSender> captions){
+    public ArcClientSender(final @NonNull Player player, final @NonNull CaptionRegistry<ArcCommandSender> captions){
         this(player, captions, new ClientMessageFormatter());
     }
 
-    @Override public void send(@NonNull MessageIntent intent, @NonNull String message){
+    @Override public void send(final @NonNull MessageIntent intent, final @NonNull String message){
         player.sendMessage(message);
     }
 
@@ -56,7 +60,7 @@ public class ArcClientSender extends ArcCommandSender{
     public static class ClientMessageFormatter implements MessageFormatter{
         private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message){
+        @Override public @NonNull String format(final @NonNull MessageIntent intent, final @NonNull String message){
             return switch(intent){
                 case DEBUG -> "[gray]" + message;
                 case ERROR -> "[scarlet]" + message;
@@ -64,11 +68,19 @@ public class ArcClientSender extends ArcCommandSender{
             };
         }
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+        @Override public @NonNull String format(
+            final @NonNull MessageIntent intent,
+            final @NonNull String message,
+            final @Nullable Object... args
+        ){
             return format(intent, Strings.format(message.replace("@", colorize(intent, "@")), args));
         }
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+        @Override public @NonNull String format(
+            final @NonNull MessageIntent intent,
+            final @NonNull String message,
+            final @NonNull CaptionVariable... vars
+        ){
             final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
             final var builder = new StringBuilder();
             final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);
@@ -77,7 +89,7 @@ public class ArcClientSender extends ArcCommandSender{
             return format(intent, builder.toString());
         }
 
-        private String colorize(@NonNull MessageIntent intent, @NonNull String value){
+        private String colorize(final @NonNull MessageIntent intent, final @NonNull String value){
             return switch(intent){
                 case DEBUG -> "[lightgray]" + value + "[]";
                 case ERROR -> "[orange]" + value + "[]";

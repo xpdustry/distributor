@@ -21,12 +21,12 @@ public abstract class ArcCommandSender{
     protected final MessageFormatter formatter;
     protected final Collection<String> permissions = new HashSet<>();
 
-    public ArcCommandSender(@NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){
+    public ArcCommandSender(final @NonNull CaptionRegistry<ArcCommandSender> captions, final @NonNull MessageFormatter formatter){
         this.captions = captions;
         this.formatter = formatter;
     }
 
-    public ArcCommandSender(@NonNull CaptionRegistry<ArcCommandSender> captions){
+    public ArcCommandSender(final @NonNull CaptionRegistry<ArcCommandSender> captions){
         this(captions, new SimpleMessageFormatter());
     }
 
@@ -45,7 +45,7 @@ public abstract class ArcCommandSender{
      * @param message the message
      * @param args    the arguments to format
      */
-    public void send(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+    public void send(final @NonNull MessageIntent intent, final @NonNull String message, final @Nullable Object... args){
         send(intent, formatter.format(intent, message, args));
     }
 
@@ -56,7 +56,7 @@ public abstract class ArcCommandSender{
      * @param message the message
      * @param args    the arguments to format
      */
-    public void send(@NonNull String message, @Nullable Object... args){
+    public void send(final @NonNull String message, final @Nullable Object... args){
         send(MessageIntent.INFO, message, args);
     }
 
@@ -67,7 +67,7 @@ public abstract class ArcCommandSender{
      * @param caption the caption
      * @param vars    the caption variables to format
      */
-    public void send(@NonNull MessageIntent intent, @NonNull Caption caption, @NonNull CaptionVariable... vars){
+    public void send(final @NonNull MessageIntent intent, final @NonNull Caption caption, final @NonNull CaptionVariable... vars){
         send(intent, formatter.format(intent, captions.getCaption(caption, this), vars));
     }
 
@@ -78,7 +78,7 @@ public abstract class ArcCommandSender{
      * @param caption the caption
      * @param vars    the caption variables to format
      */
-    public void send(@NonNull Caption caption, @NonNull CaptionVariable... vars){
+    public void send(final @NonNull Caption caption, final @NonNull CaptionVariable... vars){
         send(MessageIntent.INFO, caption, vars);
     }
 
@@ -111,7 +111,7 @@ public abstract class ArcCommandSender{
      *
      * @see cloud.commandframework.CommandManager#hasPermission(Object, String)
      */
-    public boolean hasPermission(@NonNull String permission){
+    public boolean hasPermission(final @NonNull String permission){
         return permission.isBlank() || permissions.contains(permission);
     }
 
@@ -119,20 +119,18 @@ public abstract class ArcCommandSender{
      * Add a permission to the sender.
      *
      * @param permission the permission
-     * @return false if the sender already have the permission
      */
-    public boolean addPermission(@NonNull String permission){
-        return permissions.add(permission);
+    public void addPermission(final @NonNull String permission){
+        permissions.add(permission);
     }
 
     /**
      * Remove a permission from the sender.
      *
      * @param permission the permission
-     * @return false if the sender didn't have the permission
      */
-    public boolean removePermission(@NonNull String permission){
-        return permissions.remove(permission);
+    public void removePermission(final @NonNull String permission){
+        permissions.remove(permission);
     }
 
     /**
@@ -141,15 +139,23 @@ public abstract class ArcCommandSender{
     public static class SimpleMessageFormatter implements MessageFormatter{
         private final CaptionVariableReplacementHandler handler = new SimpleCaptionVariableReplacementHandler();
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message){
+        @Override public @NonNull String format(final @NonNull MessageIntent intent, final @NonNull String message){
             return message;
         }
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+        @Override public @NonNull String format(
+            final @NonNull MessageIntent intent,
+            final @NonNull String message,
+            final @Nullable Object... args
+        ){
             return Strings.format(message, args);
         }
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+        @Override public @NonNull String format(
+            final @NonNull MessageIntent intent,
+            final @NonNull String message,
+            final @NonNull CaptionVariable... vars
+        ){
             return handler.replaceVariables(message, vars);
         }
     }

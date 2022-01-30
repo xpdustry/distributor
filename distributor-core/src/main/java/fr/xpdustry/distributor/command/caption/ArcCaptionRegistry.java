@@ -24,18 +24,18 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
      * @param caption  the caption containing the key of the localized string
      * @param provider the bundle provider
      */
-    public void registerMessageFactory(@NonNull Caption caption, @NonNull BundleProvider provider){
+    public void registerMessageFactory(final @NonNull Caption caption, final @NonNull BundleProvider provider){
         registerMessageFactory(caption, new BundleProviderMessageFactory(provider));
     }
 
     public static final class BundleProviderMessageFactory implements BiFunction<Caption, ArcCommandSender, String>{
         private final BundleProvider provider;
 
-        private BundleProviderMessageFactory(@NonNull BundleProvider provider){
+        private BundleProviderMessageFactory(final @NonNull BundleProvider provider){
             this.provider = provider;
         }
 
-        @Override public @NonNull String apply(@NonNull Caption caption, @NonNull ArcCommandSender sender){
+        @Override public @NonNull String apply(final @NonNull Caption caption, final @NonNull ArcCommandSender sender){
             return provider.getBundle(sender).get(caption.getKey());
         }
     }

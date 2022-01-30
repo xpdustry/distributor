@@ -31,7 +31,7 @@ public class WrappedBundle{
 
     private final ResourceBundle bundle;
 
-    protected WrappedBundle(@NonNull ResourceBundle bundle){
+    protected WrappedBundle(final @NonNull ResourceBundle bundle){
         this.bundle = bundle;
     }
 
@@ -41,7 +41,7 @@ public class WrappedBundle{
      * @param bundle the resource bundle to wrap
      * @return a wrapped resource bundle
      */
-    public static WrappedBundle of(@NonNull ResourceBundle bundle){
+    public static WrappedBundle of(final @NonNull ResourceBundle bundle){
         return new WrappedBundle(bundle);
     }
 
@@ -56,7 +56,11 @@ public class WrappedBundle{
      * @throws MissingResourceException if no bundles have been found.
      * @see ResourceBundle#getBundle(String, Locale, ClassLoader)
      */
-    public static WrappedBundle of(@NonNull String baseName, @NonNull Locale locale, @NonNull ClassLoader loader){
+    public static WrappedBundle of(
+        final @NonNull String baseName,
+        final @NonNull Locale locale,
+        final @NonNull ClassLoader loader
+    ){
         if(locale.equals(ROUTER_LOCALE)) return ROUTER_BUNDLE;
         return of(ResourceBundle.getBundle(baseName, locale, loader));
     }
@@ -67,7 +71,7 @@ public class WrappedBundle{
      * @param player the player
      * @return the locale of the player
      */
-    public static @NonNull Locale getPlayerLocale(@NonNull Playerc player){
+    public static @NonNull Locale getPlayerLocale(final @NonNull Playerc player){
         return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
@@ -77,7 +81,7 @@ public class WrappedBundle{
      * @param key the key of the localized string
      * @return the localized string if it exits or {@code ???key???}.
      */
-    public @NonNull String get(@NonNull String key){
+    public @NonNull String get(final @NonNull String key){
         return bundle.containsKey(key) ? bundle.getString(key) : "???" + key + "???";
     }
 
@@ -87,7 +91,7 @@ public class WrappedBundle{
      * @param key the key of the localized string
      * @return the localized string if it exits or null.
      */
-    public @Nullable String getOrNull(@NonNull String key){
+    public @Nullable String getOrNull(final @NonNull String key){
         return containsKey(key) ? get(key) : null;
     }
 
@@ -99,7 +103,7 @@ public class WrappedBundle{
      *
      * @throws MissingResourceException if the key doesn't exist in the bundle
      */
-    public @NonNull String getNonNull(@NonNull String key){
+    public @NonNull String getNonNull(final @NonNull String key){
         return bundle.getString(key);
     }
 
@@ -109,7 +113,7 @@ public class WrappedBundle{
      * @param key the key to check
      * @return true if the key exists in the bundle or one of its parents.
      */
-    public boolean containsKey(@NonNull String key){
+    public boolean containsKey(final @NonNull String key){
         return bundle.containsKey(key);
     }
 

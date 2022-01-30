@@ -43,7 +43,7 @@ public abstract class AbstractPlugin extends Plugin{
      * @return the config file store
      */
     @SuppressWarnings("SameParameterValue")
-    protected <T extends Accessible> FileStore<T> getStoredConfig(@NonNull String name, @NonNull Class<T> clazz){
+    protected <T extends Accessible> FileStore<T> getStoredConfig(final @NonNull String name, final @NonNull Class<T> clazz){
         return new ConfigFileStore<>(getDirectory().child(name + ".properties").file(), clazz);
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractPlugin extends Plugin{
      * @param <T>   the type of the config
      * @return the file store of the config
      */
-    protected <T extends Accessible> FileStore<T> getStoredConfig(@NonNull Class<T> clazz){
+    protected <T extends Accessible> FileStore<T> getStoredConfig(final @NonNull Class<T> clazz){
         return getStoredConfig("config", clazz);
     }
 
@@ -68,11 +68,15 @@ public abstract class AbstractPlugin extends Plugin{
      * @return the file store of the object
      */
     @SuppressWarnings("SameParameterValue")
-    protected <T> FileStore<T> getStoredObject(@NonNull String name, @NonNull Class<T> clazz, @NonNull Supplier<T> supplier){
+    protected <T> FileStore<T> getStoredObject(
+        final @NonNull String name,
+        final @NonNull Class<T> clazz,
+        final @NonNull Supplier<T> supplier
+    ){
         return new JsonFileStore<>(getDirectory().child(name + ".json").file(), clazz, supplier);
     }
 
-    protected <T> FileStore<T> getStoredObject(@NonNull Class<T> clazz, @NonNull Supplier<T> supplier){
+    protected <T> FileStore<T> getStoredObject(final @NonNull Class<T> clazz, final @NonNull Supplier<T> supplier){
         return getStoredObject("config", clazz, supplier);
     }
 
@@ -81,7 +85,7 @@ public abstract class AbstractPlugin extends Plugin{
      *
      * @param manager the command manager
      */
-    public void registerServerCommands(@NonNull ArcCommandManager manager){
+    public void registerServerCommands(final @NonNull ArcCommandManager manager){
     }
 
     /**
@@ -89,7 +93,7 @@ public abstract class AbstractPlugin extends Plugin{
      *
      * @param manager the command manager
      */
-    public void registerClientCommands(@NonNull ArcCommandManager manager){
+    public void registerClientCommands(final @NonNull ArcCommandManager manager){
     }
 
     /**
@@ -97,6 +101,6 @@ public abstract class AbstractPlugin extends Plugin{
      *
      * @param manager the command manager
      */
-    public void registerSharedCommands(@NonNull ArcCommandManager manager){
+    public void registerSharedCommands(final @NonNull ArcCommandManager manager){
     }
 }

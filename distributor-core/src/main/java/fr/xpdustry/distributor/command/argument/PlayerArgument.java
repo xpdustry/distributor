@@ -25,7 +25,7 @@ import java.util.function.*;
  *
  * @param <C> the command sender type
  */
-public class PlayerArgument<C> extends CommandArgument<C, Player>{
+public final class PlayerArgument<C> extends CommandArgument<C, Player>{
     private PlayerArgument(
         final boolean required,
         final @NonNull String name,
@@ -128,10 +128,7 @@ public class PlayerArgument<C> extends CommandArgument<C, Player>{
          * @param input the input string
          * @param ctx   the command context
          */
-        public PlayerParseException(
-            final @NonNull String input,
-            final @NonNull CommandContext<?> ctx
-        ){
+        public PlayerParseException(final @NonNull String input, final @NonNull CommandContext<?> ctx){
             super(PlayerParser.class, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER, CaptionVariable.of("input", input));
             this.input = input;
         }

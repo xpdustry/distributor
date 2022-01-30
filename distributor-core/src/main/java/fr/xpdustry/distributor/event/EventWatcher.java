@@ -22,12 +22,12 @@ public class EventWatcher<T> implements EventListener, Cons<T>{
     private final Cons<T> listener;
     private boolean listening = false;
 
-    public EventWatcher(@NonNull Class<T> event, @NonNull Cons<T> listener){
+    public EventWatcher(final @NonNull Class<T> event, final @NonNull Cons<T> listener){
         this.event = event;
         this.listener = listener;
     }
 
-    public EventWatcher(@NonNull T event, @NonNull Runnable listener){
+    public EventWatcher(final @NonNull T event, final @NonNull Runnable listener){
         this.event = event;
         this.listener = e -> listener.run();
     }
@@ -58,7 +58,7 @@ public class EventWatcher<T> implements EventListener, Cons<T>{
         return listening;
     }
 
-    @Override public void get(T o){
-        listener.get(o);
+    @Override public void get(final T event){
+        listener.get(event);
     }
 }

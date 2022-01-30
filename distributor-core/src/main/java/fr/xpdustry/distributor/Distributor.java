@@ -29,15 +29,16 @@ import java.util.*;
 import java.util.concurrent.*;
 
 
+@SuppressWarnings("NullAway.Init")
 public final class Distributor extends AbstractPlugin{
     public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
     public static final BundleProvider bundles = l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
-    private static @SuppressWarnings("NullAway.Init") FileStore<DistributorConfig> config;
-    private static @SuppressWarnings("NullAway.Init") ServicePipeline servicePipeline;
+    private static FileStore<DistributorConfig> config;
+    private static ServicePipeline servicePipeline;
 
-    private static @SuppressWarnings("NullAway.Init") ArcCommandManager serverCommandManager;
-    private static @SuppressWarnings("NullAway.Init") ArcCommandManager clientCommandManager;
+    private static ArcCommandManager serverCommandManager;
+    private static ArcCommandManager clientCommandManager;
 
     private static MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
     private static MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
@@ -72,7 +73,7 @@ public final class Distributor extends AbstractPlugin{
      *
      * @param formatter the message formatter
      */
-    public static void setServerMessageFormatter(@NonNull MessageFormatter formatter){
+    public static void setServerMessageFormatter(final @NonNull MessageFormatter formatter){
         Distributor.serverMessageFormatter = formatter;
     }
 
@@ -86,7 +87,7 @@ public final class Distributor extends AbstractPlugin{
      *
      * @param formatter the message formatter
      */
-    public static void setClientMessageFormatter(@NonNull MessageFormatter formatter){
+    public static void setClientMessageFormatter(final @NonNull MessageFormatter formatter){
         Distributor.clientMessageFormatter = formatter;
     }
 
@@ -109,7 +110,7 @@ public final class Distributor extends AbstractPlugin{
         ROOT_DIRECTORY.mkdirs();
     }
 
-    @Override public void registerServerCommands(CommandHandler handler){
+    @Override public void registerServerCommands(final @NonNull CommandHandler handler){
         // Creating commands here because it is what it is...
         serverCommandManager = new ArcCommandManager(handler);
         clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
@@ -142,7 +143,7 @@ public final class Distributor extends AbstractPlugin{
         });
     }
 
-    @Override public void registerSharedCommands(@NonNull ArcCommandManager manager){
+    @Override public void registerSharedCommands(final @NonNull ArcCommandManager manager){
         manager.getPermissionInjector().registerInjector(
             ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin())
         );

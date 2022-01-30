@@ -16,15 +16,15 @@ import java.util.regex.*;
 
 
 public class ArcServerSender extends ArcCommandSender{
-    public ArcServerSender(@NonNull CaptionRegistry<ArcCommandSender> captions, @NonNull MessageFormatter formatter){
+    public ArcServerSender(final @NonNull CaptionRegistry<ArcCommandSender> captions, final @NonNull MessageFormatter formatter){
         super(captions, formatter);
     }
 
-    public ArcServerSender(@NonNull CaptionRegistry<ArcCommandSender> captions){
+    public ArcServerSender(final @NonNull CaptionRegistry<ArcCommandSender> captions){
         this(captions, new ServerMessageFormatter());
     }
 
-    @Override public void send(@NonNull MessageIntent intent, @NonNull String message){
+    @Override public void send(final @NonNull MessageIntent intent, final @NonNull String message){
         switch(intent){
             case DEBUG -> Log.debug(message);
             case ERROR -> Log.err(message);
@@ -46,7 +46,7 @@ public class ArcServerSender extends ArcCommandSender{
     }
 
     /** @return always true */
-    @Override public boolean hasPermission(@NonNull String permission){
+    @Override public boolean hasPermission(final @NonNull String permission){
         return true;
     }
 
@@ -54,15 +54,23 @@ public class ArcServerSender extends ArcCommandSender{
     public static class ServerMessageFormatter implements MessageFormatter{
         private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message){
+        @Override public @NonNull String format(final @NonNull MessageIntent intent, final @NonNull String message){
             return message;
         }
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+        @Override public @NonNull String format(
+            final @NonNull MessageIntent intent,
+            final @NonNull String message,
+            final @Nullable Object... args
+        ){
             return Strings.format(message.replace("@", "&fb&lb@&fr"), args);
         }
 
-        @Override public @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+        @Override public @NonNull String format(
+            final @NonNull MessageIntent intent,
+            final @NonNull String message,
+            final @NonNull CaptionVariable... vars
+        ){
             final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
             final var builder = new StringBuilder();
             final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);

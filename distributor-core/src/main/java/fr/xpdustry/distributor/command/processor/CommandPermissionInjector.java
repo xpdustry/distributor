@@ -28,7 +28,7 @@ public class CommandPermissionInjector implements CommandPreprocessor<ArcCommand
     }
 
     @Override
-    public void accept(@NonNull CommandPreprocessingContext<ArcCommandSender> ctx){
+    public void accept(final @NonNull CommandPreprocessingContext<ArcCommandSender> ctx){
         injectors.forEach((p, i) -> {
             if(i.test(ctx.getCommandContext().getSender())) ctx.getCommandContext().getSender().addPermission(p);
         });

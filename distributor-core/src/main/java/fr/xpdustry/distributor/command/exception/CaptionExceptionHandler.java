@@ -69,7 +69,7 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
         return new CaptionExceptionHandler<>(caption, variableProvider.andThen(Seq::with).andThen(Seq::toArray));
     }
 
-    @Override public void accept(@NonNull ArcCommandSender sender, @NonNull E e){
-        sender.send(MessageIntent.ERROR, caption, variableProvider.apply(e));
+    @Override public void accept(final @NonNull ArcCommandSender sender, final @NonNull E exception){
+        sender.send(MessageIntent.ERROR, caption, variableProvider.apply(exception));
     }
 }
