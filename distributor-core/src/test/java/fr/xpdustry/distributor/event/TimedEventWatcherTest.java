@@ -48,19 +48,6 @@ public class TimedEventWatcherTest{
         assertFalse(watcher.isListening());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"CONS", "RUNNABLE"})
-    public void test_throw_on_negative_lifetime_constructor(String type){
-        assertThrows(IllegalArgumentException.class, () -> getWatcher(type, -10));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"CONS", "RUNNABLE"})
-    public void test_throw_on_negative_lifetime_setter(String type){
-        final var watcher = getWatcher(type, 10);
-        assertThrows(IllegalArgumentException.class, () -> watcher.setLifetime(-3));
-    }
-
     public TimedEventWatcher<Object> getWatcher(String type, int lifetime){
         return switch(type){
             case "CONS" -> new TimedEventWatcher<>(Object.class, lifetime, o -> holder.map(i -> i + 1));

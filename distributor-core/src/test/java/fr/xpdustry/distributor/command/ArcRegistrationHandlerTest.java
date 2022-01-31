@@ -35,12 +35,6 @@ public class ArcRegistrationHandlerTest{
         assertEquals(handler.getCommandList().size, 6);
         for(final var command : handler.getCommandList().<ArcNativeCommand>as()){
             assertNotNull(manager.getCommandTree().getNamedNode(command.text));
-
-            if(command.text.length() == 1){
-                assertTrue(command.isAlias(), command.text + " should be an alias.");
-            }else{
-                assertFalse(command.isAlias(), command.text + " shouldn't be an alias.");
-            }
         }
     }
 
