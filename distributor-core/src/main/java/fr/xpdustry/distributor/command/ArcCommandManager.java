@@ -60,7 +60,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
                 handleException(sender, ParserException.class, t, StandardExceptionHandlers.ARGUMENT_PARSE_FAILURE);
             }else if(throwable instanceof CommandExecutionException t){
                 handleException(sender, CommandExecutionException.class, t, StandardExceptionHandlers.COMMAND_FAILURE_EXECUTION);
-                Log.err(t);
+                Log.err(throwable);
             }else{
                 StandardExceptionHandlers.COMMAND_FAILURE.accept(sender, throwable);
                 Log.err(throwable);
@@ -76,11 +76,11 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         handleCommand(commandSenderMapper.apply(getCaptionRegistry(), null), input);
     }
 
-    public AnnotationParser<ArcCommandSender> getAnnotationParser(){
+    public @NonNull AnnotationParser<ArcCommandSender> getAnnotationParser(){
         return annotationParser;
     }
 
-    public CommandPermissionInjector getPermissionInjector(){
+    public @NonNull CommandPermissionInjector getPermissionInjector(){
         return permissionInjector;
     }
 

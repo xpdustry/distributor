@@ -38,7 +38,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
     }
 
     @Override public void init(){
-        store = getStoredConfig(JavaScriptConfig.class);
+        store = getStoredConfig("config", JavaScriptConfig.class);
         classShutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
         scriptProvider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)

@@ -61,6 +61,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
         return added;
     }
 
+    /** This command transfer it's call to it's command manager. */
     public final class ArcNativeCommand extends CommandHandler.Command{
         private final Command<ArcCommandSender> internalCommand;
 

@@ -92,7 +92,7 @@ public final class Distributor extends AbstractPlugin{
     }
 
     @Override public void init(){
-        config = getStoredConfig(DistributorConfig.class);
+        config = getStoredConfig("config", DistributorConfig.class);
         servicePipeline = ServicePipeline.builder()
             .withExecutor(Executors.newFixedThreadPool(config.get().getServiceThreadCount()))
             .build();
