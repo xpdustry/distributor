@@ -22,17 +22,17 @@ public class JavaScriptEngine implements AutoCloseable{
     private static final ThreadLocal<JavaScriptEngine> INSTANCE =
         ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
 
-    private final Context ctx;
+    private final Context context;
     private final Scriptable globalScope;
     private @Nullable Require require = null;
 
-    public JavaScriptEngine(final @NonNull Context ctx, final @NonNull Scriptable globalScope){
-        this.ctx = ctx;
+    public JavaScriptEngine(final @NonNull Context context, final @NonNull Scriptable globalScope){
+        this.context = context;
         this.globalScope = globalScope;
     }
 
-    public JavaScriptEngine(final @NonNull Context ctx){
-        this(ctx, new ImporterTopLevel(ctx));
+    public JavaScriptEngine(final @NonNull Context context){
+        this(context, new ImporterTopLevel(context));
     }
 
     public static Supplier<JavaScriptEngine> getGlobalFactory(){
@@ -65,7 +65,7 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @NonNull Scriptable newScope(final @NonNull Scriptable parent){
-        final var scope = ctx.newObject(parent);
+        final var scope = context.newObject(parent);
         // Ensures that definitions in the root scope are found.
         scope.setPrototype(parent);
         // Ensures that new global variables are created in this scope (don't use var for them!)
@@ -77,7 +77,7 @@ public class JavaScriptEngine implements AutoCloseable{
         require = new RequireBuilder()
             .setSandboxed(false)
             .setModuleScriptProvider(provider)
-            .createRequire(ctx, globalScope);
+            .createRequire(context, globalScope);
         require.install(globalScope);
     }
 
@@ -95,7 +95,7 @@ public class JavaScriptEngine implements AutoCloseable{
         final @NonNull String sourceName
     ) throws ScriptException{
         try{
-            return ctx.evaluateString(scope, source, sourceName, 1);
+            return context.evaluateString(scope, source, sourceName, 1);
         }catch(Exception | BlockingScriptError e){
             throw new ScriptException(e);
         }
@@ -106,11 +106,11 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @NonNull Script compileScript(final @NonNull String source, final @NonNull String sourceName){
-        return ctx.compileString(source, sourceName, 1);
+        return context.compileString(source, sourceName, 1);
     }
 
     public @NonNull Script compileScript(final @NonNull Reader reader, final @NonNull String sourceName) throws IOException{
-        return ctx.compileReader(reader, sourceName, 1);
+        return context.compileReader(reader, sourceName, 1);
     }
 
     public @NonNull Function compileFunction(
@@ -118,7 +118,7 @@ public class JavaScriptEngine implements AutoCloseable{
         final @NonNull String source,
         final @NonNull String sourceName
     ){
-        return ctx.compileFunction(scope, source, sourceName, 1);
+        return context.compileFunction(scope, source, sourceName, 1);
     }
 
     public @Nullable Object invoke(final @NonNull Function function, final @Nullable Object... args) throws ScriptException{
@@ -131,7 +131,7 @@ public class JavaScriptEngine implements AutoCloseable{
         final @Nullable Object... args
     ) throws ScriptException{
         try{
-            return function.call(ctx, scope, scope, args);
+            return function.call(context, scope, scope, args);
         }catch(Exception | BlockingScriptError e){
             throw new ScriptException(e);
         }
@@ -139,14 +139,14 @@ public class JavaScriptEngine implements AutoCloseable{
 
     public @Nullable Object exec(final @NonNull Script script, final @NonNull Scriptable scope) throws ScriptException{
         try{
-            return script.exec(ctx, scope);
+            return script.exec(context, scope);
         }catch(Exception | BlockingScriptError e){
             throw new ScriptException(e);
         }
     }
 
     public @Nullable Object exec(final @NonNull Script script) throws ScriptException{
-        return exec(script, getGlobalScope());
+        return exec(script, globalScope);
     }
 
     public @Nullable Object exec(final @NonNull File file, final @NonNull Scriptable scope) throws IOException, ScriptException{
@@ -156,11 +156,11 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @Nullable Object exec(final @NonNull File file) throws IOException, ScriptException{
-        return exec(file, getGlobalScope());
+        return exec(file, globalScope);
     }
 
     public @NonNull Context getContext(){
-        return ctx;
+        return context;
     }
 
     public @NonNull Scriptable getGlobalScope(){

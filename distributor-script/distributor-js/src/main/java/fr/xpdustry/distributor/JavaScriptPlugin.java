@@ -29,8 +29,8 @@ public final class JavaScriptPlugin extends AbstractPlugin{
     public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 
     private static FileStore<JavaScriptConfig> store;
-    private static ClassShutter shutter;
-    private static ModuleScriptProvider provider;
+    private static ClassShutter classShutter;
+    private static ModuleScriptProvider scriptProvider;
     private static Script initScript;
 
     private static JavaScriptConfig config(){
@@ -39,8 +39,8 @@ public final class JavaScriptPlugin extends AbstractPlugin{
 
     @Override public void init(){
         store = getStoredConfig(JavaScriptConfig.class);
-        shutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
-        provider = new SoftCachingModuleScriptProvider(
+        classShutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
+        scriptProvider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
         );
 
@@ -61,11 +61,11 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         ContextFactory.initGlobal(factory);
 
         Events.on(ContextCreatedEvent.class, e -> {
-            e.ctx().setOptimizationLevel(9);
-            e.ctx().setLanguageVersion(Context.VERSION_ES6);
-            e.ctx().setApplicationClassLoader(Vars.mods.mainLoader());
-            e.ctx().getWrapFactory().setJavaPrimitiveWrap(false);
-            e.ctx().setClassShutter(shutter);
+            e.ctx.setOptimizationLevel(9);
+            e.ctx.setLanguageVersion(Context.VERSION_ES6);
+            e.ctx.setApplicationClassLoader(Vars.mods.mainLoader());
+            e.ctx.getWrapFactory().setJavaPrimitiveWrap(false);
+            e.ctx.setClassShutter(classShutter);
         });
 
         initScript = factory.call(ctx -> {
@@ -84,7 +84,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             if(ctx == null) ctx = Context.enter();
 
             final var engine = new JavaScriptEngine(ctx);
-            engine.setupRequire(provider);
+            engine.setupRequire(scriptProvider);
 
             try{
                 engine.exec(initScript);
