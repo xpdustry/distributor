@@ -194,7 +194,9 @@ const WinEvent = Packages.mindustry.game.EventType.WinEvent
 const Trigger = Packages.mindustry.game.EventType.Trigger
 
 importPackage(Packages.fr.xpdustry.distributor)
-importPackage(Packages.fr.xpdustry.distributor.bundle)
+// Future API
+// importPackage(Packages.fr.xpdustry.distributor.api)
+// importPackage(Packages.fr.xpdustry.distributor.api.service)
 importPackage(Packages.fr.xpdustry.distributor.command)
 importPackage(Packages.fr.xpdustry.distributor.command.argument)
 importPackage(Packages.fr.xpdustry.distributor.command.caption)
@@ -202,5 +204,5 @@ importPackage(Packages.fr.xpdustry.distributor.command.exception)
 importPackage(Packages.fr.xpdustry.distributor.command.sender)
 importPackage(Packages.fr.xpdustry.distributor.event)
 importPackage(Packages.fr.xpdustry.distributor.exception)
-importPackage(Packages.fr.xpdustry.distributor.io)
+importPackage(Packages.fr.xpdustry.distributor.string)
 importPackage(Packages.fr.xpdustry.distributor.struct)

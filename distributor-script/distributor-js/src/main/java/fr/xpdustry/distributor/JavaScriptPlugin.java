@@ -6,6 +6,7 @@ import arc.util.*;
 
 import mindustry.*;
 import mindustry.game.EventType.*;
+import mindustry.logic.LExecutor.*;
 
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.exception.*;
@@ -43,8 +44,6 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         provider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
         );
-
-        if(!store.getFile().exists()) store.save();
 
         if(JAVA_SCRIPT_DIRECTORY.mkdirs()){
             // Copy the default init script
@@ -100,7 +99,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         Events.on(ServerLoadEvent.class, l -> {
             try{
                 if(config().getStartupScript().isBlank()) return;
-                JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getStartupScript()));
+                JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getStartupScript()).file());
             }catch(ScriptException | IOException e){
                 throw new RuntimeException("Failed to run the startup script.", e);
             }
@@ -110,7 +109,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             @Override public void exit(){
                 try{
                     if(config().getShutdownScript().isBlank()) return;
-                    JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()));
+                    JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()).file());
                 }catch(ScriptException | IOException e){
                     Log.err("Failed to run the shutdown script.", e);
                 }
@@ -118,7 +117,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         });
     }
 
-    @Override public void registerSharedCommands(@NonNull ArcCommandManager manager){
+    @Override public void registerSharedCommands(final @NonNull ArcCommandManager manager){
         manager.command(manager.commandBuilder("js")
             .meta(ArcMeta.DESCRIPTION, "Run arbitrary Javascript.")
             .meta(ArcMeta.PARAMETERS, "<script...>")
@@ -140,11 +139,11 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         private ArcContextListener(){
         }
 
-        @Override public void contextCreated(@NonNull Context ctx){
+        @Override public void contextCreated(final @NonNull Context ctx){
             Events.fire(new ContextCreatedEvent(ctx));
         }
 
-        @Override public void contextReleased(@NonNull Context ctx){
+        @Override public void contextReleased(final @NonNull Context ctx){
             Events.fire(new ContextReleasedEvent(ctx));
         }
     }

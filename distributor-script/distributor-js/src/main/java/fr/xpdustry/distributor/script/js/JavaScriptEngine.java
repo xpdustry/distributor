@@ -1,7 +1,5 @@
 package fr.xpdustry.distributor.script.js;
 
-import arc.files.*;
-
 import fr.xpdustry.distributor.exception.*;
 
 import org.checkerframework.checker.nullness.qual.*;
@@ -25,23 +23,23 @@ public class JavaScriptEngine implements AutoCloseable{
         ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
 
     private final Context ctx;
-    private final Scriptable scope;
+    private final Scriptable globalScope;
     private @Nullable Require require = null;
 
-    public JavaScriptEngine(@NonNull Context context, @NonNull Scriptable scope){
-        this.ctx = context;
-        this.scope = scope;
+    public JavaScriptEngine(final @NonNull Context ctx, final @NonNull Scriptable globalScope){
+        this.ctx = ctx;
+        this.globalScope = globalScope;
     }
 
-    public JavaScriptEngine(@NonNull Context context){
-        this(context, new ImporterTopLevel(context));
+    public JavaScriptEngine(final @NonNull Context ctx){
+        this(ctx, new ImporterTopLevel(ctx));
     }
 
-    public static @NonNull Supplier<JavaScriptEngine> getGlobalFactory(){
+    public static Supplier<JavaScriptEngine> getGlobalFactory(){
         return factory;
     }
 
-    public static void setGlobalFactory(@NonNull Supplier<JavaScriptEngine> factory){
+    public static void setGlobalFactory(final @NonNull Supplier<@NonNull JavaScriptEngine> factory){
         JavaScriptEngine.factory = factory;
     }
 
@@ -63,10 +61,10 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @NonNull Scriptable newScope(){
-        return newScope(scope);
+        return newScope(globalScope);
     }
 
-    public @NonNull Scriptable newScope(@NonNull Scriptable parent){
+    public @NonNull Scriptable newScope(final @NonNull Scriptable parent){
         final var scope = ctx.newObject(parent);
         // Ensures that definitions in the root scope are found.
         scope.setPrototype(parent);
@@ -75,12 +73,12 @@ public class JavaScriptEngine implements AutoCloseable{
         return scope;
     }
 
-    public void setupRequire(@NonNull ModuleScriptProvider provider){
+    public void setupRequire(final @NonNull ModuleScriptProvider provider){
         require = new RequireBuilder()
             .setSandboxed(false)
             .setModuleScriptProvider(provider)
-            .createRequire(ctx, scope);
-        require.install(scope);
+            .createRequire(ctx, globalScope);
+        require.install(globalScope);
     }
 
     public final boolean hasRequire(){
@@ -91,11 +89,11 @@ public class JavaScriptEngine implements AutoCloseable{
         return require;
     }
 
-    public Object eval(@NonNull String source) throws ScriptException{
-        return eval(scope, source, toString());
-    }
-
-    public Object eval(@NonNull Scriptable scope, @NonNull String source, @NonNull String sourceName) throws ScriptException{
+    public @Nullable Object eval(
+        final @NonNull Scriptable scope,
+        final @NonNull String source,
+        final @NonNull String sourceName
+    ) throws ScriptException{
         try{
             return ctx.evaluateString(scope, source, sourceName, 1);
         }catch(Exception | BlockingScriptError e){
@@ -103,23 +101,35 @@ public class JavaScriptEngine implements AutoCloseable{
         }
     }
 
-    public Script compileScript(@NonNull String source, @NonNull String sourceName){
+    public @Nullable Object eval(final @NonNull String source) throws ScriptException{
+        return eval(globalScope, source, toString());
+    }
+
+    public @NonNull Script compileScript(final @NonNull String source, final @NonNull String sourceName){
         return ctx.compileString(source, sourceName, 1);
     }
 
-    public Script compileScript(@NonNull Reader reader, @NonNull String sourceName) throws IOException{
+    public @NonNull Script compileScript(final @NonNull Reader reader, final @NonNull String sourceName) throws IOException{
         return ctx.compileReader(reader, sourceName, 1);
     }
 
-    public Function compileFunction(@NonNull Scriptable scope, @NonNull String source, @NonNull String sourceName){
+    public @NonNull Function compileFunction(
+        final @NonNull Scriptable scope,
+        final @NonNull String source,
+        final @NonNull String sourceName
+    ){
         return ctx.compileFunction(scope, source, sourceName, 1);
     }
 
-    public Object invoke(@NonNull Function function, Object... args) throws ScriptException{
-        return invoke(function, scope, args);
+    public @Nullable Object invoke(final @NonNull Function function, final @Nullable Object... args) throws ScriptException{
+        return invoke(function, globalScope, args);
     }
 
-    public Object invoke(@NonNull Function function, @NonNull Scriptable scope, Object... args) throws ScriptException{
+    public @Nullable Object invoke(
+        final @NonNull Function function,
+        final @NonNull Scriptable scope,
+        final @Nullable Object... args
+    ) throws ScriptException{
         try{
             return function.call(ctx, scope, scope, args);
         }catch(Exception | BlockingScriptError e){
@@ -127,11 +137,7 @@ public class JavaScriptEngine implements AutoCloseable{
         }
     }
 
-    public Object exec(@NonNull Script script) throws ScriptException{
-        return exec(script, scope);
-    }
-
-    public Object exec(@NonNull Script script, @NonNull Scriptable scope) throws ScriptException{
+    public @Nullable Object exec(final @NonNull Script script, final @NonNull Scriptable scope) throws ScriptException{
         try{
             return script.exec(ctx, scope);
         }catch(Exception | BlockingScriptError e){
@@ -139,22 +145,26 @@ public class JavaScriptEngine implements AutoCloseable{
         }
     }
 
-    public Object exec(@NonNull Fi file) throws IOException, ScriptException{
-        return exec(file.file());
+    public @Nullable Object exec(final @NonNull Script script) throws ScriptException{
+        return exec(script, getGlobalScope());
     }
 
-    public Object exec(@NonNull File file) throws IOException, ScriptException{
+    public @Nullable Object exec(final @NonNull File file, final @NonNull Scriptable scope) throws IOException, ScriptException{
         try(final var reader = new FileReader(file, StandardCharsets.UTF_8)){
-            return exec(compileScript(reader, file.getName()));
+            return exec(compileScript(reader, file.getName()), scope);
         }
+    }
+
+    public @Nullable Object exec(final @NonNull File file) throws IOException, ScriptException{
+        return exec(file, getGlobalScope());
     }
 
     public @NonNull Context getContext(){
         return ctx;
     }
 
-    public @NonNull Scriptable getScope(){
-        return scope;
+    public @NonNull Scriptable getGlobalScope(){
+        return globalScope;
     }
 
     @Override public @NonNull String toString(){

@@ -14,8 +14,7 @@ public class TimedContextFactory extends ContextFactory{
         this.maxRuntime = maxRuntime;
     }
 
-    @Override
-    protected Context makeContext(){
+    @Override protected Context makeContext(){
         final var ctx = new TimedContext(this);
         ctx.setInstructionObserverThreshold(10000);
         return ctx;

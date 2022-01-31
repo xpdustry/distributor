@@ -29,7 +29,7 @@ public final class RegexClassShutter implements ClassShutter{
         return whitelist;
     }
 
-    @Override public boolean visibleToScripts(String s){
+    @Override public boolean visibleToScripts(@NonNull String s){
         return !(blacklist.matcher(s).matches() && !whitelist.matcher(s).matches());
     }
 }

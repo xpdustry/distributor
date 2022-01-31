@@ -7,7 +7,7 @@ import org.checkerframework.checker.nullness.qual.*;
  * This class is a wrapper for rhino exceptions.
  */
 public class ScriptException extends Exception{
-    public ScriptException(@NonNull Throwable cause){
+    public ScriptException(final @NonNull Throwable cause){
         super(cause);
     }
 
