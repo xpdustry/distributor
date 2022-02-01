@@ -1,18 +1,23 @@
 package fr.xpdustry.distributor.command;
 
 import arc.util.*;
+import arc.util.CommandHandler.*;
 
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.command.ArcRegistrationHandler.*;
 import fr.xpdustry.distributor.command.argument.PlayerArgument.*;
 import fr.xpdustry.distributor.command.caption.*;
 import fr.xpdustry.distributor.command.exception.*;
 import fr.xpdustry.distributor.command.processor.*;
 import fr.xpdustry.distributor.command.sender.*;
 
+import cloud.commandframework.Command;
 import cloud.commandframework.*;
 import cloud.commandframework.annotations.*;
+import cloud.commandframework.arguments.standard.*;
 import cloud.commandframework.captions.*;
+import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.execution.*;
@@ -22,6 +27,7 @@ import io.leangen.geantyref.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
+import java.util.*;
 import java.util.function.*;
 
 
@@ -94,6 +100,38 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         this.commandSenderMapper = commandSenderMapper;
     }
 
+    /**
+     * Utility method that can convert a {@link CommandHandler.Command} to a {@link Command}.
+     *
+     * @param command the command to convert
+     * @return the converted command
+     *
+     * @throws IllegalArgumentException if the command is a {@link CloudCommand}
+     */
+    public @NonNull Command<ArcCommandSender> convertNativeCommand(final CommandHandler.@NonNull Command command){
+        if(command instanceof CloudCommand)
+            throw new IllegalArgumentException(
+                "You can't convert a cloud command that has been converted to a native command back to a cloud command...");
+
+        final var meta = SimpleCommandMeta.builder()
+            .with(createDefaultCommandMeta())
+            .with(ArcMeta.NATIVE, true)
+            .with(ArcMeta.DESCRIPTION, command.description)
+            .build();
+
+        var builder = commandBuilder(command.text, meta)
+            .handler(new NativeCommandExecutionHandler(command));
+
+        for(final var parameter : command.params){
+            final var argument = StringArgument.<ArcCommandSender>newBuilder(parameter.name);
+            if(parameter.variadic) argument.greedy();
+            if(parameter.optional) argument.asOptional();
+            builder = builder.argument(argument);
+        }
+
+        return builder.build();
+    }
+
     @Override public boolean hasPermission(final @NonNull ArcCommandSender sender, final @NonNull String permission){
         return sender.hasPermission(permission);
     }
@@ -114,6 +152,26 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     }
 
     @Override public @NonNull CommandMeta createDefaultCommandMeta(){
-        return SimpleCommandMeta.empty();
+        return SimpleCommandMeta.builder()
+            .with(ArcMeta.NATIVE, false)
+            .with(ArcMeta.PLUGIN, "unknown")
+            .build();
+    }
+
+    /** A command execution handler that calls an underlying native command. */
+    public static final class NativeCommandExecutionHandler implements CommandExecutionHandler<ArcCommandSender>{
+        private final CommandHandler.Command command;
+
+        public NativeCommandExecutionHandler(final CommandHandler.@NonNull Command command){
+            this.command = command;
+        }
+
+        @Override public void execute(final @NonNull CommandContext<ArcCommandSender> ctx){
+            final CommandRunner<Player> runner = Reflect.get(this.command, "runner");
+            final var array = ctx.getRawInput().toArray(new String[0]);
+            // Removes the first argument because it's the name of the command
+            final var args = Arrays.copyOfRange(array, 1, ctx.getRawInput().size());
+            runner.accept(args, ctx.getSender().isPlayer() ? ctx.getSender().asPlayer() : null);
+        }
     }
 }

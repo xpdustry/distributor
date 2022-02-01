@@ -4,6 +4,7 @@ import arc.util.*;
 
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.struct.*;
 import fr.xpdustry.distributor.util.*;
 
 import cloud.commandframework.arguments.standard.*;
@@ -12,15 +13,17 @@ import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.permission.*;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ArcCommandManagerTest{
+    private CommandHandler handler;
     private ArcCommandManager manager;
 
     @BeforeEach
     public void setup(){
-        manager = new ArcCommandManager(new CommandHandler("/"));
+        handler = new CommandHandler("/");
+        manager = new ArcCommandManager(handler);
     }
 
     @Test
@@ -77,5 +80,16 @@ public class ArcCommandManagerTest{
         manager.handleCommand("test");
 
         assertNotNull(exceptionHandler.getLastException());
+    }
+
+    @Test
+    public void test_native_command_execution_handler(){
+        final var executed = Holder.getBool();
+        final var nativeCommand = handler.<Player>register("test", "None", (args, player) -> executed.set(true));
+        final var cloudCommand = manager.convertNativeCommand(nativeCommand);
+        manager.command(cloudCommand);
+        manager.handleCommand("test");
+
+        assertEquals(Boolean.TRUE, executed.get());
     }
 }

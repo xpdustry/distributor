@@ -24,4 +24,6 @@ public final class ArcMeta{
     public static final Key<Boolean> HIDDEN = CommandMeta.HIDDEN;
     /** @see CommandConfirmationManager#META_CONFIRMATION_REQUIRED */
     public static final Key<Boolean> CONFIRMATION = CommandConfirmationManager.META_CONFIRMATION_REQUIRED;
+    /** Whether this command is native or not. */
+    public static final Key<Boolean> NATIVE = Key.of(Boolean.class, "distributor:native");
 }

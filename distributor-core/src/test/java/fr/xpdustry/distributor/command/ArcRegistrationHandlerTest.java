@@ -33,7 +33,7 @@ public class ArcRegistrationHandlerTest{
         manager.command(manager.commandBuilder("ashley", "a"));
 
         assertEquals(handler.getCommandList().size, 6);
-        for(final var command : handler.getCommandList().<ArcNativeCommand>as()){
+        for(final var command : handler.getCommandList().<CloudCommand>as()){
             assertNotNull(manager.getCommandTree().getNamedNode(command.text));
         }
     }
@@ -56,7 +56,7 @@ public class ArcRegistrationHandlerTest{
 
     @ParameterizedTest
     @ValueSource(strings = {"[args...]", "<a> <b> <c>"})
-    void test_native_command_arguments(String parameters){
+    public void test_native_command_arguments(String parameters){
         final var input = "test 12 78 09";
 
         manager.command(manager.commandBuilder("test")

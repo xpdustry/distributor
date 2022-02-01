@@ -102,7 +102,7 @@ public final class Distributor extends AbstractPlugin{
             if(in == null) throw new IOException("banner.txt not found...");
             final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             reader.lines().forEach(line -> Log.info(" &c&fb>&fr @", line));
-            Log.info(" &c&fb>&fr Loaded Distributor core @", asLoadedMod().meta.version);
+            Log.info(" &c&fb>&fr Loaded Distributor core v@", asLoadedMod().meta.version);
         }catch(IOException e){
             Log.debug("Distributor failed to show the banner.", e);
         }

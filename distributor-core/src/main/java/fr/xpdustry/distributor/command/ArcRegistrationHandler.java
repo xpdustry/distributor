@@ -38,6 +38,8 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
 
     @SuppressWarnings("unchecked")
     @Override public boolean registerCommand(final @NonNull Command<?> command){
+        if(command.getCommandMeta().get(ArcMeta.NATIVE).orElse(false)) return false;
+
         final var info = (StaticArgument<ArcCommandSender>)command.getArguments().get(0);
         final var desc = command.getCommandMeta().getOrDefault(ArcMeta.DESCRIPTION, "");
         final var params = command.getCommandMeta().getOrDefault(ArcMeta.PARAMETERS, "[args...]");
@@ -51,7 +53,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
 
         for(final var alias : info.getAliases()){
             if(!commands.containsKey(alias)){
-                final var cmd = new ArcNativeCommand(alias, params, desc, (Command<ArcCommandSender>)command);
+                final var cmd = new CloudCommand(alias, params, desc, (Command<ArcCommandSender>)command);
                 commands.put(alias, cmd);
                 handler.getCommandList().add(cmd);
                 added = true;
@@ -62,25 +64,25 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
     }
 
     /** This command transfer it's call to it's command manager. */
-    public final class ArcNativeCommand extends CommandHandler.Command{
-        private final Command<ArcCommandSender> internalCommand;
+    public final class CloudCommand extends CommandHandler.Command{
+        private final Command<ArcCommandSender> command;
 
-        public ArcNativeCommand(
+        public CloudCommand(
             final @NonNull String name,
             final @NonNull String params,
             final @NonNull String description,
-            final @NonNull Command<ArcCommandSender> internalCommand
+            final @NonNull Command<ArcCommandSender> command
         ){
             super(name, params, description, (CommandRunner<Player>)(args, player) -> {
                 final var components = Seq.with(name).addAll(args);
                 manager.handleCommand(player, String.join(" ", components));
             });
 
-            this.internalCommand = internalCommand;
+            this.command = command;
         }
 
-        public @NonNull Command<ArcCommandSender> getInternalCommand(){
-            return internalCommand;
+        public @NonNull Command<ArcCommandSender> getCommand(){
+            return command;
         }
     }
 }
