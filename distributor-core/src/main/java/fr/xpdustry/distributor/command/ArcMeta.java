@@ -12,7 +12,10 @@ public final class ArcMeta{
     private ArcMeta(){
     }
 
-    /** Equivalent to {@link arc.util.CommandHandler.Command#paramText}. */
+    /**
+     * Overrides the default {@link arc.util.CommandHandler.Command#paramText} {@code [args...]}.
+     * Do use it if you are using multiple cloud commands with the same root name but different arguments.
+     */
     public static final Key<String> PARAMETERS = Key.of(String.class, "distributor:param");
     /** The owning plugin of the command. */
     public static final Key<String> PLUGIN = Key.of(String.class, "distributor:plugin");
@@ -24,6 +27,6 @@ public final class ArcMeta{
     public static final Key<Boolean> HIDDEN = CommandMeta.HIDDEN;
     /** @see CommandConfirmationManager#META_CONFIRMATION_REQUIRED */
     public static final Key<Boolean> CONFIRMATION = CommandConfirmationManager.META_CONFIRMATION_REQUIRED;
-    /** Whether this command is native or not. */
+    /** Whether this command is native (comes from a {@link arc.util.CommandHandler}) or not. */
     public static final Key<Boolean> NATIVE = Key.of(Boolean.class, "distributor:native");
 }
