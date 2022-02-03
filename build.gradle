@@ -23,7 +23,7 @@ buildscript{
                 "cloud"    : "1.6.1",
                 "owner"    : "1.0.12",
                 "gson"     : "2.8.9",
-                "store"    : "1.2.0"
+                "store"    : "1.3.0"
         ]
     }
 }
@@ -99,7 +99,7 @@ allprojects{
         // Annotations
         compileOnly "org.checkerframework:checker-qual:3.21.1"
         annotationProcessor "com.uber.nullaway:nullaway:0.9.4"
-        errorprone "com.google.errorprone:error_prone_core:2.10.0"
+        errorprone "com.google.errorprone:error_prone_core:2.11.0"
         errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
     }
 

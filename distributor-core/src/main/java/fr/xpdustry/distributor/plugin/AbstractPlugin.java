@@ -46,7 +46,7 @@ public abstract class AbstractPlugin extends Plugin{
         final @NonNull Class<T> clazz,
         final @NonNull Factory factory
     ){
-        return new ConfigFileStore<>(getDirectory().child(name + ".properties").file(), clazz, factory);
+        return ConfigFileStore.load(getDirectory().child(name + ".properties").path(), clazz, factory);
     }
 
     /**
@@ -62,7 +62,7 @@ public abstract class AbstractPlugin extends Plugin{
         final @NonNull String name,
         final @NonNull Class<T> clazz
     ){
-        return new ConfigFileStore<>(getDirectory().child(name + ".properties").file(), clazz);
+        return ConfigFileStore.load(getDirectory().child(name + ".properties").path(), clazz);
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class AbstractPlugin extends Plugin{
         final @NonNull Type type,
         final @NonNull Supplier<T> supplier
     ){
-        return new JsonFileStore<>(getDirectory().child(name + ".json").file(), type, supplier);
+        return JsonFileStore.load(getDirectory().child(name + ".json").path(), type, supplier);
     }
 
     /**
@@ -99,7 +99,7 @@ public abstract class AbstractPlugin extends Plugin{
         final @NonNull Supplier<T> supplier,
         final @NonNull Gson gson
     ){
-        return new JsonFileStore<>(getDirectory().child(name + ".json").file(), type, supplier, gson);
+        return JsonFileStore.load(getDirectory().child(name + ".json").path(), type, supplier, gson);
     }
 
     /**
