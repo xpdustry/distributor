@@ -1,10 +1,5 @@
-- Added FileStore API for storing and loading files very easily.
-- `PlayerMessageFormatter` replaced by `ClientMessageFormatter`.
-- Deleted `fr.xpdustry.distributor.admin` package and moved `CommandPermissionInjector`.
-- Replaced `alias` field with the wrapped command in `ArcRegistrationHandler`.
-- Removing `fr.xpdustry.distributor.io` package and the `ResourceLoader` class (useless).
-- Improvements in the java script plugin.
-- Added `ServicePipeline` of cloud to `Distributor` for future APIs such as
-    - Moderation services
-    - Anti-VPN service
-    - etc...
+- Added SUCCESS and SYSTEM `MessageIntent`.
+- Added native to cloud command converter in `ArcCommandManager`.
+    - Added `ArcMeta.NATIVE` metadata key for them.
+- Renamed `ArcNativeCommand` to `CloudCommand`.
+- Changes in for the file-store API.
