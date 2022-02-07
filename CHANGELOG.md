@@ -1,5 +1,1 @@
-- Added SUCCESS and SYSTEM `MessageIntent`.
-- Added native to cloud command converter in `ArcCommandManager`.
-    - Added `ArcMeta.NATIVE` metadata key for them.
-- Renamed `ArcNativeCommand` to `CloudCommand`.
-- Changes in for the file-store API.
+- New features and improvements of the string API.
