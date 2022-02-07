@@ -17,6 +17,7 @@ import fr.xpdustry.distributor.command.sender.ArcServerSender.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.string.*;
+import fr.xpdustry.distributor.string.bundle.*;
 
 import cloud.commandframework.captions.*;
 import cloud.commandframework.services.*;
@@ -32,7 +33,7 @@ import java.util.concurrent.*;
 @SuppressWarnings("NullAway.Init")
 public final class Distributor extends AbstractPlugin{
     public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
-    public static final BundleProvider bundles = l -> WrappedBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
+    public static final BundleProvider bundles = l -> WrappedResourceBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
     private static FileStore<DistributorConfig> config;
     private static ServicePipeline servicePipeline;

@@ -1,5 +1,7 @@
 package fr.xpdustry.distributor.string;
 
+import fr.xpdustry.distributor.string.bundle.*;
+
 import org.junit.jupiter.api.*;
 
 import java.util.*;
@@ -9,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BundleProviderTest{
     private static final BundleProvider provider =
-        l -> WrappedBundle.of("bundles/test", l, BundleProvider.class.getClassLoader());
+        l -> WrappedResourceBundle.of("bundles/test", l, BundleProvider.class.getClassLoader());
 
     @BeforeAll
     public static void setup(){
@@ -18,7 +20,7 @@ public class BundleProviderTest{
 
     @Test
     public void test_bundle_lookup(){
-        WrappedBundle bundle;
+        WrappedResourceBundle bundle;
 
         // Checks the existence of the French bundle
         bundle = provider.getBundle(Locale.FRENCH);
@@ -54,7 +56,7 @@ public class BundleProviderTest{
 
     @Test
     public void test_throw_on_bad_bundle_basename(){
-        final BundleProvider bad = l -> WrappedBundle.of("nonexistent/test", l, getClass().getClassLoader());
+        final BundleProvider bad = l -> WrappedResourceBundle.of("nonexistent/test", l, getClass().getClassLoader());
         assertThrows(MissingResourceException.class, () -> bad.getBundle(Locale.ROOT));
     }
 }

@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.command.caption;
 
 import fr.xpdustry.distributor.command.sender.*;
-import fr.xpdustry.distributor.string.*;
+import fr.xpdustry.distributor.string.bundle.*;
 
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.*;

@@ -6,6 +6,7 @@ import arc.util.*;
 import mindustry.gen.*;
 
 import fr.xpdustry.distributor.string.*;
+import fr.xpdustry.distributor.string.bundle.*;
 
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -44,7 +45,7 @@ public class ArcClientSender extends ArcCommandSender{
     }
 
     @Override public @NonNull Locale getLocale(){
-        return WrappedBundle.getPlayerLocale(player);
+        return BundleProvider.getPlayerLocale(player);
     }
 
     /**
