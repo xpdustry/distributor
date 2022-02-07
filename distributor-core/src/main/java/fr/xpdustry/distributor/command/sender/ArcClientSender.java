@@ -89,11 +89,19 @@ public class ArcClientSender extends ArcCommandSender{
             return format(intent, builder.toString());
         }
 
-        private String colorize(final @NonNull MessageIntent intent, final @NonNull String value){
+        /**
+         * Add color to an argument.
+         *
+         * @param intent the intent of the message
+         * @param arg the argument to colorize
+         * @return the colored argument
+         */
+        protected @NonNull String colorize(final @NonNull MessageIntent intent, final @NonNull String arg){
             return switch(intent){
-                case DEBUG -> "[lightgray]" + value + "[]";
-                case ERROR -> "[orange]" + value + "[]";
-                default -> value;
+                case DEBUG -> "[lightgray]" + arg + "[]";
+                case ERROR -> "[orange]" + arg + "[]";
+                case SUCCESS -> "[green]" + arg + "[]";
+                default -> arg;
             };
         }
     }

@@ -43,6 +43,10 @@ public final class Distributor extends AbstractPlugin{
     private static MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
     private static MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
 
+    public static FileStore<DistributorConfig> config(){
+        return config;
+    }
+
     /** @return the {@link ServerControl} instance */
     public static ServerControl getServer(){
         return (ServerControl)Core.app.getListeners().find(listener -> listener instanceof ServerControl);

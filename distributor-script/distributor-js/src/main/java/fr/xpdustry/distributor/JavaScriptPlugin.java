@@ -61,11 +61,11 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         ContextFactory.initGlobal(factory);
 
         Events.on(ContextCreatedEvent.class, e -> {
-            e.ctx.setOptimizationLevel(9);
-            e.ctx.setLanguageVersion(Context.VERSION_ES6);
-            e.ctx.setApplicationClassLoader(Vars.mods.mainLoader());
-            e.ctx.getWrapFactory().setJavaPrimitiveWrap(false);
-            e.ctx.setClassShutter(classShutter);
+            e.ctx().setOptimizationLevel(9);
+            e.ctx().setLanguageVersion(Context.VERSION_ES6);
+            e.ctx().setApplicationClassLoader(Vars.mods.mainLoader());
+            e.ctx().getWrapFactory().setJavaPrimitiveWrap(false);
+            e.ctx().setClassShutter(classShutter);
         });
 
         initScript = factory.call(ctx -> {

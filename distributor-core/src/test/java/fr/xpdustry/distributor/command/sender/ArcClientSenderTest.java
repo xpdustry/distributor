@@ -27,7 +27,7 @@ public class ArcClientSenderTest{
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"NONE", "DEBUG", "INFO", "ERROR"})
+    @ValueSource(strings = {"NONE", "DEBUG", "INFO", "ERROR", "SUCCESS"})
     public void test_send_message(String intent){
         final var message = "Hello @";
         final var expected = formatString(intent, message, "Bob");
@@ -37,7 +37,7 @@ public class ArcClientSenderTest{
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"NONE", "DEBUG", "INFO", "ERROR"})
+    @ValueSource(strings = {"NONE", "DEBUG", "INFO", "ERROR", "SUCCESS"})
     public void test_send_caption(String intent){
         final var caption = StandardCaptionKeys.ARGUMENT_PARSE_FAILURE_NUMBER;
         final var expected = formatString(intent, "'@' is not a valid number in the range @ to @", "30", "10", "20");
@@ -55,6 +55,7 @@ public class ArcClientSenderTest{
         return switch(intent){
             case "DEBUG" -> "[gray]" + Strings.format(text.replace("@", "[lightgray]@[]"), args);
             case "ERROR" -> "[scarlet]" + Strings.format(text.replace("@", "[orange]@[]"), args);
+            case "SUCCESS" -> Strings.format(text.replace("@", "[green]@[]"), args);
             case "NONE", "INFO" -> Strings.format(text, args);
             default -> throw new IllegalArgumentException("Unable to resolve formatter: " + intent);
         };

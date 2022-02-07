@@ -148,7 +148,7 @@ public abstract class ArcCommandSender{
             final @NonNull String message,
             final @Nullable Object... args
         ){
-            return Strings.format(message, args);
+            return format(intent, Strings.format(message, args));
         }
 
         @Override public @NonNull String format(
@@ -156,7 +156,7 @@ public abstract class ArcCommandSender{
             final @NonNull String message,
             final @NonNull CaptionVariable... vars
         ){
-            return handler.replaceVariables(message, vars);
+            return format(intent, handler.replaceVariables(message, vars));
         }
     }
 }

@@ -10,5 +10,9 @@ public enum MessageIntent{
     /** This intent is for any normal message. */
     INFO,
     /** This intent is for errors and warnings. */
-    ERROR
+    ERROR,
+    /** This intent is for success messages. */
+    SUCCESS,
+    /** THis intent is ofr system or server-wide messages. */
+    SYSTEM
 }
