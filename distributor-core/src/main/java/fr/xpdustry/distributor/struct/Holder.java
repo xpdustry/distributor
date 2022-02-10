@@ -69,10 +69,8 @@ public class Holder<T>{
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public <R extends T> Holder<R> map(final @NonNull Function<T, R> func){
-        value = func.apply(value);
-        return (Holder<R>)this;
+    public <R> Holder<R> map(final @NonNull Function<T, R> func){
+        return new Holder<>(func.apply(value));
     }
 
     @SuppressWarnings("unchecked")
