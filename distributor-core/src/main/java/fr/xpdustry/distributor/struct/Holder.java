@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.struct;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -64,17 +65,17 @@ public class Holder<T>{
         return value;
     }
 
-    public Holder<T> use(final @NonNull Consumer<T> cons){
+    public Holder<T> use(final @NotNull Consumer<T> cons){
         cons.accept(value);
         return this;
     }
 
-    public <R> Holder<R> map(final @NonNull Function<T, R> func){
+    public <R> Holder<R> map(final @NotNull Function<T, R> func){
         return new Holder<>(func.apply(value));
     }
 
     @SuppressWarnings("unchecked")
-    public @NonNull <R> Holder<R> as(){
+    public @NotNull <R> Holder<R> as(){
         return (Holder<R>)this;
     }
 
@@ -86,7 +87,7 @@ public class Holder<T>{
         return (o instanceof Holder h) && Objects.equals(value, h.value);
     }
 
-    @Override public @NonNull String toString(){
+    @Override public @NotNull String toString(){
         return String.valueOf(value);
     }
 }

@@ -1,13 +1,14 @@
 package fr.xpdustry.distributor.exception;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 
 /**
  * This class is a wrapper for rhino exceptions.
  */
 public class ScriptException extends Exception{
-    public ScriptException(final @NonNull Throwable cause){
+    public ScriptException(final @NotNull Throwable cause){
         super(cause);
     }
 

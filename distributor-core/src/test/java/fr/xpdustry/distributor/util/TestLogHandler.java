@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.util;
 
 import arc.util.Log.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 
 public class TestLogHandler implements LogHandler{

@@ -12,8 +12,8 @@ import cloud.commandframework.arguments.parser.*;
 import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.parsing.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.*;
@@ -28,11 +28,11 @@ import java.util.function.*;
 public final class PlayerArgument<C> extends CommandArgument<C, Player>{
     private PlayerArgument(
         final boolean required,
-        final @NonNull String name,
-        final @NonNull String defaultValue,
-        final @Nullable BiFunction<@NonNull CommandContext<C>,
-            @NonNull String, @NonNull List<@NonNull String>> suggestionsProvider,
-        final @NonNull ArgumentDescription defaultDescription
+        final @NotNull String name,
+        final @NotNull String defaultValue,
+        final @Nullable BiFunction<@NotNull CommandContext<C>,
+            @NotNull String, @NotNull List<@NotNull String>> suggestionsProvider,
+        final @NotNull ArgumentDescription defaultDescription
     ){
         super(required, name, new PlayerParser<>(), defaultValue, Player.class, suggestionsProvider, defaultDescription);
     }
@@ -44,7 +44,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player>{
      * @param <C>  the command sender type
      * @return the created builder
      */
-    public static <C> @NonNull Builder<C> newBuilder(final @NonNull String name){
+    public static <C> @NotNull Builder<C> newBuilder(final @NotNull String name){
         return new Builder<>(name);
     }
 
@@ -55,7 +55,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player>{
      * @param <C>  the command sender type
      * @return the created builder
      */
-    public static <C> @NonNull CommandArgument<C, Player> of(final @NonNull String name){
+    public static <C> @NotNull CommandArgument<C, Player> of(final @NotNull String name){
         return PlayerArgument.<C>newBuilder(name).asRequired().build();
     }
 
@@ -66,12 +66,12 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player>{
      * @param <C>  the command sender type
      * @return the created builder
      */
-    public static <C> @NonNull CommandArgument<C, Player> optional(final @NonNull String name){
+    public static <C> @NotNull CommandArgument<C, Player> optional(final @NotNull String name){
         return PlayerArgument.<C>newBuilder(name).asOptional().build();
     }
 
     public static final class Builder<C> extends CommandArgument.Builder<C, Player>{
-        private Builder(final @NonNull String name){
+        private Builder(final @NotNull String name){
             super(Player.class, name);
         }
 
@@ -81,7 +81,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player>{
          * @return the constructed player argument
          */
         @Override
-        public @NonNull PlayerArgument<C> build(){
+        public @NotNull PlayerArgument<C> build(){
             return new PlayerArgument<>(
                 this.isRequired(),
                 this.getName(),
@@ -93,9 +93,9 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player>{
     }
 
     public static final class PlayerParser<C> implements ArgumentParser<C, Player>{
-        @Override public @NonNull ArgumentParseResult<Player> parse(
-            final @NonNull CommandContext<C> ctx,
-            final @NonNull Queue<@NonNull String> inputQueue
+        @Override public @NotNull ArgumentParseResult<Player> parse(
+            final @NotNull CommandContext<C> ctx,
+            final @NotNull Queue<@NotNull String> inputQueue
         ){
             final var input = inputQueue.peek();
             if(input == null) return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));
@@ -128,13 +128,13 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player>{
          * @param input the input string
          * @param ctx   the command context
          */
-        public PlayerParseException(final @NonNull String input, final @NonNull CommandContext<?> ctx){
+        public PlayerParseException(final @NotNull String input, final @NotNull CommandContext<?> ctx){
             super(PlayerParser.class, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER, CaptionVariable.of("input", input));
             this.input = input;
         }
 
         /** @return the input string */
-        public @NonNull String getInput(){
+        public @NotNull String getInput(){
             return this.input;
         }
     }

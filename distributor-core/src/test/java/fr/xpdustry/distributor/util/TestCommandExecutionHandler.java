@@ -2,13 +2,13 @@ package fr.xpdustry.distributor.util;
 
 import cloud.commandframework.context.*;
 import cloud.commandframework.execution.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 
 public class TestCommandExecutionHandler<C> implements CommandExecutionHandler<C>{
     private @Nullable CommandContext<C> lastContext = null;
 
-    @Override public void execute(@NonNull CommandContext<C> ctx){
+    @Override public void execute(@NotNull CommandContext<C> ctx){
         lastContext = ctx;
     }
 

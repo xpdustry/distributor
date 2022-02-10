@@ -5,7 +5,8 @@ import mindustry.gen.*;
 import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.string.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public abstract class ArcCommandSender implements TranslatingMessageReceiver{
     private final MessageFormatter formatter;
     private final Collection<String> permissions = new HashSet<>();
 
-    public ArcCommandSender(final @NonNull Translator translator, final @NonNull MessageFormatter formatter){
+    public ArcCommandSender(final @NotNull Translator translator, final @NotNull MessageFormatter formatter){
         this.translator = translator;
         this.formatter = formatter;
     }
@@ -38,10 +39,10 @@ public abstract class ArcCommandSender implements TranslatingMessageReceiver{
      *
      * @throws UnsupportedOperationException if the sender does not support this operation
      */
-    public abstract @NonNull Player asPlayer();
+    public abstract @NotNull Player asPlayer();
 
     /** @return the locale of the sender */
-    public abstract @NonNull Locale getLocale();
+    public abstract @NotNull Locale getLocale();
 
     /**
      * Check if the sender has a permission.
@@ -51,7 +52,7 @@ public abstract class ArcCommandSender implements TranslatingMessageReceiver{
      *
      * @see cloud.commandframework.CommandManager#hasPermission(Object, String)
      */
-    public boolean hasPermission(final @NonNull String permission){
+    public boolean hasPermission(final @NotNull String permission){
         return permission.isBlank() || permissions.contains(permission);
     }
 
@@ -60,7 +61,7 @@ public abstract class ArcCommandSender implements TranslatingMessageReceiver{
      *
      * @param permission the permission
      */
-    public void addPermission(final @NonNull String permission){
+    public void addPermission(final @NotNull String permission){
         permissions.add(permission);
     }
 
@@ -69,15 +70,15 @@ public abstract class ArcCommandSender implements TranslatingMessageReceiver{
      *
      * @param permission the permission
      */
-    public void removePermission(final @NonNull String permission){
+    public void removePermission(final @NotNull String permission){
         permissions.remove(permission);
     }
 
-    public @NonNull Translator getTranslator(){
+    public @NotNull Translator getTranslator(){
         return translator;
     }
 
-    public @NonNull MessageFormatter getFormatter(){
+    public @NotNull MessageFormatter getFormatter(){
         return formatter;
     }
 

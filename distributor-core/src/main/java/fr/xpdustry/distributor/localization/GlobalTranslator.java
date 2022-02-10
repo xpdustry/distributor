@@ -1,18 +1,19 @@
 package fr.xpdustry.distributor.localization;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
 
 public interface GlobalTranslator extends Translator{
-    @NonNull Collection<Translator> getTranslators();
+    @NotNull Collection<Translator> getTranslators();
 
-    void addTranslator(@NonNull Translator translator);
+    void addTranslator(@NotNull Translator translator);
 
-    void removeTranslator(@NonNull Translator translator);
+    void removeTranslator(@NotNull Translator translator);
 
-    @Override default @Nullable String translate(final @NonNull String key, final @NonNull Locale locale){
+    @Override default @Nullable String translate(final @NotNull String key, final @NotNull Locale locale){
         for(final var translator : getTranslators()){
             final var translation = translator.translate(key, locale);
             if(translation != null) return translation;

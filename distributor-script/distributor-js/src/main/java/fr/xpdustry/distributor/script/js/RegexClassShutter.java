@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.script.js;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 import rhino.*;
 
 import java.util.regex.*;
@@ -14,22 +15,22 @@ public final class RegexClassShutter implements ClassShutter{
     private final Pattern blacklist;
     private final Pattern whitelist;
 
-    public RegexClassShutter(@NonNull Iterable<String> blacklist, @NonNull Iterable<String> whitelist){
+    public RegexClassShutter(@NotNull Iterable<String> blacklist, @NotNull Iterable<String> whitelist){
         this.blacklist = Pattern.compile(String.join("|", blacklist));
         this.whitelist = Pattern.compile(String.join("|", whitelist));
     }
 
     /** @return the blacklist regex */
-    public @NonNull Pattern getBlacklist(){
+    public @NotNull Pattern getBlacklist(){
         return blacklist;
     }
 
     /** @return the whitelist regex */
-    public @NonNull Pattern getWhitelist(){
+    public @NotNull Pattern getWhitelist(){
         return whitelist;
     }
 
-    @Override public boolean visibleToScripts(@NonNull String s){
+    @Override public boolean visibleToScripts(@NotNull String s){
         return !(blacklist.matcher(s).matches() && !whitelist.matcher(s).matches());
     }
 }

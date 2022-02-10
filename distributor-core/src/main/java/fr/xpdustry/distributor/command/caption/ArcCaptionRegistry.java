@@ -4,7 +4,7 @@ import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.localization.*;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.util.function.*;
 
@@ -24,18 +24,18 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
      * @param caption  the caption containing the key of the localized string
      * @param translator the translator
      */
-    public void registerMessageFactory(final @NonNull Caption caption, final @NonNull Translator translator){
+    public void registerMessageFactory(final @NotNull Caption caption, final @NotNull Translator translator){
         registerMessageFactory(caption, new TranslatorMessageProvider(translator));
     }
 
     public static final class TranslatorMessageProvider implements BiFunction<Caption, ArcCommandSender, String>{
         private final Translator translator;
 
-        private TranslatorMessageProvider(final @NonNull Translator translator){
+        private TranslatorMessageProvider(final @NotNull Translator translator){
             this.translator = translator;
         }
 
-        @Override public @NonNull String apply(final @NonNull Caption caption, final @NonNull ArcCommandSender sender){
+        @Override public @NotNull String apply(final @NotNull Caption caption, final @NotNull ArcCommandSender sender){
             final var translation = translator.translate(caption, sender.getLocale());
             return translation == null ? "???" + caption.getKey() + "???" : translation;
         }

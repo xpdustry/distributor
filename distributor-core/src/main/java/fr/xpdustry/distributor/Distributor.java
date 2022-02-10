@@ -15,14 +15,14 @@ import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.command.sender.ArcClientSender.*;
 import fr.xpdustry.distributor.command.sender.ArcServerSender.*;
 import fr.xpdustry.distributor.internal.*;
+import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.string.*;
-import fr.xpdustry.distributor.localization.*;
 
 import cloud.commandframework.captions.*;
 import cloud.commandframework.services.*;
 import net.mindustry_ddns.store.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -83,7 +83,7 @@ public final class Distributor extends AbstractPlugin{
      *
      * @param formatter the message formatter
      */
-    public static void setServerMessageFormatter(final @NonNull MessageFormatter formatter){
+    public static void setServerMessageFormatter(final @NotNull MessageFormatter formatter){
         Distributor.serverMessageFormatter = formatter;
     }
 
@@ -97,7 +97,7 @@ public final class Distributor extends AbstractPlugin{
      *
      * @param formatter the message formatter
      */
-    public static void setClientMessageFormatter(final @NonNull MessageFormatter formatter){
+    public static void setClientMessageFormatter(final @NotNull MessageFormatter formatter){
         Distributor.clientMessageFormatter = formatter;
     }
 
@@ -123,7 +123,7 @@ public final class Distributor extends AbstractPlugin{
         ROOT_DIRECTORY.mkdirs();
     }
 
-    @Override public void registerServerCommands(final @NonNull CommandHandler handler){
+    @Override public void registerServerCommands(final @NotNull CommandHandler handler){
         // Creating commands here because it is what it is...
         serverCommandManager = new ArcCommandManager(handler);
         clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
@@ -154,7 +154,7 @@ public final class Distributor extends AbstractPlugin{
         });
     }
 
-    @Override public void registerSharedCommands(final @NonNull ArcCommandManager manager){
+    @Override public void registerSharedCommands(final @NotNull ArcCommandManager manager){
         manager.getPermissionInjector().registerInjector(
             ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin())
         );

@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.localization;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -14,7 +15,7 @@ public final class EmptyTranslator implements Translator{
         return INSTANCE;
     }
 
-    @Override public @Nullable String translate(@NonNull String key, @NonNull Locale locale){
+    @Override public @Nullable String translate(@NotNull String key, @NotNull Locale locale){
         return null;
     }
 }

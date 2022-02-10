@@ -1,11 +1,11 @@
 package fr.xpdustry.distributor.string;
 
 import arc.struct.*;
+import arc.util.Nullable;
 import arc.util.*;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.*;
 
 import java.util.regex.*;
 
@@ -13,18 +13,18 @@ import java.util.regex.*;
 public interface ColoringMessageFormatter extends MessageFormatter{
     Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 
-    default @Override @NonNull String format(
-        final @NonNull MessageIntent intent,
-        final @NonNull String message,
+    default @Override @NotNull String format(
+        final @NotNull MessageIntent intent,
+        final @NotNull String message,
         final @Nullable Object... args
     ){
         return prefix(intent) + Strings.format(message.replace("@", argument(intent, "@")), args);
     }
 
-    default @Override @NonNull String format(
-        final @NonNull MessageIntent intent,
-        final @NonNull String message,
-        final @NonNull CaptionVariable... vars
+    default @Override @NotNull String format(
+        final @NotNull MessageIntent intent,
+        final @NotNull String message,
+        final @NotNull CaptionVariable... vars
     ){
         final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
         final var builder = new StringBuilder();
@@ -34,7 +34,7 @@ public interface ColoringMessageFormatter extends MessageFormatter{
         return prefix(intent) + builder;
     }
 
-    @NonNull String prefix(final @NonNull MessageIntent intent);
+    @NotNull String prefix(final @NotNull MessageIntent intent);
 
     /**
      * Add color to an argument.
@@ -43,5 +43,5 @@ public interface ColoringMessageFormatter extends MessageFormatter{
      * @param arg    the argument to colorize
      * @return the colored argument
      */
-    @NonNull String argument(final @NonNull MessageIntent intent, final @NonNull String arg);
+    @NotNull String argument(final @NotNull MessageIntent intent, final @NotNull String arg);
 }

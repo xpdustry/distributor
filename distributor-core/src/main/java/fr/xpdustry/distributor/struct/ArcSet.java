@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.struct;
 
 import arc.struct.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -14,7 +14,7 @@ import java.util.function.*;
 public class ArcSet<E> extends AbstractSet<E>{
     private final ObjectSet<E> set;
 
-    public ArcSet(@NonNull ObjectSet<E> set){
+    public ArcSet(@NotNull ObjectSet<E> set){
         this.set = set;
     }
 
@@ -30,7 +30,7 @@ public class ArcSet<E> extends AbstractSet<E>{
         this(new ObjectSet<>());
     }
 
-    @Override public void forEach(@NonNull Consumer<? super E> action){
+    @Override public void forEach(@NotNull Consumer<? super E> action){
         set.forEach(action);
     }
 
@@ -55,7 +55,7 @@ public class ArcSet<E> extends AbstractSet<E>{
         return set.asArray().toArray();
     }
 
-    @Override public <T> T[] toArray(@NonNull T[] a){
+    @Override public <T> T[] toArray(@NotNull T[] a){
         return set.asArray().toArray(a.getClass().getComponentType());
     }
 

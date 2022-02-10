@@ -5,7 +5,8 @@ import arc.func.*;
 import arc.struct.*;
 import arc.util.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -22,12 +23,12 @@ public class EventWatcher<T> implements EventListener, Cons<T>{
     private final Cons<T> listener;
     private boolean listening = false;
 
-    public EventWatcher(final @NonNull Class<T> event, final @NonNull Cons<T> listener){
+    public EventWatcher(final @NotNull Class<T> event, final @NotNull Cons<T> listener){
         this.event = event;
         this.listener = listener;
     }
 
-    public EventWatcher(final @NonNull T event, final @NonNull Runnable listener){
+    public EventWatcher(final @NotNull T event, final @NotNull Runnable listener){
         this.event = event;
         this.listener = e -> listener.run();
     }
@@ -46,11 +47,11 @@ public class EventWatcher<T> implements EventListener, Cons<T>{
         }
     }
 
-    public @NonNull Object getEvent(){
+    public @NotNull Object getEvent(){
         return event;
     }
 
-    public @NonNull Cons<T> getListener(){
+    public @NotNull Cons<T> getListener(){
         return listener;
     }
 

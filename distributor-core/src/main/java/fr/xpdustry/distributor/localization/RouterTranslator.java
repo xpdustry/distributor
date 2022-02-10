@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.localization;
 
-import org.checkerframework.checker.nullness.qual.*;
+
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public final class RouterTranslator implements Translator {
 
     private RouterTranslator(){}
 
-    @Override public @Nullable String translate(final @NonNull String key, final @NonNull Locale locale){
+    @Override public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale){
         return locale.equals(ROUTER_LOCALE) ? "router" : null;
     }
 }

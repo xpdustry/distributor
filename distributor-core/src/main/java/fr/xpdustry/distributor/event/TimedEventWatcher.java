@@ -2,8 +2,7 @@ package fr.xpdustry.distributor.event;
 
 import arc.func.*;
 
-import org.checkerframework.checker.index.qual.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 
 /**
@@ -16,18 +15,18 @@ public class TimedEventWatcher<T> extends EventWatcher<T>{
     private int lifetime;
 
     public TimedEventWatcher(
-        final @NonNull Class<T> event,
-        final @NonNegative int lifetime,
-        final @NonNull Cons<T> listener
+        final @NotNull Class<T> event,
+        final int lifetime,
+        final @NotNull Cons<T> listener
     ){
         super(event, listener);
         this.lifetime = lifetime;
     }
 
     public TimedEventWatcher(
-        final @NonNull T event,
-        final @NonNegative int lifetime,
-        final @NonNull Runnable listener
+        final @NotNull T event,
+        final int lifetime,
+        final @NotNull Runnable listener
     ){
         super(event, listener);
         this.lifetime = lifetime;
@@ -46,7 +45,7 @@ public class TimedEventWatcher<T> extends EventWatcher<T>{
         return lifetime;
     }
 
-    public void setLifetime(final @NonNegative int lifetime){
+    public void setLifetime(final int lifetime){
         this.lifetime = lifetime;
     }
 }

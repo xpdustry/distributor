@@ -2,6 +2,7 @@ package fr.xpdustry.distributor.command;
 
 import arc.util.*;
 import arc.util.CommandHandler.*;
+import arc.util.Nullable;
 
 import mindustry.gen.*;
 
@@ -24,8 +25,8 @@ import cloud.commandframework.execution.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
 import io.leangen.geantyref.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
+
 
 import java.util.*;
 import java.util.function.*;
@@ -40,7 +41,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     private Function<Player, ArcCommandSender> commandSenderMapper =
         p -> p == null ? new ArcServerSender() : new ArcClientSender(p);
 
-    public ArcCommandManager(final @NonNull CommandHandler handler){
+    public ArcCommandManager(final @NotNull CommandHandler handler){
         super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
         setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
         setCommandRegistrationHandler(new ArcRegistrationHandler(handler, this));
@@ -51,7 +52,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
-    public void handleCommand(final @NonNull ArcCommandSender sender, final @NonNull String input){
+    public void handleCommand(final @NotNull ArcCommandSender sender, final @NotNull String input){
         executeCommand(sender, input).whenComplete((result, throwable) -> {
             if(throwable == null) return;
             if(throwable instanceof ArgumentParseException t) throwable = t.getCause();
@@ -74,28 +75,28 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         });
     }
 
-    public void handleCommand(final @Nullable Player player, final @NonNull String input){
+    public void handleCommand(final @Nullable Player player, final @NotNull String input){
         handleCommand(commandSenderMapper.apply(player), input);
     }
 
-    public void handleCommand(final @NonNull String input){
+    public void handleCommand(final @NotNull String input){
         handleCommand(commandSenderMapper.apply(null), input);
     }
 
-    public @NonNull AnnotationParser<ArcCommandSender> getAnnotationParser(){
+    public @NotNull AnnotationParser<ArcCommandSender> getAnnotationParser(){
         return annotationParser;
     }
 
-    public @NonNull CommandPermissionInjector getPermissionInjector(){
+    public @NotNull CommandPermissionInjector getPermissionInjector(){
         return permissionInjector;
     }
 
-    public @NonNull Function<Player, ArcCommandSender> getCommandSenderMapper(){
+    public @NotNull Function<Player, ArcCommandSender> getCommandSenderMapper(){
         return commandSenderMapper;
     }
 
     public void setCommandSenderMapper(
-        final @NonNull Function<Player, @NonNull ArcCommandSender> commandSenderMapper
+        final @NotNull Function<Player, @NotNull ArcCommandSender> commandSenderMapper
     ){
         this.commandSenderMapper = commandSenderMapper;
     }
@@ -108,7 +109,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
      *
      * @throws IllegalArgumentException if the command is a {@link CloudCommand}
      */
-    public @NonNull Command<ArcCommandSender> convertNativeCommand(final CommandHandler.@NonNull Command command){
+    public @NotNull Command<ArcCommandSender> convertNativeCommand(final CommandHandler.@NotNull Command command){
         if(command instanceof CloudCommand)
             throw new IllegalArgumentException(
                 "You can't convert a cloud command that has been converted to a native command back to a cloud command...");
@@ -132,26 +133,26 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         return builder.build();
     }
 
-    @Override public boolean hasPermission(final @NonNull ArcCommandSender sender, final @NonNull String permission){
+    @Override public boolean hasPermission(final @NotNull ArcCommandSender sender, final @NotNull String permission){
         return sender.hasPermission(permission);
     }
 
-    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(
-        final @NonNull String name,
-        final @NonNull CommandMeta meta,
-        final @NonNull String... aliases
+    @Override public Command.@NotNull Builder<ArcCommandSender> commandBuilder(
+        final @NotNull String name,
+        final @NotNull CommandMeta meta,
+        final @NotNull String... aliases
     ){
         return super.commandBuilder(name, meta, aliases).senderType(ArcCommandSender.class);
     }
 
-    @Override public Command.@NonNull Builder<ArcCommandSender> commandBuilder(
-        final @NonNull String name,
-        final @NonNull String... aliases
+    @Override public Command.@NotNull Builder<ArcCommandSender> commandBuilder(
+        final @NotNull String name,
+        final @NotNull String... aliases
     ){
         return super.commandBuilder(name, aliases).senderType(ArcCommandSender.class);
     }
 
-    @Override public @NonNull CommandMeta createDefaultCommandMeta(){
+    @Override public @NotNull CommandMeta createDefaultCommandMeta(){
         return SimpleCommandMeta.builder()
             .with(ArcMeta.NATIVE, false)
             .with(ArcMeta.PLUGIN, "unknown")
@@ -162,11 +163,11 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     public static final class NativeCommandExecutionHandler implements CommandExecutionHandler<ArcCommandSender>{
         private final CommandHandler.Command command;
 
-        public NativeCommandExecutionHandler(final CommandHandler.@NonNull Command command){
+        public NativeCommandExecutionHandler(final CommandHandler.@NotNull Command command){
             this.command = command;
         }
 
-        @Override public void execute(final @NonNull CommandContext<ArcCommandSender> ctx){
+        @Override public void execute(final @NotNull CommandContext<ArcCommandSender> ctx){
             final CommandRunner<Player> runner = Reflect.get(this.command, "runner");
             final var array = ctx.getRawInput().toArray(new String[0]);
             // Removes the first argument because it's the name of the command

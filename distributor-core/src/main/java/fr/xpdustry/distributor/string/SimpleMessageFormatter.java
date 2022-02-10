@@ -1,10 +1,10 @@
 package fr.xpdustry.distributor.string;
 
+import arc.util.Nullable;
 import arc.util.*;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.*;
 
 
 /** This formatter performs basic formatting without any variations specified by {@link MessageIntent intents}. */
@@ -18,18 +18,18 @@ public final class SimpleMessageFormatter implements MessageFormatter{
         return INSTANCE;
     }
 
-    @Override public @NonNull String format(
-        final @NonNull MessageIntent intent,
-        final @NonNull String message,
+    @Override public @NotNull String format(
+        final @NotNull MessageIntent intent,
+        final @NotNull String message,
         final @Nullable Object... args
     ){
         return Strings.format(message, args);
     }
 
-    @Override public @NonNull String format(
-        final @NonNull MessageIntent intent,
-        final @NonNull String message,
-        final @NonNull CaptionVariable... vars
+    @Override public @NotNull String format(
+        final @NotNull MessageIntent intent,
+        final @NotNull String message,
+        final @NotNull CaptionVariable... vars
     ){
         return HANDLER.replaceVariables(message, vars);
     }

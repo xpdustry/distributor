@@ -6,30 +6,30 @@ import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
+
 
 import java.util.*;
 
 
 public class ArcClientSender extends ArcCommandSender{
-    private final @NonNull Player player;
+    private final @NotNull Player player;
 
     public ArcClientSender(
-        final @NonNull Player player,
-        final @NonNull Translator translator,
-        final @NonNull MessageFormatter formatter
+        final @NotNull Player player,
+        final @NotNull Translator translator,
+        final @NotNull MessageFormatter formatter
     ){
         super(translator, formatter);
         this.player = player;
     }
 
-    public ArcClientSender(final @NonNull Player player, final @NonNull Translator translator){
+    public ArcClientSender(final @NotNull Player player, final @NotNull Translator translator){
         super(translator, new ClientMessageFormatter());
         this.player = player;
     }
 
-    public ArcClientSender(final @NonNull Player player){
+    public ArcClientSender(final @NotNull Player player){
         super();
         this.player = player;
     }
@@ -39,23 +39,23 @@ public class ArcClientSender extends ArcCommandSender{
         return true;
     }
 
-    @Override public @NonNull Player asPlayer(){
+    @Override public @NotNull Player asPlayer(){
         return player;
     }
 
-    @Override public @NonNull Locale getLocale(){
+    @Override public @NotNull Locale getLocale(){
         return Translator.getPlayerLocale(player);
     }
 
-    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+    @Override public void sendMessage(@NotNull MessageIntent intent, @NotNull String message, @Nullable Object... args){
         player.sendMessage(getFormatter().format(intent, message, args));
     }
 
-    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+    @Override public void sendMessage(@NotNull MessageIntent intent, @NotNull String message, @NotNull CaptionVariable... vars){
         player.sendMessage(getFormatter().format(intent, message, vars));
     }
 
-    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull Caption caption, @NonNull CaptionVariable... vars){
+    @Override public void sendMessage(@NotNull MessageIntent intent, @NotNull Caption caption, @NotNull CaptionVariable... vars){
         final var translation = getTranslator().translate(caption, getLocale());
         player.sendMessage(getFormatter().format(intent, translation == null ? "???" + caption.getKey() + "???" : translation, vars));
     }
@@ -71,7 +71,7 @@ public class ArcClientSender extends ArcCommandSender{
      * </ul>
      */
     public static class ClientMessageFormatter implements ColoringMessageFormatter{
-        @Override public @NonNull String prefix(@NonNull MessageIntent intent){
+        @Override public @NotNull String prefix(@NotNull MessageIntent intent){
             return switch(intent){
                 case DEBUG -> "[gray]";
                 case ERROR -> "[scarlet]";
@@ -79,7 +79,7 @@ public class ArcClientSender extends ArcCommandSender{
             };
         }
 
-        @Override public @NonNull String argument(@NonNull MessageIntent intent, @NonNull String arg){
+        @Override public @NotNull String argument(@NotNull MessageIntent intent, @NotNull String arg){
             return switch(intent){
                 case DEBUG -> "[lightgray]" + arg + "[]";
                 case ERROR -> "[orange]" + arg + "[]";

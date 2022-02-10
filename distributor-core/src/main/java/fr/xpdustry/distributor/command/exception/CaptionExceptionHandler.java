@@ -6,7 +6,7 @@ import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.util.function.*;
 
@@ -21,8 +21,8 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
     private final Function<E, CaptionVariable[]> variableProvider;
 
     private CaptionExceptionHandler(
-        final @NonNull Caption caption,
-        final @NonNull Function<@NonNull E, @NonNull CaptionVariable[]> variableProvider
+        final @NotNull Caption caption,
+        final @NotNull Function<@NotNull E, @NotNull CaptionVariable[]> variableProvider
     ){
         this.caption = caption;
         this.variableProvider = variableProvider;
@@ -35,7 +35,7 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
      * @param <E>     the exception type
      * @return the created caption exception handler
      */
-    public static <E extends Throwable> CaptionExceptionHandler<E> ofNone(final @NonNull Caption caption){
+    public static <E extends Throwable> CaptionExceptionHandler<E> ofNone(final @NotNull Caption caption){
         return new CaptionExceptionHandler<>(caption, e -> new CaptionVariable[0]);
     }
 
@@ -48,8 +48,8 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
      * @return the created caption exception handler
      */
     public static <E extends Throwable> CaptionExceptionHandler<E> ofSingle(
-        final @NonNull Caption caption,
-        final @NonNull Function<@NonNull E, @NonNull CaptionVariable> variableProvider
+        final @NotNull Caption caption,
+        final @NotNull Function<@NotNull E, @NotNull CaptionVariable> variableProvider
     ){
         return new CaptionExceptionHandler<>(caption, variableProvider.andThen(Seq::with).andThen(Seq::toArray));
     }
@@ -63,13 +63,13 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
      * @return the created caption exception handler
      */
     public static <E extends Throwable> CaptionExceptionHandler<E> ofMultiple(
-        final @NonNull Caption caption,
-        final @NonNull Function<@NonNull E, @NonNull Iterable<@NonNull CaptionVariable>> variableProvider
+        final @NotNull Caption caption,
+        final @NotNull Function<@NotNull E, @NotNull Iterable<@NotNull CaptionVariable>> variableProvider
     ){
         return new CaptionExceptionHandler<>(caption, variableProvider.andThen(Seq::with).andThen(Seq::toArray));
     }
 
-    @Override public void accept(final @NonNull ArcCommandSender sender, final @NonNull E exception){
+    @Override public void accept(final @NotNull ArcCommandSender sender, final @NotNull E exception){
         sender.sendMessage(MessageIntent.ERROR, caption, variableProvider.apply(exception));
     }
 }

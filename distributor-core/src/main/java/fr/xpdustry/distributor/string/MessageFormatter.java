@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.string;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 
 /**
@@ -12,7 +12,7 @@ public interface MessageFormatter{
         return SimpleMessageFormatter.getInstance();
     }
 
-    @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args);
+    @NotNull String format(@NotNull MessageIntent intent, @NotNull String message, @Nullable Object... args);
 
-    @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars);
+    @NotNull String format(@NotNull MessageIntent intent, @NotNull String message, @NotNull CaptionVariable... vars);
 }

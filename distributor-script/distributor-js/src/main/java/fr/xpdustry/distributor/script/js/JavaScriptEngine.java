@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.script.js;
 
 import fr.xpdustry.distributor.exception.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 import rhino.Function;
 import rhino.*;
 import rhino.module.*;
@@ -26,12 +26,12 @@ public class JavaScriptEngine implements AutoCloseable{
     private final Scriptable globalScope;
     private @Nullable Require require = null;
 
-    public JavaScriptEngine(final @NonNull Context context, final @NonNull Scriptable globalScope){
+    public JavaScriptEngine(final @NotNull Context context, final @NotNull Scriptable globalScope){
         this.context = context;
         this.globalScope = globalScope;
     }
 
-    public JavaScriptEngine(final @NonNull Context context){
+    public JavaScriptEngine(final @NotNull Context context){
         this(context, new ImporterTopLevel(context));
     }
 
@@ -39,7 +39,7 @@ public class JavaScriptEngine implements AutoCloseable{
         return factory;
     }
 
-    public static void setGlobalFactory(final @NonNull Supplier<@NonNull JavaScriptEngine> factory){
+    public static void setGlobalFactory(final @NotNull Supplier<@NotNull JavaScriptEngine> factory){
         JavaScriptEngine.factory = factory;
     }
 
@@ -60,11 +60,11 @@ public class JavaScriptEngine implements AutoCloseable{
         return String.valueOf(obj);
     }
 
-    public @NonNull Scriptable newScope(){
+    public @NotNull Scriptable newScope(){
         return newScope(globalScope);
     }
 
-    public @NonNull Scriptable newScope(final @NonNull Scriptable parent){
+    public @NotNull Scriptable newScope(final @NotNull Scriptable parent){
         final var scope = context.newObject(parent);
         // Ensures that definitions in the root scope are found.
         scope.setPrototype(parent);
@@ -73,7 +73,7 @@ public class JavaScriptEngine implements AutoCloseable{
         return scope;
     }
 
-    public void setupRequire(final @NonNull ModuleScriptProvider provider){
+    public void setupRequire(final @NotNull ModuleScriptProvider provider){
         require = new RequireBuilder()
             .setSandboxed(false)
             .setModuleScriptProvider(provider)
@@ -90,9 +90,9 @@ public class JavaScriptEngine implements AutoCloseable{
     }
 
     public @Nullable Object eval(
-        final @NonNull Scriptable scope,
-        final @NonNull String source,
-        final @NonNull String sourceName
+        final @NotNull Scriptable scope,
+        final @NotNull String source,
+        final @NotNull String sourceName
     ) throws ScriptException{
         try{
             return context.evaluateString(scope, source, sourceName, 1);
@@ -101,33 +101,33 @@ public class JavaScriptEngine implements AutoCloseable{
         }
     }
 
-    public @Nullable Object eval(final @NonNull String source) throws ScriptException{
+    public @Nullable Object eval(final @NotNull String source) throws ScriptException{
         return eval(globalScope, source, toString());
     }
 
-    public @NonNull Script compileScript(final @NonNull String source, final @NonNull String sourceName){
+    public @NotNull Script compileScript(final @NotNull String source, final @NotNull String sourceName){
         return context.compileString(source, sourceName, 1);
     }
 
-    public @NonNull Script compileScript(final @NonNull Reader reader, final @NonNull String sourceName) throws IOException{
+    public @NotNull Script compileScript(final @NotNull Reader reader, final @NotNull String sourceName) throws IOException{
         return context.compileReader(reader, sourceName, 1);
     }
 
-    public @NonNull Function compileFunction(
-        final @NonNull Scriptable scope,
-        final @NonNull String source,
-        final @NonNull String sourceName
+    public @NotNull Function compileFunction(
+        final @NotNull Scriptable scope,
+        final @NotNull String source,
+        final @NotNull String sourceName
     ){
         return context.compileFunction(scope, source, sourceName, 1);
     }
 
-    public @Nullable Object invoke(final @NonNull Function function, final @Nullable Object... args) throws ScriptException{
+    public @Nullable Object invoke(final @NotNull Function function, final @Nullable Object... args) throws ScriptException{
         return invoke(function, globalScope, args);
     }
 
     public @Nullable Object invoke(
-        final @NonNull Function function,
-        final @NonNull Scriptable scope,
+        final @NotNull Function function,
+        final @NotNull Scriptable scope,
         final @Nullable Object... args
     ) throws ScriptException{
         try{
@@ -137,7 +137,7 @@ public class JavaScriptEngine implements AutoCloseable{
         }
     }
 
-    public @Nullable Object exec(final @NonNull Script script, final @NonNull Scriptable scope) throws ScriptException{
+    public @Nullable Object exec(final @NotNull Script script, final @NotNull Scriptable scope) throws ScriptException{
         try{
             return script.exec(context, scope);
         }catch(Exception | BlockingScriptError e){
@@ -145,29 +145,29 @@ public class JavaScriptEngine implements AutoCloseable{
         }
     }
 
-    public @Nullable Object exec(final @NonNull Script script) throws ScriptException{
+    public @Nullable Object exec(final @NotNull Script script) throws ScriptException{
         return exec(script, globalScope);
     }
 
-    public @Nullable Object exec(final @NonNull File file, final @NonNull Scriptable scope) throws IOException, ScriptException{
+    public @Nullable Object exec(final @NotNull File file, final @NotNull Scriptable scope) throws IOException, ScriptException{
         try(final var reader = new FileReader(file, StandardCharsets.UTF_8)){
             return exec(compileScript(reader, file.getName()), scope);
         }
     }
 
-    public @Nullable Object exec(final @NonNull File file) throws IOException, ScriptException{
+    public @Nullable Object exec(final @NotNull File file) throws IOException, ScriptException{
         return exec(file, globalScope);
     }
 
-    public @NonNull Context getContext(){
+    public @NotNull Context getContext(){
         return context;
     }
 
-    public @NonNull Scriptable getGlobalScope(){
+    public @NotNull Scriptable getGlobalScope(){
         return globalScope;
     }
 
-    @Override public @NonNull String toString(){
+    @Override public @NotNull String toString(){
         return "engine@" + Integer.toHexString(hashCode()) + ".js";
     }
 

@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.util;
 
 import fr.xpdustry.distributor.localization.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -10,11 +10,11 @@ import java.util.*;
 public class TestTranslator implements Translator{
     private final Map<String, String> translations = new HashMap<>();
 
-    @Override public @Nullable String translate(final @NonNull String key, final @NonNull Locale locale){
+    @Override public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale){
         return translations.get(key);
     }
 
-    public void addTranslation(final @NonNull String key, final @NonNull String value){
+    public void addTranslation(final @NotNull String key, final @NotNull String value){
         translations.put(key, value);
     }
 }

@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.script.js;
 
 import fr.xpdustry.distributor.exception.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 import rhino.*;
 
 
@@ -53,7 +53,7 @@ public class TimedContextFactory extends ContextFactory{
     public static class TimedContext extends Context{
         private long startTime;
 
-        public TimedContext(@NonNull ContextFactory factory){
+        public TimedContext(final @NotNull ContextFactory factory){
             super(factory);
         }
 

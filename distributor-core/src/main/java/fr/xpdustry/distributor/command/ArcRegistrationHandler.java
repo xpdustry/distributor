@@ -12,7 +12,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.internal.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 
 /**
@@ -23,21 +23,21 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
     private final CommandHandler handler;
     private final ArcCommandManager manager;
 
-    public ArcRegistrationHandler(final @NonNull CommandHandler handler, final @NonNull ArcCommandManager manager){
+    public ArcRegistrationHandler(final @NotNull CommandHandler handler, final @NotNull ArcCommandManager manager){
         this.handler = handler;
         this.manager = manager;
     }
 
-    public @NonNull CommandHandler getHandler(){
+    public @NotNull CommandHandler getHandler(){
         return handler;
     }
 
-    public @NonNull ArcCommandManager getManager(){
+    public @NotNull ArcCommandManager getManager(){
         return manager;
     }
 
     @SuppressWarnings("unchecked")
-    @Override public boolean registerCommand(final @NonNull Command<?> command){
+    @Override public boolean registerCommand(final @NotNull Command<?> command){
         if(command.getCommandMeta().get(ArcMeta.NATIVE).orElse(false)) return false;
 
         final var info = (StaticArgument<ArcCommandSender>)command.getArguments().get(0);
@@ -68,10 +68,10 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
         private final Command<ArcCommandSender> command;
 
         public CloudCommand(
-            final @NonNull String name,
-            final @NonNull String params,
-            final @NonNull String description,
-            final @NonNull Command<ArcCommandSender> command
+            final @NotNull String name,
+            final @NotNull String params,
+            final @NotNull String description,
+            final @NotNull Command<ArcCommandSender> command
         ){
             super(name, params, description, (CommandRunner<Player>)(args, player) -> {
                 final var components = Seq.with(name).addAll(args);
@@ -81,7 +81,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler{
             this.command = command;
         }
 
-        public @NonNull Command<ArcCommandSender> getCommand(){
+        public @NotNull Command<ArcCommandSender> getCommand(){
             return command;
         }
     }

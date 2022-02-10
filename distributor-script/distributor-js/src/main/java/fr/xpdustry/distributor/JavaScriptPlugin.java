@@ -15,7 +15,7 @@ import fr.xpdustry.distributor.script.js.*;
 
 import cloud.commandframework.arguments.standard.*;
 import net.mindustry_ddns.store.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 import rhino.*;
 import rhino.module.*;
 import rhino.module.provider.*;
@@ -116,7 +116,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         });
     }
 
-    @Override public void registerSharedCommands(final @NonNull ArcCommandManager manager){
+    @Override public void registerSharedCommands(final @NotNull ArcCommandManager manager){
         manager.command(manager.commandBuilder("js")
             .meta(ArcMeta.DESCRIPTION, "Run arbitrary Javascript.")
             .meta(ArcMeta.PARAMETERS, "<script...>")
@@ -138,18 +138,18 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         private ArcContextListener(){
         }
 
-        @Override public void contextCreated(final @NonNull Context ctx){
+        @Override public void contextCreated(final @NotNull Context ctx){
             Events.fire(new ContextCreatedEvent(ctx));
         }
 
-        @Override public void contextReleased(final @NonNull Context ctx){
+        @Override public void contextReleased(final @NotNull Context ctx){
             Events.fire(new ContextReleasedEvent(ctx));
         }
     }
 
-    public static record ContextCreatedEvent(@NonNull Context ctx){
+    public static record ContextCreatedEvent(@NotNull Context ctx){
     }
 
-    public static record ContextReleasedEvent(@NonNull Context ctx){
+    public static record ContextReleasedEvent(@NotNull Context ctx){
     }
 }

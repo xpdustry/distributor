@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.command.caption;
 
 import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -27,13 +27,13 @@ public final class ArcCaptionKeys{
     /** Variables: {message} */
     public static final Caption COMMAND_FAILURE = of("command.failure");
 
-    private static @NonNull Caption of(final @NonNull String key){
+    private static @NotNull Caption of(final @NotNull String key){
         final Caption caption = Caption.of(key);
         RECOGNIZED_CAPTIONS.add(caption);
         return caption;
     }
 
-    public static @NonNull Collection<Caption> getArcCaptionKeys(){
+    public static @NotNull Collection<Caption> getArcCaptionKeys(){
         return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);
     }
 }

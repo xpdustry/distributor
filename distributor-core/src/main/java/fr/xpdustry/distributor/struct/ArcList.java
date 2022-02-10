@@ -2,7 +2,7 @@ package fr.xpdustry.distributor.struct;
 
 import arc.struct.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -16,7 +16,7 @@ import java.util.function.*;
 public class ArcList<E> extends AbstractList<E> implements RandomAccess{
     private final Seq<E> seq;
 
-    public ArcList(@NonNull Seq<E> seq){
+    public ArcList(@NotNull Seq<E> seq){
         this.seq = seq;
     }
 
@@ -28,20 +28,20 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess{
         this(new Seq<>());
     }
 
-    @Override public void replaceAll(@NonNull UnaryOperator<E> operator){
+    @Override public void replaceAll(@NotNull UnaryOperator<E> operator){
         seq.replace(operator::apply);
     }
 
-    @Override public void sort(@NonNull Comparator<? super E> c){
+    @Override public void sort(@NotNull Comparator<? super E> c){
         seq.sort(c);
     }
 
-    @Override public boolean removeIf(@NonNull Predicate<? super E> filter){
+    @Override public boolean removeIf(@NotNull Predicate<? super E> filter){
         final var size = seq.size;
         return size != seq.removeAll(filter::test).size;
     }
 
-    @Override public void forEach(@NonNull Consumer<? super E> action){
+    @Override public void forEach(@NotNull Consumer<? super E> action){
         seq.forEach(action);
     }
 
@@ -71,7 +71,7 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess{
         return seq.remove((E)o);
     }
 
-    @Override public boolean addAll(@NonNull Collection<? extends E> c){
+    @Override public boolean addAll(@NotNull Collection<? extends E> c){
         seq.addAll(c);
         return true;
     }

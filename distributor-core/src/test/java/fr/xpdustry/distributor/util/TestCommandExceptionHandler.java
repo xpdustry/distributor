@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.util;
 import fr.xpdustry.distributor.command.exception.*;
 import fr.xpdustry.distributor.command.sender.*;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
 
 public class TestCommandExceptionHandler<E extends Throwable> implements CommandExceptionHandler<E>{
