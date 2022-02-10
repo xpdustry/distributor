@@ -20,6 +20,10 @@ public class ArcServerSender extends ArcCommandSender{
         super(translator, formatter);
     }
 
+    public ArcServerSender(final @NonNull Translator translator){
+        super(translator, new ServerMessageFormatter());
+    }
+
     public ArcServerSender(){
         super();
     }

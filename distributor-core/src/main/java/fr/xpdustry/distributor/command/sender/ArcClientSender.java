@@ -24,6 +24,11 @@ public class ArcClientSender extends ArcCommandSender{
         this.player = player;
     }
 
+    public ArcClientSender(final @NonNull Player player, final @NonNull Translator translator){
+        super(translator, new ClientMessageFormatter());
+        this.player = player;
+    }
+
     public ArcClientSender(final @NonNull Player player){
         super();
         this.player = player;

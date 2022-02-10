@@ -48,11 +48,3 @@ Finally, when you are ready for testing, put the necessary Distributor jars in y
 > If you used the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
 
 > If you used the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).
-
-## TODO
-
-- [ ] CachedBundleProvider (BundleProvider that can cache localization bundles)
-- [ ] ArcMap (Map view of an ObjectMap)
-- [ ] JavaScript Debugger
-- [ ] Services (Anti-VPN, AutoMod)
-- [ ] Better command execution (Give the possibility to run the command asynchronously)

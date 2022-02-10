@@ -44,10 +44,12 @@ public class EventWatcherTest{
         assertEquals(1, holder.get());
     }
 
+
+    @SuppressWarnings("ConstantConditions")
     public EventWatcher<Object> getWatcher(String type){
         return switch(type){
-            case "CONS" -> new EventWatcher<>(Object.class, o -> holder.map(i -> i + 1));
-            case "RUNNABLE" -> new EventWatcher<>(event, () -> holder.map(i -> i + 1));
+            case "CONS" -> new EventWatcher<>(Object.class, o -> holder.set(holder.get() + 1));
+            case "RUNNABLE" -> new EventWatcher<>(event, () -> holder.set(holder.get() + 1));
             default -> throw new IllegalArgumentException("Unable to resolve constructor: " + type);
         };
     }

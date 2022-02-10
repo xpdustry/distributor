@@ -48,10 +48,11 @@ public class TimedEventWatcherTest{
         assertFalse(watcher.isListening());
     }
 
+    @SuppressWarnings("ConstantConditions")
     public TimedEventWatcher<Object> getWatcher(String type, int lifetime){
         return switch(type){
-            case "CONS" -> new TimedEventWatcher<>(Object.class, lifetime, o -> holder.map(i -> i + 1));
-            case "RUNNABLE" -> new TimedEventWatcher<>(event, lifetime, () -> holder.map(i -> i + 1));
+            case "CONS" -> new TimedEventWatcher<>(Object.class, lifetime, o -> holder.set(holder.get() + 1));
+            case "RUNNABLE" -> new TimedEventWatcher<>(event, lifetime, () -> holder.set(holder.get() + 1));
             default -> throw new IllegalArgumentException("Unable to resolve constructor: " + type);
         };
     }

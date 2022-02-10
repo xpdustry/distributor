@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ArcServerSenderTest{
     private ArcServerSender sender;
+    private TestTranslator translator;
     private TestLogHandler logger;
 
     @BeforeAll
@@ -27,7 +28,8 @@ public class ArcServerSenderTest{
 
     @BeforeEach
     public void setup(){
-        sender = new ArcServerSender();
+        translator = new TestTranslator();
+        sender = new ArcServerSender(translator);
         logger = new TestLogHandler();
         Log.logger = logger;
     }
@@ -47,6 +49,7 @@ public class ArcServerSenderTest{
     @ValueSource(strings = {"NONE", "DEBUG", "INFO", "ERROR"})
     public void test_send_caption(String intent){
         final var caption = StandardCaptionKeys.ARGUMENT_PARSE_FAILURE_NUMBER;
+        translator.addTranslation(StandardCaptionKeys.ARGUMENT_PARSE_FAILURE_NUMBER.getKey(),  SimpleCaptionRegistry.ARGUMENT_PARSE_FAILURE_NUMBER);
         final var expected = "'&fb&lb30&fr' is not a valid number in the range &fb&lb10&fr to &fb&lb20&fr";
         final var variables = new CaptionVariable[]{
             CaptionVariable.of("input", "30"),
