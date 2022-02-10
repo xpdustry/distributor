@@ -17,7 +17,7 @@ import fr.xpdustry.distributor.command.sender.ArcServerSender.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.string.*;
-import fr.xpdustry.distributor.string.bundle.*;
+import fr.xpdustry.distributor.localization.*;
 
 import cloud.commandframework.captions.*;
 import cloud.commandframework.services.*;
@@ -26,15 +26,14 @@ import org.checkerframework.checker.nullness.qual.*;
 
 import java.io.*;
 import java.nio.charset.*;
-import java.util.*;
 import java.util.concurrent.*;
 
 
 @SuppressWarnings("NullAway.Init")
 public final class Distributor extends AbstractPlugin{
     public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
-    public static final BundleProvider bundles = l -> WrappedResourceBundle.of("bundles/bundle", l, Distributor.class.getClassLoader());
 
+    private static final GlobalTranslator translator = new SimpleGlobalTranslator();
     private static FileStore<DistributorConfig> config;
     private static ServicePipeline servicePipeline;
 
@@ -44,6 +43,12 @@ public final class Distributor extends AbstractPlugin{
     private static MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
     private static MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
 
+    /** @return the global translator instance */
+    public static GlobalTranslator getGlobalTranslator(){
+        return translator;
+    }
+
+    /** @return Distributor internal config */
     public static FileStore<DistributorConfig> config(){
         return config;
     }
@@ -97,11 +102,6 @@ public final class Distributor extends AbstractPlugin{
     }
 
     @Override public void init(){
-        config = getStoredConfig("config", DistributorConfig.class);
-        servicePipeline = ServicePipeline.builder()
-            .withExecutor(Executors.newFixedThreadPool(config.get().getServiceThreadCount()))
-            .build();
-
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
             if(in == null) throw new IOException("banner.txt not found...");
@@ -112,6 +112,14 @@ public final class Distributor extends AbstractPlugin{
             Log.debug("Distributor failed to show the banner.", e);
         }
 
+        config = getStoredConfig("config", DistributorConfig.class);
+        servicePipeline = ServicePipeline.builder()
+            .withExecutor(Executors.newFixedThreadPool(config.get().getServiceThreadCount()))
+            .build();
+
+        translator.addTranslator(RouterTranslator.getInstance());
+        translator.addTranslator(new ResourceBundleTranslator("bundles/bundle", Distributor.class.getClassLoader()));
+
         ROOT_DIRECTORY.mkdirs();
     }
 
@@ -121,18 +129,16 @@ public final class Distributor extends AbstractPlugin{
         clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
 
         // Setup command sender mappers
-        serverCommandManager.setCommandSenderMapper((c, p) ->
-            new ArcServerSender(c, Distributor.serverMessageFormatter));
-        clientCommandManager.setCommandSenderMapper((c, p) ->
-            new ArcClientSender(Objects.requireNonNull(p), c, Distributor.clientMessageFormatter));
+        serverCommandManager.setCommandSenderMapper(p -> new ArcServerSender(getGlobalTranslator(), getServerMessageFormatter()));
+        clientCommandManager.setCommandSenderMapper(p -> new ArcClientSender(p, getGlobalTranslator(), getClientMessageFormatter()));
 
         // Add localization support via Captions
         new Seq<Caption>()
             .addAll(StandardCaptionKeys.getStandardCaptionKeys())
             .addAll(ArcCaptionKeys.getArcCaptionKeys())
             .forEach(c -> {
-                ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
-                ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, bundles);
+                ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, translator);
+                ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, translator);
             });
 
         // Register commands

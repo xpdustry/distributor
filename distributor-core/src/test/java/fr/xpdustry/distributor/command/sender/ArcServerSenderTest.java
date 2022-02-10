@@ -27,7 +27,7 @@ public class ArcServerSenderTest{
 
     @BeforeEach
     public void setup(){
-        sender = new ArcServerSender(new ArcCaptionRegistry());
+        sender = new ArcServerSender();
         logger = new TestLogHandler();
         Log.logger = logger;
     }
@@ -38,7 +38,7 @@ public class ArcServerSenderTest{
         final var message = "Hello @";
         final var expected = "Hello &fb&lbBob&fr";
 
-        sender.send(MessageIntent.valueOf(intent), message, "Bob");
+        sender.sendMessage(MessageIntent.valueOf(intent), message, "Bob");
         assertEquals(expected, logger.getLastText());
         checkIntent(intent);
     }
@@ -54,7 +54,7 @@ public class ArcServerSenderTest{
             CaptionVariable.of("max", "20")
         };
 
-        sender.send(MessageIntent.valueOf(intent), caption, variables);
+        sender.sendMessage(MessageIntent.valueOf(intent), caption, variables);
         assertEquals(expected, logger.getLastText());
         checkIntent(intent);
     }

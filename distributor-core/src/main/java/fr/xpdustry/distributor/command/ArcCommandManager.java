@@ -37,8 +37,8 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     private final AnnotationParser<ArcCommandSender> annotationParser =
         new AnnotationParser<>(this, ArcCommandSender.class, p -> createDefaultCommandMeta());
 
-    private BiFunction<CaptionRegistry<ArcCommandSender>, Player, ArcCommandSender> commandSenderMapper =
-        (c, p) -> p == null ? new ArcServerSender(c) : new ArcClientSender(p, c);
+    private Function<Player, ArcCommandSender> commandSenderMapper =
+        p -> p == null ? new ArcServerSender() : new ArcClientSender(p);
 
     public ArcCommandManager(final @NonNull CommandHandler handler){
         super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
@@ -75,11 +75,11 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
     }
 
     public void handleCommand(final @Nullable Player player, final @NonNull String input){
-        handleCommand(commandSenderMapper.apply(getCaptionRegistry(), player), input);
+        handleCommand(commandSenderMapper.apply(player), input);
     }
 
     public void handleCommand(final @NonNull String input){
-        handleCommand(commandSenderMapper.apply(getCaptionRegistry(), null), input);
+        handleCommand(commandSenderMapper.apply(null), input);
     }
 
     public @NonNull AnnotationParser<ArcCommandSender> getAnnotationParser(){
@@ -90,12 +90,12 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         return permissionInjector;
     }
 
-    public @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, Player, @NonNull ArcCommandSender> getCommandSenderMapper(){
+    public @NonNull Function<Player, ArcCommandSender> getCommandSenderMapper(){
         return commandSenderMapper;
     }
 
     public void setCommandSenderMapper(
-        final @NonNull BiFunction<@NonNull CaptionRegistry<ArcCommandSender>, Player, @NonNull ArcCommandSender> commandSenderMapper
+        final @NonNull Function<Player, @NonNull ArcCommandSender> commandSenderMapper
     ){
         this.commandSenderMapper = commandSenderMapper;
     }

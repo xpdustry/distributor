@@ -70,6 +70,6 @@ public final class CaptionExceptionHandler<E extends Throwable> implements Comma
     }
 
     @Override public void accept(final @NonNull ArcCommandSender sender, final @NonNull E exception){
-        sender.send(MessageIntent.ERROR, caption, variableProvider.apply(exception));
+        sender.sendMessage(MessageIntent.ERROR, caption, variableProvider.apply(exception));
     }
 }

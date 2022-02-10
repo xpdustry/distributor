@@ -1,19 +1,15 @@
 package fr.xpdustry.distributor.command.sender;
 
-import arc.struct.*;
-import arc.util.*;
-
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.string.*;
-import fr.xpdustry.distributor.string.bundle.*;
 
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
-import java.util.regex.*;
 
 
 public class ArcClientSender extends ArcCommandSender{
@@ -21,20 +17,18 @@ public class ArcClientSender extends ArcCommandSender{
 
     public ArcClientSender(
         final @NonNull Player player,
-        final @NonNull CaptionRegistry<ArcCommandSender> captions,
+        final @NonNull Translator translator,
         final @NonNull MessageFormatter formatter
     ){
-        super(captions, formatter);
+        super(translator, formatter);
         this.player = player;
     }
 
-    public ArcClientSender(final @NonNull Player player, final @NonNull CaptionRegistry<ArcCommandSender> captions){
-        this(player, captions, new ClientMessageFormatter());
+    public ArcClientSender(final @NonNull Player player){
+        super();
+        this.player = player;
     }
 
-    @Override public void send(final @NonNull MessageIntent intent, final @NonNull String message){
-        player.sendMessage(message);
-    }
 
     @Override public boolean isPlayer(){
         return true;
@@ -45,7 +39,20 @@ public class ArcClientSender extends ArcCommandSender{
     }
 
     @Override public @NonNull Locale getLocale(){
-        return BundleProvider.getPlayerLocale(player);
+        return Translator.getPlayerLocale(player);
+    }
+
+    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+        player.sendMessage(getFormatter().format(intent, message, args));
+    }
+
+    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+        player.sendMessage(getFormatter().format(intent, message, vars));
+    }
+
+    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull Caption caption, @NonNull CaptionVariable... vars){
+        final var translation = getTranslator().translate(caption, getLocale());
+        player.sendMessage(getFormatter().format(intent, translation == null ? "???" + caption.getKey() + "???" : translation, vars));
     }
 
     /**
@@ -58,46 +65,16 @@ public class ArcClientSender extends ArcCommandSender{
      *     <li>{@link MessageIntent#ERROR ERROR}: {@code [scarlet]There are [orange]'@'[] players.}</li>
      * </ul>
      */
-    public static class ClientMessageFormatter implements MessageFormatter{
-        private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
-
-        @Override public @NonNull String format(final @NonNull MessageIntent intent, final @NonNull String message){
+    public static class ClientMessageFormatter implements ColoringMessageFormatter{
+        @Override public @NonNull String prefix(@NonNull MessageIntent intent){
             return switch(intent){
-                case DEBUG -> "[gray]" + message;
-                case ERROR -> "[scarlet]" + message;
-                default -> message;
+                case DEBUG -> "[gray]";
+                case ERROR -> "[scarlet]";
+                default -> "";
             };
         }
 
-        @Override public @NonNull String format(
-            final @NonNull MessageIntent intent,
-            final @NonNull String message,
-            final @Nullable Object... args
-        ){
-            return format(intent, Strings.format(message.replace("@", colorize(intent, "@")), args));
-        }
-
-        @Override public @NonNull String format(
-            final @NonNull MessageIntent intent,
-            final @NonNull String message,
-            final @NonNull CaptionVariable... vars
-        ){
-            final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
-            final var builder = new StringBuilder();
-            final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);
-            while(matcher.find()) matcher.appendReplacement(builder, colorize(intent, map.get(matcher.group(), "???")));
-            matcher.appendTail(builder);
-            return format(intent, builder.toString());
-        }
-
-        /**
-         * Add color to an argument.
-         *
-         * @param intent the intent of the message
-         * @param arg the argument to colorize
-         * @return the colored argument
-         */
-        protected @NonNull String colorize(final @NonNull MessageIntent intent, final @NonNull String arg){
+        @Override public @NonNull String argument(@NonNull MessageIntent intent, @NonNull String arg){
             return switch(intent){
                 case DEBUG -> "[lightgray]" + arg + "[]";
                 case ERROR -> "[orange]" + arg + "[]";

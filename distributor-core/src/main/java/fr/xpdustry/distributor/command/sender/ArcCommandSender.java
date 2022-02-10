@@ -1,13 +1,10 @@
 package fr.xpdustry.distributor.command.sender;
 
-import arc.util.*;
-
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.string.*;
 
-import cloud.commandframework.captions.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
@@ -16,70 +13,18 @@ import java.util.*;
 /**
  * This class represents the command sender, it can be either the console or a player.
  */
-public abstract class ArcCommandSender{
-    protected final CaptionRegistry<ArcCommandSender> captions;
-    protected final MessageFormatter formatter;
-    protected final Collection<String> permissions = new HashSet<>();
+public abstract class ArcCommandSender implements TranslatingMessageReceiver{
+    private final Translator translator;
+    private final MessageFormatter formatter;
+    private final Collection<String> permissions = new HashSet<>();
 
-    public ArcCommandSender(final @NonNull CaptionRegistry<ArcCommandSender> captions, final @NonNull MessageFormatter formatter){
-        this.captions = captions;
+    public ArcCommandSender(final @NonNull Translator translator, final @NonNull MessageFormatter formatter){
+        this.translator = translator;
         this.formatter = formatter;
     }
 
-    public ArcCommandSender(final @NonNull CaptionRegistry<ArcCommandSender> captions){
-        this(captions, new SimpleMessageFormatter());
-    }
-
-    /**
-     * Send a message to the sender with the specified {@link MessageIntent}.
-     *
-     * @param intent  the intent of the message
-     * @param message the message
-     */
-    public abstract void send(@NonNull MessageIntent intent, @NonNull String message);
-
-    /**
-     * Send a message with {@link Strings#format(String, Object...) arc} formatting.
-     *
-     * @param intent  the intent of the message
-     * @param message the message
-     * @param args    the arguments to format
-     */
-    public void send(final @NonNull MessageIntent intent, final @NonNull String message, final @Nullable Object... args){
-        send(intent, formatter.format(intent, message, args));
-    }
-
-    /**
-     * Send a message with {@link Strings#format(String, Object...) arc} formatting.
-     * The intent is set to {@link MessageIntent#INFO INFO} by default.
-     *
-     * @param message the message
-     * @param args    the arguments to format
-     */
-    public void send(final @NonNull String message, final @Nullable Object... args){
-        send(MessageIntent.INFO, message, args);
-    }
-
-    /**
-     * Send a caption message with {@link SimpleCaptionVariableReplacementHandler#replaceVariables(String, CaptionVariable...) caption variable} formatting.
-     *
-     * @param intent  the intent of the message
-     * @param caption the caption
-     * @param vars    the caption variables to format
-     */
-    public void send(final @NonNull MessageIntent intent, final @NonNull Caption caption, final @NonNull CaptionVariable... vars){
-        send(intent, formatter.format(intent, captions.getCaption(caption, this), vars));
-    }
-
-    /**
-     * Send a caption message with {@link SimpleCaptionVariableReplacementHandler#replaceVariables(String, CaptionVariable...) caption variable} formatting.
-     * The intent is set to {@link MessageIntent#INFO INFO} by default.
-     *
-     * @param caption the caption
-     * @param vars    the caption variables to format
-     */
-    public void send(final @NonNull Caption caption, final @NonNull CaptionVariable... vars){
-        send(MessageIntent.INFO, caption, vars);
+    public ArcCommandSender(){
+        this(Translator.empty(), MessageFormatter.simple());
     }
 
     /** @return whether the sender is a player or not */
@@ -97,11 +42,6 @@ public abstract class ArcCommandSender{
 
     /** @return the locale of the sender */
     public abstract @NonNull Locale getLocale();
-
-    /** @return the permissions of the sender */
-    public Collection<String> getPermissions(){
-        return Collections.unmodifiableCollection(permissions);
-    }
 
     /**
      * Check if the sender has a permission.
@@ -133,30 +73,16 @@ public abstract class ArcCommandSender{
         permissions.remove(permission);
     }
 
-    /**
-     * This formatter performs basic formatting without any variations specified by {@link MessageIntent}.
-     */
-    public static class SimpleMessageFormatter implements MessageFormatter{
-        private final CaptionVariableReplacementHandler handler = new SimpleCaptionVariableReplacementHandler();
+    public @NonNull Translator getTranslator(){
+        return translator;
+    }
 
-        @Override public @NonNull String format(final @NonNull MessageIntent intent, final @NonNull String message){
-            return message;
-        }
+    public @NonNull MessageFormatter getFormatter(){
+        return formatter;
+    }
 
-        @Override public @NonNull String format(
-            final @NonNull MessageIntent intent,
-            final @NonNull String message,
-            final @Nullable Object... args
-        ){
-            return format(intent, Strings.format(message, args));
-        }
-
-        @Override public @NonNull String format(
-            final @NonNull MessageIntent intent,
-            final @NonNull String message,
-            final @NonNull CaptionVariable... vars
-        ){
-            return format(intent, handler.replaceVariables(message, vars));
-        }
+    /** @return the permissions of the sender */
+    public Collection<String> getPermissions(){
+        return Collections.unmodifiableCollection(permissions);
     }
 }

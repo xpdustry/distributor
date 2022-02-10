@@ -29,7 +29,7 @@ public final class StandardExceptionHandlers{
 
     /** Default exception handler for {@link ParserException}. */
     public static final CommandExceptionHandler<ParserException> ARGUMENT_PARSE_FAILURE =
-        (s, e) -> s.send(MessageIntent.ERROR, e.errorCaption(), e.captionVariables());
+        (s, e) -> s.sendMessage(MessageIntent.ERROR, e.errorCaption(), e.captionVariables());
 
     /** Default exception handler for {@link CommandExecutionException}. */
     public static final CommandExceptionHandler<CommandExecutionException> COMMAND_FAILURE_EXECUTION =

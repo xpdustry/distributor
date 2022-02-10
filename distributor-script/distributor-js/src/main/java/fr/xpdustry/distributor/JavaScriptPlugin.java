@@ -126,9 +126,9 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             .handler(ctx -> {
                 try{
                     var obj = JavaScriptEngine.getInstance().eval(ctx.get("script"));
-                    ctx.getSender().send(JavaScriptEngine.toString(obj));
+                    ctx.getSender().sendMessage(JavaScriptEngine.toString(obj));
                 }catch(ScriptException e){
-                    ctx.getSender().send(e.getMessage());
+                    ctx.getSender().sendMessage(e.getMessage());
                 }
             })
         );

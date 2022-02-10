@@ -1,10 +1,10 @@
 package fr.xpdustry.distributor.command.sender;
 
-import arc.struct.*;
 import arc.util.*;
 
 import mindustry.gen.*;
 
+import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.captions.*;
@@ -12,24 +12,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.*;
 
 import java.util.*;
-import java.util.regex.*;
+import java.util.function.*;
 
 
 public class ArcServerSender extends ArcCommandSender{
-    public ArcServerSender(final @NonNull CaptionRegistry<ArcCommandSender> captions, final @NonNull MessageFormatter formatter){
-        super(captions, formatter);
+    public ArcServerSender(final @NonNull Translator translator, final @NonNull MessageFormatter formatter){
+        super(translator, formatter);
     }
 
-    public ArcServerSender(final @NonNull CaptionRegistry<ArcCommandSender> captions){
-        this(captions, new ServerMessageFormatter());
-    }
-
-    @Override public void send(final @NonNull MessageIntent intent, final @NonNull String message){
-        switch(intent){
-            case DEBUG -> Log.debug(message);
-            case ERROR -> Log.err(message);
-            default -> Log.info(message);
-        }
+    public ArcServerSender(){
+        super();
     }
 
     @Override public boolean isPlayer(){
@@ -50,43 +42,32 @@ public class ArcServerSender extends ArcCommandSender{
         return true;
     }
 
+    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args){
+        getLogger(intent).accept(getFormatter().format(intent, message, args));
+    }
+
+    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull String message, @NonNull CaptionVariable... vars){
+        getLogger(intent).accept(getFormatter().format(intent, message, vars));
+    }
+
+    @Override public void sendMessage(@NonNull MessageIntent intent, @NonNull Caption caption, @NonNull CaptionVariable... vars){
+        final var translation = getTranslator().translate(caption, getLocale());
+        getLogger(intent).accept(getFormatter().format(intent, translation == null ? "???" + caption.getKey() + "???" : translation, vars));
+    }
+
+    protected Consumer<String> getLogger(@NonNull MessageIntent intent){
+        return switch(intent){
+            case DEBUG -> Log::debug; case ERROR -> Log::err; default -> Log::info;
+        };
+    }
+
     /** This formatter performs the formatting of a default mindustry server where arguments are colored. */
-    public static class ServerMessageFormatter implements MessageFormatter{
-        private static final Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
-
-        @Override public @NonNull String format(final @NonNull MessageIntent intent, final @NonNull String message){
-            return message;
+    public static class ServerMessageFormatter implements ColoringMessageFormatter{
+        @Override public @NonNull String prefix(final @NonNull MessageIntent intent){
+            return "";
         }
 
-        @Override public @NonNull String format(
-            final @NonNull MessageIntent intent,
-            final @NonNull String message,
-            final @Nullable Object... args
-        ){
-            return format(intent, Strings.format(message.replace("@", colorize(intent, "@")), args));
-        }
-
-        @Override public @NonNull String format(
-            final @NonNull MessageIntent intent,
-            final @NonNull String message,
-            final @NonNull CaptionVariable... vars
-        ){
-            final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
-            final var builder = new StringBuilder();
-            final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);
-            while(matcher.find()) matcher.appendReplacement(builder, colorize(intent, map.get(matcher.group(), "???")));
-            matcher.appendTail(builder);
-            return format(intent, builder.toString());
-        }
-
-        /**
-         * Add color to an argument.
-         *
-         * @param intent the intent of the message
-         * @param arg the argument to colorize
-         * @return the colored argument
-         */
-        protected @NonNull String colorize(final @NonNull MessageIntent intent, final @NonNull String arg){
+        @Override public @NonNull String argument(final @NonNull MessageIntent intent, final @NonNull String arg){
             return "&fb&lb" + arg + "&fr";
         }
     }

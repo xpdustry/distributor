@@ -8,7 +8,9 @@ import org.checkerframework.checker.nullness.qual.*;
  * This class format messages for the target user.
  */
 public interface MessageFormatter{
-    @NonNull String format(@NonNull MessageIntent intent, @NonNull String message);
+    static MessageFormatter simple(){
+        return SimpleMessageFormatter.getInstance();
+    }
 
     @NonNull String format(@NonNull MessageIntent intent, @NonNull String message, @Nullable Object... args);
 

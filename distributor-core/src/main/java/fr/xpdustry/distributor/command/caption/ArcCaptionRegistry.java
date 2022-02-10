@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.command.caption;
 
 import fr.xpdustry.distributor.command.sender.*;
-import fr.xpdustry.distributor.string.bundle.*;
+import fr.xpdustry.distributor.localization.*;
 
 import cloud.commandframework.captions.*;
 import org.checkerframework.checker.nullness.qual.*;
@@ -11,7 +11,7 @@ import java.util.function.*;
 
 /**
  * The {@link ArcCaptionRegistry} is an extension of {@link SimpleCaptionRegistry},
- * which adds support for {@link BundleProvider}.
+ * which adds support for {@link Translator}.
  */
 public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
     public ArcCaptionRegistry(){
@@ -19,24 +19,25 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
     }
 
     /**
-     * Register a new bundle provider as a message factory.
+     * Register a translator as a message factory.
      *
      * @param caption  the caption containing the key of the localized string
-     * @param provider the bundle provider
+     * @param translator the translator
      */
-    public void registerMessageFactory(final @NonNull Caption caption, final @NonNull BundleProvider provider){
-        registerMessageFactory(caption, new BundleProviderMessageFactory(provider));
+    public void registerMessageFactory(final @NonNull Caption caption, final @NonNull Translator translator){
+        registerMessageFactory(caption, new TranslatorMessageProvider(translator));
     }
 
-    public static final class BundleProviderMessageFactory implements BiFunction<Caption, ArcCommandSender, String>{
-        private final BundleProvider provider;
+    public static final class TranslatorMessageProvider implements BiFunction<Caption, ArcCommandSender, String>{
+        private final Translator translator;
 
-        private BundleProviderMessageFactory(final @NonNull BundleProvider provider){
-            this.provider = provider;
+        private TranslatorMessageProvider(final @NonNull Translator translator){
+            this.translator = translator;
         }
 
         @Override public @NonNull String apply(final @NonNull Caption caption, final @NonNull ArcCommandSender sender){
-            return provider.getBundle(sender).get(caption.getKey());
+            final var translation = translator.translate(caption, sender.getLocale());
+            return translation == null ? "???" + caption.getKey() + "???" : translation;
         }
     }
 }

@@ -23,7 +23,7 @@ public class ArcClientSenderTest{
     @BeforeEach
     public void setup(){
         player = new TestPlayer();
-        sender = new ArcClientSender(player, new ArcCaptionRegistry());
+        sender = new ArcClientSender(player);
     }
 
     @ParameterizedTest
@@ -32,7 +32,7 @@ public class ArcClientSenderTest{
         final var message = "Hello @";
         final var expected = formatString(intent, message, "Bob");
 
-        sender.send(MessageIntent.valueOf(intent), message, "Bob");
+        sender.sendMessage(MessageIntent.valueOf(intent), message, "Bob");
         assertEquals(expected, player.lastText());
     }
 
@@ -47,7 +47,7 @@ public class ArcClientSenderTest{
             CaptionVariable.of("max", "20")
         };
 
-        sender.send(MessageIntent.valueOf(intent), caption, variables);
+        sender.sendMessage(MessageIntent.valueOf(intent), caption, variables);
         assertEquals(expected, player.lastText());
     }
 
