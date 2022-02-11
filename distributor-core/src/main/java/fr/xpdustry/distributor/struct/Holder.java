@@ -83,7 +83,7 @@ public class Holder<T>{
         return Objects.hashCode(value);
     }
 
-    @Override public boolean equals(@Nullable Object o){
+    @Override public boolean equals(final @Nullable Object o){
         return (o instanceof Holder h) && Objects.equals(value, h.value);
     }
 

@@ -29,15 +29,22 @@ public interface ColoringMessageFormatter extends MessageFormatter{
         final var map = Seq.with(vars).asMap(e -> "{" + e.getKey() + "}", CaptionVariable::getValue);
         final var builder = new StringBuilder();
         final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);
-        while(matcher.find()) matcher.appendReplacement(builder, argument(intent, map.get(matcher.group(), "???")));
+        while(matcher.find())
+            matcher.appendReplacement(builder, argument(intent, map.get(matcher.group(), "???")));
         matcher.appendTail(builder);
         return prefix(intent) + builder;
     }
 
+    /**
+     * Add a color to a message or a prefix for the {@link MessageIntent#SYSTEM} intent.
+     *
+     * @param intent the intent
+     * @return the prefix for the intent
+     */
     @NotNull String prefix(final @NotNull MessageIntent intent);
 
     /**
-     * Add color to an argument.
+     * Colorize an argument.
      *
      * @param intent the intent of the message
      * @param arg    the argument to colorize

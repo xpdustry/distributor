@@ -9,8 +9,6 @@ import java.util.*;
 public final class EmptyTranslator implements Translator{
     private static final EmptyTranslator INSTANCE = new EmptyTranslator();
 
-    private EmptyTranslator(){}
-
     public static EmptyTranslator getInstance(){
         return INSTANCE;
     }

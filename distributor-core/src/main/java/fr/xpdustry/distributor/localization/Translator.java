@@ -17,6 +17,10 @@ public interface Translator{
         return EmptyTranslator.getInstance();
     }
 
+    static Translator router(){
+        return RouterTranslator.getInstance();
+    }
+
     @Nullable String translate(final @NotNull String key, final @NotNull Locale locale);
 
     default @Nullable String translate(final @NotNull Caption caption, final @NotNull Locale locale){

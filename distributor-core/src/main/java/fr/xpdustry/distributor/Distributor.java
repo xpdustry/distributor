@@ -33,7 +33,7 @@ import java.util.concurrent.*;
 public final class Distributor extends AbstractPlugin{
     public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
 
-    private static final GlobalTranslator translator = new SimpleGlobalTranslator();
+    private static final GlobalTranslator globalTranslator = new SimpleGlobalTranslator();
     private static FileStore<DistributorConfig> config;
     private static ServicePipeline servicePipeline;
 
@@ -45,7 +45,7 @@ public final class Distributor extends AbstractPlugin{
 
     /** @return the global translator instance */
     public static GlobalTranslator getGlobalTranslator(){
-        return translator;
+        return globalTranslator;
     }
 
     /** @return Distributor internal config */
@@ -104,7 +104,8 @@ public final class Distributor extends AbstractPlugin{
     @Override public void init(){
         // A nice Banner :^)
         try(final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")){
-            if(in == null) throw new IOException("banner.txt not found...");
+            if(in == null)
+                throw new IOException("banner.txt not found...");
             final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             reader.lines().forEach(line -> Log.info(" &c&fb>&fr @", line));
             Log.info(" &c&fb>&fr Loaded Distributor core v@", asLoadedMod().meta.version);
@@ -117,8 +118,8 @@ public final class Distributor extends AbstractPlugin{
             .withExecutor(Executors.newFixedThreadPool(config.get().getServiceThreadCount()))
             .build();
 
-        translator.addTranslator(RouterTranslator.getInstance());
-        translator.addTranslator(new ResourceBundleTranslator("bundles/bundle", Distributor.class.getClassLoader()));
+        globalTranslator.addTranslator(Translator.router());
+        globalTranslator.addTranslator(new ResourceBundleTranslator("bundles/bundle", Distributor.class.getClassLoader()));
 
         ROOT_DIRECTORY.mkdirs();
     }
@@ -137,8 +138,8 @@ public final class Distributor extends AbstractPlugin{
             .addAll(StandardCaptionKeys.getStandardCaptionKeys())
             .addAll(ArcCaptionKeys.getArcCaptionKeys())
             .forEach(c -> {
-                ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, translator);
-                ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, translator);
+                ((ArcCaptionRegistry)serverCommandManager.getCaptionRegistry()).registerMessageFactory(c, globalTranslator);
+                ((ArcCaptionRegistry)clientCommandManager.getCaptionRegistry()).registerMessageFactory(c, globalTranslator);
             });
 
         // Register commands

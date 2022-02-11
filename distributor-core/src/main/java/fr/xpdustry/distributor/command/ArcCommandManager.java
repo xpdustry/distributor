@@ -2,7 +2,6 @@ package fr.xpdustry.distributor.command;
 
 import arc.util.*;
 import arc.util.CommandHandler.*;
-import arc.util.Nullable;
 
 import mindustry.gen.*;
 
@@ -17,7 +16,6 @@ import cloud.commandframework.Command;
 import cloud.commandframework.*;
 import cloud.commandframework.annotations.*;
 import cloud.commandframework.arguments.standard.*;
-import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
@@ -25,8 +23,8 @@ import cloud.commandframework.execution.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
 import io.leangen.geantyref.*;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
-
 
 import java.util.*;
 import java.util.function.*;
@@ -51,11 +49,20 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         getParserRegistry().registerParserSupplier(TypeToken.get(Player.class), p -> new PlayerParser<>());
     }
 
+    /**
+     * Execute a command and handle the result.
+     *
+     * @param sender the command sender
+     * @param input the command input
+     */
     @SuppressWarnings("FutureReturnValueIgnored")
-    public void handleCommand(final @NotNull ArcCommandSender sender, final @NotNull String input){
+    protected void handleCommand(final @NotNull ArcCommandSender sender, final @NotNull String input){
         executeCommand(sender, input).whenComplete((result, throwable) -> {
-            if(throwable == null) return;
-            if(throwable instanceof ArgumentParseException t) throwable = t.getCause();
+            if(throwable == null){
+                return;
+            }else if(throwable instanceof ArgumentParseException t){
+                throwable = t.getCause();
+            }
 
             if(throwable instanceof InvalidSyntaxException t){
                 handleException(sender, InvalidSyntaxException.class, t, StandardExceptionHandlers.COMMAND_INVALID_SYNTAX);
@@ -75,26 +82,45 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
         });
     }
 
+    /**
+     * Execute a command and handle the result.
+     *
+     * @param player the player
+     * @param input the command input
+     */
     public void handleCommand(final @Nullable Player player, final @NotNull String input){
         handleCommand(commandSenderMapper.apply(player), input);
     }
 
+    /**
+     * Execute a command and handle the result.
+     *
+     * @param input the command input
+     */
     public void handleCommand(final @NotNull String input){
         handleCommand(commandSenderMapper.apply(null), input);
     }
 
+    /** @return the shared annotation parser instance of this command manager */
     public @NotNull AnnotationParser<ArcCommandSender> getAnnotationParser(){
         return annotationParser;
     }
 
+    /** @return the shared command injector instance of this command manager */
     public @NotNull CommandPermissionInjector getPermissionInjector(){
         return permissionInjector;
     }
 
+    /** @return the command sender mapping function */
     public @NotNull Function<Player, ArcCommandSender> getCommandSenderMapper(){
         return commandSenderMapper;
     }
 
+    /**
+     * Set the command sender mapping function.
+     *
+     * @param commandSenderMapper the new command mapping function
+     */
     public void setCommandSenderMapper(
         final @NotNull Function<Player, @NotNull ArcCommandSender> commandSenderMapper
     ){
@@ -110,9 +136,9 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
      * @throws IllegalArgumentException if the command is a {@link CloudCommand}
      */
     public @NotNull Command<ArcCommandSender> convertNativeCommand(final CommandHandler.@NotNull Command command){
-        if(command instanceof CloudCommand)
-            throw new IllegalArgumentException(
-                "You can't convert a cloud command that has been converted to a native command back to a cloud command...");
+        if(command instanceof CloudCommand) throw new IllegalArgumentException(
+                "You can't convert a cloud command that has been converted to a native command back to a cloud command..."
+        );
 
         final var meta = SimpleCommandMeta.builder()
             .with(createDefaultCommandMeta())
@@ -159,7 +185,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender>{
             .build();
     }
 
-    /** A command execution handler that calls an underlying native command. */
+    /** A command execution handler that calls an underlying {@link CommandHandler.Command}. */
     public static final class NativeCommandExecutionHandler implements CommandExecutionHandler<ArcCommandSender>{
         private final CommandHandler.Command command;
 

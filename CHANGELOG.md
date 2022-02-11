@@ -1,1 +1,2 @@
 - New features and improvements of the string API.
+- Complete localization API overhaul.

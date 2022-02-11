@@ -8,11 +8,7 @@ import rhino.*;
 
 /** @see rhino.ContextFactory */
 public class TimedContextFactory extends ContextFactory{
-    private final int maxRuntime;
-
-    public TimedContextFactory(int maxRuntime){
-        this.maxRuntime = maxRuntime;
-    }
+    private int maxRuntime = 10;
 
     @Override protected Context makeContext(){
         final var ctx = new TimedContext(this);
@@ -47,6 +43,14 @@ public class TimedContextFactory extends ContextFactory{
         if(currentTime - tcx.startTime > maxRuntime * 1000L){
             throw new BlockingScriptError();
         }
+    }
+
+    public int getMaxRuntime(){
+        return maxRuntime;
+    }
+
+    public void setMaxRuntime(int maxRuntime){
+        this.maxRuntime = maxRuntime;
     }
 
     /** Custom {@link Context} to store execution time. */

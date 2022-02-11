@@ -21,7 +21,7 @@ public class ArcCaptionRegistry extends SimpleCaptionRegistry<ArcCommandSender>{
     /**
      * Register a translator as a message factory.
      *
-     * @param caption  the caption containing the key of the localized string
+     * @param caption    the caption containing the key of the localized string
      * @param translator the translator
      */
     public void registerMessageFactory(final @NotNull Caption caption, final @NotNull Translator translator){

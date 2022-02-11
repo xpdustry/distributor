@@ -12,8 +12,8 @@ import cloud.commandframework.arguments.parser.*;
 import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.parsing.*;
-import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 import java.io.*;
 import java.util.*;

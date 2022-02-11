@@ -12,6 +12,7 @@ import fr.xpdustry.distributor.exception.*;
 import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.script.js.*;
+import fr.xpdustry.distributor.string.*;
 
 import cloud.commandframework.arguments.standard.*;
 import net.mindustry_ddns.store.*;
@@ -28,6 +29,8 @@ import java.util.*;
 public final class JavaScriptPlugin extends AbstractPlugin{
     public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 
+    private static final TimedContextFactory contextFactory = new TimedContextFactory();
+
     private static FileStore<JavaScriptConfig> store;
     private static ClassShutter classShutter;
     private static ModuleScriptProvider scriptProvider;
@@ -37,12 +40,19 @@ public final class JavaScriptPlugin extends AbstractPlugin{
         return store.get();
     }
 
+    public JavaScriptPlugin(){
+        contextFactory.addListener(new ArcContextListener());
+        ContextFactory.initGlobal(contextFactory);
+    }
+
     @Override public void init(){
         store = getStoredConfig("config", JavaScriptConfig.class);
         classShutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
         scriptProvider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
         );
+
+        contextFactory.setMaxRuntime(config().getMaxScriptRuntime());
 
         if(JAVA_SCRIPT_DIRECTORY.mkdirs()){
             // Copy the default init script
@@ -56,10 +66,6 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()).writeString("// Put your shutdown code here...\n");
         }
 
-        ContextFactory factory = new TimedContextFactory(config().getMaxScriptRuntime());
-        factory.addListener(new ArcContextListener());
-        ContextFactory.initGlobal(factory);
-
         Events.on(ContextCreatedEvent.class, e -> {
             e.ctx().setOptimizationLevel(9);
             e.ctx().setLanguageVersion(Context.VERSION_ES6);
@@ -68,17 +74,22 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             e.ctx().setClassShutter(classShutter);
         });
 
-        initScript = factory.call(ctx -> {
-            if(config().getInitScript().isBlank())
-                return ctx.compileString("\"use strict\";", "init.js", 0);
+        // Creates the init script
+        var context = Context.getCurrentContext();
+        if(context == null) context = Context.enter();
+
+        if(config().getInitScript().isBlank()){
+            initScript = context.compileString("\"use strict\";", "init.js", 0);
+        }else{
             final var script = JAVA_SCRIPT_DIRECTORY.child(config().getInitScript());
             try(final var reader = script.reader()){
-                return ctx.compileReader(reader, config().getInitScript(), 0);
+                initScript = context.compileReader(reader, config().getInitScript(), 0);
             }catch(IOException e){
                 throw new RuntimeException("Failed to compile the init script.", e);
             }
-        });
+        }
 
+        // Set up the global factory
         JavaScriptEngine.setGlobalFactory(() -> {
             var ctx = Context.getCurrentContext();
             if(ctx == null) ctx = Context.enter();
@@ -126,7 +137,7 @@ public final class JavaScriptPlugin extends AbstractPlugin{
             .handler(ctx -> {
                 try{
                     var obj = JavaScriptEngine.getInstance().eval(ctx.get("script"));
-                    ctx.getSender().sendMessage(JavaScriptEngine.toString(obj));
+                    ctx.getSender().sendMessage(MessageIntent.NONE, JavaScriptEngine.toString(obj));
                 }catch(ScriptException e){
                     ctx.getSender().sendMessage(e.getMessage());
                 }

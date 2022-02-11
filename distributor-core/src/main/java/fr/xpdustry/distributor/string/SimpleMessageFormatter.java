@@ -12,8 +12,6 @@ public final class SimpleMessageFormatter implements MessageFormatter{
     private static final SimpleMessageFormatter INSTANCE = new SimpleMessageFormatter();
     private static final CaptionVariableReplacementHandler HANDLER = new SimpleCaptionVariableReplacementHandler();
 
-    private SimpleMessageFormatter(){}
-
     public static SimpleMessageFormatter getInstance(){
         return INSTANCE;
     }
