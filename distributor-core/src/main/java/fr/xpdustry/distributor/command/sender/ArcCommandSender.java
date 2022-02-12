@@ -83,7 +83,7 @@ public abstract class ArcCommandSender implements TranslatingMessageReceiver{
     }
 
     /** @return the permissions of the sender */
-    public Collection<String> getPermissions(){
+    public @NotNull Collection<String> getPermissions(){
         return Collections.unmodifiableCollection(permissions);
     }
 }

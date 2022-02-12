@@ -13,7 +13,7 @@ import java.util.regex.*;
 public interface ColoringMessageFormatter extends MessageFormatter{
     Pattern CAPTION_VARIABLE_PATTERN = Pattern.compile("(\\{[\\w\\-]+})");
 
-    default @Override @NotNull String format(
+    @Override default @NotNull String format(
         final @NotNull MessageIntent intent,
         final @NotNull String message,
         final @Nullable Object... args
@@ -21,7 +21,7 @@ public interface ColoringMessageFormatter extends MessageFormatter{
         return prefix(intent) + Strings.format(message.replace("@", argument(intent, "@")), args);
     }
 
-    default @Override @NotNull String format(
+    @Override default @NotNull String format(
         final @NotNull MessageIntent intent,
         final @NotNull String message,
         final @NotNull CaptionVariable... vars

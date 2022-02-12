@@ -10,7 +10,7 @@ import org.jetbrains.annotations.*;
 /** This formatter performs basic formatting without any variations specified by {@link MessageIntent intents}. */
 public final class SimpleMessageFormatter implements MessageFormatter{
     private static final SimpleMessageFormatter INSTANCE = new SimpleMessageFormatter();
-    private static final CaptionVariableReplacementHandler HANDLER = new SimpleCaptionVariableReplacementHandler();
+    private final CaptionVariableReplacementHandler handler = new SimpleCaptionVariableReplacementHandler();
 
     public static SimpleMessageFormatter getInstance(){
         return INSTANCE;
@@ -29,6 +29,6 @@ public final class SimpleMessageFormatter implements MessageFormatter{
         final @NotNull String message,
         final @NotNull CaptionVariable... vars
     ){
-        return HANDLER.replaceVariables(message, vars);
+        return handler.replaceVariables(message, vars);
     }
 }

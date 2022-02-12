@@ -11,13 +11,13 @@ import java.util.function.*;
  * Holds a value and nothing else...
  */
 public class Holder<T>{
-    protected @Nullable T value;
+    private @Nullable T value;
 
     public Holder(){
         this.value = null;
     }
 
-    public Holder(@Nullable T value){
+    public Holder(final @Nullable T value){
         this.value = value;
     }
 
@@ -57,7 +57,7 @@ public class Holder<T>{
         return new Holder<>("");
     }
 
-    public void set(@Nullable T value){
+    public void set(final @Nullable T value){
         this.value = value;
     }
 

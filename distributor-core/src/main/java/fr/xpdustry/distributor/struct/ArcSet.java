@@ -8,21 +8,19 @@ import java.util.*;
 import java.util.function.*;
 
 
-/**
- * A {@link Set} view of a {@link ObjectSet}.
- */
+/** A {@link Set} view of a {@link ObjectSet}. */
 public class ArcSet<E> extends AbstractSet<E>{
     private final ObjectSet<E> set;
 
-    public ArcSet(@NotNull ObjectSet<E> set){
+    public ArcSet(final @NotNull ObjectSet<E> set){
         this.set = set;
     }
 
-    public ArcSet(int initial, float loadFactor){
+    public ArcSet(final int initial, final float loadFactor){
         this(new ObjectSet<>(initial, loadFactor));
     }
 
-    public ArcSet(int initial){
+    public ArcSet(final int initial){
         this(new ObjectSet<>(initial));
     }
 
@@ -30,7 +28,7 @@ public class ArcSet<E> extends AbstractSet<E>{
         this(new ObjectSet<>());
     }
 
-    @Override public void forEach(@NotNull Consumer<? super E> action){
+    @Override public void forEach(final @NotNull Consumer<? super E> action){
         set.forEach(action);
     }
 
@@ -47,7 +45,7 @@ public class ArcSet<E> extends AbstractSet<E>{
     }
 
     @SuppressWarnings("unchecked")
-    @Override public boolean contains(Object o){
+    @Override public boolean contains(final Object o){
         return set.contains((E)o);
     }
 
@@ -55,16 +53,17 @@ public class ArcSet<E> extends AbstractSet<E>{
         return set.asArray().toArray();
     }
 
-    @Override public <T> T[] toArray(@NotNull T[] a){
+    @SuppressWarnings("NullableProblems")
+    @Override public <T> T[] toArray(final @NotNull T[] a){
         return set.asArray().toArray(a.getClass().getComponentType());
     }
 
-    @Override public boolean add(E e){
+    @Override public boolean add(final E e){
         return set.add(e);
     }
 
     @SuppressWarnings("unchecked")
-    @Override public boolean remove(Object o){
+    @Override public boolean remove(final Object o){
         return set.remove((E)o);
     }
 
