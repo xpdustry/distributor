@@ -51,13 +51,11 @@ task runServer{
 task createRelease(dependsOn: requireClean){
     doLast{
         exec{
-            commandLine "git"
-            args "tag", "-a", "-s", "v$shared.version", "-F", "./CHANGELOG.md"
+            commandLine "git", "tag", "-as", "v$shared.version", "-F", "./CHANGELOG.md"
         }
 
         exec{
-            commandLine "git"
-            args "push", "origin", "--tags"
+            commandLine "git", "push", "origin", "--tags"
         }
     }
 }
@@ -147,8 +145,11 @@ allprojects{
         c.withVariantsFromConfiguration(configurations.shadowRuntimeElements){ skip() }
     }
 
-    // Disables the task cauz honestly, I don't care...
-    tasks.signMavenPublication.enabled(false)
+    signing {
+        def signingKey = findProperty("signingKey")
+        def signingPassword = findProperty("signingPassword")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+    }
 }
 
 
