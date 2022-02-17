@@ -1,20 +1,8 @@
-## This template
-/generated/
-
 ## Gradle
-.gradle/
-build/
-
-## Java
-*.class
-hs_err_pid*
-crash-report-*
-
-## Intellij
-.idea/
-*.ipr
-*.iws
-*.iml
+**/.gradle
+**/build/
+!src/**/build/
+!gradle-wrapper.jar
 
 ## Eclipse
 bin/
@@ -25,7 +13,25 @@ bin/
 .loadpath
 
 ## VSCode
-.vscode/
+.vscode/*
+
+## Java
+*.class
+*.jar
+*.war
+*.rar
+*.nar
+*.ear
+*.zip
+*.tar.gz
+hs_err_pid*
+replay_pid*
+
+## Intellij
+.idea/
+*.ipr
+*.iws
+*.iml
 
 ## OS Specific
 .DS_Store

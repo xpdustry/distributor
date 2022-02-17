@@ -1,8 +1,0 @@
-rootProject.name = "distributor"
-
-include "distributor-core"
-include "distributor-js"
-
-project(":distributor-js").with{
-    projectDir = file("distributor-script/distributor-js")
-}
