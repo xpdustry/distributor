@@ -53,7 +53,7 @@ dependencies {
 tasks.withType(JavaCompile::class.java).configureEach {
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
-        disable("MissingSummary")
+        disable("MissingSummary", "BadImport")
         if (!name.contains("test", true)) {
             check("NullAway", CheckSeverity.ERROR)
             option("NullAway:AnnotatedPackages", "fr.xpdustry.distributor")

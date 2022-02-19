@@ -43,6 +43,7 @@ public class ArcClientSender extends ArcCommandSender {
     player.sendMessage(getFormatter().format(intent, message, args));
   }
 
+  @Override
   public void sendMessage(final @NotNull MessageIntent intent, final @NotNull String message, final @NotNull CaptionVariable... vars) {
     player.sendMessage(getFormatter().format(intent, message, vars));
   }
