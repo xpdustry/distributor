@@ -1,2 +1,3 @@
 - New features and improvements of the string API.
 - Complete localization API overhaul.
+- Removal of CommandExceptionHandler classes with their package `fr.xpdustry.distributor.command.exception`.

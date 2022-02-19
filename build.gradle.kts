@@ -1,11 +1,8 @@
-import groovy.json.JsonSlurper
-
 plugins {
     id("distributor.parent-build-logic")
 }
 
-@Suppress("UNCHECKED_CAST")
-val metadata = JsonSlurper().parse(file("global-plugin.json")) as Map<String, Any>
+val metadata = readJson(file("global-plugin.json"))
 
 group = "fr.xpdustry"
 version = (metadata["version"] as String) + if (indraGit.headTag() == null) "-SNAPSHOT" else ""

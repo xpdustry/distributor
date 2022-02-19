@@ -1,89 +1,69 @@
 package fr.xpdustry.distributor.command.sender;
 
-import mindustry.gen.*;
-
-import fr.xpdustry.distributor.localization.*;
-import fr.xpdustry.distributor.string.*;
-
-
-import org.jetbrains.annotations.*;
-
-import java.util.*;
+import fr.xpdustry.distributor.string.MessageFormatter;
+import fr.xpdustry.distributor.string.MessageReceiver;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import mindustry.gen.Player;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
  * This class represents the command sender, it can be either the console or a player.
  */
-public abstract class ArcCommandSender implements TranslatingMessageReceiver{
-    private final Translator translator;
-    private final MessageFormatter formatter;
-    private final Collection<String> permissions = new HashSet<>();
+public abstract class ArcCommandSender implements MessageReceiver {
 
-    public ArcCommandSender(final @NotNull Translator translator, final @NotNull MessageFormatter formatter){
-        this.translator = translator;
-        this.formatter = formatter;
-    }
+  private final MessageFormatter formatter;
+  private final Collection<String> permissions = new HashSet<>();
 
-    public ArcCommandSender(){
-        this(Translator.empty(), MessageFormatter.simple());
-    }
+  public ArcCommandSender(final @NotNull MessageFormatter formatter) {
+    this.formatter = formatter;
+  }
 
-    /** @return whether the sender is a player or not */
-    public abstract boolean isPlayer();
+  public ArcCommandSender() {
+    this(MessageFormatter.simple());
+  }
 
-    /**
-     * Return the player representation of the sender.
-     * This method may only be called safely if {@link #isPlayer()} returns true.
-     *
-     * @return the player representation of the sender
-     *
-     * @throws UnsupportedOperationException if the sender does not support this operation
-     */
-    public abstract @NotNull Player asPlayer();
+  public abstract boolean isPlayer();
 
-    /** @return the locale of the sender */
-    public abstract @NotNull Locale getLocale();
+  /**
+   * Returns the internal {@link Player} instance of this command sender. This method may only be called safely if
+   * {@link #isPlayer()} returns true.
+   *
+   * @return the player representation of the sender
+   * @throws UnsupportedOperationException if the sender does not support this operation
+   */
+  public abstract @NotNull Player asPlayer();
 
-    /**
-     * Check if the sender has a permission.
-     *
-     * @param permission the permission
-     * @return whether the sender has the permission or not, or return true if the permission is blank
-     *
-     * @see cloud.commandframework.CommandManager#hasPermission(Object, String)
-     */
-    public boolean hasPermission(final @NotNull String permission){
-        return permission.isBlank() || permissions.contains(permission);
-    }
+  public abstract @NotNull Locale getLocale();
 
-    /**
-     * Add a permission to the sender.
-     *
-     * @param permission the permission
-     */
-    public void addPermission(final @NotNull String permission){
-        permissions.add(permission);
-    }
+  /**
+   * Checks if the sender has a permission.
+   *
+   * @param permission the permission
+   * @return whether the sender has the permission or not, or return true if the permission is blank
+   * @see cloud.commandframework.CommandManager#hasPermission(Object, String)
+   */
+  public boolean hasPermission(final @NotNull String permission) {
+    return permission.isBlank() || permissions.contains(permission);
+  }
 
-    /**
-     * Remove a permission from the sender.
-     *
-     * @param permission the permission
-     */
-    public void removePermission(final @NotNull String permission){
-        permissions.remove(permission);
-    }
+  public void addPermission(final @NotNull String permission) {
+    permissions.add(permission);
+  }
 
-    public @NotNull Translator getTranslator(){
-        return translator;
-    }
+  public void removePermission(final @NotNull String permission) {
+    permissions.remove(permission);
+  }
 
-    public @NotNull MessageFormatter getFormatter(){
-        return formatter;
-    }
+  public @NotNull MessageFormatter getFormatter() {
+    return formatter;
+  }
 
-    /** @return the permissions of the sender */
-    public @NotNull Collection<String> getPermissions(){
-        return Collections.unmodifiableCollection(permissions);
-    }
+  /** Returns an unmodifiable view of the permissions of this command sender. */
+  public @NotNull Collection<String> getPermissions() {
+    return Collections.unmodifiableCollection(permissions);
+  }
 }

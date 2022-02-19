@@ -1,6 +1,5 @@
 import fr.xpdustry.toxopid.extension.ModTarget
 import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper
 import net.ltgt.gradle.errorprone.CheckSeverity
 import net.ltgt.gradle.errorprone.errorprone
 
@@ -12,11 +11,7 @@ plugins {
     id("net.kyori.indra.checkstyle")
 }
 
-@Suppress("UNCHECKED_CAST")
-fun readJSON(file: File): Map<String, Any> =
-    JsonSlurper().parse(file) as Map<String, Any>
-
-val parentMetadata = readJSON(file("$rootDir/global-plugin.json"))
+val parentMetadata = readJson(file("$rootDir/global-plugin.json"))
 
 indra {
     checkstyle("9.3")
@@ -48,8 +43,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
 
-    // Static Analysis
-    compileOnly("org.jetbrains:annotations:23.0.0")
+    val jetbrains = "23.0.0"
+    compileOnly("org.jetbrains:annotations:$jetbrains")
+    testCompileOnly("org.jetbrains:annotations:$jetbrains")
     annotationProcessor("com.uber.nullaway:nullaway:0.9.4")
     errorprone("com.google.errorprone:error_prone_core:2.10.0")
 }
@@ -71,7 +67,7 @@ tasks.create("getArtifactPath") {
 
 tasks.named<Jar>("shadowJar") {
     val file = temporaryDir.resolve("plugin.json")
-    val localMetadata = readJSON(file("$projectDir/local-plugin.json"))
+    val localMetadata = readJson(file("$projectDir/local-plugin.json"))
     file.writeText(JsonBuilder(localMetadata + parentMetadata).toPrettyString())
     from(file)
 }

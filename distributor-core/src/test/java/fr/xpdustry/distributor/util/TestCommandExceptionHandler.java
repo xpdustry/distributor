@@ -1,19 +1,20 @@
 package fr.xpdustry.distributor.util;
 
-import fr.xpdustry.distributor.command.exception.*;
-import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.command.sender.ArcCommandSender;
+import java.util.function.BiConsumer;
+import org.jetbrains.annotations.Nullable;
 
-import org.jetbrains.annotations.*;
 
+public class TestCommandExceptionHandler<E extends Throwable> implements BiConsumer<ArcCommandSender, E> {
 
-public class TestCommandExceptionHandler<E extends Throwable> implements CommandExceptionHandler<E>{
-    private @Nullable E lastException = null;
+  private @Nullable E lastException = null;
 
-    @Override public void accept(ArcCommandSender sender, E e){
-        this.lastException = e;
-    }
+  @Override
+  public void accept(ArcCommandSender sender, E e) {
+    this.lastException = e;
+  }
 
-    public @Nullable E getLastException(){
-        return lastException;
-    }
+  public @Nullable E getLastException() {
+    return lastException;
+  }
 }

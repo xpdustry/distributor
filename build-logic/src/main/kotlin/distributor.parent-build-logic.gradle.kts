@@ -7,7 +7,7 @@ tasks.create("createRelease") {
 
     doLast {
         exec {
-            commandLine(arrayListOf("git", "tag", "-as", "v${project.version}", "-F", "./CHANGELOG.md"))
+            commandLine("git", "tag", "-as", "v${project.version}", "-F", "./CHANGELOG.md")
         }
 
         exec {

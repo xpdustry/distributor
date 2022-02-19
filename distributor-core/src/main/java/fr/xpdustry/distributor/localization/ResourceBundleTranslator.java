@@ -1,25 +1,36 @@
 package fr.xpdustry.distributor.localization;
 
 
-import org.jetbrains.annotations.*;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.ResourceBundle.Control;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
 
+public class ResourceBundleTranslator implements Translator {
 
-public class ResourceBundleTranslator implements Translator{
-    private final String baseName;
-    private final ClassLoader loader;
+  private final String baseName;
+  private final ClassLoader loader;
+  private final @Nullable Control control;
 
-    public ResourceBundleTranslator(final @NotNull String baseName, final @NotNull ClassLoader loader){
-        this.baseName = baseName;
-        this.loader = loader;
+  public ResourceBundleTranslator(final @NotNull String baseName, final @NotNull ClassLoader loader, final @Nullable Control control) {
+    this.baseName = baseName;
+    this.loader = loader;
+    this.control = control;
+  }
+
+  @Override
+  public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale) {
+    try {
+      final var bundle = control == null
+        ? ResourceBundle.getBundle(baseName, locale, loader)
+        : ResourceBundle.getBundle(baseName, locale, loader, control);
+
+      return bundle.getString(key);
+    } catch (MissingResourceException e) {
+      return null;
     }
-
-    @Override public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale){
-        try{
-            return ResourceBundle.getBundle(baseName, locale, loader).getString(key);
-        }catch(MissingResourceException e){
-            return null;
-        }
-    }
+  }
 }

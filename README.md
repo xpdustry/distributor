@@ -6,17 +6,18 @@
 
 ## Description
 
-**Distributor** is a Plugin framework which provides a powerful command system, better Mindustry API bindings and other nice features, making plugin development time much faster.
+**Distributor** is a Plugin framework which provides a powerful command system, better Mindustry API
+bindings and other nice features, making plugin development time much faster.
 
 Here is the list of the available modules:
-| name | description |
-|-|-|
-| `distributor-core`    | The core library needed by all distributor modules. |
-| `distributor-js`      | This module provides a better javascript management with class blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
+| name | description | |-|-| | `distributor-core`    | The core library needed by all distributor
+modules. | | `distributor-js`      | This module provides a better javascript management with class
+blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
 
 ## Usage
 
-To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such as:
+To develop a plugin using Distributor, you will first need to add the Xpdustry repository in
+your `build.gradle` such as:
 
 ```gradle
 repositories{
@@ -34,7 +35,8 @@ dependencies{
 }
 ```
 
-After that, add the internal name of the Distributor module you are using in your `plugin.json`, such as:
+After that, add the internal name of the Distributor module you are using in your `plugin.json`,
+such as:
 
 ```json
 {
@@ -44,7 +46,8 @@ After that, add the internal name of the Distributor module you are using in you
 }
 ```
 
-Finally, when you are ready for testing, put the necessary Distributor jars in your `config/mods` and your plugin.
+Finally, when you are ready for testing, put the necessary Distributor jars in your `config/mods`
+and your plugin.
 > If you used the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
 
 > If you used the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).

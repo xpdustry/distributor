@@ -1,20 +1,18 @@
 package fr.xpdustry.distributor.localization;
 
 
-import org.jetbrains.annotations.*;
+import java.util.Locale;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
 
+final class RouterTranslator implements Translator {
 
-public final class RouterTranslator implements Translator {
-    private static final Locale ROUTER_LOCALE = new Locale("router");
-    private static final RouterTranslator INSTANCE = new RouterTranslator();
+  static final Locale ROUTER_LOCALE = new Locale("router");
+  static final RouterTranslator INSTANCE = new RouterTranslator();
 
-    public static RouterTranslator getInstance(){
-        return INSTANCE;
-    }
-
-    @Override public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale){
-        return locale.equals(ROUTER_LOCALE) ? "router" : null;
-    }
+  @Override
+  public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale) {
+    return locale.equals(ROUTER_LOCALE) ? "router" : null;
+  }
 }

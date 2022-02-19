@@ -1,29 +1,29 @@
 package fr.xpdustry.distributor.localization;
 
-import mindustry.gen.*;
+import cloud.commandframework.captions.Caption;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import cloud.commandframework.captions.*;
-import org.jetbrains.annotations.*;
 
-import java.util.*;
+public interface Translator {
 
+  static Translator ofBundle(final @NotNull String baseName, final @NotNull ClassLoader loader, final @Nullable ResourceBundle.Control control) {
+    return new ResourceBundleTranslator(baseName, loader, control);
+  }
 
-public interface Translator{
-    static Locale getPlayerLocale(final @NotNull Player player){
-        return Locale.forLanguageTag(player.locale().replace('_', '-'));
-    }
+  static Translator ofBundle(final @NotNull String baseName, final @NotNull ClassLoader loader) {
+    return ofBundle(baseName, loader, null);
+  }
 
-    static Translator empty(){
-        return EmptyTranslator.getInstance();
-    }
+  static Translator router() {
+    return RouterTranslator.INSTANCE;
+  }
 
-    static Translator router(){
-        return RouterTranslator.getInstance();
-    }
+  @Nullable String translate(final @NotNull String key, final @NotNull Locale locale);
 
-    @Nullable String translate(final @NotNull String key, final @NotNull Locale locale);
-
-    default @Nullable String translate(final @NotNull Caption caption, final @NotNull Locale locale){
-        return translate(caption.getKey(), locale);
-    }
+  default @Nullable String translate(final @NotNull Caption caption, final @NotNull Locale locale) {
+    return translate(caption.getKey(), locale);
+  }
 }

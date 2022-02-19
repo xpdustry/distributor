@@ -1,13 +1,15 @@
 package fr.xpdustry.distributor.util;
 
-import mindustry.gen.*;
+import mindustry.gen.Player;
 
 
-public class TestPlayer extends Player{
-    public TestPlayer(){
-    }
+public class TestPlayer extends Player {
 
-    @Override public void sendMessage(String text){
-        lastText = text;
-    }
+  public TestPlayer() {
+  }
+
+  @Override
+  public void sendMessage(String text) {
+    lastText = text;
+  }
 }

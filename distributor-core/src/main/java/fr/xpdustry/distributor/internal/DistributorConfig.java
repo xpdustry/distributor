@@ -1,10 +1,11 @@
 package fr.xpdustry.distributor.internal;
 
-import org.aeonbits.owner.*;
+import org.aeonbits.owner.Accessible;
 
 
-public interface DistributorConfig extends Accessible{
-    @DefaultValue("1")
-    @Key("distributor.service.threads")
-    int getServiceThreadCount();
+public interface DistributorConfig extends Accessible {
+
+  @DefaultValue("1")
+  @Key("distributor.service.threads")
+  int getServiceThreadCount();
 }
