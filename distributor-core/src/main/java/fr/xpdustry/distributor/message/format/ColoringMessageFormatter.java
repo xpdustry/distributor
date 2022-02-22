@@ -1,12 +1,12 @@
-package fr.xpdustry.distributor.string;
+package fr.xpdustry.distributor.message.format;
 
 import arc.struct.Seq;
 import arc.util.Nullable;
 import arc.util.Strings;
 import cloud.commandframework.captions.CaptionVariable;
+import fr.xpdustry.distributor.message.MessageIntent;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
-
 
 public interface ColoringMessageFormatter extends MessageFormatter {
 
@@ -31,9 +31,7 @@ public interface ColoringMessageFormatter extends MessageFormatter {
     final var builder = new StringBuilder();
     final var matcher = CAPTION_VARIABLE_PATTERN.matcher(message);
 
-    while (matcher.find()) {
-      matcher.appendReplacement(builder, argument(intent, map.get(matcher.group(), "???")));
-    }
+    while (matcher.find()) matcher.appendReplacement(builder, argument(intent, map.get(matcher.group(), "???")));
     matcher.appendTail(builder);
 
     return prefix(intent) + builder;

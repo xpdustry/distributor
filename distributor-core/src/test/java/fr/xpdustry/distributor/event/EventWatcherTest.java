@@ -10,21 +10,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-
 public class EventWatcherTest {
 
   private Object event;
   private Holder<Integer> holder;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     event = new Object();
     holder = Holder.getInt();
   }
 
   @ParameterizedTest
   @ValueSource(strings = {"CONS", "RUNNABLE"})
-  public void test_event_fire(String type) {
+  void test_event_fire(String type) {
     final var watcher = getWatcher(type);
 
     Events.fire(event);
@@ -45,9 +44,8 @@ public class EventWatcherTest {
     assertEquals(1, holder.get());
   }
 
-
   @SuppressWarnings("ConstantConditions")
-  public EventWatcher<Object> getWatcher(String type) {
+  EventWatcher<Object> getWatcher(String type) {
     return switch (type) {
       case "CONS" -> new EventWatcher<>(Object.class, o -> holder.set(holder.get() + 1));
       case "RUNNABLE" -> new EventWatcher<>(event, () -> holder.set(holder.get() + 1));

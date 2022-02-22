@@ -51,3 +51,7 @@ and your plugin.
 > If you used the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
 
 > If you used the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).
+
+## Credits
+
+The translation system is based on the one you can find in [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).

@@ -6,6 +6,9 @@ import fr.xpdustry.distributor.localization.Translator;
 import java.util.function.BiFunction;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A message provider backed by a {@link Translator} for a {@link cloud.commandframework.captions.CaptionRegistry}.
+ */
 public final class TranslatorMessageProvider implements BiFunction<Caption, ArcCommandSender, String> {
 
   private final Translator translator;

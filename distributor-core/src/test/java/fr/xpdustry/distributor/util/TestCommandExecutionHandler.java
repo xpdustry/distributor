@@ -5,7 +5,6 @@ import cloud.commandframework.execution.CommandExecutionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 public class TestCommandExecutionHandler<C> implements CommandExecutionHandler<C> {
 
   private @Nullable CommandContext<C> lastContext = null;

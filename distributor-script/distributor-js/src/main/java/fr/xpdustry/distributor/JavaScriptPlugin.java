@@ -15,7 +15,7 @@ import fr.xpdustry.distributor.plugin.AbstractPlugin;
 import fr.xpdustry.distributor.script.js.JavaScriptEngine;
 import fr.xpdustry.distributor.script.js.RegexClassShutter;
 import fr.xpdustry.distributor.script.js.TimedContextFactory;
-import fr.xpdustry.distributor.string.MessageIntent;
+import fr.xpdustry.distributor.message.MessageIntent;
 import java.io.IOException;
 import java.util.Collections;
 import mindustry.Vars;
@@ -30,9 +30,9 @@ import rhino.module.ModuleScriptProvider;
 import rhino.module.provider.SoftCachingModuleScriptProvider;
 import rhino.module.provider.UrlModuleSourceProvider;
 
-
 @SuppressWarnings("NullAway.Init")
 public final class JavaScriptPlugin extends AbstractPlugin {
+  // TODO make a base implementation using JSR-235
 
   public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 
@@ -150,8 +150,9 @@ public final class JavaScriptPlugin extends AbstractPlugin {
       .argument(StringArgument.greedy("script"))
       .handler(ctx -> {
         try {
-          var obj = JavaScriptEngine.getInstance().eval(ctx.get("script"));
-          ctx.getSender().sendMessage(MessageIntent.NONE, JavaScriptEngine.toString(obj));
+          final var obj = JavaScriptEngine.getInstance().eval(ctx.get("script"));
+          final var formatter = Distributor.getMessageFormatter(ctx.getSender());
+          ctx.getSender().sendMessage(formatter.format(MessageIntent.NONE, JavaScriptEngine.toString(obj)));
         } catch (ScriptException e) {
           ctx.getSender().sendMessage(e.getMessage());
         }

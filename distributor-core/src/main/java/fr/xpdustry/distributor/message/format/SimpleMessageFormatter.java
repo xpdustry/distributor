@@ -1,12 +1,12 @@
-package fr.xpdustry.distributor.string;
+package fr.xpdustry.distributor.message.format;
 
 import arc.util.Nullable;
 import arc.util.Strings;
 import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.captions.CaptionVariableReplacementHandler;
 import cloud.commandframework.captions.SimpleCaptionVariableReplacementHandler;
+import fr.xpdustry.distributor.message.MessageIntent;
 import org.jetbrains.annotations.NotNull;
-
 
 /**
  * This formatter performs basic formatting without any variations specified by {@link MessageIntent intents}.
@@ -15,6 +15,9 @@ public final class SimpleMessageFormatter implements MessageFormatter {
 
   private static final SimpleMessageFormatter INSTANCE = new SimpleMessageFormatter();
   private static final CaptionVariableReplacementHandler HANDLER = new SimpleCaptionVariableReplacementHandler();
+
+  private SimpleMessageFormatter() {
+  }
 
   public static SimpleMessageFormatter getInstance() {
     return INSTANCE;

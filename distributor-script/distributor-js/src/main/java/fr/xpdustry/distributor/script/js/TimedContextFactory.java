@@ -7,7 +7,6 @@ import rhino.Context;
 import rhino.ContextFactory;
 import rhino.Scriptable;
 
-
 /**
  * @see rhino.ContextFactory
  */

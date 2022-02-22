@@ -21,7 +21,6 @@ import rhino.module.ModuleScriptProvider;
 import rhino.module.Require;
 import rhino.module.RequireBuilder;
 
-
 public class JavaScriptEngine implements AutoCloseable {
 
   private static Supplier<JavaScriptEngine> factory = () -> {

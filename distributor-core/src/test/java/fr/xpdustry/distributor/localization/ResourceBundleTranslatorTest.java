@@ -1,13 +1,11 @@
-package fr.xpdustry.distributor.string;
+package fr.xpdustry.distributor.localization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import fr.xpdustry.distributor.localization.ResourceBundleTranslator;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 
 public class ResourceBundleTranslatorTest {
 

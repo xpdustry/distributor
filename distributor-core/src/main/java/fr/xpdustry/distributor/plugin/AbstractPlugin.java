@@ -15,22 +15,21 @@ import org.aeonbits.owner.Accessible;
 import org.aeonbits.owner.Factory;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
- * Abstract plugin class for plugins using Distributor. Be aware that ALL THE METHODS LISTED IN THIS CLASS HAVE TO BE
- * CALLED IN OR AFTER {@link #init()}. NOT IN THE CONSTRUCTOR.
+ * Abstract plugin class for plugins using Distributor. Be aware that ALL THE METHODS LISTED IN THIS CLASS HAVE TO BE CALLED IN OR AFTER
+ * {@link #init()}. NOT IN THE CONSTRUCTOR.
  */
 public abstract class AbstractPlugin extends Plugin {
 
   /**
-   * @return the {@link LoadedMod} containing the plugin
+   * Returns the {@link LoadedMod} containing the plugin.
    */
   public @NotNull LoadedMod asLoadedMod() {
     return Vars.mods.list().find(m -> m.main == this);
   }
 
   /**
-   * @return the root directory of the plugin, {@code ./distributor/plugins/{plugin-name}} by default.
+   * Returns the root directory of the plugin, {@code ./distributor/plugins/{plugin-name}} by default.
    */
   public @NotNull Fi getDirectory() {
     return new Fi("./distributor/plugins/" + asLoadedMod().name);
@@ -123,8 +122,7 @@ public abstract class AbstractPlugin extends Plugin {
   }
 
   /**
-   * Method called after {@link #init()} to register commands in the server and client command manager, and configure
-   * them.
+   * Method called after {@link #init()} to register commands in the server and client command manager, and configure them.
    *
    * @param manager the command manager
    */

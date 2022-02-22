@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import java.net.URL
 import fr.xpdustry.toxopid.task.MindustryExec
 import java.io.BufferedReader
 import java.io.IOException
+import java.net.URL
 
 plugins {
     id("distributor.base-conventions")
@@ -29,7 +29,7 @@ tasks.named<ShadowJar>("shadowJar") {
             val mindustryVersion = readJson(file("$rootDir/global-plugin.json"))["minGameVersion"] as String
             URL("https://raw.githubusercontent.com/Anuken/Mindustry/$mindustryVersion/core/assets/scripts/global.js").openStream().bufferedReader()
         } catch (e: IOException) {
-            logger.warn("WARNING, unable to read the remote global.js, the import file will be empty...")
+            logger.warn("WARNING, unable to read the remote global.js, the init.js file will only contain base.js...")
             BufferedReader.nullReader()
         }
 

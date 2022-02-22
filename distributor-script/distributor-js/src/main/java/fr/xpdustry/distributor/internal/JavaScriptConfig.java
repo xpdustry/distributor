@@ -3,7 +3,6 @@ package fr.xpdustry.distributor.internal;
 import java.util.List;
 import org.aeonbits.owner.Accessible;
 
-
 public interface JavaScriptConfig extends Accessible {
 
   @DefaultValue("init.js")

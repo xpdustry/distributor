@@ -1,10 +1,8 @@
 package fr.xpdustry.distributor.script.js;
 
-
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 import rhino.ClassShutter;
-
 
 /**
  * This is a {@link ClassShutter} backed by 2 regexes. One act as the blacklist and the other the whitelist.

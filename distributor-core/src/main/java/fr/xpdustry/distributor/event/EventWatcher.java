@@ -8,7 +8,6 @@ import arc.util.Reflect;
 import java.util.EventListener;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * A utility class for dynamically register/unregister an event listener from {@link Events}.
  *

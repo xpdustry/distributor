@@ -7,8 +7,11 @@ import arc.struct.Seq;
 import arc.util.CommandHandler;
 import arc.util.Log;
 import cloud.commandframework.captions.Caption;
+import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.captions.FactoryDelegatingCaptionRegistry;
 import cloud.commandframework.captions.StandardCaptionKeys;
+import cloud.commandframework.exceptions.InvalidSyntaxException;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.services.ServicePipeline;
 import fr.xpdustry.distributor.command.ArcCommandManager;
 import fr.xpdustry.distributor.command.ArcPermission;
@@ -16,17 +19,16 @@ import fr.xpdustry.distributor.command.caption.ArcCaptionKeys;
 import fr.xpdustry.distributor.command.caption.TranslatorMessageProvider;
 import fr.xpdustry.distributor.command.processor.CommandPermissionPreprocessor;
 import fr.xpdustry.distributor.command.sender.ArcClientSender;
-import fr.xpdustry.distributor.command.sender.ArcClientSender.ClientMessageFormatter;
+import fr.xpdustry.distributor.message.MessageIntent;
+import fr.xpdustry.distributor.message.format.ClientMessageFormatter;
 import fr.xpdustry.distributor.command.sender.ArcCommandSender;
 import fr.xpdustry.distributor.command.sender.ArcServerSender;
-import fr.xpdustry.distributor.command.sender.ArcServerSender.ServerMessageFormatter;
+import fr.xpdustry.distributor.message.format.ServerMessageFormatter;
 import fr.xpdustry.distributor.internal.DistributorConfig;
 import fr.xpdustry.distributor.localization.GlobalTranslator;
-import fr.xpdustry.distributor.localization.ResourceBundleTranslator;
-import fr.xpdustry.distributor.localization.SimpleGlobalTranslator;
 import fr.xpdustry.distributor.localization.Translator;
 import fr.xpdustry.distributor.plugin.AbstractPlugin;
-import fr.xpdustry.distributor.string.MessageFormatter;
+import fr.xpdustry.distributor.message.format.MessageFormatter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,42 +40,41 @@ import mindustry.server.ServerControl;
 import net.mindustry_ddns.store.FileStore;
 import org.jetbrains.annotations.NotNull;
 
-
 @SuppressWarnings("NullAway.Init")
 public final class Distributor extends AbstractPlugin {
 
   public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
 
-  private static final GlobalTranslator globalTranslator = new SimpleGlobalTranslator();
+  private static final GlobalTranslator globalTranslator = Translator.global();
   private static FileStore<DistributorConfig> config;
   private static ServicePipeline servicePipeline;
 
   private static ArcCommandManager serverCommandManager;
   private static ArcCommandManager clientCommandManager;
 
-  private static MessageFormatter serverMessageFormatter = new ServerMessageFormatter();
-  private static MessageFormatter clientMessageFormatter = new ClientMessageFormatter();
+  private static MessageFormatter serverMessageFormatter = MessageFormatter.server();
+  private static MessageFormatter clientMessageFormatter = MessageFormatter.client();
 
   public static GlobalTranslator getGlobalTranslator() {
     return globalTranslator;
   }
 
   /**
-   * @return Distributor internal config
+   * Returns Distributor internal config.
    */
   public static FileStore<DistributorConfig> config() {
     return config;
   }
 
   /**
-   * @return the {@link ServerControl} instance
+   * Returns the {@link ServerControl} instance.
    */
   public static ServerControl getServer() {
     return (ServerControl) Core.app.getListeners().find(listener -> listener instanceof ServerControl);
   }
 
   /**
-   * @return the service pipeline of distributor
+   * Returns the service pipeline of distributor.
    */
   public static ServicePipeline getServicePipeline() {
     return servicePipeline;
@@ -103,15 +104,18 @@ public final class Distributor extends AbstractPlugin {
     Distributor.clientMessageFormatter = formatter;
   }
 
+  public static MessageFormatter getMessageFormatter(final @NotNull ArcCommandSender sender) {
+    return sender.isPlayer() ? getClientMessageFormatter() : getServerMessageFormatter();
+  }
+
   @Override
   public void init() {
     // A nice Banner :^)
     try (final var in = getClass().getClassLoader().getResourceAsStream("banner.txt")) {
-      if (in != null) {
-        final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-        reader.lines().forEach(line -> Log.info(" &c&fb>&fr @", line));
-        Log.info(" &c&fb>&fr Loaded Distributor core v@", asLoadedMod().meta.version);
-      }
+      if (in == null) throw new IOException("banner.txt can't be found.");
+      final var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+      reader.lines().forEach(line -> Log.info(" &c&fb>&fr @", line));
+      Log.info(" &c&fb>&fr Loaded Distributor core v@", asLoadedMod().meta.version);
     } catch (IOException e) {
       Log.debug("Distributor failed to show the banner.", e);
     }
@@ -134,8 +138,8 @@ public final class Distributor extends AbstractPlugin {
     clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
 
     // Setup command sender mappers
-    serverCommandManager.setCommandSenderMapper(p -> new ArcServerSender(getServerMessageFormatter()));
-    clientCommandManager.setCommandSenderMapper(p -> new ArcClientSender(p, getClientMessageFormatter()));
+    serverCommandManager.setCommandSenderMapper(p -> new ArcServerSender());
+    clientCommandManager.setCommandSenderMapper(ArcClientSender::new);
 
     // Add localization support via Captions
     final var translator = TranslatorMessageProvider.of(getGlobalTranslator());
@@ -166,7 +170,14 @@ public final class Distributor extends AbstractPlugin {
   @Override
   public void registerSharedCommands(final @NotNull ArcCommandManager manager) {
     manager.registerCommandPreProcessor(CommandPermissionPreprocessor.of(
-      ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.asPlayer().admin())
+      ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.getPlayer().admin())
     ));
+
+    // TODO Continue ?
+    manager.registerExceptionHandler(InvalidSyntaxException.class, (s, e) -> {
+      final var message = manager.getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_INVALID_SYNTAX, s);
+      final var formatter = s.isPlayer() ? getClientMessageFormatter() : getServerMessageFormatter();
+      s.sendMessage(formatter.format(MessageIntent.ERROR, message, CaptionVariable.of("syntax", e.getCorrectSyntax())));
+    });
   }
 }

@@ -1,8 +1,6 @@
 package fr.xpdustry.distributor.exception;
 
-
 import org.jetbrains.annotations.NotNull;
-
 
 /**
  * This class is a wrapper for rhino exceptions.

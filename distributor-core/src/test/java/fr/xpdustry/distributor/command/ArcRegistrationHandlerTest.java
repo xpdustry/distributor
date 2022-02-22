@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-
 public class ArcRegistrationHandlerTest {
 
   private CommandHandler handler;
@@ -23,14 +22,14 @@ public class ArcRegistrationHandlerTest {
   private TestCommandExecutionHandler<ArcCommandSender> executor;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     handler = new CommandHandler("/");
     manager = new ArcCommandManager(handler);
     executor = new TestCommandExecutionHandler<>();
   }
 
   @Test
-  public void test_register_native_command() {
+  void test_register_native_command() {
     manager.command(manager.commandBuilder("bob", "b"));
     manager.command(manager.commandBuilder("marine", "m"));
     manager.command(manager.commandBuilder("ashley", "a"));
@@ -42,7 +41,7 @@ public class ArcRegistrationHandlerTest {
   }
 
   @Test
-  public void test_native_command_override() {
+  void test_native_command_override() {
     final var command = handler.register("execute", "Execute something...", (args, parameter) -> {
     });
 
@@ -52,7 +51,7 @@ public class ArcRegistrationHandlerTest {
   }
 
   @Test
-  public void test_native_command_execution() {
+  void test_native_command_execution() {
     manager.command(manager.commandBuilder("test").handler(executor));
     manager.handleCommand("test");
     assertNotNull(executor.getLastContext());
@@ -60,7 +59,7 @@ public class ArcRegistrationHandlerTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"[args...]", "<a> <b> <c>"})
-  public void test_native_command_arguments(String parameters) {
+  void test_native_command_arguments(String parameters) {
     final var input = "test 12 78 09";
 
     manager.command(manager.commandBuilder("test")

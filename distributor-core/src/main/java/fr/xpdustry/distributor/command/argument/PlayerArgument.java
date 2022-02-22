@@ -19,7 +19,6 @@ import mindustry.gen.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 /**
  * A command argument for an online {@link Player}.
  *
@@ -38,7 +37,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   }
 
   /**
-   * Create a new {@link Builder}.
+   * Creates a new {@link Builder}.
    *
    * @param name the name of the argument
    * @param <C>  the command sender type
@@ -49,7 +48,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   }
 
   /**
-   * Create a new required {@link PlayerArgument}.
+   * Creates a new required {@link PlayerArgument}.
    *
    * @param name the name of the argument
    * @param <C>  the command sender type
@@ -60,7 +59,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   }
 
   /**
-   * Create a new optional {@link PlayerArgument}.
+   * Creates a new optional {@link PlayerArgument}.
    *
    * @param name the name of the argument
    * @param <C>  the command sender type
@@ -70,6 +69,11 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     return PlayerArgument.<C>newBuilder(name).asOptional().build();
   }
 
+  /**
+   * The internal builder class of {@link PlayerArgument}.
+   *
+   * @param <C> the command sender type
+   */
   public static final class Builder<C> extends CommandArgument.Builder<C, Player> {
 
     private Builder(final @NotNull String name) {
@@ -77,7 +81,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
 
     /**
-     * Build a new {@link PlayerArgument}.
+     * Builds a new {@link PlayerArgument}.
      *
      * @return the constructed player argument
      */
@@ -93,6 +97,11 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
   }
 
+  /**
+   * An argument parser that outputs an online {@link Player}.
+   *
+   * @param <C> the command sender type
+   */
   public static final class PlayerParser<C> implements ArgumentParser<C, Player> {
 
     @Override
@@ -123,6 +132,9 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
   }
 
+  /**
+   * Exception thrown when no players have been found for the corresponding input.
+   */
   public static final class PlayerParseException extends ParserException {
 
     @Serial
@@ -130,7 +142,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     private final String input;
 
     /**
-     * Create a new {@link PlayerParseException}.
+     * Creates a new {@link PlayerParseException}.
      *
      * @param input the input string
      * @param ctx   the command context
@@ -141,7 +153,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
 
     /**
-     * @return the input string
+     * Returns the input string.
      */
     public @NotNull String getInput() {
       return this.input;

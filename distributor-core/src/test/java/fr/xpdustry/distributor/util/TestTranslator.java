@@ -7,7 +7,6 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 public class TestTranslator implements Translator {
 
   private final Map<String, String> translations = new HashMap<>();

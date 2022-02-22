@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * A {@link List} view of a {@link Seq}.
  *

@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * A {@link Set} view of a {@link ObjectSet}.
  *

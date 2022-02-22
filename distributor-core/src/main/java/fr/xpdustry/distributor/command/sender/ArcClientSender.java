@@ -1,26 +1,22 @@
 package fr.xpdustry.distributor.command.sender;
 
-import cloud.commandframework.captions.CaptionVariable;
-import fr.xpdustry.distributor.string.ColoringMessageFormatter;
-import fr.xpdustry.distributor.string.MessageFormatter;
-import fr.xpdustry.distributor.string.MessageIntent;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
 import mindustry.gen.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-
-public class ArcClientSender extends ArcCommandSender {
+/**
+ * A command sender representing a player.
+ */
+public class ArcClientSender implements ArcCommandSender {
 
   private final @NotNull Player player;
-
-  public ArcClientSender(final @NotNull Player player, final @NotNull MessageFormatter formatter) {
-    super(formatter);
-    this.player = player;
-  }
+  private final Collection<String> permissions = new HashSet<>();
 
   public ArcClientSender(final @NotNull Player player) {
-    this(player, ClientMessageFormatter.getInstance());
+    this.player = player;
   }
 
   @Override
@@ -29,7 +25,7 @@ public class ArcClientSender extends ArcCommandSender {
   }
 
   @Override
-  public @NotNull Player asPlayer() {
+  public @NotNull Player getPlayer() {
     return player;
   }
 
@@ -39,50 +35,27 @@ public class ArcClientSender extends ArcCommandSender {
   }
 
   @Override
-  public void sendMessage(final @NotNull MessageIntent intent, final @NotNull String message, final @Nullable Object... args) {
-    player.sendMessage(getFormatter().format(intent, message, args));
+  public boolean hasPermission(@NotNull String permission) {
+    return permissions.contains(permission);
   }
 
   @Override
-  public void sendMessage(final @NotNull MessageIntent intent, final @NotNull String message, final @NotNull CaptionVariable... vars) {
-    player.sendMessage(getFormatter().format(intent, message, vars));
+  public void addPermission(@NotNull String permission) {
+    permissions.add(permission);
   }
 
-  /**
-   * This formatter performs special formatting for players. Here is an example with the message {@code There are '@'
-   * players}:
-   * <ul>
-   *     <li>{@link MessageIntent#NONE NONE}: {@code There are '@' players.}</li>
-   *     <li>{@link MessageIntent#DEBUG DEBUG}: {@code [gray]There are [lightgray]'@'[] players.}</li>
-   *     <li>{@link MessageIntent#INFO INFO}: {@code There are '@' players.}</li>
-   *     <li>{@link MessageIntent#ERROR ERROR}: {@code [scarlet]There are [orange]'@'[] players.}</li>
-   * </ul>
-   */
-  public static class ClientMessageFormatter implements ColoringMessageFormatter {
+  @Override
+  public void removePermission(@NotNull String permission) {
+    permissions.remove(permission);
+  }
 
-    private static final ClientMessageFormatter INSTANCE = new ClientMessageFormatter();
+  @Override
+  public @NotNull Collection<String> getPermissions() {
+    return Collections.unmodifiableCollection(permissions);
+  }
 
-    public static ClientMessageFormatter getInstance() {
-      return INSTANCE;
-    }
-
-    @Override
-    public @NotNull String prefix(final @NotNull MessageIntent intent) {
-      return switch (intent) {
-        case DEBUG -> "[gray]";
-        case ERROR -> "[scarlet]";
-        default -> "";
-      };
-    }
-
-    @Override
-    public @NotNull String argument(final @NotNull MessageIntent intent, final @NotNull String arg) {
-      return switch (intent) {
-        case DEBUG -> "[lightgray]" + arg + "[]";
-        case ERROR -> "[orange]" + arg + "[]";
-        case SUCCESS -> "[green]" + arg + "[]";
-        default -> arg;
-      };
-    }
+  @Override
+  public void sendMessage(@NotNull String message) {
+    player.sendMessage(message);
   }
 }

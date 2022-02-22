@@ -13,10 +13,9 @@ import fr.xpdustry.distributor.command.sender.ArcCommandSender;
 import mindustry.gen.Player;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
- * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler}, by registering
- * cloud commands as native arc commands.
+ * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
+ * by registering cloud commands as native arc commands.
  */
 public final class ArcRegistrationHandler implements CommandRegistrationHandler {
 
@@ -65,7 +64,7 @@ public final class ArcRegistrationHandler implements CommandRegistrationHandler 
   }
 
   /**
-   * This command transfer it's call to it's command manager.
+   * This command delegate it's call to it's command manager.
    */
   public final class CloudCommand extends CommandHandler.Command {
 

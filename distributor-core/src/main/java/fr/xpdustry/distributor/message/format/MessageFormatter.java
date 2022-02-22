@@ -1,9 +1,9 @@
-package fr.xpdustry.distributor.string;
+package fr.xpdustry.distributor.message.format;
 
 import cloud.commandframework.captions.CaptionVariable;
+import fr.xpdustry.distributor.message.MessageIntent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 
 /**
  * This class format messages for a message receiver.
@@ -11,10 +11,18 @@ import org.jetbrains.annotations.Nullable;
 public interface MessageFormatter {
 
   /**
-   * @return a simple message formatter instance
+   * Returns a simple message formatter instance.
    */
   static MessageFormatter simple() {
     return SimpleMessageFormatter.getInstance();
+  }
+
+  static MessageFormatter server() {
+    return ServerMessageFormatter.getInstance();
+  }
+
+  static MessageFormatter client() {
+    return ClientMessageFormatter.getInstance();
   }
 
   /**

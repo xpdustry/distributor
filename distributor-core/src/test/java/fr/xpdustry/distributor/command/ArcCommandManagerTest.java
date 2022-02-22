@@ -17,20 +17,19 @@ import mindustry.gen.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 public class ArcCommandManagerTest {
 
   private CommandHandler handler;
   private ArcCommandManager manager;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     handler = new CommandHandler("/");
     manager = new ArcCommandManager(handler);
   }
 
   @Test
-  public void test_command_exception_syntax() {
+  void test_command_exception_syntax() {
     final var exceptionHandler = new TestCommandExceptionHandler<InvalidSyntaxException>();
     manager.registerExceptionHandler(InvalidSyntaxException.class, exceptionHandler);
 
@@ -41,7 +40,7 @@ public class ArcCommandManagerTest {
   }
 
   @Test
-  public void test_command_exception_permission() {
+  void test_command_exception_permission() {
     final var exceptionHandler = new TestCommandExceptionHandler<NoPermissionException>();
     manager.registerExceptionHandler(NoPermissionException.class, exceptionHandler);
 
@@ -52,7 +51,7 @@ public class ArcCommandManagerTest {
   }
 
   @Test
-  public void test_command_exception_no_such_command() {
+  void test_command_exception_no_such_command() {
     final var exceptionHandler = new TestCommandExceptionHandler<NoSuchCommandException>();
     manager.registerExceptionHandler(NoSuchCommandException.class, exceptionHandler);
 
@@ -64,7 +63,7 @@ public class ArcCommandManagerTest {
   }
 
   @Test
-  public void test_command_exception_parsing() {
+  void test_command_exception_parsing() {
     final var exceptionHandler = new TestCommandExceptionHandler<ParserException>();
     manager.registerExceptionHandler(ParserException.class, exceptionHandler);
 
@@ -75,7 +74,7 @@ public class ArcCommandManagerTest {
   }
 
   @Test
-  public void test_command_exception_execution() {
+  void test_command_exception_execution() {
     final var exceptionHandler = new TestCommandExceptionHandler<CommandExecutionException>();
     manager.registerExceptionHandler(CommandExecutionException.class, exceptionHandler);
 
@@ -88,7 +87,7 @@ public class ArcCommandManagerTest {
   }
 
   @Test
-  public void test_native_command_execution_handler() {
+  void test_native_command_execution_handler() {
     final var executed = Holder.getBool();
     final var nativeCommand = handler.<Player>register("test", "None", (args, player) -> executed.set(true));
     final var cloudCommand = manager.convertNativeCommand(nativeCommand);

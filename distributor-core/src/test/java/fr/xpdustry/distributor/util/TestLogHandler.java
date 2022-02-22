@@ -4,7 +4,6 @@ import arc.util.Log.LogHandler;
 import arc.util.Log.LogLevel;
 import org.jetbrains.annotations.Nullable;
 
-
 public class TestLogHandler implements LogHandler {
 
   @Nullable
@@ -17,7 +16,6 @@ public class TestLogHandler implements LogHandler {
     lastLevel = level;
     lastText = text;
   }
-
 
   public @Nullable LogLevel getLastLevel() {
     return lastLevel;

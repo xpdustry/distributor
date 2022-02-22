@@ -2,7 +2,6 @@ package fr.xpdustry.distributor.internal;
 
 import org.aeonbits.owner.Accessible;
 
-
 public interface DistributorConfig extends Accessible {
 
   @DefaultValue("1")

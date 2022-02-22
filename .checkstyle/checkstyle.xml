@@ -146,6 +146,8 @@
                     STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF,
                     COMPACT_CTOR_DEF"/>
       <property name="allowNoEmptyLineBetweenFields" value="true"/>
+      <!-- I added that - Phinner -->
+      <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
     </module>
     <module name="SeparatorWrap">
       <property name="id" value="SeparatorWrapDot"/>
@@ -353,7 +355,7 @@
       <message key="name.invalidPattern"
         value="Method name ''{0}'' must match pattern ''{1}''."/>
     </module>
-    <!--<module name="SingleLineJavadoc"/>-->
+    <module name="SingleLineJavadoc"/>
     <module name="EmptyCatchBlock">
       <property name="exceptionVariableName" value="expected"/>
     </module>

@@ -2,7 +2,6 @@ package fr.xpdustry.distributor.util;
 
 import mindustry.gen.Player;
 
-
 public class TestPlayer extends Player {
 
   public TestPlayer() {
