@@ -11,7 +11,6 @@ import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.captions.FactoryDelegatingCaptionRegistry;
 import cloud.commandframework.captions.StandardCaptionKeys;
 import cloud.commandframework.exceptions.InvalidSyntaxException;
-import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.services.ServicePipeline;
 import fr.xpdustry.distributor.command.ArcCommandManager;
 import fr.xpdustry.distributor.command.ArcPermission;
@@ -19,16 +18,14 @@ import fr.xpdustry.distributor.command.caption.ArcCaptionKeys;
 import fr.xpdustry.distributor.command.caption.TranslatorMessageProvider;
 import fr.xpdustry.distributor.command.processor.CommandPermissionPreprocessor;
 import fr.xpdustry.distributor.command.sender.ArcClientSender;
-import fr.xpdustry.distributor.message.MessageIntent;
-import fr.xpdustry.distributor.message.format.ClientMessageFormatter;
 import fr.xpdustry.distributor.command.sender.ArcCommandSender;
 import fr.xpdustry.distributor.command.sender.ArcServerSender;
-import fr.xpdustry.distributor.message.format.ServerMessageFormatter;
 import fr.xpdustry.distributor.internal.DistributorConfig;
 import fr.xpdustry.distributor.localization.GlobalTranslator;
 import fr.xpdustry.distributor.localization.Translator;
-import fr.xpdustry.distributor.plugin.AbstractPlugin;
+import fr.xpdustry.distributor.message.MessageIntent;
 import fr.xpdustry.distributor.message.format.MessageFormatter;
+import fr.xpdustry.distributor.plugin.AbstractPlugin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,7 +42,7 @@ public final class Distributor extends AbstractPlugin {
 
   public static final Fi ROOT_DIRECTORY = new Fi("./distributor");
 
-  private static final GlobalTranslator globalTranslator = Translator.global();
+  private static final GlobalTranslator globalTranslator = GlobalTranslator.simple();
   private static FileStore<DistributorConfig> config;
   private static ServicePipeline servicePipeline;
 

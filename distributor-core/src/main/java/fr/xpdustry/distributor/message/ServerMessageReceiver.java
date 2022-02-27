@@ -3,15 +3,9 @@ package fr.xpdustry.distributor.message;
 import arc.util.Log;
 import org.jetbrains.annotations.NotNull;
 
-public final class ServerMessageReceiver implements MessageReceiver {
-  private static final ServerMessageReceiver INSTANCE = new ServerMessageReceiver();
+final class ServerMessageReceiver implements MessageReceiver {
 
-  private ServerMessageReceiver() {
-  }
-
-  public static ServerMessageReceiver getInstance() {
-    return INSTANCE;
-  }
+  static final ServerMessageReceiver INSTANCE = new ServerMessageReceiver();
 
   @Override
   public void sendMessage(@NotNull String message) {

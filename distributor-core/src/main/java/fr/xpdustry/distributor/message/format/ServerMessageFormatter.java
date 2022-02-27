@@ -8,11 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ServerMessageFormatter implements ColoringMessageFormatter {
 
-  private static final ServerMessageFormatter INSTANCE = new ServerMessageFormatter();
-
-  public static ServerMessageFormatter getInstance() {
-    return INSTANCE;
-  }
+  static final ServerMessageFormatter INSTANCE = new ServerMessageFormatter();
 
   @Override
   public @NotNull String prefix(final @NotNull MessageIntent intent) {

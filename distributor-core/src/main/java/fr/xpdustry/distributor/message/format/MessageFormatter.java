@@ -14,15 +14,15 @@ public interface MessageFormatter {
    * Returns a simple message formatter instance.
    */
   static MessageFormatter simple() {
-    return SimpleMessageFormatter.getInstance();
+    return SimpleMessageFormatter.INSTANCE;
   }
 
   static MessageFormatter server() {
-    return ServerMessageFormatter.getInstance();
+    return ServerMessageFormatter.INSTANCE;
   }
 
   static MessageFormatter client() {
-    return ClientMessageFormatter.getInstance();
+    return ClientMessageFormatter.INSTANCE;
   }
 
   /**

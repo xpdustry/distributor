@@ -17,11 +17,7 @@ public interface Translator {
   }
 
   static Translator router() {
-    return RouterTranslator.getInstance();
-  }
-
-  static GlobalTranslator global() {
-    return new SimpleGlobalTranslator();
+    return RouterTranslator.INSTANCE;
   }
 
   @Nullable String translate(final @NotNull String key, final @NotNull Locale locale);

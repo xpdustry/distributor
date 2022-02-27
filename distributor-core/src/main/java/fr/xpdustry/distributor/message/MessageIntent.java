@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.message;
 /**
  * Enum containing generic message intent for message formatting.
  */
-public enum MessageIntent {
+public enum   MessageIntent {
 
   /**
    * This intent requires the sender to NOT apply special formatting.

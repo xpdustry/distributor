@@ -160,10 +160,13 @@ public final class JavaScriptPlugin extends AbstractPlugin {
     );
   }
 
-  public static final class ArcContextListener implements ContextFactory.Listener {
+  public record ContextCreatedEvent(@NotNull Context ctx) {
+  }
 
-    private ArcContextListener() {
-    }
+  public record ContextReleasedEvent(@NotNull Context ctx) {
+  }
+
+  private static final class ArcContextListener implements ContextFactory.Listener {
 
     @Override
     public void contextCreated(final @NotNull Context ctx) {
@@ -174,13 +177,5 @@ public final class JavaScriptPlugin extends AbstractPlugin {
     public void contextReleased(final @NotNull Context ctx) {
       Events.fire(new ContextReleasedEvent(ctx));
     }
-  }
-
-  public record ContextCreatedEvent(@NotNull Context ctx) {
-
-  }
-
-  public record ContextReleasedEvent(@NotNull Context ctx) {
-
   }
 }

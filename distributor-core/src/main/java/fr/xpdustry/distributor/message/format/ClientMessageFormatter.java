@@ -14,11 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ClientMessageFormatter implements ColoringMessageFormatter {
 
-  private static final ClientMessageFormatter INSTANCE = new ClientMessageFormatter();
-
-  public static ClientMessageFormatter getInstance() {
-    return INSTANCE;
-  }
+  static final ClientMessageFormatter INSTANCE = new ClientMessageFormatter();
 
   @Override
   public @NotNull String prefix(final @NotNull MessageIntent intent) {

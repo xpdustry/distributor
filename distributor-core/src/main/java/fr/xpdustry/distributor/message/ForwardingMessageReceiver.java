@@ -1,13 +1,12 @@
 package fr.xpdustry.distributor.message;
 
-import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
-public class ForwardingMessageReceiver implements MessageReceiver {
+final class ForwardingMessageReceiver implements MessageReceiver {
 
-  private final Collection<MessageReceiver> receivers;
+  private final Iterable<MessageReceiver> receivers;
 
-  public ForwardingMessageReceiver(Collection<MessageReceiver> receivers) {
+  public ForwardingMessageReceiver(Iterable<MessageReceiver> receivers) {
     this.receivers = receivers;
   }
 
