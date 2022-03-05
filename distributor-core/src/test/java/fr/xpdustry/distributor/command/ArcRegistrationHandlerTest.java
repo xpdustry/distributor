@@ -9,6 +9,8 @@ import arc.util.CommandHandler;
 import cloud.commandframework.arguments.standard.StringArgument;
 import fr.xpdustry.distributor.command.ArcRegistrationHandler.CloudCommand;
 import fr.xpdustry.distributor.command.sender.ArcCommandSender;
+import fr.xpdustry.distributor.command.sender.ArcServerSender;
+import fr.xpdustry.distributor.message.format.MessageFormatter;
 import fr.xpdustry.distributor.util.TestCommandExecutionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,7 @@ public class ArcRegistrationHandlerTest {
   @BeforeEach
   void setup() {
     handler = new CommandHandler("/");
-    manager = new ArcCommandManager(handler);
+    manager = new ArcCommandManager(handler, p -> new ArcServerSender(), MessageFormatter::simple);
     executor = new TestCommandExecutionHandler<>();
   }
 

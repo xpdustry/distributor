@@ -129,27 +129,22 @@ public final class Distributor extends AbstractPlugin {
   }
 
   @Override
-  public void registerServerCommands(final @NotNull CommandHandler handler) {
-    // Creating commands here because it is what it is...
-    serverCommandManager = new ArcCommandManager(handler);
-    clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands);
+  public void registerServerCommands(final @NotNull CommandHandler serverCommands) {
+    serverCommandManager = new ArcCommandManager(serverCommands, p -> new ArcServerSender(), Distributor::getServerMessageFormatter);
+    clientCommandManager = new ArcCommandManager(Vars.netServer.clientCommands, ArcClientSender::new, Distributor::getClientMessageFormatter);
 
-    // Setup command sender mappers
-    serverCommandManager.setCommandSenderMapper(p -> new ArcServerSender());
-    clientCommandManager.setCommandSenderMapper(ArcClientSender::new);
-
-    // Add localization support via Captions
+    // Add localization support via captions
     final var translator = TranslatorMessageProvider.of(getGlobalTranslator());
-
-    new Seq<Caption>()
+    final var captions = new Seq<Caption>()
       .addAll(StandardCaptionKeys.getStandardCaptionKeys())
-      .addAll(ArcCaptionKeys.getArcCaptionKeys())
-      .forEach(c -> {
-        ((FactoryDelegatingCaptionRegistry<ArcCommandSender>) serverCommandManager.getCaptionRegistry())
-          .registerMessageFactory(c, translator);
-        ((FactoryDelegatingCaptionRegistry<ArcCommandSender>) clientCommandManager.getCaptionRegistry())
-          .registerMessageFactory(c, translator);
-      });
+      .addAll(ArcCaptionKeys.getArcCaptionKeys());
+
+    captions.forEach(c -> {
+      final var serverCaptionRegistry = (FactoryDelegatingCaptionRegistry<ArcCommandSender>) serverCommandManager.getCaptionRegistry();
+      final var clientCaptionRegistry = (FactoryDelegatingCaptionRegistry<ArcCommandSender>) clientCommandManager.getCaptionRegistry();
+      serverCaptionRegistry.registerMessageFactory(c, translator);
+      clientCaptionRegistry.registerMessageFactory(c, translator);
+    });
 
     // Register commands
     Events.on(ServerLoadEvent.class, e -> {
@@ -169,12 +164,5 @@ public final class Distributor extends AbstractPlugin {
     manager.registerCommandPreProcessor(CommandPermissionPreprocessor.of(
       ArcPermission.ADMIN, s -> !s.isPlayer() || (s.isPlayer() && s.getPlayer().admin())
     ));
-
-    // TODO Continue ?
-    manager.registerExceptionHandler(InvalidSyntaxException.class, (s, e) -> {
-      final var message = manager.getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_INVALID_SYNTAX, s);
-      final var formatter = s.isPlayer() ? getClientMessageFormatter() : getServerMessageFormatter();
-      s.sendMessage(formatter.format(MessageIntent.ERROR, message, CaptionVariable.of("syntax", e.getCorrectSyntax())));
-    });
   }
 }

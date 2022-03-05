@@ -7,7 +7,6 @@ import arc.util.Reflect;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.captions.Caption;
 import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.ArgumentParseException;
@@ -32,6 +31,7 @@ import fr.xpdustry.distributor.message.format.MessageFormatter;
 import io.leangen.geantyref.TypeToken;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import mindustry.gen.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,19 +41,25 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ArcCommandManager extends CommandManager<ArcCommandSender> {
 
-  private Function<Player, ArcCommandSender> commandSenderMapper =
-    p -> p == null ? new ArcServerSender() : new ArcClientSender(p);
+  private final Function<Player, ArcCommandSender> commandSenderMapper;
+  private final Supplier<MessageFormatter> formatterProvider;
 
   /**
    * Creates a new arc command manager that wraps the given arc command handler.
    *
    * @param handler the arc command handler to wrap
    */
-  public ArcCommandManager(final @NotNull CommandHandler handler) {
+  public ArcCommandManager(
+    final @NotNull CommandHandler handler,
+    final @NotNull Function<Player, @NotNull ArcCommandSender> commandSenderMapper,
+    final @NotNull Supplier<@NotNull MessageFormatter> formatterProvider
+  ) {
     super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
     setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
     setCommandRegistrationHandler(new ArcRegistrationHandler(handler, this));
     getParserRegistry().registerParserSupplier(TypeToken.get(Player.class), p -> new PlayerParser<>());
+    this.commandSenderMapper = commandSenderMapper;
+    this.formatterProvider = formatterProvider;
   }
 
   /**
@@ -73,27 +79,38 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender> {
 
       if (throwable instanceof InvalidSyntaxException t) {
         handleException(sender, InvalidSyntaxException.class, t, (s, e) -> {
-          handleException(s, ArcCaptionKeys.COMMAND_INVALID_SYNTAX, CaptionVariable.of("syntax", e.getCorrectSyntax()));
+          final var message = getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_INVALID_SYNTAX, s);
+          final var caption = CaptionVariable.of("syntax", e.getCorrectSyntax());
+          s.sendMessage(formatterProvider.get().format(MessageIntent.ERROR, message, caption));
         });
       } else if (throwable instanceof NoPermissionException t) {
         handleException(sender, NoPermissionException.class, t, (s, e) -> {
-          handleException(s, ArcCaptionKeys.COMMAND_INVALID_PERMISSION, CaptionVariable.of("permission", e.getMissingPermission()));
+          final var message = getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_INVALID_PERMISSION, s);
+          final var caption = CaptionVariable.of("permission", e.getMissingPermission());
+          s.sendMessage(formatterProvider.get().format(MessageIntent.ERROR, message, caption));
         });
       } else if (throwable instanceof NoSuchCommandException t) {
         handleException(sender, NoSuchCommandException.class, t, (s, e) -> {
-          handleException(s, ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND, CaptionVariable.of("command", e.getSuppliedCommand()));
+          final var message = getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND, s);
+          final var caption = CaptionVariable.of("command", e.getSuppliedCommand());
+          s.sendMessage(formatterProvider.get().format(MessageIntent.ERROR, message, caption));
         });
       } else if (throwable instanceof ParserException t) {
         handleException(sender, ParserException.class, t, (s, e) -> {
-          handleException(s, e.errorCaption(), e.captionVariables());
+          final var message = getCaptionRegistry().getCaption(e.errorCaption(), s);
+          s.sendMessage(formatterProvider.get().format(MessageIntent.ERROR, message, e.captionVariables()));
         });
       } else if (throwable instanceof CommandExecutionException t) {
         handleException(sender, CommandExecutionException.class, t, (s, e) -> {
-          handleException(sender, ArcCaptionKeys.COMMAND_FAILURE_EXECUTION, CaptionVariable.of("message", e.getCause().getMessage()));
+          final var message = getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_FAILURE_EXECUTION, sender);
+          final var caption = CaptionVariable.of("message", e.getCause().getMessage());
+          s.sendMessage(formatterProvider.get().format(MessageIntent.ERROR, message, caption));
           Log.err(e);
         });
       } else {
-        handleException(sender, ArcCaptionKeys.COMMAND_FAILURE_UNKNOWN, CaptionVariable.of("message", throwable.getMessage()));
+        final var message = getCaptionRegistry().getCaption(ArcCaptionKeys.COMMAND_FAILURE_UNKNOWN, sender);
+        final var caption = CaptionVariable.of("message", throwable.getMessage());
+        sender.sendMessage(formatterProvider.get().format(MessageIntent.ERROR, message, caption));
         Log.err(throwable);
       }
     });
@@ -116,16 +133,6 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender> {
    */
   public void handleCommand(final @NotNull String input) {
     handleCommand(commandSenderMapper.apply(null), input);
-  }
-
-  public @NotNull Function<Player, ArcCommandSender> getCommandSenderMapper() {
-    return commandSenderMapper;
-  }
-
-  public void setCommandSenderMapper(
-    final @NotNull Function<Player, @NotNull ArcCommandSender> commandSenderMapper
-  ) {
-    this.commandSenderMapper = commandSenderMapper;
   }
 
   /**
@@ -161,6 +168,14 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender> {
     return builder.build();
   }
 
+  public @NotNull Function<Player, ArcCommandSender> getCommandSenderMapper() {
+    return commandSenderMapper;
+  }
+
+  public @NotNull Supplier<MessageFormatter> getFormatterProvider() {
+    return formatterProvider;
+  }
+
   @Override
   public boolean hasPermission(final @NotNull ArcCommandSender sender, final @NotNull String permission) {
     return sender.hasPermission(permission);
@@ -189,15 +204,6 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender> {
       .with(ArcMeta.NATIVE, false)
       .with(ArcMeta.PLUGIN, "unknown")
       .build();
-  }
-
-  private void handleException(
-    final @NotNull ArcCommandSender sender,
-    final @NotNull Caption caption,
-    final @NotNull CaptionVariable... variables
-  ) {
-    final var message = getCaptionRegistry().getCaption(caption, sender);
-    sender.sendMessage(MessageFormatter.simple().format(MessageIntent.ERROR, message, variables));
   }
 
   /**
