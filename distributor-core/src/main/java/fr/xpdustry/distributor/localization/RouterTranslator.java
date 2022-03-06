@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 final class RouterTranslator implements Translator {
 
-  private static final Locale ROUTER_LOCALE = new Locale("router");
   static final RouterTranslator INSTANCE = new RouterTranslator();
+  private static final Locale ROUTER_LOCALE = new Locale("router");
 
   @Override
   public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale) {

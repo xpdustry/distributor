@@ -11,11 +11,11 @@ import fr.xpdustry.distributor.command.ArcMeta;
 import fr.xpdustry.distributor.command.ArcPermission;
 import fr.xpdustry.distributor.exception.ScriptException;
 import fr.xpdustry.distributor.internal.JavaScriptConfig;
+import fr.xpdustry.distributor.message.MessageIntent;
 import fr.xpdustry.distributor.plugin.AbstractPlugin;
 import fr.xpdustry.distributor.script.js.JavaScriptEngine;
 import fr.xpdustry.distributor.script.js.RegexClassShutter;
 import fr.xpdustry.distributor.script.js.TimedContextFactory;
-import fr.xpdustry.distributor.message.MessageIntent;
 import java.io.IOException;
 import java.util.Collections;
 import mindustry.Vars;
@@ -161,9 +161,11 @@ public final class JavaScriptPlugin extends AbstractPlugin {
   }
 
   public record ContextCreatedEvent(@NotNull Context ctx) {
+
   }
 
   public record ContextReleasedEvent(@NotNull Context ctx) {
+
   }
 
   private static final class ArcContextListener implements ContextFactory.Listener {

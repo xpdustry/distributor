@@ -14,8 +14,8 @@ import mindustry.gen.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
- * by registering cloud commands as native arc commands.
+ * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler}, by registering cloud commands as native
+ * arc commands.
  */
 public final class ArcRegistrationHandler implements CommandRegistrationHandler {
 

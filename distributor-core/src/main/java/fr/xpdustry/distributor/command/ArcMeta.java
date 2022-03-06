@@ -10,8 +10,8 @@ import cloud.commandframework.meta.CommandMeta.Key;
 public final class ArcMeta {
 
   /**
-   * Overrides the default {@link arc.util.CommandHandler.Command#paramText} {@code [args...]}.
-   * Do not use it if you are using multiple cloud commands with the same root name but different arguments.
+   * Overrides the default {@link arc.util.CommandHandler.Command#paramText} {@code [args...]}. Do not use it if you are using multiple
+   * cloud commands with the same root name but different arguments.
    */
   public static final Key<String> PARAMETERS = Key.of(String.class, "distributor:param");
 

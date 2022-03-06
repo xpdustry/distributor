@@ -11,6 +11,7 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.exceptions.NoSuchCommandException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import cloud.commandframework.permission.Permission;
+import fr.xpdustry.distributor.command.sender.ArcClientSender;
 import fr.xpdustry.distributor.command.sender.ArcServerSender;
 import fr.xpdustry.distributor.message.format.MessageFormatter;
 import fr.xpdustry.distributor.struct.Holder;
@@ -27,7 +28,7 @@ public class ArcCommandManagerTest {
   @BeforeEach
   void setup() {
     handler = new CommandHandler("/");
-    manager = new ArcCommandManager(handler, p -> new ArcServerSender(), MessageFormatter::simple);
+    manager = new ArcCommandManager(handler, ArcClientSender::new, MessageFormatter::simple);
   }
 
   @Test
@@ -46,6 +47,7 @@ public class ArcCommandManagerTest {
     final var exceptionHandler = new TestCommandExceptionHandler<NoPermissionException>();
     manager.registerExceptionHandler(NoPermissionException.class, exceptionHandler);
 
+    // TODO Add test case for server ?
     manager.command(manager.commandBuilder("test").permission(Permission.of("wow")));
     manager.handleCommand(Player.create(), "test");
 
