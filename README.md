@@ -16,24 +16,26 @@ Here is the list of the available modules:
 | `distributor-core` | The core library needed by all distributor modules.                                                                                        |
 | `distributor-js`   | This module provides a better javascript management with class blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
 
+Follow the development [here](https://github.com/orgs/Xpdustry/projects/3). 
+
 ## Usage
 
 To develop a plugin using Distributor, you will first need to add the Xpdustry repository in
 your `build.gradle` such as:
 
 ```gradle
-repositories{
+repositories {
     // Replace with "https://repo.xpdustry.fr/snapshots" if you want to use snapshots
-    maven{ url "https://repo.xpdustry.fr/releases" }
+    maven { url = uri("https://repo.xpdustry.fr/releases") }
 }
 ```
 
 Then, add the needed artifacts in your dependencies, such as:
 
 ```gradle
-dependencies{
+dependencies {
     // Add "-SNAPSHOT" at the end if you are using the snapshot repository
-    compileOnly "fr.xpdustry:{distributor-module}:{version}" 
+    compileOnly("fr.xpdustry:{distributor-module}:{version}" )
 }
 ```
 
@@ -50,6 +52,7 @@ such as:
 
 Finally, when you are ready for testing, put the necessary Distributor jars in your `config/mods`
 and your plugin.
+
 > If you used the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
 
 > If you used the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).
