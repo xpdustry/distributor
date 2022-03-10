@@ -1,7 +1,7 @@
 # Distributor
 
 [![Xpdustry latest](https://repo.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor-core?color=00FFFF&name=Distributor&prefix=v)](https://github.com/Xpdustry/Distributor/releases)
-[![Build](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml)
+[![Build](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
 [![Mindustry 7.0 ](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Description
@@ -10,9 +10,11 @@
 bindings and other nice features, making plugin development time much faster.
 
 Here is the list of the available modules:
-| name | description | |-|-| | `distributor-core`    | The core library needed by all distributor
-modules. | | `distributor-js`      | This module provides a better javascript management with class
-blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
+
+| name               | description                                                                                                                                |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `distributor-core` | The core library needed by all distributor modules.                                                                                        |
+| `distributor-js`   | This module provides a better javascript management with class blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
 
 ## Usage
 
