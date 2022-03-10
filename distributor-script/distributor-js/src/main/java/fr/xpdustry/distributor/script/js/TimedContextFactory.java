@@ -10,7 +10,7 @@ import rhino.Scriptable;
 /**
  * @see rhino.ContextFactory
  */
-public class TimedContextFactory extends ContextFactory {
+public final class TimedContextFactory extends ContextFactory {
 
   private int maxRuntime = 10;
 
@@ -29,6 +29,7 @@ public class TimedContextFactory extends ContextFactory {
       case Context.FEATURE_NON_ECMA_GET_YEAR:
       case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
       case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
+      case Context.FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE:
         return true;
       case Context.FEATURE_PARENT_PROTO_PROPERTIES:
         return false;
@@ -38,8 +39,8 @@ public class TimedContextFactory extends ContextFactory {
   }
 
   @Override
-  protected Object doTopCall(Callable callable, Context ctx, Scriptable scope, Scriptable thisObj, Object[] args) {
-    final var tcx = (TimedContext) ctx;
+  protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+    final var tcx = (TimedContext) cx;
     tcx.startTime = System.currentTimeMillis();
     return super.doTopCall(callable, tcx, scope, thisObj, args);
   }
@@ -49,7 +50,7 @@ public class TimedContextFactory extends ContextFactory {
     final var tcx = (TimedContext) ctx;
     final var currentTime = System.currentTimeMillis();
     if (currentTime - tcx.startTime > maxRuntime * 1000L) {
-      throw new BlockingScriptError();
+      throw new BlockingScriptError(maxRuntime);
     }
   }
 

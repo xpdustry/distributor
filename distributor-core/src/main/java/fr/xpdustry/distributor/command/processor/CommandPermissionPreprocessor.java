@@ -31,9 +31,7 @@ public final class CommandPermissionPreprocessor implements CommandPreprocessor<
   @Override
   public void accept(final @NotNull CommandPreprocessingContext<ArcCommandSender> ctx) {
     final var sender = ctx.getCommandContext().getSender();
-    if (predicate.test(sender)) {
-      sender.addPermission(permission);
-    }
+    if (predicate.test(sender)) sender.addPermission(permission);
   }
 
   /**

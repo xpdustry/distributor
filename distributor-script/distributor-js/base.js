@@ -27,15 +27,15 @@ Call = Packages.mindustry.gen.Call
 
 //js 'extend(Base, ..., {})' = java 'new Base(...) {}'
 const extend = function (/*Base, ..., def*/) {
-  const Base = arguments[0]
-  const def = arguments[arguments.length - 1]
+  let Base = arguments[0]
+  let def = arguments[arguments.length - 1]
   //swap order from Base, def, ... to Base, ..., def
-  const args = [Base, def].concat(Array.from(arguments).splice(1, arguments.length - 2))
+  let args = [Base, def].concat(Array.from(arguments).splice(1, arguments.length - 2))
 
   //forward constructor arguments to new JavaAdapter
-  const instance = JavaAdapter.apply(null, args)
+  let instance = JavaAdapter.apply(null, args)
   //JavaAdapter only overrides functions; set fields too
-  for (var i in def) {
+  for (let i in def) {
     if (typeof (def[i]) != "function") {
       instance[i] = def[i]
     }

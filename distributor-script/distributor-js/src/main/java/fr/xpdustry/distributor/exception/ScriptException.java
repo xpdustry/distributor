@@ -13,7 +13,6 @@ public class ScriptException extends Exception {
 
   @Override
   public String getMessage() {
-    return getCause().getClass().getSimpleName() +
-      (getCause().getMessage() == null ? "" : ": " + getCause().getMessage());
+    return getCause().getClass().getSimpleName() + (getCause().getMessage() == null ? "" : ": " + getCause().getMessage());
   }
 }

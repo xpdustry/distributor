@@ -1,5 +1,8 @@
 package fr.xpdustry.distributor.script.js;
 
+import arc.struct.Seq;
+import fr.xpdustry.distributor.struct.ArcList;
+import java.util.List;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 import rhino.ClassShutter;
@@ -9,30 +12,30 @@ import rhino.ClassShutter;
  */
 public final class RegexClassShutter implements ClassShutter {
 
-  private final Pattern blacklist;
-  private final Pattern whitelist;
+  private final Seq<Pattern> blacklist;
+  private final Seq<Pattern> whitelist;
 
   public RegexClassShutter(@NotNull Iterable<String> blacklist, @NotNull Iterable<String> whitelist) {
-    this.blacklist = Pattern.compile(String.join("|", blacklist));
-    this.whitelist = Pattern.compile(String.join("|", whitelist));
+    this.blacklist = Seq.with(blacklist).map(Pattern::compile);
+    this.whitelist = Seq.with(whitelist).map(Pattern::compile);
   }
 
   /**
-   * @return the blacklist regex
+   * Returns the blacklist regex list.
    */
-  public @NotNull Pattern getBlacklist() {
-    return blacklist;
+  public @NotNull List<Pattern> getBlacklist() {
+    return new ArcList<>(blacklist);
   }
 
   /**
-   * @return the whitelist regex
+   * Returns the whitelist regex list.
    */
-  public @NotNull Pattern getWhitelist() {
-    return whitelist;
+  public @NotNull List<Pattern> getWhitelist() {
+    return new ArcList<>(whitelist);
   }
 
   @Override
-  public boolean visibleToScripts(@NotNull String s) {
-    return !(blacklist.matcher(s).matches() && !whitelist.matcher(s).matches());
+  public boolean visibleToScripts(@NotNull final String s) {
+    return !(blacklist.contains(p -> p.matcher(s).matches()) && !whitelist.contains(p -> p.matcher(s).matches()));
   }
 }

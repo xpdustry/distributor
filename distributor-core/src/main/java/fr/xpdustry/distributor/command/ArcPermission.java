@@ -10,6 +10,8 @@ public final class ArcPermission {
 
   public static final CommandPermission ADMIN = Permission.of("distributor:admin");
 
+  public static final CommandPermission SCRIPT = Permission.of("distributor:script");
+
   private ArcPermission() {
   }
 }

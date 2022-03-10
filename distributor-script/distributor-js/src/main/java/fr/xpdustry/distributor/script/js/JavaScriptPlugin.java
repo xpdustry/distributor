@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor;
+package fr.xpdustry.distributor.script.js;
 
 import arc.ApplicationListener;
 import arc.Core;
@@ -6,6 +6,7 @@ import arc.Events;
 import arc.files.Fi;
 import arc.util.Log;
 import cloud.commandframework.arguments.standard.StringArgument;
+import fr.xpdustry.distributor.Distributor;
 import fr.xpdustry.distributor.command.ArcCommandManager;
 import fr.xpdustry.distributor.command.ArcMeta;
 import fr.xpdustry.distributor.command.ArcPermission;
@@ -13,9 +14,6 @@ import fr.xpdustry.distributor.exception.ScriptException;
 import fr.xpdustry.distributor.internal.JavaScriptConfig;
 import fr.xpdustry.distributor.message.MessageIntent;
 import fr.xpdustry.distributor.plugin.AbstractPlugin;
-import fr.xpdustry.distributor.script.js.JavaScriptEngine;
-import fr.xpdustry.distributor.script.js.RegexClassShutter;
-import fr.xpdustry.distributor.script.js.TimedContextFactory;
 import java.io.IOException;
 import java.util.Collections;
 import mindustry.Vars;
@@ -32,7 +30,6 @@ import rhino.module.provider.UrlModuleSourceProvider;
 
 @SuppressWarnings("NullAway.Init")
 public final class JavaScriptPlugin extends AbstractPlugin {
-  // TODO make a base implementation using JSR-235
 
   public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 

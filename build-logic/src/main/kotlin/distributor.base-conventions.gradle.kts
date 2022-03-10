@@ -1,3 +1,4 @@
+import fr.xpdustry.toxopid.extension.MindustryRepository
 import fr.xpdustry.toxopid.extension.ModTarget
 import groovy.json.JsonBuilder
 import net.ltgt.gradle.errorprone.CheckSeverity
@@ -27,6 +28,9 @@ toxopid {
     val compileVersion = parentMetadata["minGameVersion"] as String
     arcCompileVersion.set(compileVersion)
     mindustryCompileVersion.set(compileVersion)
+
+    mindustryRepository.set(MindustryRepository.BE)
+    mindustryRuntimeVersion.set("22343")
 }
 
 repositories {

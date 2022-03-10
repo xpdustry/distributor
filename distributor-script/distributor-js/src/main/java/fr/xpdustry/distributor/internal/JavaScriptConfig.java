@@ -9,11 +9,11 @@ public interface JavaScriptConfig extends Accessible {
   @Key("distributor.script.js.init")
   String getInitScript();
 
-  @DefaultValue("startup.js")
+  @DefaultValue("")
   @Key("distributor.script.js.startup")
   String getStartupScript();
 
-  @DefaultValue("shutdown.js")
+  @DefaultValue("")
   @Key("distributor.script.js.shutdown")
   String getShutdownScript();
 

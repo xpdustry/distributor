@@ -12,7 +12,6 @@ import cloud.commandframework.exceptions.NoSuchCommandException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import cloud.commandframework.permission.Permission;
 import fr.xpdustry.distributor.command.sender.ArcClientSender;
-import fr.xpdustry.distributor.command.sender.ArcServerSender;
 import fr.xpdustry.distributor.message.format.MessageFormatter;
 import fr.xpdustry.distributor.struct.Holder;
 import fr.xpdustry.distributor.util.TestCommandExceptionHandler;

@@ -42,11 +42,13 @@
     <property name="eachLine" value="true"/>
   </module>
 
+  <!-- Not needed
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
     <property name="max" value="140"/>
     <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
   </module>
+  -->
 
   <module name="TreeWalker">
     <module name="OuterTypeFilename"/>
