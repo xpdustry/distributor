@@ -18,28 +18,40 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractScriptPlugin extends AbstractPlugin implements ScriptEngineFactory {
 
+  @Override
   public abstract @NotNull String getEngineName();
 
+  @Override
   public abstract @NotNull String getEngineVersion();
 
+  @Override
   public abstract @NotNull List<String> getExtensions();
 
+  @Override
   public abstract @NotNull List<String> getMimeTypes();
 
+  @Override
   public abstract @NotNull List<String> getNames();
 
+  @Override
   public abstract @NotNull String getLanguageName();
 
+  @Override
   public abstract @NotNull String getLanguageVersion();
 
+  @Override
   public abstract @Nullable Object getParameter(final @NotNull String key);
 
+  @Override
   public abstract @NotNull String getMethodCallSyntax(final @NotNull String obj, final @NotNull String m, final @NotNull String... args);
 
+  @Override
   public abstract @NotNull String getOutputStatement(final @NotNull String toDisplay);
 
+  @Override
   public abstract @NotNull String getProgram(final @NotNull String... statements);
 
+  @Override
   public abstract @NotNull ScriptEngine getScriptEngine();
 
   @SuppressWarnings("NullAway") // <- ScriptException#getMessage() can't be null.

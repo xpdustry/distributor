@@ -46,7 +46,6 @@ public class ArcCommandManagerTest {
     final var exceptionHandler = new TestCommandExceptionHandler<NoPermissionException>();
     manager.registerExceptionHandler(NoPermissionException.class, exceptionHandler);
 
-    // TODO Add test case for server ?
     manager.command(manager.commandBuilder("test").permission(Permission.of("wow")));
     manager.handleCommand(Player.create(), "test");
 
@@ -81,9 +80,7 @@ public class ArcCommandManagerTest {
     final var exceptionHandler = new TestCommandExceptionHandler<CommandExecutionException>();
     manager.registerExceptionHandler(CommandExecutionException.class, exceptionHandler);
 
-    manager.command(manager.commandBuilder("test").handler(ctx -> {
-      throw new RuntimeException();
-    }));
+    manager.command(manager.commandBuilder("test").handler(ctx -> {throw new RuntimeException();}));
     manager.handleCommand("test");
 
     assertNotNull(exceptionHandler.getLastException());

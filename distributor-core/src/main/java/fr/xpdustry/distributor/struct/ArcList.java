@@ -86,6 +86,11 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess {
   }
 
   @Override
+  public E remove(final int index) {
+    return seq.remove(index);
+  }
+
+  @Override
   public boolean addAll(final @NotNull Collection<? extends E> c) {
     seq.addAll(c);
     return true;
@@ -98,6 +103,11 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess {
   }
 
   @Override
+  public void add(final int index, final E element) {
+    seq.insert(index, element);
+  }
+
+  @Override
   public E get(final int index) {
     return seq.get(index);
   }
@@ -107,16 +117,6 @@ public class ArcList<E> extends AbstractList<E> implements RandomAccess {
     E old = seq.get(index);
     seq.set(index, element);
     return old;
-  }
-
-  @Override
-  public void add(final int index, final E element) {
-    seq.insert(index, element);
-  }
-
-  @Override
-  public E remove(final int index) {
-    return seq.remove(index);
   }
 
   @SuppressWarnings("unchecked")

@@ -75,6 +75,7 @@
         value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
     </module>
     <module name="NeedBraces">
+      <property name="allowSingleLineStatement" value="true"/> <!-- It's more beautiful :^) -->
       <property name="tokens"
         value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
     </module>
@@ -342,8 +343,7 @@
       <property name="scope" value="public"/>
       <property name="minLineCount" value="2"/>
       <property name="allowedAnnotations" value="Override, Test"/>
-      <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF,
-                                   COMPACT_CTOR_DEF"/>
+      <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
     </module>
     <module name="MissingJavadocType">
       <property name="scope" value="protected"/>

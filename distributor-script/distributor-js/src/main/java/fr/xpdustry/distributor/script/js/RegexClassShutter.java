@@ -15,7 +15,7 @@ public final class RegexClassShutter implements ClassShutter {
   private final Seq<Pattern> blacklist;
   private final Seq<Pattern> whitelist;
 
-  public RegexClassShutter(@NotNull Iterable<String> blacklist, @NotNull Iterable<String> whitelist) {
+  public RegexClassShutter(final @NotNull Iterable<String> blacklist, final @NotNull Iterable<String> whitelist) {
     this.blacklist = Seq.with(blacklist).map(Pattern::compile);
     this.whitelist = Seq.with(whitelist).map(Pattern::compile);
   }
