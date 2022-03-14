@@ -57,6 +57,22 @@ and your plugin.
 
 > If you used the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).
 
+## Building
+
+- `./gradlew jar` for a simple jar that contains only the plugin code.
+
+- `./gradlew shadowJar` for a fatJar that contains the plugin and its dependencies (use this for your server).
+
+## Testing
+
+- `./gradlew runMindustryClient`: Run Mindustry in desktop with the plugin.
+
+- `./gradlew runMindustryServer`: Run Mindustry in a server with the plugin.
+
+## Running
+
+This plugin is compatible with V6 and V7.
+
 ## Credits
 
 The translation system is based on the one you can find in [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
