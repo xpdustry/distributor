@@ -71,7 +71,7 @@ jobs:
 
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           asset_name: distributor-core.jar
-          tag: v${{ steps.build.outputs.RELEASE_TAG }}
+          tag: v${{ steps.release.outputs.RELEASE_TAG }}
           file: ${{ steps.build.outputs.CORE_ARTIFACT_PATH }}
 
       - name: Upload core artifact to Release
@@ -80,7 +80,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           asset_name: distributor-js.jar
-          tag: v${{ steps.build.outputs.RELEASE_TAG }}
+          tag: v${{ steps.release.outputs.RELEASE_TAG }}
           file: ${{ steps.build.outputs.JS_ARTIFACT_PATH }}
 
       - name: Upload core artifact to Actions
