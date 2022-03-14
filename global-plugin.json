@@ -1,7 +1,7 @@
 {
-  "version": "2.4.0",
+  "version": "2.5.0",
   "author": "Xpdustry",
-  "minGameVersion": "v135",
+  "minGameVersion": "v126.2",
   "hidden": true,
   "java": true,
   "repo": "Xpdustry/Distributor"

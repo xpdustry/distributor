@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This class is a wrapper for rhino exceptions.
  */
-public class ScriptException extends Exception {
+public final class ScriptException extends Exception {
 
   public ScriptException(final @NotNull Throwable cause) {
     super(cause);

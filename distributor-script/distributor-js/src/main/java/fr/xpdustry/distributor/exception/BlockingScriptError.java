@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This error is thrown when a script is running for too long.
  */
-public class BlockingScriptError extends Error {
+public final class BlockingScriptError extends Error {
 
   private final int maxRuntime;
 

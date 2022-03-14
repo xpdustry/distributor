@@ -17,17 +17,20 @@ import fr.xpdustry.distributor.plugin.AbstractPlugin;
 import java.io.IOException;
 import java.util.Collections;
 import mindustry.Vars;
+import mindustry.core.Version;
 import mindustry.game.EventType.ServerLoadEvent;
 import net.mindustry_ddns.store.FileStore;
 import org.jetbrains.annotations.NotNull;
-import rhino.ClassShutter;
-import rhino.Context;
-import rhino.ContextFactory;
-import rhino.Script;
-import rhino.module.ModuleScriptProvider;
-import rhino.module.provider.SoftCachingModuleScriptProvider;
-import rhino.module.provider.UrlModuleSourceProvider;
+import org.mozilla.javascript.ClassShutter;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.ContextFactory.Listener;
+import org.mozilla.javascript.Script;
+import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
+import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider;
+import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
 
+// TODO overhaul the script system
 @SuppressWarnings("NullAway.Init")
 public final class JavaScriptPlugin extends AbstractPlugin {
 
@@ -41,7 +44,6 @@ public final class JavaScriptPlugin extends AbstractPlugin {
   private static Script initScript;
 
   public JavaScriptPlugin() {
-    contextFactory.addListener(new ArcContextListener());
     ContextFactory.initGlobal(contextFactory);
   }
 
@@ -62,35 +64,37 @@ public final class JavaScriptPlugin extends AbstractPlugin {
     if (JAVA_SCRIPT_DIRECTORY.mkdirs()) {
       // Copy the default init script
       try (final var in = getClass().getClassLoader().getResourceAsStream("init.js")) {
-        JAVA_SCRIPT_DIRECTORY.child(config().getInitScript()).write(in, false);
+        JAVA_SCRIPT_DIRECTORY.child("init.js").write(in, false);
       } catch (IOException e) {
         throw new RuntimeException("Failed to create the default init script.", e);
       }
-
-      JAVA_SCRIPT_DIRECTORY.child(config().getStartupScript()).writeString("// Put your startup code here...\n");
-      JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()).writeString("// Put your shutdown code here...\n");
     }
 
-    Events.on(ContextCreatedEvent.class, e -> {
-      e.ctx().setOptimizationLevel(9);
-      e.ctx().setLanguageVersion(Context.VERSION_ES6);
-      e.ctx().setApplicationClassLoader(Vars.mods.mainLoader());
-      e.ctx().getWrapFactory().setJavaPrimitiveWrap(false);
-      e.ctx().setClassShutter(classShutter);
+    contextFactory.addListener(new Listener() {
+      @Override
+      public void contextCreated(final @NotNull Context cx) {
+        cx.setOptimizationLevel(9);
+        cx.setLanguageVersion(Context.VERSION_ES6);
+        cx.getWrapFactory().setJavaPrimitiveWrap(false);
+        cx.setClassShutter(classShutter);
+      }
+
+      @Override
+      public void contextReleased(final @NotNull Context cx) {
+
+      }
     });
 
     // Creates the init script
     var context = Context.getCurrentContext();
-    if (context == null) {
-      context = Context.enter();
-    }
+    if (context == null) context = Context.enter();
 
     if (config().getInitScript().isBlank()) {
-      initScript = context.compileString("\"use strict\";", "init.js", 0);
+      initScript = context.compileString("\"use strict\";", "init.js", 0, null);
     } else {
       final var script = JAVA_SCRIPT_DIRECTORY.child(config().getInitScript());
       try (final var reader = script.reader()) {
-        initScript = context.compileReader(reader, config().getInitScript(), 0);
+        initScript = context.compileReader(reader, config().getInitScript(), 0, null);
       } catch (IOException e) {
         throw new RuntimeException("Failed to compile the init script.", e);
       }
@@ -99,9 +103,7 @@ public final class JavaScriptPlugin extends AbstractPlugin {
     // Set up the global factory
     JavaScriptEngine.setGlobalFactory(() -> {
       var ctx = Context.getCurrentContext();
-      if (ctx == null) {
-        ctx = Context.enter();
-      }
+      if (ctx == null) ctx = Context.enter();
 
       final var engine = new JavaScriptEngine(ctx);
       engine.setupRequire(scriptProvider);
@@ -155,26 +157,5 @@ public final class JavaScriptPlugin extends AbstractPlugin {
         }
       })
     );
-  }
-
-  public record ContextCreatedEvent(@NotNull Context ctx) {
-
-  }
-
-  public record ContextReleasedEvent(@NotNull Context ctx) {
-
-  }
-
-  private static final class ArcContextListener implements ContextFactory.Listener {
-
-    @Override
-    public void contextCreated(final @NotNull Context ctx) {
-      Events.fire(new ContextCreatedEvent(ctx));
-    }
-
-    @Override
-    public void contextReleased(final @NotNull Context ctx) {
-      Events.fire(new ContextReleasedEvent(ctx));
-    }
   }
 }

@@ -29,6 +29,7 @@ toxopid {
     arcCompileVersion.set(compileVersion)
     mindustryCompileVersion.set(compileVersion)
 
+    // TODO Add ModLoaderPlugin Support
     mindustryRepository.set(MindustryRepository.BE)
     mindustryRuntimeVersion.set("22343")
 }

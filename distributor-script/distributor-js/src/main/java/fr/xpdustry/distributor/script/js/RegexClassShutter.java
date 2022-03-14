@@ -5,7 +5,7 @@ import fr.xpdustry.distributor.struct.ArcList;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
-import rhino.ClassShutter;
+import org.mozilla.javascript.ClassShutter;
 
 /**
  * This is a {@link ClassShutter} backed by 2 regexes. One act as the blacklist and the other the whitelist.

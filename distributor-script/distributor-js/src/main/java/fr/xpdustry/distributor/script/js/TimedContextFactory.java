@@ -2,10 +2,10 @@ package fr.xpdustry.distributor.script.js;
 
 import fr.xpdustry.distributor.exception.BlockingScriptError;
 import org.jetbrains.annotations.NotNull;
-import rhino.Callable;
-import rhino.Context;
-import rhino.ContextFactory;
-import rhino.Scriptable;
+import org.mozilla.javascript.Callable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Scriptable;
 
 /**
  * @see rhino.ContextFactory

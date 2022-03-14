@@ -10,29 +10,26 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import rhino.Context;
-import rhino.Function;
-import rhino.ImporterTopLevel;
-import rhino.NativeJavaObject;
-import rhino.Script;
-import rhino.Scriptable;
-import rhino.Undefined;
-import rhino.module.ModuleScriptProvider;
-import rhino.module.Require;
-import rhino.module.RequireBuilder;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.Script;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
+import org.mozilla.javascript.commonjs.module.Require;
+import org.mozilla.javascript.commonjs.module.RequireBuilder;
 
 public class JavaScriptEngine implements AutoCloseable {
 
   private static Supplier<JavaScriptEngine> factory = () -> {
     var ctx = Context.getCurrentContext();
-    if (ctx == null) {
-      ctx = Context.enter();
-    }
+    if (ctx == null) ctx = Context.enter();
     return new JavaScriptEngine(ctx);
   };
 
-  private static final ThreadLocal<JavaScriptEngine> INSTANCE =
-    ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
+  private static final ThreadLocal<JavaScriptEngine> INSTANCE = ThreadLocal.withInitial(() -> JavaScriptEngine.factory.get());
 
   private final Context context;
   private final Scriptable globalScope;
@@ -113,7 +110,7 @@ public class JavaScriptEngine implements AutoCloseable {
     final @NotNull String sourceName
   ) throws ScriptException {
     try {
-      return context.evaluateString(scope, source, sourceName, 1);
+      return context.evaluateString(scope, source, sourceName, 1, null);
     } catch (Exception | BlockingScriptError e) {
       throw new ScriptException(e);
     }
@@ -124,12 +121,12 @@ public class JavaScriptEngine implements AutoCloseable {
   }
 
   public @NotNull Script compileScript(final @NotNull String source, final @NotNull String sourceName) {
-    return context.compileString(source, sourceName, 1);
+    return context.compileString(source, sourceName, 1, null);
   }
 
   public @NotNull Script compileScript(final @NotNull Reader reader, final @NotNull String sourceName)
     throws IOException {
-    return context.compileReader(reader, sourceName, 1);
+    return context.compileReader(reader, sourceName, 1, null);
   }
 
   public @NotNull Function compileFunction(
@@ -137,7 +134,7 @@ public class JavaScriptEngine implements AutoCloseable {
     final @NotNull String source,
     final @NotNull String sourceName
   ) {
-    return context.compileFunction(scope, source, sourceName, 1);
+    return context.compileFunction(scope, source, sourceName, 1, null);
   }
 
   public @Nullable Object invoke(final @NotNull Function function, final @Nullable Object... args)
