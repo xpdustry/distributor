@@ -1,10 +1,7 @@
 package fr.xpdustry.distributor.script.js;
 
-import arc.ApplicationListener;
-import arc.Core;
 import arc.Events;
 import arc.files.Fi;
-import arc.util.Log;
 import cloud.commandframework.arguments.standard.StringArgument;
 import fr.xpdustry.distributor.Distributor;
 import fr.xpdustry.distributor.command.ArcCommandManager;
@@ -15,62 +12,72 @@ import fr.xpdustry.distributor.internal.JavaScriptConfig;
 import fr.xpdustry.distributor.message.MessageIntent;
 import fr.xpdustry.distributor.plugin.AbstractPlugin;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import mindustry.Vars;
-import mindustry.core.Version;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import mindustry.game.EventType.PlayerLeave;
 import mindustry.game.EventType.ServerLoadEvent;
+import mindustry.gen.Player;
 import net.mindustry_ddns.store.FileStore;
 import org.jetbrains.annotations.NotNull;
 import org.mozilla.javascript.ClassShutter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ContextFactory.Listener;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider;
 import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
 
-// TODO overhaul the script system
 @SuppressWarnings("NullAway.Init")
-public final class JavaScriptPlugin extends AbstractPlugin {
+public class JavaScriptPlugin extends AbstractPlugin {
 
   public static final Fi JAVA_SCRIPT_DIRECTORY = Distributor.ROOT_DIRECTORY.child("script/js");
 
-  private static final TimedContextFactory contextFactory = new TimedContextFactory();
+  private static final RhinoJavaScriptEngine evalEngine = createEngine();
+  // For the server scope
+  private static final Player SERVER_PLAYER = Player.create();
+  private static final Map<Player, Scriptable> scopes = new HashMap<>();
 
   private static FileStore<JavaScriptConfig> store;
   private static ClassShutter classShutter;
-  private static ModuleScriptProvider scriptProvider;
-  private static Script initScript;
 
-  public JavaScriptPlugin() {
-    ContextFactory.initGlobal(contextFactory);
+  private static @NotNull JavaScriptConfig config() {
+    return store.get();
   }
 
-  private static JavaScriptConfig config() {
-    return store.get();
+  public static @NotNull RhinoJavaScriptEngine createEngine() {
+    final var engine = new RhinoJavaScriptEngine();
+
+    try (final var in = JavaScriptPlugin.class.getClassLoader().getResourceAsStream("init.js")) {
+      if (in == null) throw new IOException("init.js can't be found...");
+      final var reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+      engine.eval(reader, engine.getGlobalScope());
+    } catch (final IOException | ScriptException e) {
+      throw new RuntimeException("An unexpected exception occurred while running the init script.", e);
+    }
+
+    return engine;
   }
 
   @Override
   public void init() {
+    JAVA_SCRIPT_DIRECTORY.mkdirs();
+
     store = getStoredConfig("config", JavaScriptConfig.class);
+
+    final var factory = new TimedContextFactory();
+    factory.setMaxRuntime(config().getMaxScriptRuntime());
+    ContextFactory.initGlobal(factory);
+
     classShutter = new RegexClassShutter(config().getBlackList(), config().getWhiteList());
-    scriptProvider = new SoftCachingModuleScriptProvider(
+    evalEngine.installRequire(new SoftCachingModuleScriptProvider(
       new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
-    );
+    ));
 
-    contextFactory.setMaxRuntime(config().getMaxScriptRuntime());
-
-    if (JAVA_SCRIPT_DIRECTORY.mkdirs()) {
-      // Copy the default init script
-      try (final var in = getClass().getClassLoader().getResourceAsStream("init.js")) {
-        JAVA_SCRIPT_DIRECTORY.child("init.js").write(in, false);
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to create the default init script.", e);
-      }
-    }
-
-    contextFactory.addListener(new Listener() {
+    factory.addListener(new Listener() {
       @Override
       public void contextCreated(final @NotNull Context cx) {
         cx.setOptimizationLevel(9);
@@ -81,62 +88,20 @@ public final class JavaScriptPlugin extends AbstractPlugin {
 
       @Override
       public void contextReleased(final @NotNull Context cx) {
-
       }
-    });
-
-    // Creates the init script
-    var context = Context.getCurrentContext();
-    if (context == null) context = Context.enter();
-
-    if (config().getInitScript().isBlank()) {
-      initScript = context.compileString("\"use strict\";", "init.js", 0, null);
-    } else {
-      final var script = JAVA_SCRIPT_DIRECTORY.child(config().getInitScript());
-      try (final var reader = script.reader()) {
-        initScript = context.compileReader(reader, config().getInitScript(), 0, null);
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to compile the init script.", e);
-      }
-    }
-
-    // Set up the global factory
-    JavaScriptEngine.setGlobalFactory(() -> {
-      var ctx = Context.getCurrentContext();
-      if (ctx == null) ctx = Context.enter();
-
-      final var engine = new JavaScriptEngine(ctx);
-      engine.setupRequire(scriptProvider);
-
-      try {
-        engine.exec(initScript);
-      } catch (ScriptException t) {
-        throw new RuntimeException("Failed to run the init script.", t);
-      }
-
-      return engine;
     });
 
     Events.on(ServerLoadEvent.class, l -> {
-      try {
-        if (config().getStartupScript().isBlank()) return;
-        JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getStartupScript()).file());
-      } catch (ScriptException | IOException e) {
-        throw new RuntimeException("Failed to run the startup script.", e);
-      }
+      config().getStartupScripts().forEach(script -> {
+        try (final var reader = JAVA_SCRIPT_DIRECTORY.child(script).reader()) {
+          evalEngine.eval(reader);
+        } catch (final IOException | ScriptException e) {
+          throw new RuntimeException("Failed to run the startup script " + script, e);
+        }
+      });
     });
 
-    Core.app.addListener(new ApplicationListener() {
-      @Override
-      public void exit() {
-        try {
-          if (config().getShutdownScript().isBlank()) return;
-          JavaScriptEngine.getInstance().exec(JAVA_SCRIPT_DIRECTORY.child(config().getShutdownScript()).file());
-        } catch (ScriptException | IOException e) {
-          Log.err("Failed to run the shutdown script.", e);
-        }
-      }
-    });
+    Events.on(PlayerLeave.class, e -> scopes.remove(e.player));
   }
 
   @Override
@@ -145,14 +110,16 @@ public final class JavaScriptPlugin extends AbstractPlugin {
       .meta(ArcMeta.DESCRIPTION, "Run arbitrary Javascript.")
       .meta(ArcMeta.PARAMETERS, "<script...>")
       .meta(ArcMeta.PLUGIN, asLoadedMod().name)
-      .permission(ArcPermission.ADMIN)
+      .permission(ArcPermission.ADMIN.or(ArcPermission.SCRIPT))
       .argument(StringArgument.greedy("script"))
       .handler(ctx -> {
         try {
-          final var obj = JavaScriptEngine.getInstance().eval(ctx.get("script"));
+          final var player = ctx.getSender().isPlayer() ? ctx.getSender().getPlayer() : SERVER_PLAYER;
+          final var scope = scopes.computeIfAbsent(player, k -> evalEngine.newScope());
+          final var obj = evalEngine.eval(ctx.<String>get("script"), scope);
           final var formatter = Distributor.getMessageFormatter(ctx.getSender());
-          ctx.getSender().sendMessage(formatter.format(MessageIntent.NONE, JavaScriptEngine.toString(obj)));
-        } catch (ScriptException e) {
+          ctx.getSender().sendMessage(formatter.format(MessageIntent.NONE, Objects.toString(obj)));
+        } catch (final ScriptException e) {
           ctx.getSender().sendMessage(e.getMessage());
         }
       })

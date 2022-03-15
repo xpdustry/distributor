@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import fr.xpdustry.toxopid.task.MindustryExec
 
 plugins {
@@ -13,8 +12,4 @@ dependencies {
 
 tasks.withType<MindustryExec> {
     addArtifact(project(":distributor-core").tasks.named<Jar>("shadowJar"))
-}
-
-tasks.named<ShadowJar>("shadowJar") {
-    from("$projectDir/init.js")
 }

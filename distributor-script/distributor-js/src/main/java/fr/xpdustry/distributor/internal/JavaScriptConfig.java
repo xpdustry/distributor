@@ -5,17 +5,9 @@ import org.aeonbits.owner.Accessible;
 
 public interface JavaScriptConfig extends Accessible {
 
-  @DefaultValue("init.js")
-  @Key("distributor.script.js.init")
-  String getInitScript();
-
   @DefaultValue("")
   @Key("distributor.script.js.startup")
-  String getStartupScript();
-
-  @DefaultValue("")
-  @Key("distributor.script.js.shutdown")
-  String getShutdownScript();
+  List<String> getStartupScripts();
 
   @DefaultValue("")
   @Key("distributor.script.js.blacklist")
