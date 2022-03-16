@@ -75,3 +75,5 @@ This plugin is compatible with V6 and V7.
 ## Credits
 
 The translation system is based on the one you can find in [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
+
+pls run workflow...
