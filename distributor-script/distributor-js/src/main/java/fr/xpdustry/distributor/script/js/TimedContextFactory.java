@@ -15,7 +15,7 @@ public final class TimedContextFactory extends ContextFactory {
   private int maxRuntime = 10;
 
   @Override
-  protected Context makeContext() {
+  protected @NotNull Context makeContext() {
     final var ctx = new TimedContext(this);
     ctx.setInstructionObserverThreshold(10000);
     return ctx;
@@ -23,7 +23,7 @@ public final class TimedContextFactory extends ContextFactory {
 
   @SuppressWarnings("EnhancedSwitchMigration")
   @Override
-  public boolean hasFeature(Context cx, int featureIndex) {
+  public boolean hasFeature(final @NotNull Context cx, final int featureIndex) {
     switch (featureIndex) {
       case Context.FEATURE_DYNAMIC_SCOPE:
       case Context.FEATURE_NON_ECMA_GET_YEAR:
@@ -39,15 +39,21 @@ public final class TimedContextFactory extends ContextFactory {
   }
 
   @Override
-  protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+  protected Object doTopCall(
+    final @NotNull Callable callable,
+    final @NotNull Context cx,
+    final @NotNull Scriptable scope,
+    final @NotNull Scriptable thisObj,
+    final @NotNull Object[] args
+  ) {
     final var tcx = (TimedContext) cx;
     tcx.startTime = System.currentTimeMillis();
     return super.doTopCall(callable, tcx, scope, thisObj, args);
   }
 
   @Override
-  protected void observeInstructionCount(Context ctx, int instructionCount) {
-    final var tcx = (TimedContext) ctx;
+  protected void observeInstructionCount(final @NotNull Context cx, final int instructionCount) {
+    final var tcx = (TimedContext) cx;
     final var currentTime = System.currentTimeMillis();
     if (currentTime - tcx.startTime > maxRuntime * 1000L) {
       throw new BlockingScriptError(maxRuntime);
@@ -58,7 +64,7 @@ public final class TimedContextFactory extends ContextFactory {
     return maxRuntime;
   }
 
-  public void setMaxRuntime(int maxRuntime) {
+  public void setMaxRuntime(final int maxRuntime) {
     this.maxRuntime = maxRuntime;
   }
 

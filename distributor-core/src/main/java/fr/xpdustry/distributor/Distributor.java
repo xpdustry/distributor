@@ -56,7 +56,7 @@ public final class Distributor extends AbstractPlugin {
   /**
    * Returns Distributor internal config.
    */
-  public static FileStore<DistributorConfig> config() {
+  public static FileStore<DistributorConfig> getConf() {
     return config;
   }
 
