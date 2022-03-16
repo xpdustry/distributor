@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     compileOnly(project(":distributor-core"))
-    implementation("org.mozilla:rhino:1.7.14")
+    api("org.mozilla:rhino:1.7.14")
 }
 
 tasks.withType<MindustryExec> {
