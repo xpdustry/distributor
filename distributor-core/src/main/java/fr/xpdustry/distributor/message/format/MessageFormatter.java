@@ -32,7 +32,7 @@ public interface MessageFormatter {
    * @param args    the arguments
    * @return the formatted message
    */
-  @NotNull String format(@NotNull MessageIntent intent, @NotNull String message, @Nullable Object... args);
+  @NotNull String format(final @NotNull MessageIntent intent, final @NotNull String message, final @Nullable Object... args);
 
   /**
    * Format a message with caption variables.
@@ -42,5 +42,5 @@ public interface MessageFormatter {
    * @param vars    the caption variables
    * @return the formatted message
    */
-  @NotNull String format(@NotNull MessageIntent intent, @NotNull String message, @NotNull CaptionVariable... vars);
+  @NotNull String format(final @NotNull MessageIntent intent, final @NotNull String message, final @NotNull CaptionVariable... vars);
 }

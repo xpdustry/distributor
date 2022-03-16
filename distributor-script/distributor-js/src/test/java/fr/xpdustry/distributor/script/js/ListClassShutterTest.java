@@ -3,8 +3,7 @@ package fr.xpdustry.distributor.script.js;
 import arc.struct.*;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ListClassShutterTest {
 
@@ -20,7 +19,6 @@ public class ListClassShutterTest {
     assertTrue(classShutter.visibleToScripts(EXAMPLE_CLASS_1));
     assertTrue(classShutter.visibleToScripts(EXAMPLE_CLASS_2));
   }
-
 
   @Test
   void test_blacklisted_class() {

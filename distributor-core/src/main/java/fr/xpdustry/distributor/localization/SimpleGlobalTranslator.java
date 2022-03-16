@@ -27,7 +27,7 @@ public class SimpleGlobalTranslator implements GlobalTranslator {
   }
 
   @Override
-  public @Nullable String translate(@NotNull String key, @NotNull Locale locale) {
+  public @Nullable String translate(final @NotNull String key, final @NotNull Locale locale) {
     final var iterator = translators.descendingIterator();
 
     while (iterator.hasNext()) {

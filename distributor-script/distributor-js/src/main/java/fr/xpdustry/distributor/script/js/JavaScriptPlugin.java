@@ -33,15 +33,15 @@ public final class JavaScriptPlugin extends AbstractPlugin {
   private static ClassShutter classShutter;
   private static FileStore<JavaScriptConfig> store;
 
-  public static @NotNull JavaScriptConfig getConf() {
+  public static JavaScriptConfig getConf() {
     return store.get();
   }
 
-  public static @NotNull Script getImportsScript() {
+  public static Script getImportsScript() {
     return importsScript;
   }
 
-  public static @NotNull RhinoJavaScriptEngine createEngine() {
+  public static RhinoJavaScriptEngine createEngine() {
     final var engine = new RhinoJavaScriptEngine();
 
     try (final var in = JavaScriptPlugin.class.getClassLoader().getResourceAsStream("builtins.js")) {

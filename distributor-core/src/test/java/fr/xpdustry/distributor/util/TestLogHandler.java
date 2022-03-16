@@ -1,8 +1,7 @@
 package fr.xpdustry.distributor.util;
 
-import arc.util.Log.LogHandler;
-import arc.util.Log.LogLevel;
-import org.jetbrains.annotations.Nullable;
+import arc.util.Log.*;
+import org.jetbrains.annotations.*;
 
 public class TestLogHandler implements LogHandler {
 

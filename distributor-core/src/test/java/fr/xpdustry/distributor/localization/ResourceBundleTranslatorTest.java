@@ -1,11 +1,9 @@
 package fr.xpdustry.distributor.localization;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.*;
+import org.junit.jupiter.api.*;
 
-import java.util.Locale;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ResourceBundleTranslatorTest {
 

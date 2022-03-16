@@ -8,7 +8,7 @@ final class ServerMessageReceiver implements MessageReceiver {
   static final ServerMessageReceiver INSTANCE = new ServerMessageReceiver();
 
   @Override
-  public void sendMessage(@NotNull String message) {
+  public void sendMessage(final @NotNull String message) {
     Log.info(message);
   }
 }

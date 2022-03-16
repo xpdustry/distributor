@@ -1,11 +1,8 @@
 package fr.xpdustry.distributor.util;
 
-import fr.xpdustry.distributor.localization.Translator;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import fr.xpdustry.distributor.localization.*;
+import java.util.*;
+import org.jetbrains.annotations.*;
 
 public class TestTranslator implements Translator {
 

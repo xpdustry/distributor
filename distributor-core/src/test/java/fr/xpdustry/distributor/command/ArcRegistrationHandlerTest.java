@@ -1,21 +1,16 @@
 package fr.xpdustry.distributor.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import arc.util.*;
+import cloud.commandframework.arguments.standard.*;
+import fr.xpdustry.distributor.command.ArcRegistrationHandler.*;
+import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.message.format.*;
+import fr.xpdustry.distributor.util.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import arc.util.CommandHandler;
-import cloud.commandframework.arguments.standard.StringArgument;
-import fr.xpdustry.distributor.command.ArcRegistrationHandler.CloudCommand;
-import fr.xpdustry.distributor.command.sender.ArcCommandSender;
-import fr.xpdustry.distributor.command.sender.ArcServerSender;
-import fr.xpdustry.distributor.message.format.MessageFormatter;
-import fr.xpdustry.distributor.util.TestCommandExecutionHandler;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ArcRegistrationHandlerTest {
 

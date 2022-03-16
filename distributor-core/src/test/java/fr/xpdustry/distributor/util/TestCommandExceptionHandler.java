@@ -1,8 +1,8 @@
 package fr.xpdustry.distributor.util;
 
-import fr.xpdustry.distributor.command.sender.ArcCommandSender;
-import java.util.function.BiConsumer;
-import org.jetbrains.annotations.Nullable;
+import fr.xpdustry.distributor.command.sender.*;
+import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 public class TestCommandExceptionHandler<E extends Throwable> implements BiConsumer<ArcCommandSender, E> {
 

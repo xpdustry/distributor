@@ -37,11 +37,11 @@ public final class ArcServerSender implements ArcCommandSender {
   }
 
   @Override
-  public void addPermission(@NotNull String permission) {
+  public void addPermission(final @NotNull String permission) {
   }
 
   @Override
-  public void removePermission(@NotNull String permission) {
+  public void removePermission(final @NotNull String permission) {
   }
 
   @Override
@@ -50,7 +50,7 @@ public final class ArcServerSender implements ArcCommandSender {
   }
 
   @Override
-  public void sendMessage(@NotNull String message) {
+  public void sendMessage(final @NotNull String message) {
     Log.info(message);
   }
 }

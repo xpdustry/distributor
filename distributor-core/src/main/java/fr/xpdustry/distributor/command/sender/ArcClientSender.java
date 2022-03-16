@@ -32,17 +32,17 @@ public final class ArcClientSender implements ArcCommandSender {
   }
 
   @Override
-  public boolean hasPermission(@NotNull String permission) {
+  public boolean hasPermission(final @NotNull String permission) {
     return permissions.contains(permission);
   }
 
   @Override
-  public void addPermission(@NotNull String permission) {
+  public void addPermission(final @NotNull String permission) {
     permissions.add(permission);
   }
 
   @Override
-  public void removePermission(@NotNull String permission) {
+  public void removePermission(final @NotNull String permission) {
     permissions.remove(permission);
   }
 
@@ -52,7 +52,7 @@ public final class ArcClientSender implements ArcCommandSender {
   }
 
   @Override
-  public void sendMessage(@NotNull String message) {
+  public void sendMessage(final @NotNull String message) {
     player.sendMessage(message);
   }
 }

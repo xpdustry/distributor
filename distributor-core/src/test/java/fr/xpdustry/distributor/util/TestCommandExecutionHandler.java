@@ -1,9 +1,8 @@
 package fr.xpdustry.distributor.util;
 
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.CommandExecutionHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import cloud.commandframework.context.*;
+import cloud.commandframework.execution.*;
+import org.jetbrains.annotations.*;
 
 public class TestCommandExecutionHandler<C> implements CommandExecutionHandler<C> {
 

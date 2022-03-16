@@ -1,23 +1,18 @@
 package fr.xpdustry.distributor.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import arc.util.*;
+import cloud.commandframework.arguments.standard.*;
+import cloud.commandframework.exceptions.*;
+import cloud.commandframework.exceptions.parsing.*;
+import cloud.commandframework.permission.*;
+import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.message.format.*;
+import fr.xpdustry.distributor.struct.*;
+import fr.xpdustry.distributor.util.*;
+import mindustry.gen.*;
+import org.junit.jupiter.api.*;
 
-import arc.util.CommandHandler;
-import cloud.commandframework.arguments.standard.IntegerArgument;
-import cloud.commandframework.exceptions.CommandExecutionException;
-import cloud.commandframework.exceptions.InvalidSyntaxException;
-import cloud.commandframework.exceptions.NoPermissionException;
-import cloud.commandframework.exceptions.NoSuchCommandException;
-import cloud.commandframework.exceptions.parsing.ParserException;
-import cloud.commandframework.permission.Permission;
-import fr.xpdustry.distributor.command.sender.ArcClientSender;
-import fr.xpdustry.distributor.message.format.MessageFormatter;
-import fr.xpdustry.distributor.struct.Holder;
-import fr.xpdustry.distributor.util.TestCommandExceptionHandler;
-import mindustry.gen.Player;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ArcCommandManagerTest {
 

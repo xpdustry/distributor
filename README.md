@@ -11,10 +11,10 @@ better Mindustry API bindings and other nice features, making plugin development
 
 Here is the list of the available modules:
 
-| name               | description                                                                                                                                |
-|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| `distributor-core` | The core library needed by all distributor modules.                                                                                        |
-| `distributor-js`   | This module provides a better javascript management with class blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
+| name                                                                                                    | description                                                                                                                                |
+|---------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| distributor-core                                                                                        | The core library needed by all distributor modules.                                                                                        |
+| [distributor-js](https://github.com/Xpdustry/Distributor/tree/master/distributor-script/distributor-js) | This module provides a better javascript management with class blacklists/whitelists, shared class loaders, maximum script runtime, etc... |
 
 Follow the development [here](https://github.com/orgs/Xpdustry/projects/3). 
 
