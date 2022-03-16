@@ -1,16 +1,14 @@
 package fr.xpdustry.distributor.command.sender;
 
-import arc.util.Log;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Locale;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import arc.util.*;
+import java.util.*;
+import mindustry.gen.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A command sender representing the server.
  */
-public class ArcServerSender implements ArcCommandSender {
+public final class ArcServerSender implements ArcCommandSender {
 
   @Override
   public boolean isPlayer() {

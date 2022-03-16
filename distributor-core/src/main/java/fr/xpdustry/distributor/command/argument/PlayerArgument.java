@@ -1,23 +1,19 @@
 package fr.xpdustry.distributor.command.argument;
 
-import arc.util.Strings;
-import cloud.commandframework.ArgumentDescription;
-import cloud.commandframework.arguments.CommandArgument;
-import cloud.commandframework.arguments.parser.ArgumentParseResult;
-import cloud.commandframework.arguments.parser.ArgumentParser;
-import cloud.commandframework.captions.CaptionVariable;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import cloud.commandframework.exceptions.parsing.ParserException;
-import fr.xpdustry.distributor.command.caption.ArcCaptionKeys;
-import java.io.Serial;
-import java.util.List;
-import java.util.Queue;
-import java.util.function.BiFunction;
-import mindustry.gen.Groups;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import arc.util.*;
+import cloud.commandframework.*;
+import cloud.commandframework.arguments.*;
+import cloud.commandframework.arguments.parser.*;
+import cloud.commandframework.captions.*;
+import cloud.commandframework.context.*;
+import cloud.commandframework.exceptions.parsing.*;
+import fr.xpdustry.distributor.command.caption.*;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import mindustry.gen.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 /**
  * A command argument for an online {@link Player}.

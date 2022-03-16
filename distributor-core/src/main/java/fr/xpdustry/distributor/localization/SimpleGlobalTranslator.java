@@ -1,16 +1,11 @@
 package fr.xpdustry.distributor.localization;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Locale;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import java.util.*;
+import org.jetbrains.annotations.*;
 
 /**
- * A simple global translator which lookups translations from the end of the list. It means the last registered translator is the first to
- * be queried.
+ * A simple global translator which lookups translations from the end of the list.
+ * It means the last registered translator is the first to be queried.
  */
 public class SimpleGlobalTranslator implements GlobalTranslator {
 

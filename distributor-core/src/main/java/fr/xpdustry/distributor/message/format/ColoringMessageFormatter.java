@@ -1,12 +1,12 @@
 package fr.xpdustry.distributor.message.format;
 
-import arc.struct.Seq;
+import arc.struct.*;
 import arc.util.Nullable;
-import arc.util.Strings;
-import cloud.commandframework.captions.CaptionVariable;
-import fr.xpdustry.distributor.message.MessageIntent;
-import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
+import arc.util.*;
+import cloud.commandframework.captions.*;
+import fr.xpdustry.distributor.message.*;
+import java.util.regex.*;
+import org.jetbrains.annotations.*;
 
 public interface ColoringMessageFormatter extends MessageFormatter {
 

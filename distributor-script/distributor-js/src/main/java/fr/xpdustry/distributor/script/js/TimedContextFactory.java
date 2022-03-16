@@ -1,13 +1,12 @@
 package fr.xpdustry.distributor.script.js;
 
-import fr.xpdustry.distributor.exception.BlockingScriptError;
-import org.jetbrains.annotations.NotNull;
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
+import fr.xpdustry.distributor.exception.*;
+import org.jetbrains.annotations.*;
+import org.mozilla.javascript.*;
 
 /**
+ * The anti blocking script context factory from the example given in the javadoc of {@link ContextFactory}.
+ *
  * @see rhino.ContextFactory
  */
 public final class TimedContextFactory extends ContextFactory {

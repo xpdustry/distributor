@@ -1,43 +1,34 @@
 package fr.xpdustry.distributor.command;
 
-import arc.util.CommandHandler;
-import arc.util.CommandHandler.CommandRunner;
-import arc.util.Log;
-import arc.util.Reflect;
+import arc.util.*;
+import arc.util.CommandHandler.*;
 import cloud.commandframework.Command;
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.captions.CaptionVariable;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.exceptions.ArgumentParseException;
-import cloud.commandframework.exceptions.CommandExecutionException;
-import cloud.commandframework.exceptions.InvalidSyntaxException;
-import cloud.commandframework.exceptions.NoPermissionException;
-import cloud.commandframework.exceptions.NoSuchCommandException;
-import cloud.commandframework.exceptions.parsing.ParserException;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.execution.CommandExecutionHandler;
-import cloud.commandframework.internal.CommandRegistrationHandler;
-import cloud.commandframework.meta.CommandMeta;
-import cloud.commandframework.meta.SimpleCommandMeta;
-import fr.xpdustry.distributor.command.ArcRegistrationHandler.CloudCommand;
-import fr.xpdustry.distributor.command.argument.PlayerArgument.PlayerParser;
-import fr.xpdustry.distributor.command.caption.ArcCaptionKeys;
-import fr.xpdustry.distributor.command.sender.ArcCommandSender;
-import fr.xpdustry.distributor.message.MessageIntent;
-import fr.xpdustry.distributor.message.format.MessageFormatter;
-import io.leangen.geantyref.TypeToken;
-import java.util.Arrays;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import cloud.commandframework.*;
+import cloud.commandframework.arguments.standard.*;
+import cloud.commandframework.captions.*;
+import cloud.commandframework.context.*;
+import cloud.commandframework.exceptions.*;
+import cloud.commandframework.exceptions.parsing.*;
+import cloud.commandframework.execution.*;
+import cloud.commandframework.internal.*;
+import cloud.commandframework.meta.*;
+import fr.xpdustry.distributor.command.ArcRegistrationHandler.*;
+import fr.xpdustry.distributor.command.argument.PlayerArgument.*;
+import fr.xpdustry.distributor.command.caption.*;
+import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.message.*;
+import fr.xpdustry.distributor.message.format.*;
+import io.leangen.geantyref.*;
+import java.util.*;
+import java.util.function.*;
+import mindustry.gen.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 /**
  * Mindustry implementation of cloud {@link CommandManager}.
  */
-public class ArcCommandManager extends CommandManager<ArcCommandSender> {
+public final class ArcCommandManager extends CommandManager<ArcCommandSender> {
 
   private final Function<Player, ArcCommandSender> commandSenderMapper;
   private final Supplier<MessageFormatter> formatterProvider;
@@ -53,9 +44,11 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender> {
     final @NotNull Supplier<@NotNull MessageFormatter> formatterProvider
   ) {
     super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
+
     setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
     setCommandRegistrationHandler(new ArcRegistrationHandler(handler, this));
     getParserRegistry().registerParserSupplier(TypeToken.get(Player.class), p -> new PlayerParser<>());
+
     this.commandSenderMapper = commandSenderMapper;
     this.formatterProvider = formatterProvider;
   }
@@ -67,7 +60,7 @@ public class ArcCommandManager extends CommandManager<ArcCommandSender> {
    * @param input  the command input
    */
   @SuppressWarnings("FutureReturnValueIgnored")
-  protected void handleCommand(final @NotNull ArcCommandSender sender, final @NotNull String input) {
+  private void handleCommand(final @NotNull ArcCommandSender sender, final @NotNull String input) {
     executeCommand(sender, input).whenComplete((result, throwable) -> {
       if (throwable == null) {
         return;

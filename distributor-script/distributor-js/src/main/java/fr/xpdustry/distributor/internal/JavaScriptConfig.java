@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.internal;
 
-import java.util.List;
-import org.aeonbits.owner.Accessible;
+import java.util.*;
+import org.aeonbits.owner.*;
 
 public interface JavaScriptConfig extends Accessible {
 

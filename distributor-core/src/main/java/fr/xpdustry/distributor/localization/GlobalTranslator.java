@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.localization;
 
-import java.util.Collection;
-import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import org.jetbrains.annotations.*;
 
 public interface GlobalTranslator extends Translator {
 

@@ -1,12 +1,10 @@
 package fr.xpdustry.distributor.message.format;
 
 import arc.util.Nullable;
-import arc.util.Strings;
-import cloud.commandframework.captions.CaptionVariable;
-import cloud.commandframework.captions.CaptionVariableReplacementHandler;
-import cloud.commandframework.captions.SimpleCaptionVariableReplacementHandler;
-import fr.xpdustry.distributor.message.MessageIntent;
-import org.jetbrains.annotations.NotNull;
+import arc.util.*;
+import cloud.commandframework.captions.*;
+import fr.xpdustry.distributor.message.*;
+import org.jetbrains.annotations.*;
 
 /**
  * This formatter performs basic formatting without any variations specified by {@link MessageIntent intents}.

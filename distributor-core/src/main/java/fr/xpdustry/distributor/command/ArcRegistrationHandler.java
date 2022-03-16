@@ -1,21 +1,19 @@
 package fr.xpdustry.distributor.command;
 
-import arc.struct.ObjectMap;
-import arc.struct.Seq;
-import arc.util.CommandHandler;
-import arc.util.CommandHandler.CommandRunner;
-import arc.util.Reflect;
+import arc.struct.*;
+import arc.util.*;
+import arc.util.CommandHandler.*;
 import cloud.commandframework.Command;
-import cloud.commandframework.CommandManager.ManagerSettings;
-import cloud.commandframework.arguments.StaticArgument;
-import cloud.commandframework.internal.CommandRegistrationHandler;
-import fr.xpdustry.distributor.command.sender.ArcCommandSender;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import cloud.commandframework.CommandManager.*;
+import cloud.commandframework.arguments.*;
+import cloud.commandframework.internal.*;
+import fr.xpdustry.distributor.command.sender.*;
+import mindustry.gen.*;
+import org.jetbrains.annotations.*;
 
 /**
- * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler}, by registering cloud commands as native
- * arc commands.
+ * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
+ * by registering cloud commands as native arc commands.
  */
 public final class ArcRegistrationHandler implements CommandRegistrationHandler {
 

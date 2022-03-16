@@ -1,36 +1,24 @@
 package fr.xpdustry.distributor.script.js;
 
-import arc.Events;
-import arc.files.Fi;
-import cloud.commandframework.arguments.standard.StringArgument;
-import fr.xpdustry.distributor.Distributor;
-import fr.xpdustry.distributor.command.ArcCommandManager;
-import fr.xpdustry.distributor.command.ArcMeta;
-import fr.xpdustry.distributor.command.ArcPermission;
-import fr.xpdustry.distributor.exception.ScriptException;
-import fr.xpdustry.distributor.internal.JavaScriptConfig;
-import fr.xpdustry.distributor.message.MessageIntent;
-import fr.xpdustry.distributor.plugin.AbstractPlugin;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import mindustry.game.EventType.PlayerLeave;
-import mindustry.game.EventType.ServerLoadEvent;
-import mindustry.gen.Player;
-import net.mindustry_ddns.store.FileStore;
-import org.jetbrains.annotations.NotNull;
-import org.mozilla.javascript.ClassShutter;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ContextFactory.Listener;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider;
-import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
+import arc.*;
+import arc.files.*;
+import cloud.commandframework.arguments.standard.*;
+import fr.xpdustry.distributor.*;
+import fr.xpdustry.distributor.command.*;
+import fr.xpdustry.distributor.exception.*;
+import fr.xpdustry.distributor.internal.*;
+import fr.xpdustry.distributor.message.*;
+import fr.xpdustry.distributor.plugin.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import mindustry.game.EventType.*;
+import mindustry.gen.*;
+import net.mindustry_ddns.store.*;
+import org.jetbrains.annotations.*;
+import org.mozilla.javascript.*;
+import org.mozilla.javascript.ContextFactory.*;
+import org.mozilla.javascript.commonjs.module.provider.*;
 
 @SuppressWarnings("NullAway.Init")
 public final class JavaScriptPlugin extends AbstractPlugin {

@@ -1,11 +1,9 @@
 package fr.xpdustry.distributor.struct;
 
-import arc.struct.ObjectSet;
-import java.util.AbstractSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
+import arc.struct.*;
+import java.util.*;
+import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A {@link Set} view of a {@link ObjectSet}.

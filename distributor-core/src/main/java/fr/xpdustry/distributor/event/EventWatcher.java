@@ -1,12 +1,11 @@
 package fr.xpdustry.distributor.event;
 
-import arc.Events;
-import arc.func.Cons;
-import arc.struct.ObjectMap;
-import arc.struct.Seq;
-import arc.util.Reflect;
-import java.util.EventListener;
-import org.jetbrains.annotations.NotNull;
+import arc.*;
+import arc.func.*;
+import arc.struct.*;
+import arc.util.*;
+import java.util.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A utility class for dynamically register/unregister an event listener from {@link Events}.

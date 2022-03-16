@@ -1,7 +1,6 @@
 package fr.xpdustry.distributor.command;
 
-import cloud.commandframework.permission.CommandPermission;
-import cloud.commandframework.permission.Permission;
+import cloud.commandframework.permission.*;
 
 /**
  * Global class for making command permission usage easier.

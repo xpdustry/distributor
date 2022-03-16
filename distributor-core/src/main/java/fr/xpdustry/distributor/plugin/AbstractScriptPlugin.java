@@ -1,20 +1,14 @@
 package fr.xpdustry.distributor.plugin;
 
-import arc.util.Strings;
-import cloud.commandframework.arguments.standard.StringArgument;
-import fr.xpdustry.distributor.Distributor;
-import fr.xpdustry.distributor.command.ArcCommandManager;
-import fr.xpdustry.distributor.command.ArcMeta;
-import fr.xpdustry.distributor.command.ArcPermission;
-import fr.xpdustry.distributor.message.MessageIntent;
-import java.util.List;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-import org.jetbrains.annotations.NotNull;
+import arc.util.*;
+import cloud.commandframework.arguments.standard.*;
+import fr.xpdustry.distributor.*;
+import fr.xpdustry.distributor.command.*;
+import fr.xpdustry.distributor.message.*;
+import java.util.*;
+import javax.script.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 public abstract class AbstractScriptPlugin extends AbstractPlugin implements ScriptEngineFactory {
 

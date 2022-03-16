@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.message.format;
 
-import fr.xpdustry.distributor.message.MessageIntent;
-import org.jetbrains.annotations.NotNull;
+import fr.xpdustry.distributor.message.*;
+import org.jetbrains.annotations.*;
 
 /**
  * This formatter performs the formatting of a default mindustry server where arguments are colored.

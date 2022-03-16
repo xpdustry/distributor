@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.message;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 final class ForwardingMessageReceiver implements MessageReceiver {
 

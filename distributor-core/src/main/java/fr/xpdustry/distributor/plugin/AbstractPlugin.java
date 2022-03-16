@@ -1,23 +1,20 @@
 package fr.xpdustry.distributor.plugin;
 
-import arc.files.Fi;
-import com.google.gson.Gson;
-import fr.xpdustry.distributor.command.ArcCommandManager;
-import java.lang.reflect.Type;
-import java.util.function.Supplier;
-import mindustry.Vars;
-import mindustry.mod.Mods.LoadedMod;
-import mindustry.mod.Plugin;
-import net.mindustry_ddns.store.ConfigFileStore;
-import net.mindustry_ddns.store.FileStore;
-import net.mindustry_ddns.store.JsonFileStore;
-import org.aeonbits.owner.Accessible;
-import org.aeonbits.owner.Factory;
-import org.jetbrains.annotations.NotNull;
+import arc.files.*;
+import com.google.gson.*;
+import fr.xpdustry.distributor.command.*;
+import java.lang.reflect.*;
+import java.util.function.*;
+import mindustry.*;
+import mindustry.mod.Mods.*;
+import mindustry.mod.*;
+import net.mindustry_ddns.store.*;
+import org.aeonbits.owner.*;
+import org.jetbrains.annotations.*;
 
 /**
- * Abstract plugin class for plugins using Distributor. Be aware that ALL THE METHODS LISTED IN THIS CLASS HAVE TO BE CALLED IN OR AFTER
- * {@link #init()}. NOT IN THE CONSTRUCTOR.
+ * Abstract plugin class for plugins using Distributor.
+ * Be aware that ALL THE METHODS LISTED IN THIS CLASS HAVE TO BE CALLED IN OR AFTER {@link #init()}. NOT IN THE CONSTRUCTOR.
  */
 public abstract class AbstractPlugin extends Plugin {
 

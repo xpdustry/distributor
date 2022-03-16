@@ -1,10 +1,8 @@
 package fr.xpdustry.distributor.command.caption;
 
-import cloud.commandframework.captions.Caption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import org.jetbrains.annotations.NotNull;
+import cloud.commandframework.captions.*;
+import java.util.*;
+import org.jetbrains.annotations.*;
 
 /**
  * {@link Caption} instances for {@link fr.xpdustry.distributor.command.ArcCommandManager} error messages.

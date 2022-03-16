@@ -14,8 +14,9 @@ const pirates = Seq.with(
 
 Events.on(PlayerConnect, e => {
   if (pirates.contains(e.player.name())) {
-    e.player.con().kick(
-        "Mindustry is free on [royal]https://anuke.itch.io/mindustry[]\n" +
-        "[red]Please, get a legit copy of the game.");
+    e.player.con().kick(""
+        + "Mindustry is free on [royal]https://anuke.itch.io/mindustry[]\n"
+        + "[red]Please, get a legit copy of the game."
+    );
   }
 })

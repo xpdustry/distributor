@@ -1,11 +1,8 @@
 package fr.xpdustry.distributor.localization;
 
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.ResourceBundle.Control;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import java.util.*;
+import java.util.ResourceBundle.*;
+import org.jetbrains.annotations.*;
 
 public class ResourceBundleTranslator implements Translator {
 

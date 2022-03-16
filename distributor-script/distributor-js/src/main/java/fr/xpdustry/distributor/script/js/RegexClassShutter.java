@@ -1,11 +1,11 @@
 package fr.xpdustry.distributor.script.js;
 
-import arc.struct.Seq;
-import fr.xpdustry.distributor.struct.ArcList;
-import java.util.List;
-import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
-import org.mozilla.javascript.ClassShutter;
+import arc.struct.*;
+import fr.xpdustry.distributor.struct.*;
+import java.util.*;
+import java.util.regex.*;
+import org.jetbrains.annotations.*;
+import org.mozilla.javascript.*;
 
 /**
  * This is a {@link ClassShutter} backed by 2 regexes. One act as the blacklist and the other the whitelist.

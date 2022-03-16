@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.internal;
 
-import org.aeonbits.owner.Accessible;
+import org.aeonbits.owner.*;
 
 public interface DistributorConfig extends Accessible {
 

@@ -1,20 +1,10 @@
 package fr.xpdustry.distributor.script.js;
 
-import fr.xpdustry.distributor.exception.BlockingScriptError;
-import fr.xpdustry.distributor.exception.ScriptException;
-import java.io.IOException;
-import java.io.Reader;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
-import org.mozilla.javascript.commonjs.module.RequireBuilder;
+import fr.xpdustry.distributor.exception.*;
+import java.io.*;
+import org.jetbrains.annotations.*;
+import org.mozilla.javascript.*;
+import org.mozilla.javascript.commonjs.module.*;
 
 public final class RhinoJavaScriptEngine {
 
@@ -101,12 +91,6 @@ public final class RhinoJavaScriptEngine {
     }
   }
 
-  public @NotNull Scriptable getGlobalScope() {
-    try (final Context cx = createContext()) {
-      return getGlobalScope(cx);
-    }
-  }
-
   private @NotNull Scriptable newScope(final @NotNull Context cx) {
     return newScope(cx, getGlobalScope(cx));
   }
@@ -118,13 +102,19 @@ public final class RhinoJavaScriptEngine {
     return scope;
   }
 
-  private @NotNull Scriptable initScope(final @NotNull Context cx, final @Nullable Scriptable scope) {
-    return scope == null ? newScope(cx, getGlobalScope(cx)) : scope;
+  public @NotNull Scriptable getGlobalScope() {
+    try (final Context cx = createContext()) {
+      return getGlobalScope(cx);
+    }
   }
 
   private @NotNull Scriptable getGlobalScope(final @NotNull Context cx) {
     if (globalScope == null) globalScope = new ImporterTopLevel(cx);
     return globalScope;
+  }
+
+  private @NotNull Scriptable initScope(final @NotNull Context cx, final @Nullable Scriptable scope) {
+    return scope == null ? newScope(cx, getGlobalScope(cx)) : scope;
   }
 
   private @NotNull Context createContext() {

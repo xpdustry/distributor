@@ -1,8 +1,7 @@
 package fr.xpdustry.distributor.localization;
 
-import java.util.Locale;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import java.util.*;
+import org.jetbrains.annotations.*;
 
 final class RouterTranslator implements Translator {
 

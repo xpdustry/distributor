@@ -1,6 +1,6 @@
 ANOTHER BREAKING UPDATE !!!
 
-- `distributor-js` brings its own javascript runtime instead of mindustry-rhino for better compatibility with V6 and more control.
+- `distributor-js` brings its own javascript runtime instead of `mindustry-rhino` for better compatibility with V6 and more control.
 
 - Simplified the javascript settings :
 
@@ -13,3 +13,7 @@ ANOTHER BREAKING UPDATE !!!
 - The `js` command no longer shares the same scope with every user, each one has its own (player and server).
 
   - This means users can no longer mess with the variables in the global scope.
+
+- Renamed the config getters of both plugins from `config()` to `getConf()`.
+
+- Much more !!!

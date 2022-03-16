@@ -31,11 +31,15 @@ const rainbow = extend(Timer.Task, {
 });
 
 Vars.netServer.clientCommands.register("rainbow", "Make everyone fart a rainbow.", runner((args, player) => {
-  if (!rainbow.isScheduled()) {
-    Timer.schedule(rainbow, 0, 0.1);
-    player.sendMessage("You enabled the rainbow fart.")
+  if (player.admin()) {
+    if (!rainbow.isScheduled()) {
+      Timer.schedule(rainbow, 0, 0.1);
+      player.sendMessage("You enabled the rainbow fart.")
+    } else {
+      rainbow.cancel()
+      player.sendMessage("You disabled the rainbow fart.")
+    }
   } else {
-    rainbow.cancel()
-    player.sendMessage("You disabled the rainbow fart.")
+    player.sendMessage("[red]You need to be admin to do that...");
   }
 }))

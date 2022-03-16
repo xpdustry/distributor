@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.exception;
 
-import java.io.Serial;
-import org.jetbrains.annotations.NotNull;
+import java.io.*;
+import org.jetbrains.annotations.*;
 
 /**
  * This error is thrown when a script is running for too long.

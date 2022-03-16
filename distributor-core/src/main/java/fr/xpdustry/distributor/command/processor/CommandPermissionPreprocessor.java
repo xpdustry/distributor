@@ -1,11 +1,10 @@
 package fr.xpdustry.distributor.command.processor;
 
-import cloud.commandframework.execution.preprocessor.CommandPreprocessingContext;
-import cloud.commandframework.execution.preprocessor.CommandPreprocessor;
-import cloud.commandframework.permission.CommandPermission;
-import fr.xpdustry.distributor.command.sender.ArcCommandSender;
-import java.util.function.Predicate;
-import org.jetbrains.annotations.NotNull;
+import cloud.commandframework.execution.preprocessor.*;
+import cloud.commandframework.permission.*;
+import fr.xpdustry.distributor.command.sender.*;
+import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A Command preprocessor that injects a given permission inside a command sender, when the predicate is satisfied.

@@ -1,8 +1,8 @@
 package fr.xpdustry.distributor.message;
 
-import arc.struct.Seq;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import arc.struct.*;
+import mindustry.gen.*;
+import org.jetbrains.annotations.*;
 
 public interface MessageReceiver {
 

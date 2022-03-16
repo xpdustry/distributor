@@ -1,16 +1,13 @@
 package fr.xpdustry.distributor.command.sender;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Locale;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import mindustry.gen.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A command sender representing a player.
  */
-public class ArcClientSender implements ArcCommandSender {
+public final class ArcClientSender implements ArcCommandSender {
 
   private final @NotNull Player player;
   private final Collection<String> permissions = new HashSet<>();

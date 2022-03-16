@@ -1,15 +1,9 @@
 package fr.xpdustry.distributor.struct;
 
-import arc.struct.Seq;
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.RandomAccess;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import org.jetbrains.annotations.NotNull;
+import arc.struct.*;
+import java.util.*;
+import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A {@link List} view of a {@link Seq}.

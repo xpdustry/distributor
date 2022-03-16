@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.message;
 
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import mindustry.gen.*;
+import org.jetbrains.annotations.*;
 
 final class ClientMessageReceiver implements MessageReceiver {
 

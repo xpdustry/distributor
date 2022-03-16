@@ -1,10 +1,9 @@
 package fr.xpdustry.distributor.command.sender;
 
-import fr.xpdustry.distributor.message.MessageReceiver;
-import java.util.Collection;
-import java.util.Locale;
-import mindustry.gen.Player;
-import org.jetbrains.annotations.NotNull;
+import fr.xpdustry.distributor.message.*;
+import java.util.*;
+import mindustry.gen.*;
+import org.jetbrains.annotations.*;
 
 /**
  * This class represents the command sender, it can be either the console or a player.
@@ -14,8 +13,8 @@ public interface ArcCommandSender extends MessageReceiver {
   boolean isPlayer();
 
   /**
-   * Returns the internal {@link Player} instance of this command sender. This method may only be called safely if {@link #isPlayer()}
-   * returns true.
+   * Returns the internal {@link Player} instance of this command sender.
+   * This method may only be called safely if {@link #isPlayer()} returns true.
    *
    * @return the player representation of the sender
    * @throws UnsupportedOperationException if the sender does not support this operation

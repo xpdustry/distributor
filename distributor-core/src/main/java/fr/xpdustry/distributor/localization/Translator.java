@@ -1,10 +1,9 @@
 package fr.xpdustry.distributor.localization;
 
-import cloud.commandframework.captions.Caption;
-import java.util.Locale;
-import java.util.ResourceBundle.Control;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import cloud.commandframework.captions.*;
+import java.util.*;
+import java.util.ResourceBundle.*;
+import org.jetbrains.annotations.*;
 
 public interface Translator {
 

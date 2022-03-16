@@ -1,10 +1,10 @@
 package fr.xpdustry.distributor.command.caption;
 
-import cloud.commandframework.captions.Caption;
-import fr.xpdustry.distributor.command.sender.ArcCommandSender;
-import fr.xpdustry.distributor.localization.Translator;
-import java.util.function.BiFunction;
-import org.jetbrains.annotations.NotNull;
+import cloud.commandframework.captions.*;
+import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.localization.*;
+import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A message provider backed by a {@link Translator} for a {@link cloud.commandframework.captions.CaptionRegistry}.

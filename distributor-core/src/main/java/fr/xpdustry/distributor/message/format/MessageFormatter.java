@@ -1,9 +1,8 @@
 package fr.xpdustry.distributor.message.format;
 
-import cloud.commandframework.captions.CaptionVariable;
-import fr.xpdustry.distributor.message.MessageIntent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import cloud.commandframework.captions.*;
+import fr.xpdustry.distributor.message.*;
+import org.jetbrains.annotations.*;
 
 /**
  * This class format messages for a message receiver.
