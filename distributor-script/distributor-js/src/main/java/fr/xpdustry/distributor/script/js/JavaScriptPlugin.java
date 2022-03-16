@@ -79,7 +79,7 @@ public final class JavaScriptPlugin extends AbstractPlugin {
       }
     });
 
-    classShutter = new RegexClassShutter(getConf().getBlackList(), getConf().getWhiteList());
+    classShutter = new ListClassShutter(getConf().getBlackList(), getConf().getWhiteList());
     evalEngine.installRequire(new SoftCachingModuleScriptProvider(
       new UrlModuleSourceProvider(Collections.singletonList(JAVA_SCRIPT_DIRECTORY.file().toURI()), null)
     ));
@@ -125,7 +125,6 @@ public final class JavaScriptPlugin extends AbstractPlugin {
             evalEngine.eval(importsScript, scope);
             evalScopes.put(player, scope);
           }
-
           final var obj = evalEngine.eval(ctx.<String>get("script"), evalScopes.get(player));
           final var formatter = Distributor.getMessageFormatter(ctx.getSender());
           ctx.getSender().sendMessage(formatter.format(MessageIntent.NONE, Objects.toString(obj)));

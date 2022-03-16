@@ -16,4 +16,6 @@ ANOTHER BREAKING UPDATE !!!
 
 - Renamed the config getters of both plugins from `config()` to `getConf()`.
 
+- Replaced the `RegexClassShutter` with the `ListClassShutter`. It is no longer backed by regexes, but it is easier to use...
+
 - Much more !!!

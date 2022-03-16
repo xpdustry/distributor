@@ -3,7 +3,7 @@
 "use strict";
 
 // these are not strictly necessary, but are kept for edge cases
-const run = method => new java.lang.Runnable(){run: method}
+const run = method => new Packages.java.lang.Runnable(){run: method}
 const boolf = method => new Packages.arc.func.Boolf(){get: method}
 const boolp = method => new Packages.arc.func.Boolp(){get: method}
 const floatf = method => new Packages.arc.func.Floatf(){get: method}

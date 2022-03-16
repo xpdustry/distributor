@@ -6,8 +6,8 @@
 
 ## Description
 
-**Distributor** is a Plugin framework which provides a powerful command system, better Mindustry API
-bindings and other nice features, making plugin development time much faster.
+**Distributor** is a plugin framework which provides a powerful command system,
+better Mindustry API bindings and other nice features, making plugin development time much faster.
 
 Here is the list of the available modules:
 
@@ -20,8 +20,7 @@ Follow the development [here](https://github.com/orgs/Xpdustry/projects/3).
 
 ## Usage
 
-To develop a plugin using Distributor, you will first need to add the Xpdustry repository in
-your `build.gradle` such as:
+To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such as :
 
 ```gradle
 repositories {
@@ -30,32 +29,30 @@ repositories {
 }
 ```
 
-Then, add the needed artifacts in your dependencies, such as:
+Then, add the needed artifacts in your dependencies :
 
 ```gradle
 dependencies {
-    // Add "-SNAPSHOT" at the end if you are using the snapshot repository
-    compileOnly("fr.xpdustry:{distributor-module}:{version}" )
+    // Add "-SNAPSHOT" after the version if you are using the snapshot repository
+    compileOnly("fr.xpdustry:distributor-core:{version}" )
 }
 ```
 
-After that, add the internal name of the Distributor module you are using in your `plugin.json`,
-such as:
+After that, add the internal name of the module you are using in your `plugin.json` :
 
 ```json
 {
   "dependencies": [
-    "distributor-module-internal-name"
+    "xpdustry-distributor-core"
   ]
 }
 ```
 
-Finally, when you are ready for testing, put the necessary Distributor jars in your `config/mods`
-and your plugin.
+Finally, when you are ready to deploy your plugin, get the necessary Distributor jars :
 
-> If you used the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
+- If you use the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
 
-> If you used the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).
+- If you use the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/commit.yml).
 
 ## Building
 
@@ -72,6 +69,8 @@ and your plugin.
 ## Running
 
 This plugin is compatible with V6 and V7.
+
+**/!\ Up to v135, you will need [mod-loader](https://github.com/Xpdustry/ModLoaderPlugin) if you have plugins that relies on Distributor.**
 
 ## Credits
 

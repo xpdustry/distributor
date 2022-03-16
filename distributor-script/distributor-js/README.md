@@ -2,9 +2,9 @@
 
 ## Description
 
-`distributor-js` provides a better js runtime . Here are some things to know about this module :
+`distributor-js` provides a better js runtime. Here are some things to know about this module :
 
-- The `js` command is overridden to use the `JavaScriptEngine`.
+- The `js` command is overridden to use the `JavaScriptEngine` provided by the plugin.
 
 - The `require` function is set up to search for scripts from the root of the `distributor/script/js` subdirectory.
 
@@ -12,11 +12,11 @@
 
 Here is the config you can change in `distributor/plugins/xpdustry-distributor-script-js/config.properties`
 
-- `distributor.script.js.startup`: List of startup scripts (see above for details).
+- `distributor.script.js.startup`: List of startup scripts (separated by `,`).
 
-- `distributor.script.js.blacklist`: Blacklist for packages and classes (separated by `,`), makes them invisible to scripts. Regex compatible.
+- `distributor.script.js.blacklist`: Blacklist for packages and classes (separated by `,`), makes them invisible to scripts. 
 
-- `distributor.script.js.whitelist`: WhiteList for packages and class, (see above for details)
+- `distributor.script.js.whitelist`: WhiteList for packages and classes.
 
 - `distributor.script.js.max-runtime`: Max runtime before killing the script.
 
@@ -39,4 +39,3 @@ Here is the config you can change in `distributor/plugins/xpdustry-distributor-s
 This plugin is compatible with V6 and V7.
 
 **/!\ Up to v135, you will need [mod-loader](https://github.com/Xpdustry/ModLoaderPlugin) for the dependency resolution.**
-
