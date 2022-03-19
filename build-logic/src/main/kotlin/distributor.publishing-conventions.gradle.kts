@@ -12,7 +12,7 @@ indra {
     publishReleasesTo("xpdustry", "https://repo.xpdustry.fr/releases")
     publishSnapshotsTo("xpdustry", "https://repo.xpdustry.fr/snapshots")
 
-    mitLicense()
+    gpl3OnlyLicense()
 
     github("Xpdustry", "Distributor") {
         ci(true)
