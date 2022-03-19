@@ -10,15 +10,15 @@
 
 ## Config
 
-Here is the config you can change in `distributor/plugins/xpdustry-distributor-script-js/config.properties`
+Here is the config you can change in `./distributor/plugins/xpdustry-distributor-script-js/config.properties` :
 
-- `distributor.script.js.startup`: List of startup scripts (separated by `,`).
+- `distributor.script.js.startup`: List of startup scripts (separated by `,`, the scripts must be located in the `./distributor/script/js` directory).
 
 - `distributor.script.js.blacklist`: Blacklist for packages and classes (separated by `,`), makes them invisible to scripts. 
 
 - `distributor.script.js.whitelist`: WhiteList for packages and classes.
 
-- `distributor.script.js.max-runtime`: Max runtime before killing the script.
+- `distributor.script.js.max-runtime`: Max runtime before killing the script (in case you did the foridden `while(true){}`).
 
 ## Building
 
