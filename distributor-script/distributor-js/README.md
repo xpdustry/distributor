@@ -8,6 +8,8 @@
 
 - The `require` function is set up to search for scripts from the root of the `distributor/script/js` subdirectory.
 
+- This plugin brings its own javascript runtime, it does not uses the `rhino` package from Mindustry.
+
 ## Config
 
 Here is the config you can change in `./distributor/plugins/xpdustry-distributor-script-js/config.properties` :
