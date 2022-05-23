@@ -32,7 +32,7 @@ Then, add the needed artifacts in your dependencies :
 ```gradle
 dependencies {
     // Add "-SNAPSHOT" after the version if you are using the snapshot repository
-    compileOnly("fr.xpdustry:distributor-core:{version}" )
+    compileOnly("fr.xpdustry:distributor-core:2.7.0" )
 }
 ```
 
@@ -68,7 +68,7 @@ Finally, when you are ready to deploy your plugin, get the necessary Distributor
 
 This plugin is compatible with V6 and V7.
 
-**/!\ Up to v135, you will need [mod-loader](https://github.com/Xpdustry/ModLoaderPlugin) if you have plugins that relies on Distributor.**
+**/!\ Below v136, you will need [mod-loader](https://github.com/Xpdustry/ModLoaderPlugin) if you have plugins that relies on Distributor.**
 
 ## Credits
 
