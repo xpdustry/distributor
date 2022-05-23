@@ -4,6 +4,8 @@ import arc.util.*;
 import arc.util.CommandHandler.*;
 import cloud.commandframework.Command;
 import cloud.commandframework.*;
+import cloud.commandframework.annotations.*;
+import cloud.commandframework.arguments.parser.*;
 import cloud.commandframework.arguments.standard.*;
 import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
@@ -195,6 +197,15 @@ public final class ArcCommandManager extends CommandManager<ArcCommandSender> {
       .with(ArcMeta.NATIVE, false)
       .with(ArcMeta.PLUGIN, "unknown")
       .build();
+  }
+
+  public @NotNull AnnotationParser<ArcCommandSender> createAnnotationParser() {
+    return new AnnotationParser<>(this, ArcCommandSender.class, parameters -> CommandMeta.simple()
+      .with(createDefaultCommandMeta())
+      .with(ArcMeta.DESCRIPTION, parameters.get(StandardParameters.DESCRIPTION, ""))
+      .with(ArcMeta.HIDDEN, parameters.get(StandardParameters.HIDDEN, false))
+      .build()
+    );
   }
 
   /**
