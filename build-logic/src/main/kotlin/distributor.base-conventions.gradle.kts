@@ -1,18 +1,12 @@
-import fr.xpdustry.toxopid.extension.MindustryRepository
-import fr.xpdustry.toxopid.extension.ModTarget
-import groovy.json.JsonBuilder
 import net.ltgt.gradle.errorprone.CheckSeverity
 import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     id("net.kyori.indra")
-    id("fr.xpdustry.toxopid")
-    id("net.ltgt.errorprone")
-    id("net.kyori.indra.git")
     id("net.kyori.indra.checkstyle")
+    id("net.ltgt.errorprone")
+    id("com.github.johnrengelman.shadow")
 }
-
-val parentMetadata = readJson(file("$rootDir/global-plugin.json"))
 
 indra {
     checkstyle("9.3")
@@ -23,21 +17,10 @@ indra {
     }
 }
 
-toxopid {
-    modTarget.set(ModTarget.HEADLESS)
-    val compileVersion = parentMetadata["minGameVersion"] as String
-    arcCompileVersion.set(compileVersion)
-    mindustryCompileVersion.set(compileVersion)
-
-    // TODO Add ModLoaderPlugin Support
-    mindustryRepository.set(MindustryRepository.BE)
-    mindustryRuntimeVersion.set("22343")
-}
-
 repositories {
     mavenCentral()
     maven("https://repo.xpdustry.fr/releases") {
-        name = "xpdustry-releases"
+        name = "xpdustry-repository-releases"
         mavenContent { releasesOnly() }
     }
 }
@@ -67,12 +50,13 @@ tasks.withType(JavaCompile::class.java).configureEach {
 }
 
 tasks.create("getArtifactPath") {
-    doLast { println((tasks.shadowJar.get() as Jar).archiveFile.get().toString()) }
+    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
 }
 
-tasks.named<Jar>("shadowJar") {
-    val file = temporaryDir.resolve("plugin.json")
-    val localMetadata = readJson(file("$projectDir/local-plugin.json"))
-    file.writeText(JsonBuilder(localMetadata + parentMetadata).toPrettyString())
-    from(file)
+tasks.shadowJar {
+    from(rootProject.file("LICENSE.md")) {
+        into("META-INF")
+    }
 }
+
+tasks.build.get().dependsOn(tasks.shadowJar)
