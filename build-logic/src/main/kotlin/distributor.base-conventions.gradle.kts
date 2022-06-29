@@ -4,6 +4,7 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     id("net.kyori.indra")
     id("net.kyori.indra.checkstyle")
+    // id("net.kyori.indra.license-header")
     id("net.ltgt.errorprone")
     id("com.github.johnrengelman.shadow")
 }
@@ -16,6 +17,12 @@ indra {
         minimumToolchain(17)
     }
 }
+
+/*
+license {
+    header(rootProject.file("LICENSE_HEADER.md"))
+}
+ */
 
 repositories {
     mavenCentral()
