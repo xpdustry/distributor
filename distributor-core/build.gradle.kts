@@ -13,4 +13,5 @@ dependencies {
     api("cloud.commandframework:cloud-annotations:$cloud")
     api("cloud.commandframework:cloud-tasks:$cloud")
     api("cloud.commandframework:cloud-core:$cloud")
+    api("cloud.commandframework:cloud-services:$cloud")
 }
