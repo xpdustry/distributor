@@ -7,7 +7,7 @@ import java.util.function.*;
 import org.jetbrains.annotations.*;
 
 // TODO Benchmarks + Compliance tests
-public final class ArcMap<K, V> extends AbstractMap<K, V> implements Cloneable, Serializable {
+public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
 
   @Serial
   private static final long serialVersionUID = 1261308433311045675L;
@@ -65,17 +65,6 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Cloneable, 
   @Override
   public String toString() {
     return map.toString();
-  }
-
-  @Override
-  public Object clone() {
-    try {
-      final var clone = (ArcMap<?, ?>) super.clone();
-      clone.entries = null;
-      return clone;
-    } catch (final CloneNotSupportedException e) {
-      throw new RuntimeException("That should never happen.", e);
-    }
   }
 
   @SuppressWarnings("unchecked")

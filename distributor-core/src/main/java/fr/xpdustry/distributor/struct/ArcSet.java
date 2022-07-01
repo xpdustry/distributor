@@ -62,9 +62,8 @@ public final class ArcSet<E> extends AbstractSet<E> {
     return set.asArray().toArray();
   }
 
-  @SuppressWarnings("NullableProblems")
   @Override
-  public <T> T[] toArray(final @NotNull T[] a) {
+  public <T> T[] toArray(final @NotNull T @NotNull [] a) {
     return set.asArray().toArray(a.getClass().getComponentType());
   }
 

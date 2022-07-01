@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.struct;
 
 import arc.struct.*;
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import org.jetbrains.annotations.*;
@@ -11,7 +12,10 @@ import org.jetbrains.annotations.*;
  * @param <E> the element type
  */
 // TODO Benchmarks + Compliance tests
-public final class ArcList<E> extends AbstractList<E> implements RandomAccess {
+public final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAccess {
+
+  @Serial
+  private static final long serialVersionUID = 7102237478555006892L;
 
   private final Seq<E> seq;
 
