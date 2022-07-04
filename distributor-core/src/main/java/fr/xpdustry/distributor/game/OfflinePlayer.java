@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.admin;
+package fr.xpdustry.distributor.game;
 
 import java.time.*;
 import java.util.*;
@@ -6,9 +6,15 @@ import org.jetbrains.annotations.*;
 
 public interface OfflinePlayer {
 
-  @NotNull String getLastName();
+  boolean isOnline();
 
-  @NotNull String getLastIP();
+  @NotNull OnlinePlayer getOnlinePlayer();
+
+  // Returns last name if offline
+  @NotNull String getName();
+
+  // Returns last ip if offline
+  @NotNull String getIP();
 
   @NotNull List<String> getUsedNames();
 
@@ -30,7 +36,8 @@ public interface OfflinePlayer {
 
   @NotNull Duration getKickDuration();
 
-  void setKickDuration(final Duration duration);
+  // Removes kick
+  void pardon();
 
   boolean isWhitelisted();
 
@@ -41,8 +48,4 @@ public interface OfflinePlayer {
   void setAdmin(final boolean admin);
 
   boolean hasPlayedBefore();
-
-  boolean isOnline();
-
-  @NotNull OnlinePlayer getOnlinePlayer();
 }

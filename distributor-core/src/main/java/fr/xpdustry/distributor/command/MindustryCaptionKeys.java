@@ -5,11 +5,11 @@ import java.util.*;
 import org.jetbrains.annotations.*;
 
 /**
- * {@link Caption} instances for {@link ArcCommandManager} error messages.
+ * {@link Caption} instances for {@link MindustryCommandManager} error messages.
  *
  * @see StandardCaptionKeys
  */
-public final class ArcCaptionKeys {
+public final class MindustryCaptionKeys {
 
   private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>();
 
@@ -43,7 +43,7 @@ public final class ArcCaptionKeys {
    */
   public static final Caption COMMAND_FAILURE_UNKNOWN = of("command.failure.unknown");
 
-  private ArcCaptionKeys() {
+  private MindustryCaptionKeys() {
   }
 
   private static @NotNull Caption of(final @NotNull String key) {
@@ -53,7 +53,7 @@ public final class ArcCaptionKeys {
   }
 
   /**
-   * Returns an unmodifiable view of all the captions used in the {@link ArcCommandManager}.
+   * Returns an unmodifiable view of all the captions used in the {@link MindustryCommandManager}.
    */
   public static @NotNull Collection<Caption> getCaptionKeys() {
     return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);

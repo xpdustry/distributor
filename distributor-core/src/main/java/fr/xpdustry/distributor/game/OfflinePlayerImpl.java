@@ -1,10 +1,11 @@
-package fr.xpdustry.distributor.admin;
+package fr.xpdustry.distributor.game;
 
-import java.time.*;
-import java.util.*;
-import mindustry.gen.*;
-import mindustry.net.*;
-import org.jetbrains.annotations.*;
+      import fr.xpdustry.distributor.struct.*;
+      import java.time.*;
+      import java.util.*;
+      import mindustry.gen.*;
+      import mindustry.net.*;
+      import org.jetbrains.annotations.*;
 
 class OfflinePlayerImpl implements OfflinePlayer {
 
@@ -17,23 +18,35 @@ class OfflinePlayerImpl implements OfflinePlayer {
   }
 
   @Override
-  public @NotNull String getLastName() {
+  public boolean isOnline() {
+    return Groups.player.find(p -> p.uuid().equals(uuid)) != null;
+  }
+
+  @SuppressWarnings("NullAway")
+  @Override
+  public @NotNull OnlinePlayer getOnlinePlayer() {
+    //TODO create the online player instance
+    return null;
+  }
+
+  @Override
+  public @NotNull String getName() {
     return administration.getInfo(uuid).lastName;
   }
 
   @Override
-  public @NotNull String getLastIP() {
+  public @NotNull String getIP() {
     return administration.getInfo(uuid).lastIP;
   }
 
   @Override
   public @NotNull List<String> getUsedNames() {
-    return administration.getInfo(uuid).names.list();
+    return List.copyOf(new ArcList<>(getPlayerInfo().names));
   }
 
   @Override
   public @NotNull List<String> getUsedIPs() {
-    return administration.getInfo(uuid).ips.list();
+    return getPlayerInfo().ips.list();
   }
 
   @Override
@@ -43,22 +56,22 @@ class OfflinePlayerImpl implements OfflinePlayer {
 
   @Override
   public @NotNull String getUSID() {
-    return administration.getInfo(uuid).adminUsid;
+    return getPlayerInfo().adminUsid;
   }
 
   @Override
   public int getTimesJoined() {
-    return administration.getInfo(uuid).timesJoined;
+    return getPlayerInfo().timesJoined;
   }
 
   @Override
   public int getTimesKicked() {
-    return administration.getInfo(uuid).timesKicked;
+    return getPlayerInfo().timesKicked;
   }
 
   @Override
   public boolean isBanned() {
-    return administration.getInfo(uuid).banned;
+    return getPlayerInfo().banned;
   }
 
   @Override
@@ -77,13 +90,13 @@ class OfflinePlayerImpl implements OfflinePlayer {
 
   @Override
   public @NotNull Duration getKickDuration() {
-    final var duration = getPlayerInfo().lastKicked - System.currentTimeMillis();
+    final var duration = administration.getKickTime(getUUID(), getIP());
     return duration < 0L ? Duration.ZERO : Duration.ofMillis(duration);
   }
 
   @Override
-  public void setKickDuration(final @NotNull Duration duration) {
-    getPlayerInfo().lastKicked = duration.toMillis() + System.currentTimeMillis();
+  public void pardon() {
+    getUsedIPs().forEach(administration.kickedIPs::remove);
   }
 
   @Override
@@ -119,17 +132,6 @@ class OfflinePlayerImpl implements OfflinePlayer {
     return getTimesJoined() > 1;
   }
 
-  @Override
-  public boolean isOnline() {
-    return Groups.player.find(p -> p.uuid().equals(uuid)) != null;
-  }
-
-  @SuppressWarnings("NullAway")
-  @Override
-  public @NotNull OnlinePlayer getOnlinePlayer() {
-    //TODO create the online player instance
-    return null;
-  }
 
   private @NotNull Administration.PlayerInfo getPlayerInfo() {
     return administration.getInfo(uuid);

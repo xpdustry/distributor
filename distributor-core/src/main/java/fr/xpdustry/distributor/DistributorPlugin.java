@@ -1,5 +1,6 @@
 package fr.xpdustry.distributor;
 
+import fr.xpdustry.distributor.internal.*;
 import java.util.*;
 import mindustry.mod.*;
 import org.jetbrains.annotations.*;
