@@ -6,7 +6,6 @@ plugins {
     id("net.kyori.indra.checkstyle")
     // id("net.kyori.indra.license-header")
     id("net.ltgt.errorprone")
-    id("com.github.johnrengelman.shadow")
 }
 
 indra {
@@ -38,9 +37,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
 
-    val jetbrains = "23.0.0"
-    compileOnly("org.jetbrains:annotations:$jetbrains")
-    testCompileOnly("org.jetbrains:annotations:$jetbrains")
+    val checker = "3.23.0"
+    compileOnly("org.checkerframework:checker-qual:$checker")
+    testCompileOnly("org.checkerframework:checker-qual:$checker")
+
     annotationProcessor("com.uber.nullaway:nullaway:0.9.4")
     errorprone("com.google.errorprone:error_prone_core:2.10.0")
 }
@@ -55,15 +55,3 @@ tasks.withType(JavaCompile::class.java).configureEach {
         }
     }
 }
-
-tasks.create("getArtifactPath") {
-    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
-}
-
-tasks.shadowJar {
-    from(rootProject.file("LICENSE.md")) {
-        into("META-INF")
-    }
-}
-
-tasks.build.get().dependsOn(tasks.shadowJar)

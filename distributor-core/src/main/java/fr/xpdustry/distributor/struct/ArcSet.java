@@ -3,7 +3,6 @@ package fr.xpdustry.distributor.struct;
 import arc.struct.*;
 import java.util.*;
 import java.util.function.*;
-import org.jetbrains.annotations.*;
 
 /**
  * A {@link Set} view of a {@link ObjectSet}.
@@ -15,29 +14,17 @@ public final class ArcSet<E> extends AbstractSet<E> {
 
   private final ObjectSet<E> set;
 
-  public ArcSet(final @NotNull ObjectSet<E> set) {
+  public ArcSet(final ObjectSet<E> set) {
     this.set = set;
   }
 
-  public ArcSet(final int initial, final float loadFactor) {
-    this(new ObjectSet<>(initial, loadFactor));
-  }
-
-  public ArcSet(final int initial) {
-    this(new ObjectSet<>(initial));
-  }
-
-  public ArcSet() {
-    this(new ObjectSet<>());
-  }
-
   @Override
-  public void forEach(final @NotNull Consumer<? super E> action) {
+  public void forEach(final Consumer<? super E> action) {
     set.forEach(action);
   }
 
   @Override
-  public @NotNull Iterator<E> iterator() {
+  public Iterator<E> iterator() {
     return set.iterator();
   }
 
@@ -53,7 +40,7 @@ public final class ArcSet<E> extends AbstractSet<E> {
 
   @SuppressWarnings("unchecked")
   @Override
-  public boolean contains(final @NotNull Object o) {
+  public boolean contains(final Object o) {
     return set.contains((E) o);
   }
 
@@ -63,18 +50,18 @@ public final class ArcSet<E> extends AbstractSet<E> {
   }
 
   @Override
-  public <T> T[] toArray(final @NotNull T @NotNull [] a) {
+  public <T> T[] toArray(final T [] a) {
     return set.asArray().toArray(a.getClass().getComponentType());
   }
 
   @Override
-  public boolean add(final @Nullable E e) {
+  public boolean add(final E e) {
     return set.add(e);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public boolean remove(final @Nullable Object o) {
+  public boolean remove(final Object o) {
     return set.remove((E) o);
   }
 

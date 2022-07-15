@@ -2,7 +2,6 @@ package fr.xpdustry.distributor.command;
 
 import cloud.commandframework.captions.*;
 import java.util.*;
-import org.jetbrains.annotations.*;
 
 /**
  * {@link Caption} instances for {@link MindustryCommandManager} error messages.
@@ -11,12 +10,17 @@ import org.jetbrains.annotations.*;
  */
 public final class MindustryCaptionKeys {
 
-  private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>();
+  private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(7);
 
   /**
    * Variables: {@code {input}}.
    */
-  public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER = of("argument.parse.failure.player");
+  public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND = of("argument.parse.failure.player.not_found");
+
+  /**
+   * Variables: {@code {input}}.
+   */
+  public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY = of("argument.parse.failure.player.too_many");
 
   /**
    * Variables: {@code {syntax}}.
@@ -46,7 +50,7 @@ public final class MindustryCaptionKeys {
   private MindustryCaptionKeys() {
   }
 
-  private static @NotNull Caption of(final @NotNull String key) {
+  private static Caption of(final String key) {
     final var caption = Caption.of(key);
     RECOGNIZED_CAPTIONS.add(caption);
     return caption;
@@ -55,7 +59,7 @@ public final class MindustryCaptionKeys {
   /**
    * Returns an unmodifiable view of all the captions used in the {@link MindustryCommandManager}.
    */
-  public static @NotNull Collection<Caption> getCaptionKeys() {
+  public static Collection<Caption> getCaptionKeys() {
     return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);
   }
 }

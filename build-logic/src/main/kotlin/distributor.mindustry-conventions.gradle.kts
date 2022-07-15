@@ -36,3 +36,15 @@ tasks.shadowJar {
         from(temp)
     }
 }
+
+tasks.create("getArtifactPath") {
+    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
+}
+
+tasks.shadowJar {
+    from(rootProject.file("LICENSE.md")) {
+        into("META-INF")
+    }
+}
+
+tasks.build.get().dependsOn(tasks.shadowJar)

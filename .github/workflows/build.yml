@@ -1,3 +1,5 @@
+# TODO A more convenient ci is required...
+
 name: Build
 
 on: [ push, pull_request ]
@@ -28,7 +30,7 @@ jobs:
         run: |
           ./gradlew build
           echo '::set-output name=CORE_ARTIFACT_PATH::'$(./gradlew :distributor-core:getArtifactPath -q)
-          echo '::set-output name=JS_ARTIFACT_PATH::'$(./gradlew :distributor-js:getArtifactPath -q)
+      #   echo '::set-output name=JS_ARTIFACT_PATH::'$(./gradlew :distributor-js:getArtifactPath -q)
 
       - name: Publish to Xpdustry
         if: ${{ github.event_name != 'pull_request' }}
@@ -47,20 +49,20 @@ jobs:
             echo "STATUS=release" >> $GITHUB_ENV
           fi
 
-      - name: Set up Release
-        if: "${{ env.STATUS == 'release' }}"
-        id: release
-        run: |
-          tag=$(cat global-plugin.json | grep "version*")   # Cut the line with the version in plugin.json
-          tag=$(echo $tag | cut -d ":" -f 2,3)              # Split with ":" and take the version number
-          tag=$(echo $tag | tr -d \"," ")                   # Trim the " and , and spaces
-          echo '::set-output name=RELEASE_TAG::'$tag
-
-          r=$(cat CHANGELOG.md)
-          r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
-          r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
-          r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
-          echo "::set-output name=CHANGELOG::$r"
+      # - name: Set up Release
+      #   if: "${{ env.STATUS == 'release' }}"
+      #   id: release
+      #   run: |
+      #     tag=$(cat global-plugin.json | grep "version*")   # Cut the line with the version in plugin.json
+      #     tag=$(echo $tag | cut -d ":" -f 2,3)              # Split with ":" and take the version number
+      #     tag=$(echo $tag | tr -d \"," ")                   # Trim the " and , and spaces
+      #     echo '::set-output name=RELEASE_TAG::'$tag
+      #
+      #     r=$(cat CHANGELOG.md)
+      #     r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
+      #     r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
+      #     r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
+      #     echo "::set-output name=CHANGELOG::$r"
 
       - name: Upload core artifact to Release
         if: "${{ env.STATUS == 'release' }}"
@@ -74,14 +76,14 @@ jobs:
           tag: v${{ steps.release.outputs.RELEASE_TAG }}
           file: ${{ steps.build.outputs.CORE_ARTIFACT_PATH }}
 
-      - name: Upload core artifact to Release
-        if: "${{ env.STATUS == 'release' }}"
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          asset_name: distributor-js.jar
-          tag: v${{ steps.release.outputs.RELEASE_TAG }}
-          file: ${{ steps.build.outputs.JS_ARTIFACT_PATH }}
+      # - name: Upload core artifact to Release
+      #   if: "${{ env.STATUS == 'release' }}"
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     asset_name: distributor-js.jar
+      #     tag: v${{ steps.release.outputs.RELEASE_TAG }}
+      #     file: ${{ steps.build.outputs.JS_ARTIFACT_PATH }}
 
       - name: Upload core artifact to Actions
         uses: actions/upload-artifact@v2
@@ -89,8 +91,8 @@ jobs:
           name: ${{ github.event.repository.name }}
           path: ${{ steps.build.outputs.CORE_ARTIFACT_PATH }}
 
-      - name: Upload js artifact to Actions
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.event.repository.name }}
-          path: ${{ steps.build.outputs.JS_ARTIFACT_PATH }}
+      # - name: Upload js artifact to Actions
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{ github.event.repository.name }}
+      #     path: ${{ steps.build.outputs.JS_ARTIFACT_PATH }}

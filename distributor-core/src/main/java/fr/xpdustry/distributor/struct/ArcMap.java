@@ -4,7 +4,8 @@ import arc.struct.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import org.jetbrains.annotations.*;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 // TODO Benchmarks + Compliance tests
 public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
@@ -13,9 +14,9 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
   private static final long serialVersionUID = 1261308433311045675L;
 
   private final ObjectMap<K, V> map;
-  private transient @Nullable EntrySet entries = null;
+  private transient @MonotonicNonNull EntrySet entries = null;
 
-  public ArcMap(final @NotNull ObjectMap<K, V> map) {
+  public ArcMap(final ObjectMap<K, V> map) {
     this.map = map;
   }
 
@@ -30,30 +31,30 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
   }
 
   @Override
-  public boolean containsValue(final @Nullable Object value) {
+  public boolean containsValue(final Object value) {
     return map.containsValue(value, false);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public boolean containsKey(final @NotNull Object key) {
+  public boolean containsKey(final Object key) {
     return map.containsKey((K) key);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public V get(final @NotNull Object key) {
+  public V get(final Object key) {
     return map.get((K) key);
   }
 
   @Override
-  public V put(final @NotNull K key, final @Nullable V value) {
+  public V put(final K key, final V value) {
     return map.put(key, value);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public V remove(final @NotNull Object key) {
+  public V remove(final Object key) {
     return map.remove((K) key);
   }
 
@@ -79,7 +80,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
   }
 
   @Override
-  public @NotNull Set<Entry<K, V>> entrySet() {
+  public Set<Entry<K, V>> entrySet() {
     if (entries == null) {
       entries = new EntrySet();
     }
@@ -99,49 +100,28 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     }
 
     @Override
-    public @NotNull Iterator<Map.Entry<K,V>> iterator() {
+    public @NonNull Iterator<Map.Entry<K,V>> iterator() {
       return new EntryIterator();
     }
   }
 
-  private abstract class ArcMapIterator {
+  private final class EntryIterator implements Iterator<Entry<K, V>> {
 
     private final ObjectMap.Entries<K, V> entries = map.entries();
 
-    public final boolean hasNext() {
+    @Override
+    public boolean hasNext() {
       return entries.hasNext();
     }
 
-    public final void remove() {
+    @Override
+    public void remove() {
       entries.remove();
     }
 
-    final ObjectMap.Entry<K, V> nextEntry() {
-      return entries.next();
-    }
-  }
-
-  private final class KeyIterator extends ArcMapIterator implements Iterator<K> {
-
-    @Override
-    public K next() {
-      return nextEntry().key;
-    }
-  }
-
-  private final class ValueIterator extends ArcMapIterator implements Iterator<V> {
-
-    @Override
-    public V next() {
-      return nextEntry().value;
-    }
-  }
-
-  private final class EntryIterator extends ArcMapIterator implements Iterator<Map.Entry<K,V>> {
-
     @Override
     public Entry<K, V> next() {
-      return new ArcMapEntry(nextEntry());
+      return new ArcMapEntry(entries.next());
     }
   }
 
@@ -152,11 +132,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
 
     private final K key;
 
-    ArcMapEntry(final @NotNull K key) {
-      this.key = key;
-    }
-
-    ArcMapEntry(final @NotNull ObjectMap.Entry<K, V> entry) {
+    private ArcMapEntry(final ObjectMap.Entry<K, V> entry) {
       this.key = entry.key;
     }
 
@@ -169,7 +145,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     @Override
     public V getValue() {
       checkPresent();
-      return map.getThrow(key, RuntimeException::new);
+      return map.get(key);
     }
 
     @Override

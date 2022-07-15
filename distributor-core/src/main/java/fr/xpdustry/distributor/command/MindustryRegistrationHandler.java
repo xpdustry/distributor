@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.command;
 
 import arc.struct.*;
-import arc.util.*;
+import arc.util.CommandHandler;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
@@ -10,11 +10,13 @@ import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.internal.*;
 
-import cloud.commandframework.meta.*;
+import fr.xpdustry.distributor.DistributorPlugin;
+import fr.xpdustry.distributor.text.Component;
+import fr.xpdustry.distributor.text.format.TextColor;
 import mindustry.gen.*;
-import org.checkerframework.checker.nullness.qual.*;
-import org.jetbrains.annotations.*;
-import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * This class acts as a bridge between the {@link MindustryCommandManager} and the {@link CommandHandler},
@@ -23,18 +25,34 @@ import org.jetbrains.annotations.Nullable;
 public final class MindustryRegistrationHandler<C> implements CommandRegistrationHandler {
 
   private static final String DEFAULT_ARGS = "[args...]";
+  private static final Field COMMAND_MAP_ACCESSOR;
+
+  static {
+    try {
+      COMMAND_MAP_ACCESSOR = CommandHandler.class.getDeclaredField("commands");
+      COMMAND_MAP_ACCESSOR.setAccessible(true);
+    } catch (final NoSuchFieldException e) {
+      throw new RuntimeException("Unable to access CommandHandler#commands.", e);
+    }
+  }
 
   private final MindustryCommandManager<C> manager;
   private final CommandHandler handler;
-
-  public MindustryRegistrationHandler(final @NotNull MindustryCommandManager<C> manager, final @NotNull CommandHandler handler) {
-    this.manager = manager;
-    this.handler = handler;
-  }
+  private final ObjectMap<String, CommandHandler.Command> commands;
 
   @SuppressWarnings("unchecked")
+  public MindustryRegistrationHandler(final MindustryCommandManager<C> manager, final CommandHandler handler) {
+    this.manager = manager;
+    this.handler = handler;
+    try {
+      this.commands = (ObjectMap<String, CommandHandler.Command>) COMMAND_MAP_ACCESSOR.get(handler);
+    } catch (final IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
-  public boolean registerCommand(final @NotNull Command<?> command) {
+  public boolean registerCommand(final Command<?> command) {
     final var root = (StaticArgument<?>) command.getArguments().get(0);
 
     if (manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)) {
@@ -42,14 +60,12 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
     }
 
     var added = false;
-    final var commands = getNativeCommands();
 
     for (final var alias : root.getAliases()) {
       if (!commands.containsKey(alias)) {
-        // TODO CLean this shit up
-        final var cmd = new CloudCommand(alias, (Command<C>) command);
-        commands.put(alias, cmd);
-        handler.getCommandList().add(cmd);
+        final var nativeCommand = new CloudCommand(alias);
+        commands.put(alias, nativeCommand);
+        handler.getCommandList().add(nativeCommand);
         added = true;
       }
     }
@@ -58,17 +74,12 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
   }
 
   @Override
-  public void unregisterRootCommand(final @NonNull StaticArgument<?> root) {
-    final var commands = getNativeCommands();
+  public void unregisterRootCommand(final StaticArgument<?> root) {
     root.getAliases().stream()
       .map(commands::get)
       .filter(CloudCommand.class::isInstance)
-      .map(c -> c.text)
+      .map(c -> c.text) // Name
       .forEach(handler::removeCommand);
-  }
-
-  private ObjectMap<String, CommandHandler.Command> getNativeCommands() {
-    return Reflect.get(handler, "commands");
   }
 
   /**
@@ -76,15 +87,8 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
    */
   public final class CloudCommand extends CommandHandler.Command {
 
-    private final Command<C> command;
-
-    private CloudCommand(final @NotNull String name, final @NotNull Command<C> command) {
-      super(name, DEFAULT_ARGS, command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, ""), new CloudCommandRunner(name));
-      this.command = command;
-    }
-
-    public @NotNull Command<C> getWrappedCommand() {
-      return command;
+    private CloudCommand(final String name) {
+      super(name, DEFAULT_ARGS, "", new CloudCommandRunner(name));
     }
   }
 
@@ -92,18 +96,23 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
 
     private final String name;
 
-    private CloudCommandRunner(final @NotNull String name) {
+    private CloudCommandRunner(final String name) {
       this.name = name;
     }
 
     @Override
-    public void accept(final @NotNull String[] args, final @Nullable Player player) {
-      // TODO figure out how to get a OnlinePlayer instance here...
-      final var caller = manager.getSenderToCallerMapper().apply(new ConsoleCommandSender());
+    public void accept(final String[] args, final @Nullable Player player) {
+      final var provider = DistributorPlugin.getAudienceProvider();
+      // TODO, Fix player audience
+      final var audience = player != null ? provider.player(player.uuid()) : provider.console();
+      final var sender = manager.getAudienceToSenderMapper().apply(audience);
+      
       final var input = new StringBuilder(name);
-      for (final var arg : args) input.append(arg);
+      for (final var arg : args) {
+        input.append(' ').append(arg);
+      }
 
-      manager.executeCommand(caller, input.toString()).whenComplete((result, throwable) -> {
+      manager.executeCommand(sender, input.toString()).whenComplete((result, throwable) -> {
         if (throwable == null) {
           return;
         } else if (throwable instanceof ArgumentParseException t) {
@@ -111,35 +120,49 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
         }
 
         if (throwable instanceof InvalidSyntaxException t) {
-          manager.handleException(caller, InvalidSyntaxException.class, t, (c, e) -> {
-            sendException(c, MindustryCaptionKeys.COMMAND_INVALID_SYNTAX, CaptionVariable.of("syntax", e.getCorrectSyntax()));
-          });
+          manager.handleException(sender, InvalidSyntaxException.class, t, (s, e) -> sendException(
+            sender,
+            MindustryCaptionKeys.COMMAND_INVALID_SYNTAX,
+            CaptionVariable.of("syntax", e.getCorrectSyntax())
+          ));
         } else if (throwable instanceof NoPermissionException t) {
-          manager.handleException(caller, NoPermissionException.class, t, (c, e) -> {
-            sendException(c, MindustryCaptionKeys.COMMAND_INVALID_PERMISSION, CaptionVariable.of("permission", e.getMissingPermission()));
-          });
+          manager.handleException(sender, NoPermissionException.class, t, (s, e) -> sendException(
+            sender,
+            MindustryCaptionKeys.COMMAND_INVALID_PERMISSION,
+            CaptionVariable.of("permission", e.getMissingPermission())
+          ));
         } else if (throwable instanceof NoSuchCommandException t) {
-          manager.handleException(caller, NoSuchCommandException.class, t, (c, e) -> {
-            sendException(c, MindustryCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND, CaptionVariable.of("command", e.getSuppliedCommand()));
-          });
+          manager.handleException(sender, NoSuchCommandException.class, t, (s, e) -> sendException(
+            sender,
+            MindustryCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
+            CaptionVariable.of("command", e.getSuppliedCommand())
+          ));
         } else if (throwable instanceof ParserException t) {
-          manager.handleException(caller, ParserException.class, t, (c, e) -> {
-            sendException(c, e.errorCaption(), e.captionVariables());
-          });
+          manager.handleException(sender, ParserException.class, t, (s, e) -> sendException(
+            sender, e.errorCaption(), e.captionVariables()
+          ));
         } else if (throwable instanceof CommandExecutionException t) {
-          manager.handleException(caller, CommandExecutionException.class, t, (c, e) -> {
-            sendException(c, MindustryCaptionKeys.COMMAND_FAILURE_EXECUTION, CaptionVariable.of("message", e.getCause().getMessage()));
-          });
+          manager.handleException(sender, CommandExecutionException.class, t, (s, e) -> sendException(
+            sender,
+            MindustryCaptionKeys.COMMAND_FAILURE_EXECUTION,
+            CaptionVariable.of("message", e.getCause().getMessage())
+          ));
         } else {
-          sendException(caller, MindustryCaptionKeys.COMMAND_FAILURE_UNKNOWN, CaptionVariable.of("message", throwable.getMessage()));
+          sendException(
+            sender,
+            MindustryCaptionKeys.COMMAND_FAILURE_UNKNOWN,
+            CaptionVariable.of("message", throwable.getMessage())
+          );
         }
       });
     }
 
-    private void sendException(final @NotNull C caller, final Caption caption, final CaptionVariable... variables) {
-      final var message = manager.captionRegistry().getCaption(caption, caller);
+    private void sendException(final C sender, final Caption caption, final CaptionVariable... variables) {
+      final var message = manager.captionRegistry().getCaption(caption, sender);
       final var formatted = manager.captionVariableReplacementHandler().replaceVariables(message, variables);
-      manager.getCallerToSenderMapper().apply(caller).sendMessage(formatted);
+      manager.getSenderToAudienceMapper()
+        .apply(sender)
+        .sendMessage(Component.text(formatted, TextColor.RED));
     }
   }
 }

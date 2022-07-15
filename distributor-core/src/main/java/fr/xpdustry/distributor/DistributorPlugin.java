@@ -1,32 +1,22 @@
 package fr.xpdustry.distributor;
 
-import fr.xpdustry.distributor.internal.*;
-import java.util.*;
+import fr.xpdustry.distributor.admin.PermissionManager;
+import fr.xpdustry.distributor.audience.AudienceProvider;
 import mindustry.mod.*;
-import org.jetbrains.annotations.*;
 
-public class DistributorPlugin extends Plugin {
+// TODO Make a package like fr.xpdustry.distributor.v7|v6 for runtime jars
+public final class DistributorPlugin extends Plugin {
 
-  private static final DistributorRuntime runtime;
+  public static final String NAMESPACE = "xpdustry-distributor";
 
-  static {
-    final var loader = ServiceLoader.load(
-      DistributorRuntime.class,
-      DistributorPlugin.class.getClassLoader()
-    );
-    final var iterator = loader.iterator();
-    if (iterator.hasNext()) {
-      runtime = iterator.next();
-      if (iterator.hasNext()) {
-        throw new IllegalStateException("Found more than one DistributorRuntime implementation!");
-      }
-    } else {
-      throw new IllegalStateException("No DistributorRuntime implementation was found!");
-    }
+  public static AudienceProvider getAudienceProvider() {
+    // AudienceProvider TODO PermissionManager
+    throw new UnsupportedOperationException("Oh no...");
   }
 
-  public static @NotNull DistributorRuntime getRuntime() {
-    return runtime;
+  public static PermissionManager getPermissionManager() {
+    // TODO PermissionManager
+    throw new UnsupportedOperationException("Oh no...");
   }
 
   @Override

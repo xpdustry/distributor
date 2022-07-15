@@ -4,7 +4,6 @@ import arc.struct.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import org.jetbrains.annotations.*;
 
 /**
  * A {@link List} view of a {@link Seq}.
@@ -19,36 +18,28 @@ public final class ArcList<E> extends AbstractList<E> implements Serializable, R
 
   private final Seq<E> seq;
 
-  public ArcList(final @NotNull Seq<E> seq) {
+  public ArcList(final Seq<E> seq) {
     this.seq = seq;
   }
 
-  public ArcList(final int initial) {
-    this(new Seq<>(initial));
-  }
-
-  public ArcList() {
-    this(new Seq<>());
-  }
-
   @Override
-  public void replaceAll(final @NotNull UnaryOperator<E> operator) {
+  public void replaceAll(final UnaryOperator<E> operator) {
     seq.replace(operator::apply);
   }
 
   @Override
-  public void sort(final @NotNull Comparator<? super E> c) {
+  public void sort(final Comparator<? super E> c) {
     seq.sort(c);
   }
 
   @Override
-  public boolean removeIf(final @NotNull Predicate<? super E> filter) {
+  public boolean removeIf(final Predicate<? super E> filter) {
     final var size = seq.size;
     return size != seq.removeAll(filter::test).size;
   }
 
   @Override
-  public void forEach(final @NotNull Consumer<? super E> action) {
+  public void forEach(final Consumer<? super E> action) {
     seq.forEach(action);
   }
 
@@ -80,7 +71,7 @@ public final class ArcList<E> extends AbstractList<E> implements Serializable, R
 
   @SuppressWarnings("unchecked")
   @Override
-  public boolean remove(final @Nullable Object o) {
+  public boolean remove(final Object o) {
     return seq.remove((E) o);
   }
 
@@ -90,19 +81,19 @@ public final class ArcList<E> extends AbstractList<E> implements Serializable, R
   }
 
   @Override
-  public boolean addAll(final @NotNull Collection<? extends E> c) {
+  public boolean addAll(final Collection<? extends E> c) {
     seq.addAll(c);
     return true;
   }
 
   @Override
-  public boolean add(final @Nullable E e) {
+  public boolean add(final E e) {
     seq.add(e);
     return true;
   }
 
   @Override
-  public void add(final int index, final @Nullable E element) {
+  public void add(final int index, final E element) {
     seq.insert(index, element);
   }
 
@@ -112,7 +103,7 @@ public final class ArcList<E> extends AbstractList<E> implements Serializable, R
   }
 
   @Override
-  public E set(final int index, final @Nullable E element) {
+  public E set(final int index, final E element) {
     E old = seq.get(index);
     seq.set(index, element);
     return old;
@@ -120,13 +111,13 @@ public final class ArcList<E> extends AbstractList<E> implements Serializable, R
 
   @SuppressWarnings("unchecked")
   @Override
-  public int indexOf(final @Nullable Object o) {
+  public int indexOf(final Object o) {
     return seq.indexOf((E) o);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public int lastIndexOf(final @Nullable Object o) {
+  public int lastIndexOf(final Object o) {
     return seq.lastIndexOf((E) o, false);
   }
 

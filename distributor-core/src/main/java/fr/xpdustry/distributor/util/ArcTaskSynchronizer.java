@@ -4,13 +4,13 @@ import arc.*;
 import cloud.commandframework.tasks.*;
 import java.util.concurrent.*;
 import org.checkerframework.checker.nullness.qual.*;
-import org.jetbrains.annotations.*;
 
+// TODO Totally useless lol...
 public final class ArcTaskSynchronizer implements TaskSynchronizer {
 
   private final Application application;
 
-  public ArcTaskSynchronizer(final @NotNull Application application) {
+  public ArcTaskSynchronizer(final @NonNull Application application) {
     this.application = application;
   }
 
