@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.audience;
 
-import arc.Events;
+import arc.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +8,13 @@ import java.util.stream.StreamSupport;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.gen.Groups;
+import mindustry.gen.Player;
 
-// TODO Open this class for extension (javelin global chat goes brrrrrr)
-final class SimpleAudienceProvider implements AudienceProvider {
+public class SimpleAudienceProvider implements AudienceProvider {
 
   private final Map<String, Audience> players = new HashMap<>();
 
-  SimpleAudienceProvider() {
+  {
     Events.on(EventType.PlayerConnect.class, e -> {
       players.put(e.player.uuid(), new PlayerAudience(e.player));
     });
@@ -24,8 +24,8 @@ final class SimpleAudienceProvider implements AudienceProvider {
   }
 
   @Override
-  public Audience everyone() {
-    return (ForwardingAudience) () -> List.of(console(), players());
+  public ForwardingAudience all() {
+    return () -> List.of(console(), players());
   }
 
   @Override
@@ -47,7 +47,8 @@ final class SimpleAudienceProvider implements AudienceProvider {
   public ForwardingAudience team(final Team team) {
     return () -> StreamSupport.stream(Groups.player.spliterator(), false)
       .filter(p -> p.team() == team)
-      .map(p -> players.get(p.uuid()))
+      .map(Player::uuid)
+      .map(this::player)
       .toList();
   }
 }

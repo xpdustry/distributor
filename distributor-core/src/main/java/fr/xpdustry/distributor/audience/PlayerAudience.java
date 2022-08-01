@@ -1,11 +1,10 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.audio.Sound;
-import fr.xpdustry.distributor.meta.MetaContainer;
-import fr.xpdustry.distributor.meta.MetaKey;
+import fr.xpdustry.distributor.data.*;
 import fr.xpdustry.distributor.text.Component;
 import fr.xpdustry.distributor.text.renderer.ComponentRenderer;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.Locale;
 import java.util.Optional;
 import mindustry.core.Version;
@@ -41,17 +40,15 @@ final class PlayerAudience implements Audience {
   }
 
   private final Player player;
-  private final MetaContainer metas;
+  private final MetadataContainer metas;
 
   PlayerAudience(final Player player) {
     this.player = player;
-    this.metas = MetaContainer.builder()
-      .withConstant(MetaKey.UUID, this.player.uuid())
-      .withConstant(
-        MetaKey.LOCALE, Locale.forLanguageTag(this.player.locale().replace('-', '_'))
-      )
-      .withSupplier(MetaKey.NAME, this.player::name)
-      .withSupplier(MetaKey.TEAM, this.player::team)
+    this.metas = MetadataContainer.builder()
+      .withConstant(StandardMetaKeys.UUID, this.player.uuid())
+      .withConstant(StandardMetaKeys.LOCALE, getPlayerLocale(this.player))
+      .withSupplier(StandardMetaKeys.NAME, this.player::name)
+      .withSupplier(StandardMetaKeys.TEAM, this.player::team)
       .build();
   }
 
@@ -113,7 +110,17 @@ final class PlayerAudience implements Audience {
   }
 
   @Override
-  public <T> Optional<T> getMeta(final MetaKey<T> key) {
-    return metas.getMeta(key);
+  public <T> Optional<T> getMetadata(final Key<T> key) {
+    return metas.getMetadata(key);
   }
+
+  private Locale getPlayerLocale(final Player player) {
+    final var parts = player.locale().split("-", 3);
+    return switch (parts.length) {
+      case 1 -> new Locale(parts[0]);
+      case 2 -> new Locale(parts[0], parts[1]);
+      case 3 -> new Locale(parts[0], parts[1], parts[2]);
+      default -> Locale.getDefault();
+    };
+  };
 }

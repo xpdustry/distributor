@@ -54,4 +54,14 @@ public final class TextColor {
   public int getB() {
     return value & 0xFF;
   }
+
+  @Override
+  public int hashCode() {
+    return Integer.hashCode(value);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return this == obj || (obj instanceof TextColor color && this.value == color.value);
+  }
 }

@@ -8,7 +8,7 @@ import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.parsing.*;
 
-import fr.xpdustry.distributor.command.MindustryCaptionKeys;
+import fr.xpdustry.distributor.command.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
@@ -109,8 +109,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
       }
 
       final var name = stripAndLower(input);
-      final var players = StreamSupport
-        .stream(Groups.player.spliterator(), false)
+      final var players = StreamSupport.stream(Groups.player.spliterator(), false)
         .filter(p -> stripAndLower(p.name()).contains(name))
         .toList();
 
@@ -170,7 +169,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     private static final long serialVersionUID = 2964533701700707264L;
 
     public TooManyPlayersFoundException(final String input, final CommandContext<?> ctx) {
-      super(input, ctx, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
+      super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
     }
   }
 
@@ -180,7 +179,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     private static final long serialVersionUID = 4683487234146844501L;
 
     public PlayerNotFoundException(final String input, final CommandContext<?> ctx) {
-      super(input, ctx, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
+      super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
     }
   }
 }

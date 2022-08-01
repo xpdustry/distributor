@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.text.renderer;
 
-import fr.xpdustry.distributor.text.Component;
+import fr.xpdustry.distributor.text.*;
 
 public interface ComponentRenderer {
 

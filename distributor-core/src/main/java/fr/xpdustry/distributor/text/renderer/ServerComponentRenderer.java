@@ -1,49 +1,38 @@
 package fr.xpdustry.distributor.text.renderer;
 
-import fr.xpdustry.distributor.text.format.TextStyle;
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
+import fr.xpdustry.distributor.text.format.*;
 
-final class ServerComponentRenderer extends AbstractComponentRenderer<Ansi> {
+final class ServerComponentRenderer extends AbstractComponentRenderer {
+
+  private static final String CONSOLE_COLOR = "\u001b[38;2;%d;%d;%dm";
 
   static final ServerComponentRenderer INSTANCE = new ServerComponentRenderer();
-
-  static {
-    AnsiConsole.systemInstall();
-  }
 
   private ServerComponentRenderer() {
   }
 
   @Override
-  protected Ansi createBuilder() {
-    return new Ansi();
-  }
-
-  @Override
-  protected void appendText(Ansi builder, String text) {
-    builder.a(text);
-  }
-
-  @Override
-  protected void startStyle(Ansi builder, TextStyle style) {
-    if (style.getColor() != null) {
-      builder.fgRgb(style.getColor().getRGB());
+  protected void startStyle(final StringBuilder builder, final TextStyle style) {
+    final var color = style.getColor();
+    if (color != null) {
+      builder.append(CONSOLE_COLOR.formatted(color.getR(), color.getG(), color.getB()));
     }
     for (final var decoration : style.getDecorations()) {
-      builder.a(switch (decoration) {
-        case ITALIC -> Ansi.Attribute.ITALIC;
-        case BOLD -> Ansi.Attribute.INTENSITY_BOLD;
-        case UNDERLINE -> Ansi.Attribute.UNDERLINE;
+      builder.append(switch (decoration) {
+        case ITALIC     -> "\u001b[3m";
+        case BOLD       -> "\u001b[1m";
+        case UNDERLINE  -> "\u001b[4m";
       });
     }
   }
 
   @Override
-  protected void closeStyle(Ansi builder, TextStyle last) {
-    builder.reset();
-    if (last != TextStyle.empty()) {
-      startStyle(builder, last);
+  protected void closeStyle(StringBuilder builder, TextStyle style, TextStyle last) {
+    if (style == TextStyle.empty()) {
+      builder.append("\u001b[0m"); // Reset all formatting
+      if (last != TextStyle.empty()) {
+        startStyle(builder, last);
+      }
     }
   }
 }

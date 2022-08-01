@@ -36,4 +36,16 @@ public final class TextStyle {
   public Set<TextDecoration> getDecorations() {
     return Collections.unmodifiableSet(decorations);
   }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(color, decorations);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return this == obj || (
+      obj instanceof TextStyle style && Objects.equals(this.color, style.color) && this.decorations.equals(style.decorations)
+    );
+  }
 }

@@ -4,7 +4,7 @@ import mindustry.game.Team;
 
 public interface AudienceProvider {
 
-  Audience everyone();
+  Audience all();
 
   Audience console();
 

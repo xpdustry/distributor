@@ -1,14 +1,13 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.audio.*;
-import fr.xpdustry.distributor.meta.MetaKey;
-import fr.xpdustry.distributor.meta.MetaProvider;
+import fr.xpdustry.distributor.data.*;
 import fr.xpdustry.distributor.text.Component;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public interface Audience extends MetaProvider {
+public interface Audience extends MetadataProvider {
 
   static Audience with(final Audience... receivers) {
     return switch (receivers.length) {
@@ -61,8 +60,7 @@ public interface Audience extends MetaProvider {
     action.accept(this);
   }
 
-  @Override
-  default <T> Optional<T> getMeta(final MetaKey<T> key) {
+  default <T> Optional<T> getMetadata(final Key<T> key) {
     return Optional.empty();
   }
 }

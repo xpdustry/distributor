@@ -4,11 +4,11 @@ import cloud.commandframework.captions.*;
 import java.util.*;
 
 /**
- * {@link Caption} instances for {@link MindustryCommandManager} error messages.
+ * {@link Caption} instances for {@link ArcCommandManager} error messages.
  *
  * @see StandardCaptionKeys
  */
-public final class MindustryCaptionKeys {
+public final class ArcCaptionKeys {
 
   private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(7);
 
@@ -47,7 +47,7 @@ public final class MindustryCaptionKeys {
    */
   public static final Caption COMMAND_FAILURE_UNKNOWN = of("command.failure.unknown");
 
-  private MindustryCaptionKeys() {
+  private ArcCaptionKeys() {
   }
 
   private static Caption of(final String key) {
@@ -57,7 +57,7 @@ public final class MindustryCaptionKeys {
   }
 
   /**
-   * Returns an unmodifiable view of all the captions used in the {@link MindustryCommandManager}.
+   * Returns an unmodifiable view of all the captions used in the {@link ArcCommandManager}.
    */
   public static Collection<Caption> getCaptionKeys() {
     return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);

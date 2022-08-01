@@ -1,5 +1,6 @@
 package fr.xpdustry.distributor.command;
 
+import arc.Events;
 import arc.util.*;
 import cloud.commandframework.*;
 import cloud.commandframework.execution.*;
@@ -9,32 +10,44 @@ import cloud.commandframework.meta.CommandMeta.*;
 import fr.xpdustry.distributor.DistributorPlugin;
 import fr.xpdustry.distributor.audience.Audience;
 import fr.xpdustry.distributor.command.argument.PlayerArgument;
-import fr.xpdustry.distributor.meta.MetaKey;
+import fr.xpdustry.distributor.data.StandardMetaKeys;
 import io.leangen.geantyref.TypeToken;
+import java.util.*;
 import java.util.function.*;
 import mindustry.*;
+import mindustry.game.EventType;
+import mindustry.gen.*;
 import mindustry.mod.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class MindustryCommandManager<C> extends CommandManager<C> {
+public class ArcCommandManager<C> extends CommandManager<C> {
 
   /**
    * The owning plugin of the command.
    */
   public static final Key<String> PLUGIN = Key.of(String.class, "distributor:plugin");
 
-  private final Plugin plugin;
-  private final Function<Audience, C> audienceToSenderMapper;
-  private final Function<C, Audience> senderToAudienceMapper;
+  public static final Function<Audience, Player> AUDIENCE_TO_PLAYER_MAPPER = a -> {
+    final var uuid = a.getMetadata(StandardMetaKeys.UUID).orElseThrow();
+    final var player = Groups.player.find(p -> p.uuid().equals(uuid));
+    return Objects.requireNonNull(player);
+  };
+  public static final Function<Player, Audience> PLAYER_TO_AUDIENCE_MAPPER = p -> {
+    // TODO Make this mapper more reliable (AudienceProvider may return empty)
+    return DistributorPlugin.getAudienceProvider().player(p.uuid());
+  };
 
-  public MindustryCommandManager(
+  private final Plugin plugin;
+  private final Function<C, Audience> senderToAudienceMapper;
+  private final Function<Audience, C> audienceToSenderMapper;
+
+  public ArcCommandManager(
     final Plugin plugin,
-    final CommandHandler handler,
     final Function<Audience, C> audienceToSenderMapper,
     final Function<C, Audience> senderToAudienceMapper
   ) {
     super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
     registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
-    commandRegistrationHandler(new MindustryRegistrationHandler<>(this, handler));
 
     this.parserRegistry().registerParserSupplier(
       TypeToken.get(PlayerArgument.PlayerParser.class),
@@ -46,6 +59,22 @@ public class MindustryCommandManager<C> extends CommandManager<C> {
     this.plugin = plugin;
     this.audienceToSenderMapper = audienceToSenderMapper;
     this.senderToAudienceMapper = senderToAudienceMapper;
+
+    Events.on(EventType.ServerLoadEvent.class, e -> lockRegistration());
+  }
+
+  // TODO FInish lol...
+  public final @Nullable CommandHandler getNativeCommandHandler() {
+    if (commandRegistrationHandler() instanceof ArcRegistrationHandler<?> registration) {
+      return registration.handler;
+    } else {
+      return null;
+    }
+  }
+
+  public final void setNativeCommandHandler(final CommandHandler handler) {
+    transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
+    commandRegistrationHandler(new ArcRegistrationHandler<>(this, handler));
   }
 
   public final Function<Audience, C> getAudienceToSenderMapper() {
@@ -63,11 +92,17 @@ public class MindustryCommandManager<C> extends CommandManager<C> {
   @SuppressWarnings("NullableProblems")
   @Override
   public boolean hasPermission(final C sender, final String permission) {
-    // TODO Why intellij is yelling at me here ?
-    return permission.isEmpty() || senderToAudienceMapper.apply(sender)
-      .getMeta(MetaKey.UUID)
-      .map(uuid -> DistributorPlugin.getPermissionManager().hasPermission(uuid, permission))
-      .orElse(true);
+    if (permission.isBlank()) {
+      return true;
+    }
+    final var optional = senderToAudienceMapper.apply(sender).getMetadata(StandardMetaKeys.UUID);
+    if (optional.isPresent()) {
+      final var permissions = DistributorPlugin.getPermissionManager();
+      final var uuid = optional.get();
+      return permissions.isAdministrator(uuid) || permissions.hasPermission(uuid, permission);
+    } else {
+      return true; // If it hasn't an uuid, it's the server
+    }
   }
 
   @Override

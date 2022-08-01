@@ -1,7 +1,7 @@
 {
   "name": "xpdustry-distributor-core",
   "displayName": "Distributor core",
-  "main": "fr.xpdustry.distributor.Distributor",
+  "main": "fr.xpdustry.distributor.DistributorPlugin",
   "author": "Xpdustry",
   "minGameVersion": "126",
   "hidden": true,

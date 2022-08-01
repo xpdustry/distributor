@@ -50,7 +50,7 @@ public final class ArcSet<E> extends AbstractSet<E> {
   }
 
   @Override
-  public <T> T[] toArray(final T [] a) {
+  public <T> T[] toArray(final T[] a) {
     return set.asArray().toArray(a.getClass().getComponentType());
   }
 

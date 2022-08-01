@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.*;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 // TODO Benchmarks + Compliance tests
 public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
@@ -70,12 +71,12 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
 
   @SuppressWarnings("unchecked")
   @Override
-  public V getOrDefault(Object key, V defaultValue) {
+  public V getOrDefault(final Object key, final V defaultValue) {
     return map.get((K) key, defaultValue);
   }
 
   @Override
-  public void forEach(BiConsumer<? super K, ? super V> action) {
+  public void forEach(final BiConsumer<? super K, ? super V> action) {
     map.each(action::accept);
   }
 
@@ -87,7 +88,16 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     return entries;
   }
 
-  private final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
+  private final class EntrySet extends AbstractSet<Map.Entry<K, V>> {
+
+    @Override
+    public boolean remove(final @Nullable Object o) {
+      if (o == null) {
+        return false;
+      }
+      final var entry = (Map.Entry<?, ?>)o;
+      return ArcMap.this.remove(entry.getKey(), entry.getValue());
+    }
 
     @Override
     public int size() {
@@ -100,14 +110,14 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     }
 
     @Override
-    public @NonNull Iterator<Map.Entry<K,V>> iterator() {
+    public @NonNull Iterator<Map.Entry<K, V>> iterator() {
       return new EntryIterator();
     }
   }
 
   private final class EntryIterator implements Iterator<Entry<K, V>> {
 
-    private final ObjectMap.Entries<K, V> entries = map.entries();
+    private final ObjectMap.Entries<K, V> entries = new ObjectMap.Entries<>(map);
 
     @Override
     public boolean hasNext() {
@@ -152,6 +162,22 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     public V setValue(V value) {
       checkPresent();
       return map.put(key, value);
+    }
+
+    public boolean equals(Object o) {
+      return o instanceof Map.Entry<?, ?> entry
+        && Objects.equals(this.key, entry.getKey())
+        && Objects.equals(this.getValue(), entry.getValue());
+    }
+
+    @Override
+    public int hashCode() {
+      return key.hashCode() ^ Objects.hashCode(getValue());
+    }
+
+    @Override
+    public String toString() {
+      return key + "=" + getValue();
     }
 
     private void checkPresent() {

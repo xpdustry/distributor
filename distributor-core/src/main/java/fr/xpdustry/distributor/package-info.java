@@ -17,7 +17,7 @@
     TypeUseLocation.OTHERWISE,
   }
 )
-package fr.xpdustry.distributor.text.renderer;
+package fr.xpdustry.distributor;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;

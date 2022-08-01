@@ -11,7 +11,7 @@ import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.internal.*;
 
 import fr.xpdustry.distributor.DistributorPlugin;
-import fr.xpdustry.distributor.text.Component;
+import fr.xpdustry.distributor.text.Components;
 import fr.xpdustry.distributor.text.format.TextColor;
 import mindustry.gen.*;
 
@@ -19,10 +19,10 @@ import java.lang.reflect.Field;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * This class acts as a bridge between the {@link MindustryCommandManager} and the {@link CommandHandler},
- * by registering cloud commands as native arc commands.
+ * This class acts as a bridge between the {@link ArcCommandManager} and the
+ * {@link CommandHandler}, by registering cloud commands as native arc commands.
  */
-public final class MindustryRegistrationHandler<C> implements CommandRegistrationHandler {
+public final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
 
   private static final String DEFAULT_ARGS = "[args...]";
   private static final Field COMMAND_MAP_ACCESSOR;
@@ -36,12 +36,12 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
     }
   }
 
-  private final MindustryCommandManager<C> manager;
-  private final CommandHandler handler;
+  private final ArcCommandManager<C> manager;
+  final CommandHandler handler;
   private final ObjectMap<String, CommandHandler.Command> commands;
 
   @SuppressWarnings("unchecked")
-  public MindustryRegistrationHandler(final MindustryCommandManager<C> manager, final CommandHandler handler) {
+  ArcRegistrationHandler(final ArcCommandManager<C> manager, final CommandHandler handler) {
     this.manager = manager;
     this.handler = handler;
     try {
@@ -103,10 +103,9 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
     @Override
     public void accept(final String[] args, final @Nullable Player player) {
       final var provider = DistributorPlugin.getAudienceProvider();
-      // TODO, Fix player audience
       final var audience = player != null ? provider.player(player.uuid()) : provider.console();
       final var sender = manager.getAudienceToSenderMapper().apply(audience);
-      
+
       final var input = new StringBuilder(name);
       for (final var arg : args) {
         input.append(' ').append(arg);
@@ -119,38 +118,45 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
           throwable = t.getCause();
         }
 
-        if (throwable instanceof InvalidSyntaxException t) {
-          manager.handleException(sender, InvalidSyntaxException.class, t, (s, e) -> sendException(
+        switch (throwable) {
+          case InvalidSyntaxException t -> manager.handleException(sender, InvalidSyntaxException.class, t, (s, e) ->
+            sendException(
+              sender,
+              ArcCaptionKeys.COMMAND_INVALID_SYNTAX,
+              CaptionVariable.of("syntax", e.getCorrectSyntax())
+            )
+          );
+          case NoPermissionException t -> manager.handleException(sender, NoPermissionException.class, t, (s, e) ->
+            sendException(
+              sender,
+              ArcCaptionKeys.COMMAND_INVALID_PERMISSION,
+              CaptionVariable.of("permission", e.getMissingPermission())
+            )
+          );
+          case NoSuchCommandException t -> manager.handleException(sender, NoSuchCommandException.class, t, (s, e) ->
+            sendException(
+              sender,
+              ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
+              CaptionVariable.of("command", e.getSuppliedCommand())
+            )
+          );
+          case ParserException t -> manager.handleException(sender, ParserException.class, t, (s, e) ->
+            sendException(
+              sender,
+              e.errorCaption(),
+              e.captionVariables()
+            )
+          );
+          case CommandExecutionException t -> manager.handleException(sender, CommandExecutionException.class, t, (s, e) ->
+            sendException(
+              sender,
+              ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
+              CaptionVariable.of("message", e.getCause().getMessage())
+            )
+          );
+          default -> sendException(
             sender,
-            MindustryCaptionKeys.COMMAND_INVALID_SYNTAX,
-            CaptionVariable.of("syntax", e.getCorrectSyntax())
-          ));
-        } else if (throwable instanceof NoPermissionException t) {
-          manager.handleException(sender, NoPermissionException.class, t, (s, e) -> sendException(
-            sender,
-            MindustryCaptionKeys.COMMAND_INVALID_PERMISSION,
-            CaptionVariable.of("permission", e.getMissingPermission())
-          ));
-        } else if (throwable instanceof NoSuchCommandException t) {
-          manager.handleException(sender, NoSuchCommandException.class, t, (s, e) -> sendException(
-            sender,
-            MindustryCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
-            CaptionVariable.of("command", e.getSuppliedCommand())
-          ));
-        } else if (throwable instanceof ParserException t) {
-          manager.handleException(sender, ParserException.class, t, (s, e) -> sendException(
-            sender, e.errorCaption(), e.captionVariables()
-          ));
-        } else if (throwable instanceof CommandExecutionException t) {
-          manager.handleException(sender, CommandExecutionException.class, t, (s, e) -> sendException(
-            sender,
-            MindustryCaptionKeys.COMMAND_FAILURE_EXECUTION,
-            CaptionVariable.of("message", e.getCause().getMessage())
-          ));
-        } else {
-          sendException(
-            sender,
-            MindustryCaptionKeys.COMMAND_FAILURE_UNKNOWN,
+            ArcCaptionKeys.COMMAND_FAILURE_UNKNOWN,
             CaptionVariable.of("message", throwable.getMessage())
           );
         }
@@ -162,7 +168,7 @@ public final class MindustryRegistrationHandler<C> implements CommandRegistratio
       final var formatted = manager.captionVariableReplacementHandler().replaceVariables(message, variables);
       manager.getSenderToAudienceMapper()
         .apply(sender)
-        .sendMessage(Component.text(formatted, TextColor.RED));
+        .sendMessage(Components.text(formatted, TextColor.RED));
     }
   }
 }

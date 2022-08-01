@@ -45,7 +45,13 @@ dependencies {
     errorprone("com.google.errorprone:error_prone_core:2.10.0")
 }
 
-tasks.withType(JavaCompile::class.java).configureEach {
+tasks.test {
+    useJUnitPlatform()
+    jvmArgs("--enable-preview")
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("--enable-preview")
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
         disable("MissingSummary", "BadImport")

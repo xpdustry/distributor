@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.util.Log;
-import fr.xpdustry.distributor.meta.MetaKey;
+import fr.xpdustry.distributor.data.*;
 import fr.xpdustry.distributor.text.Component;
 import fr.xpdustry.distributor.text.renderer.ComponentRenderer;
 import java.util.Locale;
@@ -20,15 +20,17 @@ final class ConsoleAudience implements Audience {
   }
 
   @Override
-  public void sendWarning(Component component) {
+  public void sendWarning(final Component component) {
     Log.warn(ComponentRenderer.server().render(component));
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> Optional<T> getMeta(final MetaKey<T> key) {
-    if (key.equals(MetaKey.LOCALE)) {
+  public <T> Optional<T> getMetadata(final Key<T> key) {
+    if (key.equals(StandardMetaKeys.LOCALE)) {
       return (Optional<T>) Optional.of(Locale.getDefault());
+    } else if (key.equals(StandardMetaKeys.SERVER)) {
+      return (Optional<T>) Optional.of(true);
     }
     return Optional.empty();
   }

@@ -1,28 +1,25 @@
-package fr.xpdustry.distributor.meta;
+package fr.xpdustry.distributor.data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-// TODO Clean this...
-public final class MetaContainer implements MetaProvider {
+public final class MetadataContainer implements MetadataProvider {
 
-  @SuppressWarnings("rawtypes")
-  private final Map<MetaKey, Supplier> metas;
+  private final Map<Key<?>, Supplier<?>> metas;
 
-  public static MetaContainer.Builder builder() {
-    return new MetaContainer.Builder();
+  public static MetadataContainer.Builder builder() {
+    return new MetadataContainer.Builder();
   }
 
-  @SuppressWarnings("rawtypes")
-  private MetaContainer(final Map<MetaKey, Supplier> metas) {
+  private MetadataContainer(final Map<Key<?>, Supplier<?>> metas) {
     this.metas = metas;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> Optional<T> getMeta(MetaKey<T> key) {
+  public <T> Optional<T> getMetadata(final Key<T> key) {
     return metas.containsKey(key)
       ? (Optional<T>) Optional.ofNullable(metas.get(key).get())
       : Optional.empty();
@@ -30,23 +27,23 @@ public final class MetaContainer implements MetaProvider {
 
   public static final class Builder {
 
-    private final Map<MetaKey<?>, Supplier<?>> metas = new HashMap<>();
+    private final Map<Key<?>, Supplier<?>> metas = new HashMap<>();
 
     private Builder() {
     }
 
-    public <T> Builder withConstant(final MetaKey<T> key, final T value) {
+    public <T> Builder withConstant(final Key<T> key, final T value) {
       this.metas.put(key, new ObjectSupplier<>(value));
       return this;
     }
 
-    public <T> Builder withSupplier(final MetaKey<T> key, final Supplier<T> supplier) {
+    public <T> Builder withSupplier(final Key<T> key, final Supplier<T> supplier) {
       this.metas.put(key, supplier);
       return this;
     }
 
-    public MetaContainer build() {
-      return new MetaContainer(Map.copyOf(metas));
+    public MetadataContainer build() {
+      return new MetadataContainer(Map.copyOf(metas));
     }
   }
 
@@ -63,6 +60,4 @@ public final class MetaContainer implements MetaProvider {
       return object;
     }
   }
-
-  // TODO Check effectiveness...
 }
