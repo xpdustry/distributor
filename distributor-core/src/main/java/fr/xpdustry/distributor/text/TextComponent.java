@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.text;
 
-import fr.xpdustry.distributor.text.format.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 public final class TextComponent extends Component {
 
@@ -10,8 +10,8 @@ public final class TextComponent extends Component {
 
   private final String content;
 
-  TextComponent(final String content, final TextStyle style) {
-    super(style);
+  TextComponent(final String content, final @Nullable TextColor color, final Iterable<TextDecoration> decorations) {
+    super(color, decorations);
     this.content = content;
   }
 
@@ -22,9 +22,9 @@ public final class TextComponent extends Component {
   @Override
   public Component repeat(int times) {
     if (times <= 0 || isEmpty()) {
-      return Components.empty();
+      return EMPTY;
     }
-    return new TextComponent(content.repeat(times), getStyle());
+    return new TextComponent(content.repeat(times), getColor(), getDecorations());
   }
 
   @Override
@@ -53,7 +53,7 @@ public final class TextComponent extends Component {
 
     @Override
     public TextComponent build() {
-      return content.isEmpty() ? EMPTY : new TextComponent(content, style());
+      return content.isEmpty() ? EMPTY : new TextComponent(content, color(), decorations());
     }
   }
 }

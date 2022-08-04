@@ -3,8 +3,8 @@ package fr.xpdustry.distributor.plugin;
 import arc.*;
 import arc.files.*;
 import arc.util.serialization.*;
-import fr.xpdustry.distributor.event.*;
 import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.event.*;
 import java.io.*;
 import mindustry.*;
 import mindustry.game.*;
@@ -50,7 +50,7 @@ public abstract class ExtendedPlugin extends Plugin implements Namespace {
   }
 
   @Override
-  public final String getNamespace() {
+  public String getNamespace() {
     return getDescriptor().getName();
   }
 

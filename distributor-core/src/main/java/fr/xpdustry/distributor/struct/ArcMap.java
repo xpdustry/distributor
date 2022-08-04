@@ -4,9 +4,7 @@ import arc.struct.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.*;
 
 // TODO Benchmarks + Compliance tests
 public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
@@ -95,7 +93,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
       if (o == null) {
         return false;
       }
-      final var entry = (Map.Entry<?, ?>)o;
+      final var entry = (Map.Entry<?, ?>) o;
       return ArcMap.this.remove(entry.getKey(), entry.getValue());
     }
 
@@ -164,6 +162,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
       return map.put(key, value);
     }
 
+    @Override
     public boolean equals(Object o) {
       return o instanceof Map.Entry<?, ?> entry
         && Objects.equals(this.key, entry.getKey())

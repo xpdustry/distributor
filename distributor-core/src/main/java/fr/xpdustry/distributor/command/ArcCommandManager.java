@@ -1,21 +1,22 @@
 package fr.xpdustry.distributor.command;
 
-import arc.Events;
+import arc.*;
 import arc.util.*;
 import cloud.commandframework.*;
 import cloud.commandframework.execution.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
-import cloud.commandframework.meta.CommandMeta.*;
-import fr.xpdustry.distributor.DistributorPlugin;
-import fr.xpdustry.distributor.audience.Audience;
-import fr.xpdustry.distributor.command.argument.PlayerArgument;
-import fr.xpdustry.distributor.data.StandardMetaKeys;
-import io.leangen.geantyref.TypeToken;
+import cloud.commandframework.meta.CommandMeta.Key;
+import fr.xpdustry.distributor.*;
+import fr.xpdustry.distributor.audience.*;
+import fr.xpdustry.distributor.command.argument.*;
+import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.struct.*;
+import io.leangen.geantyref.*;
 import java.util.*;
 import java.util.function.*;
 import mindustry.*;
-import mindustry.game.EventType;
+import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -28,13 +29,13 @@ public class ArcCommandManager<C> extends CommandManager<C> {
   public static final Key<String> PLUGIN = Key.of(String.class, "distributor:plugin");
 
   public static final Function<Audience, Player> AUDIENCE_TO_PLAYER_MAPPER = a -> {
-    final var uuid = a.getMetadata(StandardMetaKeys.UUID).orElseThrow();
-    final var player = Groups.player.find(p -> p.uuid().equals(uuid));
-    return Objects.requireNonNull(player);
+    final var muuid = a.getMetadata(StandardMetaKeys.MUUID).orElseThrow();
+    return Objects.requireNonNull(
+      Groups.player.find(p -> p.uuid().equals(muuid.getUUID()) && p.usid().equals(muuid.getUSID()))
+    );
   };
   public static final Function<Player, Audience> PLAYER_TO_AUDIENCE_MAPPER = p -> {
-    // TODO Make this mapper more reliable (AudienceProvider may return empty)
-    return DistributorPlugin.getAudienceProvider().player(p.uuid());
+    return DistributorPlugin.getAudienceProvider().player(MUUID.of(p));
   };
 
   private final Plugin plugin;
@@ -95,14 +96,16 @@ public class ArcCommandManager<C> extends CommandManager<C> {
     if (permission.isBlank()) {
       return true;
     }
-    final var optional = senderToAudienceMapper.apply(sender).getMetadata(StandardMetaKeys.UUID);
-    if (optional.isPresent()) {
-      final var permissions = DistributorPlugin.getPermissionManager();
-      final var uuid = optional.get();
-      return permissions.isAdministrator(uuid) || permissions.hasPermission(uuid, permission);
-    } else {
-      return true; // If it hasn't an uuid, it's the server
+    final var audience = senderToAudienceMapper.apply(sender);
+    if (audience.getMetadata(StandardMetaKeys.SERVER).orElse(false)) {
+      return true;
     }
+    return audience.getMetadata(StandardMetaKeys.MUUID)
+      .map(muuid -> {
+        final var permissions = DistributorPlugin.getPermissionManager();
+        return permissions.isAdministrator(muuid) || permissions.hasPermission(muuid, permission);
+      })
+      .orElse(false);
   }
 
   @Override

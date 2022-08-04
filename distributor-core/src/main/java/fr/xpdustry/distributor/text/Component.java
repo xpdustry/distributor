@@ -1,19 +1,24 @@
 package fr.xpdustry.distributor.text;
 
-import fr.xpdustry.distributor.text.format.*;
 import java.util.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.*;
 
 public abstract sealed class Component permits ListComponent, TextComponent {
 
-  private final TextStyle style;
+  private final @Nullable TextColor color;
+  private final Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
 
-  protected Component(final TextStyle style) {
-    this.style = style;
+  protected Component(final @Nullable TextColor color, final Iterable<TextDecoration> decorations) {
+    this.color = color;
+    decorations.forEach(this.decorations::add);
   }
 
-  public final TextStyle getStyle() {
-    return style;
+  public @Nullable TextColor getColor() {
+    return color;
+  }
+
+  public Set<TextDecoration> getDecorations() {
+    return Collections.unmodifiableSet(decorations);
   }
 
   public Component joins(final Iterable<Component> components) {
@@ -21,9 +26,7 @@ public abstract sealed class Component permits ListComponent, TextComponent {
     if (!iterator.hasNext()) {
       return Components.empty();
     }
-    final var builder = Components
-      .list()
-      .add(iterator.next());
+    final var builder = Components.list().add(iterator.next());
     while (iterator.hasNext()) {
       builder.add(this).add(iterator.next());
     }
@@ -47,7 +50,7 @@ public abstract sealed class Component permits ListComponent, TextComponent {
 
   public abstract boolean isEmpty();
 
-  public static abstract class Builder<C extends Component, B extends Builder<C, B>> {
+  public abstract static class Builder<C extends Component, B extends Builder<C, B>> {
 
     private @Nullable TextColor color = null;
     private Set<TextDecoration> decorations = Collections.emptySet();
@@ -75,18 +78,9 @@ public abstract sealed class Component permits ListComponent, TextComponent {
       return Collections.unmodifiableSet(decorations);
     }
 
-    public final B style(final TextStyle style) {
-      this.color = style.getColor();
-      this.decorations = style.getDecorations();
-      return self();
-    }
-
-    public final TextStyle style() {
-      return TextStyle.of(color, decorations);
-    }
-
     public B from(final C component) {
-      this.style(component.getStyle());
+      this.color(component.getColor());
+      this.decorations(component.getDecorations());
       return self();
     }
 

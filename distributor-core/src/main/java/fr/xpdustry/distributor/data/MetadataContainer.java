@@ -1,20 +1,18 @@
 package fr.xpdustry.distributor.data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 public final class MetadataContainer implements MetadataProvider {
 
   private final Map<Key<?>, Supplier<?>> metas;
 
-  public static MetadataContainer.Builder builder() {
-    return new MetadataContainer.Builder();
-  }
-
   private MetadataContainer(final Map<Key<?>, Supplier<?>> metas) {
     this.metas = metas;
+  }
+
+  public static MetadataContainer.Builder builder() {
+    return new MetadataContainer.Builder();
   }
 
   @SuppressWarnings("unchecked")

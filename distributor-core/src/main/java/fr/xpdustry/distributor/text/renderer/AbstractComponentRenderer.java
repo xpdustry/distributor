@@ -1,10 +1,12 @@
 package fr.xpdustry.distributor.text.renderer;
 
-import fr.xpdustry.distributor.text.format.*;
 import fr.xpdustry.distributor.text.*;
 import java.util.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 public abstract class AbstractComponentRenderer implements ComponentRenderer {
+
+  private static final Style EMPTY = new Style(null, Collections.emptySet());
 
   @Override
   public String render(final Component component) {
@@ -13,30 +15,50 @@ public abstract class AbstractComponentRenderer implements ComponentRenderer {
     return builder.toString();
   }
 
-  private void render(final Component component, final Deque<TextStyle> stack, final StringBuilder builder) {
+  private void render(final Component component, final Deque<Style> stack, final StringBuilder builder) {
     if (component.isEmpty()) {
       return;
     }
 
-    startStyle(builder, component.getStyle());
+    final var style = new Style(component.getColor(), component.getDecorations());
+    startStyle(builder, style);
 
-    switch (component) {
-      case TextComponent text -> {
-        builder.append(text);
-      }
-      case ListComponent list -> {
-        list.getComponents().forEach(c -> render(component, stack, builder));
-      }
+    // Java 17 black magik pls
+    if (component instanceof TextComponent text) {
+      builder.append(text.getContent());
+    } else if (component instanceof ListComponent list) {
+      stack.push(style);
+      list.getComponents().forEach(c -> render(component, stack, builder));
+      stack.pop();
     }
 
-    closeStyle(builder, component.getStyle(), stack.isEmpty() ? TextStyle.empty() : stack.peek());
+    closeStyle(builder, style, stack.isEmpty() ? EMPTY : stack.peek());
   }
 
   protected void appendText(final StringBuilder builder, final String text) {
     builder.append(text);
   }
 
-  protected abstract void startStyle(final StringBuilder builder, final TextStyle style);
+  protected abstract void startStyle(final StringBuilder builder, final Style style);
 
-  protected abstract void closeStyle(final StringBuilder builder, final TextStyle style, final TextStyle last);
+  protected abstract void closeStyle(final StringBuilder builder, final Style style, final Style last);
+
+  protected static final class Style {
+
+    private final @Nullable TextColor color;
+    private final Set<TextDecoration> decorations;
+
+    private Style(@Nullable TextColor color, Set<TextDecoration> decorations) {
+      this.color = color;
+      this.decorations = decorations;
+    }
+
+    public @Nullable TextColor getColor() {
+      return color;
+    }
+
+    public Set<TextDecoration> getDecorations() {
+      return decorations;
+    }
+  }
 }

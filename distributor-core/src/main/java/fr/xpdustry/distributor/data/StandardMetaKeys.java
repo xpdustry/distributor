@@ -1,15 +1,15 @@
 package fr.xpdustry.distributor.data;
 
-import fr.xpdustry.distributor.DistributorPlugin;
-import fr.xpdustry.distributor.data.*;
-import java.util.Locale;
-import mindustry.game.Team;
+import fr.xpdustry.distributor.*;
+import fr.xpdustry.distributor.struct.*;
+import java.util.*;
+import mindustry.game.*;
 
 public final class StandardMetaKeys {
 
   public static final Key<String> NAME = Key.of(String.class, DistributorPlugin.NAMESPACE, "name");
 
-  public static final Key<String> UUID = Key.of(String.class, DistributorPlugin.NAMESPACE, "uuid");
+  public static final Key<MUUID> MUUID = Key.of(MUUID.class, DistributorPlugin.NAMESPACE, "muuid");
 
   public static final Key<Team> TEAM = Key.of(Team.class, DistributorPlugin.NAMESPACE, "team");
 

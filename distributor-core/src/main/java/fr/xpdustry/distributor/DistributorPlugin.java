@@ -5,7 +5,7 @@ import fr.xpdustry.distributor.audience.*;
 import fr.xpdustry.distributor.plugin.*;
 import java.util.*;
 import mindustry.*;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.*;
 
 public final class DistributorPlugin extends ExtendedPlugin {
 
@@ -32,7 +32,12 @@ public final class DistributorPlugin extends ExtendedPlugin {
 
   @Override
   public void onLoad() {
-    setAudienceProvider(new SimpleAudienceProvider());
     setPermissionManager(new SimplePermissionManager(Vars.netServer.admins, getDirectory(), "permissions"));
+    setAudienceProvider(new SimpleAudienceProvider());
+  }
+
+  @Override
+  public String getNamespace() {
+    return NAMESPACE;
   }
 }

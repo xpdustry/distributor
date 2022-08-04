@@ -1,14 +1,11 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.StreamSupport;
-import mindustry.game.EventType;
-import mindustry.game.Team;
-import mindustry.gen.Groups;
-import mindustry.gen.Player;
+import fr.xpdustry.distributor.struct.*;
+import java.util.*;
+import java.util.stream.*;
+import mindustry.game.*;
+import mindustry.gen.*;
 
 public class SimpleAudienceProvider implements AudienceProvider {
 
@@ -34,8 +31,8 @@ public class SimpleAudienceProvider implements AudienceProvider {
   }
 
   @Override
-  public Audience player(final String uuid) {
-    return players.getOrDefault(uuid, Audience.empty());
+  public Audience player(final MUUID muuid) {
+    return players.getOrDefault(muuid.getUUID(), Audience.empty());
   }
 
   @Override
@@ -47,8 +44,7 @@ public class SimpleAudienceProvider implements AudienceProvider {
   public ForwardingAudience team(final Team team) {
     return () -> StreamSupport.stream(Groups.player.spliterator(), false)
       .filter(p -> p.team() == team)
-      .map(Player::uuid)
-      .map(this::player)
+      .map(p -> this.player(MUUID.of(p)))
       .toList();
   }
 }

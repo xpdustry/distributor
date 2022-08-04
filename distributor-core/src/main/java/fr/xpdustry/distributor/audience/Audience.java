@@ -2,10 +2,9 @@ package fr.xpdustry.distributor.audience;
 
 import arc.audio.*;
 import fr.xpdustry.distributor.data.*;
-import fr.xpdustry.distributor.text.Component;
+import fr.xpdustry.distributor.text.*;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public interface Audience extends MetadataProvider {
 
@@ -60,6 +59,7 @@ public interface Audience extends MetadataProvider {
     action.accept(this);
   }
 
+  @Override
   default <T> Optional<T> getMetadata(final Key<T> key) {
     return Optional.empty();
   }

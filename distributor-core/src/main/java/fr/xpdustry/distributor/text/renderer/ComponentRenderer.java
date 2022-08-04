@@ -12,5 +12,9 @@ public interface ComponentRenderer {
     return ClientComponentRenderer.INSTANCE;
   }
 
+  static ComponentRenderer plain() {
+    return PlainTextComponentRenderer.INSTANCE;
+  }
+
   String render(final Component component);
 }

@@ -1,14 +1,14 @@
 package fr.xpdustry.distributor.text;
 
-import fr.xpdustry.distributor.text.format.*;
 import java.util.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 public final class ListComponent extends Component {
 
   private final List<Component> components;
 
-  ListComponent(final List<Component> components, final TextStyle style) {
-    super(style);
+  ListComponent(final List<Component> components, final @Nullable TextColor color, final Iterable<TextDecoration> decorations) {
+    super(color, decorations);
     this.components = List.copyOf(components);
   }
 
@@ -52,7 +52,7 @@ public final class ListComponent extends Component {
 
     @Override
     public ListComponent build() {
-      return new ListComponent(components, style());
+      return new ListComponent(components, color(), decorations());
     }
   }
 }

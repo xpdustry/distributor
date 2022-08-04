@@ -1,42 +1,32 @@
 package fr.xpdustry.distributor.plugin;
 
+import arc.*;
 import arc.files.*;
 import fr.xpdustry.distributor.data.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import org.spongepowered.configurate.gson.*;
-import org.spongepowered.configurate.hocon.*;
-import org.spongepowered.configurate.yaml.*;
 
-public interface PluginConfiguration {
+public interface PluginConfiguration extends PluginResource {
 
   static PluginConfiguration mindustry() {
-    return SettingsConfiguration.INSTANCE;
+    return SettingsConfiguration.MINDUSTRY;
   }
 
-  static PluginConfiguration configurate(final File file) {
-    final int dot = file.getName().lastIndexOf('.');
-    final var extension = dot == -1
-      ? file.getName()
-      : file.getName().substring(dot + 1);
-
-    final var builder = switch (extension.toLowerCase(Locale.ROOT)) {
-      case "yaml", "yml" -> YamlConfigurationLoader.builder();
-      case "json" -> GsonConfigurationLoader.builder();
-      case "hocon" -> HoconConfigurationLoader.builder();
-      default -> throw new IllegalArgumentException("Unsupported file format " + extension);
-    };
-    return new ConfiguratePluginConfiguration(builder.file(file).build());
+  static PluginConfiguration settings(final File directory) {
+    final var settings = new Settings();
+    settings.setAutosave(false);
+    settings.setDataDirectory(new Fi(directory));
+    return new SettingsConfiguration(settings);
   }
 
   <V> Optional<V> getValue(final Key<V> key);
 
-  default <V> V getOrDefault(final Key<V> key, V def) {
+  default <V> V getValue(final Key<V> key, V def) {
     return getValue(key).orElse(def);
   }
 
-  default <V> V getOrCompute(final Key<V> key, Supplier<V> supplier) {
+  default <V> V getValue(final Key<V> key, Supplier<V> supplier) {
     return getValue(key).orElseGet(supplier);
   }
 
@@ -47,8 +37,4 @@ public interface PluginConfiguration {
   }
 
   <V> void deleteValue(final Key<V> key);
-
-  void load() throws IOException;
-
-  void save() throws IOException;
 }

@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.text.format;
+package fr.xpdustry.distributor.text;
 
 public enum TextDecoration {
   ITALIC,

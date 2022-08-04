@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.event;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 public abstract class AbstractEventBus implements EventBus {

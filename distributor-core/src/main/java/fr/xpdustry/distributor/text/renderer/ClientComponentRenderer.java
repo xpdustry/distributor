@@ -1,7 +1,5 @@
 package fr.xpdustry.distributor.text.renderer;
 
-import fr.xpdustry.distributor.text.format.TextStyle;
-
 final class ClientComponentRenderer extends AbstractComponentRenderer {
 
   static final ClientComponentRenderer INSTANCE = new ClientComponentRenderer();
@@ -15,15 +13,15 @@ final class ClientComponentRenderer extends AbstractComponentRenderer {
   }
 
   @Override
-  protected void startStyle(final StringBuilder builder, final TextStyle style) {
+  protected void startStyle(final StringBuilder builder, final Style style) {
     if (style.getColor() != null) {
       builder.append("#").append(Integer.toHexString(style.getColor().getRGB()));
     }
   }
 
   @Override
-  protected void closeStyle(final StringBuilder builder, final TextStyle style, final TextStyle last) {
-    if (style != TextStyle.empty()) {
+  protected void closeStyle(final StringBuilder builder, final Style style, final Style last) {
+    if (style.getColor() != null) {
       builder.append("[]");
     }
   }

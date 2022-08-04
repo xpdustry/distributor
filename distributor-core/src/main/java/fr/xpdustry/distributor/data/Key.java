@@ -9,18 +9,18 @@ public final class Key<V> {
   private final String namespace;
   private final String name;
 
+  private Key(final TypeToken<V> valueType, final String namespace, final String name) {
+    this.valueType = valueType;
+    this.namespace = namespace;
+    this.name = name;
+  }
+
   public static <V> Key<V> of(final Class<V> type, final String namespace, final String name) {
     return new Key<>(TypeToken.get(type), namespace, name);
   }
 
   public static <V> Key<V> of(final TypeToken<V> type, final String namespace, final String name) {
     return new Key<>(type, namespace, name);
-  }
-
-  private Key(final TypeToken<V> valueType, final String namespace, final String name) {
-    this.valueType = valueType;
-    this.namespace = namespace;
-    this.name = name;
   }
 
   public TypeToken<V> getValueType() {

@@ -1,11 +1,10 @@
 package fr.xpdustry.distributor.audience;
 
-import arc.util.Log;
+import arc.util.*;
 import fr.xpdustry.distributor.data.*;
-import fr.xpdustry.distributor.text.Component;
-import fr.xpdustry.distributor.text.renderer.ComponentRenderer;
-import java.util.Locale;
-import java.util.Optional;
+import fr.xpdustry.distributor.text.*;
+import fr.xpdustry.distributor.text.renderer.*;
+import java.util.*;
 
 final class ConsoleAudience implements Audience {
 

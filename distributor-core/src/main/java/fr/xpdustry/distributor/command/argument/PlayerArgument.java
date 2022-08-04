@@ -1,18 +1,17 @@
 package fr.xpdustry.distributor.command.argument;
 
-import arc.util.Strings;
+import arc.util.*;
 import cloud.commandframework.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.arguments.parser.*;
 import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.parsing.*;
-
 import fr.xpdustry.distributor.command.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.StreamSupport;
+import java.util.stream.*;
 import mindustry.gen.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

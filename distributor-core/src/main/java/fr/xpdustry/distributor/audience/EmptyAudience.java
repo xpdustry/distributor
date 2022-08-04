@@ -1,7 +1,6 @@
 package fr.xpdustry.distributor.audience;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 final class EmptyAudience implements Audience {
 

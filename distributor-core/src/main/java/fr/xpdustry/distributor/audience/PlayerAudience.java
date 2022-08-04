@@ -1,17 +1,16 @@
 package fr.xpdustry.distributor.audience;
 
-import arc.audio.Sound;
+import arc.audio.*;
 import fr.xpdustry.distributor.data.*;
-import fr.xpdustry.distributor.text.Component;
-import fr.xpdustry.distributor.text.renderer.ComponentRenderer;
+import fr.xpdustry.distributor.struct.*;
+import fr.xpdustry.distributor.text.*;
+import fr.xpdustry.distributor.text.renderer.*;
 import java.lang.reflect.*;
-import java.util.Locale;
-import java.util.Optional;
-import mindustry.core.Version;
-import mindustry.gen.Call;
-import mindustry.gen.Player;
-import mindustry.net.NetConnection;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import java.util.*;
+import mindustry.core.*;
+import mindustry.gen.*;
+import mindustry.net.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 final class PlayerAudience implements Audience {
@@ -45,7 +44,7 @@ final class PlayerAudience implements Audience {
   PlayerAudience(final Player player) {
     this.player = player;
     this.metas = MetadataContainer.builder()
-      .withConstant(StandardMetaKeys.UUID, this.player.uuid())
+      .withConstant(StandardMetaKeys.MUUID, MUUID.of(this.player))
       .withConstant(StandardMetaKeys.LOCALE, getPlayerLocale(this.player))
       .withSupplier(StandardMetaKeys.NAME, this.player::name)
       .withSupplier(StandardMetaKeys.TEAM, this.player::team)
@@ -122,5 +121,5 @@ final class PlayerAudience implements Audience {
       case 3 -> new Locale(parts[0], parts[1], parts[2]);
       default -> Locale.getDefault();
     };
-  };
+  }
 }

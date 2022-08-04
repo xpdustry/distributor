@@ -1,7 +1,6 @@
 package fr.xpdustry.distributor.data;
 
-import fr.xpdustry.distributor.data.*;
-import java.util.Optional;
+import java.util.*;
 
 public interface MetadataProvider {
 

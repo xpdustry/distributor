@@ -15,14 +15,10 @@ public final class PluginDescriptor {
   private final String repository;
   private final List<String> dependencies;
 
-  public static PluginDescriptor from(final Mods.ModMeta meta) {
-    return new PluginDescriptor(meta);
-  }
-
   private PluginDescriptor(final Mods.ModMeta meta) {
     this.name = Objects.requireNonNull(meta.name);
     this.displayName = meta.displayName();
-    this.author =  Objects.requireNonNullElse(meta.author, "unknown");
+    this.author = Objects.requireNonNullElse(meta.author, "unknown");
     this.description = Objects.requireNonNullElse(meta.description, "");
     this.version = Objects.requireNonNull(meta.version);
     this.main = Objects.requireNonNull(meta.main);
@@ -31,6 +27,10 @@ public final class PluginDescriptor {
     this.dependencies = Collections.unmodifiableList(
       Objects.requireNonNull(meta.dependencies).list()
     );
+  }
+
+  public static PluginDescriptor from(final Mods.ModMeta meta) {
+    return new PluginDescriptor(meta);
   }
 
   public String getName() {

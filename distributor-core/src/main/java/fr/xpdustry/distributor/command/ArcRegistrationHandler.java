@@ -1,21 +1,19 @@
 package fr.xpdustry.distributor.command;
 
 import arc.struct.*;
-import arc.util.CommandHandler;
-import cloud.commandframework.Command;
+import arc.util.*;
+import cloud.commandframework.*;
 import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.captions.*;
 import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.internal.*;
-
-import fr.xpdustry.distributor.DistributorPlugin;
-import fr.xpdustry.distributor.text.Components;
-import fr.xpdustry.distributor.text.format.TextColor;
+import fr.xpdustry.distributor.*;
+import fr.xpdustry.distributor.struct.*;
+import fr.xpdustry.distributor.text.*;
+import java.lang.reflect.*;
 import mindustry.gen.*;
-
-import java.lang.reflect.Field;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -36,8 +34,8 @@ public final class ArcRegistrationHandler<C> implements CommandRegistrationHandl
     }
   }
 
-  private final ArcCommandManager<C> manager;
   final CommandHandler handler;
+  private final ArcCommandManager<C> manager;
   private final ObjectMap<String, CommandHandler.Command> commands;
 
   @SuppressWarnings("unchecked")
@@ -100,10 +98,11 @@ public final class ArcRegistrationHandler<C> implements CommandRegistrationHandl
       this.name = name;
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     @Override
     public void accept(final String[] args, final @Nullable Player player) {
       final var provider = DistributorPlugin.getAudienceProvider();
-      final var audience = player != null ? provider.player(player.uuid()) : provider.console();
+      final var audience = player != null ? provider.player(MUUID.of(player)) : provider.console();
       final var sender = manager.getAudienceToSenderMapper().apply(audience);
 
       final var input = new StringBuilder(name);
@@ -118,43 +117,49 @@ public final class ArcRegistrationHandler<C> implements CommandRegistrationHandl
           throwable = t.getCause();
         }
 
-        switch (throwable) {
-          case InvalidSyntaxException t -> manager.handleException(sender, InvalidSyntaxException.class, t, (s, e) ->
+        // Java 17 black magik pls
+        if (throwable instanceof InvalidSyntaxException t) {
+          manager.handleException(sender, InvalidSyntaxException.class, t, (s, e) ->
             sendException(
               sender,
               ArcCaptionKeys.COMMAND_INVALID_SYNTAX,
               CaptionVariable.of("syntax", e.getCorrectSyntax())
             )
           );
-          case NoPermissionException t -> manager.handleException(sender, NoPermissionException.class, t, (s, e) ->
+        } else if (throwable instanceof NoPermissionException t) {
+          manager.handleException(sender, NoPermissionException.class, t, (s, e) ->
             sendException(
               sender,
               ArcCaptionKeys.COMMAND_INVALID_PERMISSION,
               CaptionVariable.of("permission", e.getMissingPermission())
             )
           );
-          case NoSuchCommandException t -> manager.handleException(sender, NoSuchCommandException.class, t, (s, e) ->
+        } else if (throwable instanceof NoSuchCommandException t) {
+          manager.handleException(sender, NoSuchCommandException.class, t, (s, e) ->
             sendException(
               sender,
               ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
               CaptionVariable.of("command", e.getSuppliedCommand())
             )
           );
-          case ParserException t -> manager.handleException(sender, ParserException.class, t, (s, e) ->
+        } else if (throwable instanceof ParserException t) {
+          manager.handleException(sender, ParserException.class, t, (s, e) ->
             sendException(
               sender,
               e.errorCaption(),
               e.captionVariables()
             )
           );
-          case CommandExecutionException t -> manager.handleException(sender, CommandExecutionException.class, t, (s, e) ->
+        } else if (throwable instanceof CommandExecutionException t) {
+          manager.handleException(sender, CommandExecutionException.class, t, (s, e) ->
             sendException(
               sender,
               ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
               CaptionVariable.of("message", e.getCause().getMessage())
             )
           );
-          default -> sendException(
+        } else {
+          sendException(
             sender,
             ArcCaptionKeys.COMMAND_FAILURE_UNKNOWN,
             CaptionVariable.of("message", throwable.getMessage())

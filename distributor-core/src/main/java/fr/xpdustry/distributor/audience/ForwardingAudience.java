@@ -1,10 +1,9 @@
 package fr.xpdustry.distributor.audience;
 
-import arc.audio.Sound;
-import fr.xpdustry.distributor.text.Component;
-import java.util.ArrayList;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import arc.audio.*;
+import fr.xpdustry.distributor.text.*;
+import java.util.*;
+import java.util.function.*;
 
 @FunctionalInterface
 public interface ForwardingAudience extends Audience {

@@ -1,8 +1,8 @@
 package fr.xpdustry.distributor.admin;
 
+import fr.xpdustry.distributor.struct.*;
 import java.util.*;
 
-// TODO Make simple permission manager
 public interface PermissionManager {
 
   void addDefaultPermission(final String permission);
@@ -13,15 +13,15 @@ public interface PermissionManager {
 
   Collection<String> getDefaultPermissions();
 
-  void addPermission(final String uuid, final String permission);
+  void addPermission(final MUUID muuid, final String permission);
 
-  boolean hasPermission(final String uuid, final String permission);
+  boolean hasPermission(final MUUID muuid, final String permission);
 
-  void removePermission(final String uuid, final String permission);
+  void removePermission(final MUUID muuid, final String permission);
 
-  boolean isAdministrator(final String uuid);
+  boolean isAdministrator(final MUUID muuid);
 
-  void setAdministrator(final String uuid, final boolean administrator);
+  void setAdministrator(final MUUID muuid, final boolean administrator);
 
-  Collection<String> getPermissions(final String uuid);
+  Collection<String> getPermissions(final MUUID muuid);
 }

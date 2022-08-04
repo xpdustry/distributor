@@ -1,136 +1,120 @@
 package fr.xpdustry.distributor.admin;
 
-import arc.util.*;
-import com.google.gson.*;
-import com.google.gson.stream.*;
+import fr.xpdustry.distributor.plugin.*;
+import fr.xpdustry.distributor.struct.*;
 import java.io.*;
-import java.nio.charset.*;
 import java.util.*;
 import mindustry.net.*;
+import org.spongepowered.configurate.*;
+import org.spongepowered.configurate.loader.*;
+import org.spongepowered.configurate.serialize.*;
+import org.spongepowered.configurate.yaml.*;
 
-public final class SimplePermissionManager implements PermissionManager {
+public final class SimplePermissionManager implements PermissionManager, PluginResource {
 
   private final Administration administration;
-  private final File file;
-  private final Set<String> defaults = new HashSet<>();
-  private final Map<String, Set<String>> permissions = new HashMap<>();
+  private final ConfigurationLoader<?> loader;
+  private ConfigurationNode root;
 
   public SimplePermissionManager(final Administration administration, final File directory, final String filename) {
     this.administration = administration;
-    this.file = new File(directory, filename + ".json");
-
-    if (this.file.exists()) {
-      try (final var reader = new FileReader(this.file, StandardCharsets.UTF_8)) {
-        final var object = new Gson().fromJson(reader, JsonObject.class);
-
-        object.get("defaults").getAsJsonArray()
-          .forEach(def -> this.defaults.add(def.getAsString()));
-
-        object.get("permissions").getAsJsonObject()
-          .entrySet()
-          .forEach(entry -> {
-            final var perms = new HashSet<String>();
-            entry.getValue().getAsJsonArray().forEach(e -> perms.add(e.getAsString()));
-            permissions.put(entry.getKey(), perms);
-          });
-      } catch (final IOException e) {
-        Log.info("Failed to read permission file.");
-      }
-    }
+    this.loader = YamlConfigurationLoader.builder()
+      .indent(4)
+      .nodeStyle(NodeStyle.BLOCK)
+      .file(new File(directory, filename + ".yml"))
+      .build();
+    this.root = this.loader.createNode();
   }
 
   @Override
   public void addDefaultPermission(final String permission) {
-    if (defaults.add(permission)) {
-      save();
+    final var node = getDefaultPermissionsNode();
+    if (!node.hasChild(permission)) {
+      node.raw(permission);
     }
   }
 
   @Override
   public boolean hasDefaultPermission(final String permission) {
-    return defaults.contains(permission);
+    return getDefaultPermissionsNode().hasChild(permission);
   }
 
   @Override
   public void removeDefaultPermission(final String permission) {
-    if (defaults.remove(permission)) {
-      save();
-    }
+    getDefaultPermissionsNode().removeChild(permission);
   }
 
   @Override
   public Collection<String> getDefaultPermissions() {
-    return Collections.unmodifiableSet(defaults);
-  }
-
-  @Override
-  public void addPermission(final String uuid, final String permission) {
-    if (permissions.computeIfAbsent(uuid, u -> new HashSet<>()).add(permission)) {
-      save();
+    try {
+      return getDefaultPermissionsNode().getList(String.class, Collections.emptyList());
+    } catch (final SerializationException e) {
+      throw impossible(e);
     }
   }
 
   @Override
-  public boolean hasPermission(final String uuid, final String permission) {
-    return hasDefaultPermission(permission) || getPermissions(uuid).contains(permission);
-  }
-
-  @Override
-  public void removePermission(final String uuid, final String permission) {
-    final var set = permissions.get(uuid);
-    if (set != null) {
-      set.remove(permission);
-      if (set.isEmpty()) {
-        permissions.remove(uuid);
-      }
-      save();
+  public void addPermission(final MUUID muuid, final String permission) {
+    final var node = getPlayerPermissionsNode(muuid);
+    if (!node.hasChild(permission)) {
+      node.appendListNode().raw(permission);
     }
   }
 
   @Override
-  public boolean isAdministrator(final String uuid) {
-    return administration.getInfo(uuid).admin;
+  public boolean hasPermission(final MUUID muuid, final String permission) {
+    return getDefaultPermissionsNode().hasChild(permission)
+      || (isValid(muuid) && getPlayerPermissionsNode(muuid).hasChild(permission));
   }
 
   @Override
-  public void setAdministrator(final String uuid, final boolean administrator) {
-    administration.getInfo(uuid).admin = true;
+  public void removePermission(final MUUID muuid, final String permission) {
+    getPlayerPermissionsNode(muuid).removeChild(permission);
   }
 
   @Override
-  public Collection<String> getPermissions(final String uuid) {
-    return permissions.containsKey(uuid) ? Collections.unmodifiableSet(permissions.get(uuid)) : Collections.emptySet();
+  public boolean isAdministrator(final MUUID muuid) {
+    return administration.isAdmin(muuid.getUUID(), muuid.getUSID());
   }
 
-  private synchronized void save() {
-    try (final var writer = new JsonWriter(new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8)))) {
-      writer.setIndent("    ");
-      writer.setHtmlSafe(false);
+  @Override
+  public void setAdministrator(final MUUID muuid, final boolean administrator) {
+    administration.adminPlayer(muuid.getUUID(), muuid.getUSID());
+  }
 
-      writer.beginObject();
-
-      writer.name("defaults");
-      writer.beginArray();
-      for (final var def : defaults) {
-        writer.value(def);
-      }
-      writer.endArray();
-
-      writer.name("permissions");
-      writer.beginObject();
-      for (final var entry : permissions.entrySet()) {
-        writer.name(entry.getKey());
-        writer.beginArray();
-        for (final var permission : entry.getValue()) {
-          writer.value(permission);
-        }
-        writer.endArray();
-      }
-      writer.endObject();
-
-      writer.endObject();
-    } catch (final IOException e) {
-      Log.info("Failed to save the permission file.");
+  @Override
+  public Collection<String> getPermissions(final MUUID muuid) {
+    try {
+      return getPlayerPermissionsNode(muuid).getList(String.class, Collections.emptyList());
+    } catch (final SerializationException e) {
+      throw impossible(e);
     }
+  }
+
+  @Override
+  public void load() throws IOException {
+    this.root = loader.load();
+  }
+
+  @Override
+  public void save() throws IOException {
+    loader.save(this.root);
+  }
+
+  private RuntimeException impossible(final Exception e) {
+    return new RuntimeException("An unexpected exception happened.", e);
+  }
+
+  private boolean isValid(final MUUID muuid) {
+    final var info = administration.getInfoOptional(muuid.getUUID());
+    return info != null && info.adminUsid != null && info.adminUsid.equals(muuid.getUSID());
+  }
+
+  private ConfigurationNode getDefaultPermissionsNode() {
+    return root.node("default");
+  }
+
+  private ConfigurationNode getPlayerPermissionsNode(final MUUID muuid) {
+    return root.node("players", muuid.getUUID());
   }
 }
