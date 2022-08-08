@@ -1,18 +1,18 @@
-package fr.xpdustry.distributor.text;
+package fr.xpdustry.distributor.text.format;
 
 // TODO Add colors
 public final class TextColor {
 
   private static final int WHITE_VALUE = 0xFFFFFF;
-  public static final TextColor WHITE = new TextColor(WHITE_VALUE);
-
   private static final int BLACK_VALUE = 0x000000;
-  public static final TextColor BLACK = new TextColor(BLACK_VALUE);
-
   private static final int RED_VALUE = 0xFF0000;
-  public static final TextColor RED = new TextColor(RED_VALUE);
-
+  private static final int YELLOW_VALUE = 0xFFFF00;
   private static final int ACCENT_VALUE = 0xFFD37F;
+
+  public static final TextColor WHITE = new TextColor(WHITE_VALUE);
+  public static final TextColor BLACK = new TextColor(BLACK_VALUE);
+  public static final TextColor RED = new TextColor(RED_VALUE);
+  public static final TextColor YELLOW = new TextColor(YELLOW_VALUE);
   public static final TextColor ACCENT = new TextColor(ACCENT_VALUE);
 
   private final int value;

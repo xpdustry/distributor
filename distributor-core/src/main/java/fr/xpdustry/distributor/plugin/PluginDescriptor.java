@@ -1,5 +1,7 @@
 package fr.xpdustry.distributor.plugin;
 
+import arc.util.serialization.*;
+import java.io.*;
 import java.util.*;
 import mindustry.mod.*;
 
@@ -20,7 +22,7 @@ public final class PluginDescriptor {
     this.displayName = meta.displayName();
     this.author = Objects.requireNonNullElse(meta.author, "unknown");
     this.description = Objects.requireNonNullElse(meta.description, "");
-    this.version = Objects.requireNonNull(meta.version);
+    this.version = Objects.requireNonNullElse(meta.version, "1.0.0");
     this.main = Objects.requireNonNull(meta.main);
     this.minGameVersion = meta.getMinMajor();
     this.repository = Objects.requireNonNullElse(meta.repo, "");
@@ -31,6 +33,23 @@ public final class PluginDescriptor {
 
   public static PluginDescriptor from(final Mods.ModMeta meta) {
     return new PluginDescriptor(meta);
+  }
+
+  public static PluginDescriptor from(final Plugin plugin) {
+    var resource = plugin.getClass().getClassLoader().getResourceAsStream("plugin.json");
+    if (resource == null) {
+      resource = plugin.getClass().getClassLoader().getResourceAsStream("plugin.hjson");
+      if (resource == null) {
+        throw new IllegalStateException("Missing plugin descriptor.");
+      }
+    }
+    try (final var input = resource) {
+      final var meta = new Json().fromJson(Mods.ModMeta.class, input);
+      meta.cleanup();
+      return PluginDescriptor.from(meta);
+    } catch (final IOException e) {
+      throw new IllegalStateException("The plugin descriptor is invalid.", e);
+    }
   }
 
   public String getName() {

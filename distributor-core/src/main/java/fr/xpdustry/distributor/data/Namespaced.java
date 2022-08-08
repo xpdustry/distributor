@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.data;
 
-public interface Namespace {
+public interface Namespaced {
 
   String getNamespace();
 }

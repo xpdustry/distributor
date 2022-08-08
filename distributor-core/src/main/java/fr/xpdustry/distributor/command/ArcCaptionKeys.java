@@ -10,7 +10,7 @@ import java.util.*;
  */
 public final class ArcCaptionKeys {
 
-  private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(7);
+  private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(6);
 
   /**
    * Variables: {@code {input}}.
@@ -41,11 +41,6 @@ public final class ArcCaptionKeys {
    * Variables: {@code {message}}.
    */
   public static final Caption COMMAND_FAILURE_EXECUTION = of("command.failure.execution");
-
-  /**
-   * Variables: {@code {message}}.
-   */
-  public static final Caption COMMAND_FAILURE_UNKNOWN = of("command.failure.unknown");
 
   private ArcCaptionKeys() {
   }

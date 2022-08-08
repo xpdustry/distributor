@@ -7,7 +7,8 @@ import java.util.stream.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 
-public class SimpleAudienceProvider implements AudienceProvider {
+@SuppressWarnings("NullAway")
+public final class SimpleAudienceProvider implements AudienceProvider {
 
   private final Map<String, Audience> players = new HashMap<>();
 
@@ -33,6 +34,11 @@ public class SimpleAudienceProvider implements AudienceProvider {
   @Override
   public Audience player(final MUUID muuid) {
     return players.getOrDefault(muuid.getUUID(), Audience.empty());
+  }
+
+  @Override
+  public Audience player(Player player) {
+    return players.get(player.uuid());
   }
 
   @Override

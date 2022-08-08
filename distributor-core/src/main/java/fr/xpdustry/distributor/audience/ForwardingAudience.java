@@ -46,9 +46,9 @@ public interface ForwardingAudience extends Audience {
   }
 
   @Override
-  default void playSound(final Sound sound, final float volume, final float pitch, final float pan, final float x, final float y) {
+  default void playSound(final Sound sound, final float volume, final float pitch, final float x, final float y) {
     for (final var audience : getAudiences()) {
-      audience.playSound(sound, volume, pitch, pan, x, y);
+      audience.playSound(sound, volume, pitch, x, y);
     }
   }
 

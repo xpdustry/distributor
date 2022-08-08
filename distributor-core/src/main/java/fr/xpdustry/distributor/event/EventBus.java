@@ -1,5 +1,7 @@
 package fr.xpdustry.distributor.event;
 
+import java.util.*;
+
 public interface EventBus {
 
   static EventBus mindustry() {
@@ -8,11 +10,11 @@ public interface EventBus {
 
   <E> void post(final E event);
 
-  <E> void register(final Class<E> event, final EventListener<E> listener);
+  <E> void register(final Class<E> event, final MonoEventListener<E> listener);
 
-  void register(final Object listener);
+  void register(final EventListener listener);
 
-  <E> void unregister(final Class<E> event, final EventListener<E> listener);
+  <E> void unregister(final Class<E> event, final MonoEventListener<E> listener);
 
-  void unregister(final Object listener);
+  void unregister(final EventListener listener);
 }

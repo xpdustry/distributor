@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.plugin;
+package fr.xpdustry.distributor.io;
 
 import java.io.*;
 

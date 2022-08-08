@@ -1,6 +1,8 @@
 package fr.xpdustry.distributor.struct;
 
+import java.util.*;
 import mindustry.gen.*;
+import mindustry.net.*;
 
 /**
  * TODO doc + change package ?
@@ -28,11 +30,27 @@ public final class MUUID {
     return new MUUID(player.uuid(), player.usid());
   }
 
+  public static MUUID of(final Administration.PlayerInfo info) {
+    return new MUUID(info.id, info.adminUsid != null ? info.adminUsid : "");
+  }
+
   public String getUUID() {
     return uuid;
   }
 
   public String getUSID() {
     return usid;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(uuid, usid);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj == this || (
+      obj instanceof MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid)
+    );
   }
 }

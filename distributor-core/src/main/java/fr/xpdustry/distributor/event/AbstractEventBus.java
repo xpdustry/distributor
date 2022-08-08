@@ -6,17 +6,17 @@ import java.util.*;
 public abstract class AbstractEventBus implements EventBus {
 
   @SuppressWarnings("rawtypes")
-  private final Map<Object, List<MethodEventListener>> objects = new HashMap<>();
+  private final Map<Object, List<ObjectMethodEventListener>> objects = new HashMap<>();
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public void register(final Object listener) {
+  public void register(final EventListener listener) {
     if (objects.containsKey(listener)) {
       return;
     }
-    final List<MethodEventListener> handlers = new ArrayList<>();
+    final List<ObjectMethodEventListener> handlers = new ArrayList<>();
     for (final var method : listener.getClass().getDeclaredMethods()) {
-      final var annotation = method.getAnnotation(EventHandler.class);
+      final var annotation = method.getAnnotation(MethodEventListener.class);
       if (annotation == null) {
         continue;
       }
@@ -27,7 +27,7 @@ public abstract class AbstractEventBus implements EventBus {
         throw new IllegalArgumentException("The event handler on " + method + " doesn't return void.");
       }
       final var clazz = method.getParameterTypes()[0];
-      final var handler = new MethodEventListener(clazz, listener, method);
+      final var handler = new ObjectMethodEventListener(clazz, listener, method);
       handlers.add(handler);
       register(clazz, handler);
     }
@@ -43,13 +43,13 @@ public abstract class AbstractEventBus implements EventBus {
     }
   }
 
-  private static final class MethodEventListener<E> implements EventListener<E> {
+  private static final class ObjectMethodEventListener<E> implements MonoEventListener<E> {
 
     private final Class<E> clazz;
     private final Object object;
     private final Method method;
 
-    MethodEventListener(final Class<E> clazz, final Object object, final Method method) {
+    ObjectMethodEventListener(final Class<E> clazz, final Object object, final Method method) {
       this.clazz = clazz;
       this.object = object;
       this.method = method;

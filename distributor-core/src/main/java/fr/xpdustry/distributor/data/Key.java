@@ -3,7 +3,7 @@ package fr.xpdustry.distributor.data;
 import io.leangen.geantyref.*;
 import java.util.*;
 
-public final class Key<V> {
+public final class Key<V> implements Namespaced {
 
   private final TypeToken<V> valueType;
   private final String namespace;
@@ -27,6 +27,7 @@ public final class Key<V> {
     return valueType;
   }
 
+  @Override
   public String getNamespace() {
     return namespace;
   }
@@ -35,21 +36,27 @@ public final class Key<V> {
     return name;
   }
 
+  public String getNamespacedName() {
+    return namespace + ":" + name;
+  }
+
   @Override
   public boolean equals(final Object o) {
-    return this == o || (o instanceof Key<?> key
-      && this.valueType.equals(key.getValueType())
-      && this.namespace.equals(key.getNamespace())
-      && this.getName().equals(key.getName()));
+    return this == o || (
+      o instanceof Key<?> key
+        && this.valueType.equals(key.valueType)
+        && this.namespace.equals(key.namespace)
+        && this.name.equals(key.name)
+    );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getValueType(), getNamespace(), getName());
+    return Objects.hash(valueType, namespace, name);
   }
 
   @Override
   public String toString() {
-    return namespace + ":" + getName();
+    return getNamespacedName();
   }
 }

@@ -2,39 +2,22 @@ package fr.xpdustry.distributor.plugin;
 
 import arc.*;
 import arc.files.*;
+import arc.util.*;
 import arc.util.serialization.*;
 import fr.xpdustry.distributor.data.*;
 import fr.xpdustry.distributor.event.*;
 import java.io.*;
 import mindustry.*;
-import mindustry.game.*;
 import mindustry.mod.*;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public abstract class ExtendedPlugin extends Plugin implements Namespace {
+public abstract class ExtendedPlugin extends Plugin implements Namespaced {
 
-  private final PluginDescriptor descriptor;
-  private PluginConfiguration configuration = PluginConfiguration.mindustry();
+  private final PluginDescriptor descriptor = PluginDescriptor.from(this);
+  private PluginSettings settings = PluginSettings.mindustry();
 
   {
-    var stream = getClass().getClassLoader().getResourceAsStream("plugin.json");
-    if (stream == null) {
-      stream = getClass().getClassLoader().getResourceAsStream("plugin.hjson");
-      if (stream == null) {
-        throw new IllegalStateException("Missing plugin descriptor.");
-      }
-    }
-    try {
-      final var meta = new Json().fromJson(Mods.ModMeta.class, stream);
-      meta.cleanup();
-      descriptor = PluginDescriptor.from(meta);
-      stream.close();
-    } catch (final IOException e) {
-      throw new IllegalStateException("The plugin descriptor is invalid.", e);
-    }
-
-    getDirectory().mkdirs();
-    onInit();
+    this.getDirectory().mkdirs();
   }
 
   public void onInit() {
@@ -43,23 +26,21 @@ public abstract class ExtendedPlugin extends Plugin implements Namespace {
   public void onLoad() {
   }
 
-  public void onUpdate() {
-  }
-
   public void onExit() {
   }
 
-  @Override
-  public String getNamespace() {
-    return getDescriptor().getName();
+  public void onServerCommandsRegistration(CommandHandler handler) {
   }
 
-  public PluginConfiguration getConfiguration() {
-    return this.configuration;
+  public void onClientCommandsRegistration(CommandHandler handler) {
   }
 
-  protected void setConfiguration(final PluginConfiguration configuration) {
-    this.configuration = configuration;
+  public PluginSettings getConfiguration() {
+    return this.settings;
+  }
+
+  protected void setConfiguration(final PluginSettings settings) {
+    this.settings = settings;
   }
 
   public File getDirectory() {
@@ -68,6 +49,37 @@ public abstract class ExtendedPlugin extends Plugin implements Namespace {
 
   public final PluginDescriptor getDescriptor() {
     return descriptor;
+  }
+
+  @Override
+  public String getNamespace() {
+    return getDescriptor().getName();
+  }
+
+  @Deprecated
+  @Override
+  public final void registerServerCommands(CommandHandler handler) {
+    this.onInit();
+    this.onServerCommandsRegistration(handler);
+
+    Core.app.addListener(new ApplicationListener() {
+
+      @Override
+      public void init() {
+        ExtendedPlugin.this.onLoad();
+      }
+
+      @Override
+      public void dispose() {
+        ExtendedPlugin.this.onExit();
+      }
+    });
+  }
+
+  @Deprecated
+  @Override
+  public void registerClientCommands(CommandHandler handler) {
+    this.onClientCommandsRegistration(handler);
   }
 
   @Deprecated
@@ -84,19 +96,5 @@ public abstract class ExtendedPlugin extends Plugin implements Namespace {
   @Deprecated
   @Override
   public void init() {
-    EventBus.mindustry().register(this);
-    Events.on(EventType.ServerLoadEvent.class, e -> onLoad());
-    Core.app.addListener(new ApplicationListener() {
-
-      @Override
-      public void update() {
-        ExtendedPlugin.this.onUpdate();
-      }
-
-      @Override
-      public void exit() {
-        ExtendedPlugin.this.onExit();
-      }
-    });
   }
 }

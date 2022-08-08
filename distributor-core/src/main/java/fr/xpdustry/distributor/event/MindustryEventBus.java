@@ -10,7 +10,7 @@ final class MindustryEventBus extends AbstractEventBus {
   static final MindustryEventBus INSTANCE = new MindustryEventBus();
 
   @SuppressWarnings("rawtypes")
-  private final Map<EventListener, EventListenerConsWrapper> wrappers = new HashMap<>();
+  private final Map<MonoEventListener, EventListenerConsWrapper> wrappers = new HashMap<>();
 
   private MindustryEventBus() {
   }
@@ -21,14 +21,14 @@ final class MindustryEventBus extends AbstractEventBus {
   }
 
   @Override
-  public <E> void register(final Class<E> event, final EventListener<E> listener) {
+  public <E> void register(final Class<E> event, final MonoEventListener<E> listener) {
     final var wrapper = new EventListenerConsWrapper<>(listener);
     Events.on(event, wrapper);
     wrappers.put(listener, wrapper);
   }
 
   @Override
-  public <E> void unregister(final Class<E> event, final EventListener<E> listener) {
+  public <E> void unregister(final Class<E> event, final MonoEventListener<E> listener) {
     if (wrappers.containsKey(listener)) {
       Events.remove(event, wrappers.remove(listener));
     }
@@ -36,9 +36,9 @@ final class MindustryEventBus extends AbstractEventBus {
 
   private static final class EventListenerConsWrapper<E> implements Cons<E> {
 
-    private final EventListener<E> listener;
+    private final MonoEventListener<E> listener;
 
-    private EventListenerConsWrapper(final EventListener<E> listener) {
+    private EventListenerConsWrapper(final MonoEventListener<E> listener) {
       this.listener = listener;
     }
 

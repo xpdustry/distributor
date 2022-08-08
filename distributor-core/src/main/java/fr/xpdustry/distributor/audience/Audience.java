@@ -3,6 +3,7 @@ package fr.xpdustry.distributor.audience;
 import arc.audio.*;
 import fr.xpdustry.distributor.data.*;
 import fr.xpdustry.distributor.text.*;
+import io.leangen.geantyref.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -39,7 +40,7 @@ public interface Audience extends MetadataProvider {
   default void sendNotification(final Component component) {
   }
 
-  default void playSound(final Sound sound, final float volume, final float pitch, final float pan, final float x, final float y) {
+  default void playSound(final Sound sound, final float volume, final float pitch, final float x, final float y) {
   }
 
   default void playSound(final Sound sound, final float volume, final float pitch, final float pan) {
@@ -60,7 +61,7 @@ public interface Audience extends MetadataProvider {
   }
 
   @Override
-  default <T> Optional<T> getMetadata(final Key<T> key) {
+  default <T> Optional<T> getMetadata(final String key, final TypeToken<T> type) {
     return Optional.empty();
   }
 }

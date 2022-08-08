@@ -1,27 +1,21 @@
 package fr.xpdustry.distributor.text;
 
+import fr.xpdustry.distributor.text.format.*;
 import java.util.*;
-import org.checkerframework.checker.nullness.qual.*;
 
-public abstract sealed class Component permits ListComponent, TextComponent {
+public abstract sealed class Component permits ListComponent, TextComponent, TranslatableComponent {
 
-  private final @Nullable TextColor color;
-  private final Set<TextDecoration> decorations = EnumSet.noneOf(TextDecoration.class);
+  private final TextStyle style;
 
-  protected Component(final @Nullable TextColor color, final Iterable<TextDecoration> decorations) {
-    this.color = color;
-    decorations.forEach(this.decorations::add);
+  protected Component(final TextStyle style) {
+    this.style = style;
   }
 
-  public @Nullable TextColor getColor() {
-    return color;
+  public TextStyle getStyle() {
+    return this.style;
   }
 
-  public Set<TextDecoration> getDecorations() {
-    return Collections.unmodifiableSet(decorations);
-  }
-
-  public Component joins(final Iterable<Component> components) {
+  public Component join(final Iterable<Component> components) {
     final var iterator = components.iterator();
     if (!iterator.hasNext()) {
       return Components.empty();
@@ -33,8 +27,8 @@ public abstract sealed class Component permits ListComponent, TextComponent {
     return builder.build();
   }
 
-  public Component joins(final Component... components) {
-    return joins(List.of(components));
+  public Component join(final Component... components) {
+    return join(List.of(components));
   }
 
   public Component repeat(final int times) {
@@ -48,47 +42,13 @@ public abstract sealed class Component permits ListComponent, TextComponent {
     return builder.build();
   }
 
-  public abstract boolean isEmpty();
-
-  public abstract static class Builder<C extends Component, B extends Builder<C, B>> {
-
-    private @Nullable TextColor color = null;
-    private Set<TextDecoration> decorations = Collections.emptySet();
-
-    public final B color(final @Nullable TextColor color) {
-      this.color = color;
-      return self();
-    }
-
-    public final @Nullable TextColor color() {
-      return this.color;
-    }
-
-    public final B decorations(final TextDecoration... decorations) {
-      this.decorations = Set.of(decorations);
-      return self();
-    }
-
-    public final B decorations(final Set<TextDecoration> decorations) {
-      this.decorations = new HashSet<>(decorations);
-      return self();
-    }
-
-    public final Set<TextDecoration> decorations() {
-      return Collections.unmodifiableSet(decorations);
-    }
-
-    public B from(final C component) {
-      this.color(component.getColor());
-      this.decorations(component.getDecorations());
-      return self();
-    }
-
-    public abstract C build();
-
-    @SuppressWarnings("unchecked")
-    protected B self() {
-      return (B) this;
+  public Component append(final Component component) {
+    if (component.isEmpty()) {
+      return this;
+    } else {
+      return new ListComponent(List.of(this, component), getStyle());
     }
   }
+
+  public abstract boolean isEmpty();
 }

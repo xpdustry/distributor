@@ -1,8 +1,21 @@
 package fr.xpdustry.distributor.data;
 
+import io.leangen.geantyref.*;
 import java.util.*;
 
 public interface MetadataProvider {
 
-  <T> Optional<T> getMetadata(final Key<T> key);
+  static MetadataProvider empty() {
+    return EmptyMetadataProvider.INSTANCE;
+  }
+
+  <T> Optional<T> getMetadata(final String key, final TypeToken<T> type);
+
+  default <T> Optional<T> getMetadata(final String key, final Class<T> type) {
+    return getMetadata(key, TypeToken.get(type));
+  }
+
+  default <T> Optional<T> getMetadata(final Key<T> key) {
+    return getMetadata(key.getNamespacedName(), key.getValueType());
+  }
 }

@@ -1,14 +1,15 @@
 package fr.xpdustry.distributor.text;
 
+import fr.xpdustry.distributor.text.format.*;
+import fr.xpdustry.distributor.util.*;
 import java.util.*;
-import org.checkerframework.checker.nullness.qual.*;
 
-public final class ListComponent extends Component {
+public final class ListComponent extends Component implements Buildable<ListComponent, ListComponent.Builder> {
 
   private final List<Component> components;
 
-  ListComponent(final List<Component> components, final @Nullable TextColor color, final Iterable<TextDecoration> decorations) {
-    super(color, decorations);
+  ListComponent(final List<Component> components, final TextStyle style) {
+    super(style);
     this.components = List.copyOf(components);
   }
 
@@ -21,22 +22,25 @@ public final class ListComponent extends Component {
     return components.isEmpty();
   }
 
-  public static final class Builder extends Component.Builder<ListComponent, Builder> {
-
-    private List<Component> components = new ArrayList<>();
-
-    public Builder components(final Component... components) {
-      this.components = List.of(components);
+  @Override
+  public Component append(Component component) {
+    if (component.isEmpty()) {
       return this;
+    } else {
+      return toBuilder().add(component).build();
     }
+  }
 
-    public Builder components(final List<Component> components) {
-      this.components = components;
-      return this;
-    }
+  @Override
+  public Builder toBuilder() {
+    return new Builder().withStyle(getStyle()).withComponents(getComponents());
+  }
 
-    public List<Component> components() {
-      return Collections.unmodifiableList(components);
+  public static final class Builder extends ComponentBuilder<ListComponent, Builder> {
+
+    private final List<Component> components = new ArrayList<>();
+
+    Builder() {
     }
 
     public Builder add(final Component component) {
@@ -44,15 +48,28 @@ public final class ListComponent extends Component {
       return this;
     }
 
-    @Override
-    public Builder from(final ListComponent component) {
-      this.components(component.components);
-      return super.from(component);
+    public Builder withComponents(final Component... components) {
+      return withComponents(Arrays.asList(components));
+    }
+
+    public Builder withComponents(final List<Component> components) {
+      this.components.clear();
+      this.components.addAll(components);
+      return this;
+    }
+
+    public List<Component> getComponents() {
+      return Collections.unmodifiableList(components);
     }
 
     @Override
     public ListComponent build() {
-      return new ListComponent(components, color(), decorations());
+      return new ListComponent(components, getStyle());
     }
+  }
+
+  @Override
+  public String toString() {
+    return components.toString();
   }
 }

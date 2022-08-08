@@ -3,23 +3,25 @@ package fr.xpdustry.distributor.plugin;
 import arc.*;
 import arc.files.*;
 import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.io.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
-public interface PluginConfiguration extends PluginResource {
+public interface PluginSettings extends PluginResource {
 
-  static PluginConfiguration mindustry() {
-    return SettingsConfiguration.MINDUSTRY;
+  static PluginSettings mindustry() {
+    return ArcPluginSettings.MINDUSTRY;
   }
 
-  static PluginConfiguration settings(final File directory) {
+  static PluginSettings of(final File directory) {
     final var settings = new Settings();
     settings.setAutosave(false);
     settings.setDataDirectory(new Fi(directory));
-    return new SettingsConfiguration(settings);
+    return new ArcPluginSettings(settings);
   }
 
+  // TODO Allow unsafe insert
   <V> Optional<V> getValue(final Key<V> key);
 
   default <V> V getValue(final Key<V> key, V def) {
