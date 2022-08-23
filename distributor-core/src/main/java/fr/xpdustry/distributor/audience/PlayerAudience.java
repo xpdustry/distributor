@@ -1,28 +1,27 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.audio.*;
-import fr.xpdustry.distributor.data.*;
-import fr.xpdustry.distributor.struct.*;
+import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.text.*;
 import fr.xpdustry.distributor.text.serializer.*;
 import io.leangen.geantyref.*;
 import java.util.*;
-import mindustry.*;
 import mindustry.gen.*;
 
 final class PlayerAudience implements Audience {
 
   private final Player player;
-  private final MetadataContainer metas;
+  private final MetadataStore metas;
 
   PlayerAudience(final Player player) {
     this.player = player;
-    this.metas = MetadataContainer.builder()
-      .withConstant(StandardMetaKeys.MUUID, MUUID.of(this.player))
-      .withConstant(StandardMetaKeys.LOCALE, getPlayerLocale())
-      .withConstant(StandardMetaKeys.NAME, getRealPlayerName())
-      .withSupplier(StandardMetaKeys.DISPLAY_NAME, this.player::name)
-      .withSupplier(StandardMetaKeys.TEAM, this.player::team)
+    this.metas = MetadataStore.builder()
+      .withConstant(StandardKeys.UUID, this.player.uuid())
+      .withConstant(StandardKeys.USID, this.player.usid())
+      .withConstant(StandardKeys.LOCALE, getPlayerLocale())
+      .withConstant(StandardKeys.NAME, getRealPlayerName())
+      .withSupplier(StandardKeys.DISPLAY_NAME, this.player::name)
+      .withSupplier(StandardKeys.TEAM, this.player::team)
       .build();
   }
 

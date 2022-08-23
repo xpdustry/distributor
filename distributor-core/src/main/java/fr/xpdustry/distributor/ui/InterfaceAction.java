@@ -3,6 +3,7 @@ package fr.xpdustry.distributor.ui;
 import java.util.function.*;
 import mindustry.gen.*;
 
+@FunctionalInterface
 public interface InterfaceAction<I extends Interface> extends BiConsumer<Player, I> {
 
   static <I extends Interface> InterfaceAction<I> nothing() {
@@ -14,6 +15,7 @@ public interface InterfaceAction<I extends Interface> extends BiConsumer<Player,
   }
 
   /*
+  For v138
   static <I extends Interface> InterfaceAction<I> uri(final URI uri) {
     return (player, inter) -> Call.openURI(uri.toString());
   }

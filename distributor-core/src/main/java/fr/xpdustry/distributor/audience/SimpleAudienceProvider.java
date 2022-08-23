@@ -1,13 +1,11 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.*;
-import fr.xpdustry.distributor.struct.*;
 import java.util.*;
 import java.util.stream.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 
-@SuppressWarnings("NullAway")
 public final class SimpleAudienceProvider implements AudienceProvider {
 
   private final Map<String, Audience> players = new HashMap<>();
@@ -32,13 +30,13 @@ public final class SimpleAudienceProvider implements AudienceProvider {
   }
 
   @Override
-  public Audience player(final MUUID muuid) {
-    return players.getOrDefault(muuid.getUUID(), Audience.empty());
+  public Audience player(final String uuid) {
+    return players.getOrDefault(uuid, Audience.empty());
   }
 
   @Override
   public Audience player(Player player) {
-    return players.get(player.uuid());
+    return Objects.requireNonNull(players.get(player.uuid()), "player");
   }
 
   @Override
@@ -50,7 +48,7 @@ public final class SimpleAudienceProvider implements AudienceProvider {
   public ForwardingAudience team(final Team team) {
     return () -> StreamSupport.stream(Groups.player.spliterator(), false)
       .filter(p -> p.team() == team)
-      .map(p -> this.player(MUUID.of(p)))
+      .map(this::player)
       .toList();
   }
 }

@@ -3,15 +3,13 @@ package fr.xpdustry.distributor.plugin;
 import arc.*;
 import arc.files.*;
 import arc.util.*;
-import arc.util.serialization.*;
-import fr.xpdustry.distributor.data.*;
-import fr.xpdustry.distributor.event.*;
 import java.io.*;
 import mindustry.*;
 import mindustry.mod.*;
+import mindustry.server.*;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public abstract class ExtendedPlugin extends Plugin implements Namespaced {
+public abstract class ExtendedPlugin extends Plugin {
 
   private final PluginDescriptor descriptor = PluginDescriptor.from(this);
   private PluginSettings settings = PluginSettings.mindustry();
@@ -29,17 +27,20 @@ public abstract class ExtendedPlugin extends Plugin implements Namespaced {
   public void onExit() {
   }
 
-  public void onServerCommandsRegistration(CommandHandler handler) {
+  public void onServerCommandsRegistration(final CommandHandler handler) {
   }
 
-  public void onClientCommandsRegistration(CommandHandler handler) {
+  public void onClientCommandsRegistration(final CommandHandler handler) {
   }
 
-  public PluginSettings getConfiguration() {
+  public void onSharedCommandsRegistration(final CommandHandler handler) {
+  }
+
+  public final PluginSettings getSettings() {
     return this.settings;
   }
 
-  protected void setConfiguration(final PluginSettings settings) {
+  protected final void setSettings(final PluginSettings settings) {
     this.settings = settings;
   }
 
@@ -51,14 +52,9 @@ public abstract class ExtendedPlugin extends Plugin implements Namespaced {
     return descriptor;
   }
 
-  @Override
-  public String getNamespace() {
-    return getDescriptor().getName();
-  }
-
   @Deprecated
   @Override
-  public final void registerServerCommands(CommandHandler handler) {
+  public void registerServerCommands(final CommandHandler handler) {
     this.onInit();
     this.onServerCommandsRegistration(handler);
 
@@ -78,8 +74,11 @@ public abstract class ExtendedPlugin extends Plugin implements Namespaced {
 
   @Deprecated
   @Override
-  public void registerClientCommands(CommandHandler handler) {
+  public void registerClientCommands(final CommandHandler handler) {
     this.onClientCommandsRegistration(handler);
+    final var control = (ServerControl) Core.app.getListeners().find(ServerControl.class::isInstance);
+    this.onSharedCommandsRegistration(control.handler);
+    this.onSharedCommandsRegistration(handler);
   }
 
   @Deprecated

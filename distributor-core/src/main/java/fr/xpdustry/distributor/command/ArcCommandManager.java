@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.command;
 
-import arc.*;
 import arc.util.*;
 import cloud.commandframework.*;
 import cloud.commandframework.annotations.*;
@@ -12,9 +11,10 @@ import cloud.commandframework.meta.CommandMeta.Key;
 import fr.xpdustry.distributor.*;
 import fr.xpdustry.distributor.audience.*;
 import fr.xpdustry.distributor.command.argument.*;
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.command.argument.TeamArgument.*;
+import fr.xpdustry.distributor.command.specifier.*;
+import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.plugin.*;
-import fr.xpdustry.distributor.struct.*;
 import fr.xpdustry.distributor.util.*;
 import io.leangen.geantyref.*;
 import java.util.*;
@@ -27,25 +27,24 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
   /**
    * The owning plugin of the command.
    */
-  public static final Key<String> PLUGIN = Key.of(String.class, "distributor:plugin");
+  public static final Key<String> PLUGIN = Key.of(String.class, DistributorPlugin.NAMESPACE + ":plugin");
 
   private final Plugin plugin;
   private final Function<C, Audience> senderToAudienceMapper;
   private final Function<Audience, C> audienceToSenderMapper;
 
   public static ArcCommandManager<Audience> audience(final Plugin plugin) {
-    final var mapper = Function.<Audience>identity();
-    return new ArcCommandManager<>(plugin, mapper, mapper);
+    return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
   }
 
   public static ArcCommandManager<Player> player(final Plugin plugin) {
     return new ArcCommandManager<>(
       plugin,
-      a -> {
-        final var muuid = a.getMetadata(StandardMetaKeys.MUUID).orElseThrow();
-        return Objects.requireNonNull(Groups.player.find(p -> MUUID.of(p).equals(muuid)));
+      audience -> {
+        final var uuid = audience.getMetadata(StandardKeys.UUID).orElseThrow();
+        return Objects.requireNonNull(Groups.player.find(p -> p.uuid().equals(uuid)));
       },
-      p -> DistributorPlugin.getAudienceProvider().player(MUUID.of(p))
+      player -> DistributorPlugin.getAudienceProvider().player(player)
     );
   }
 
@@ -61,6 +60,16 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     this.parserRegistry().registerParserSupplier(
       TypeToken.get(PlayerArgument.PlayerParser.class),
       params -> new PlayerArgument.PlayerParser<>()
+    );
+
+    this.parserRegistry().registerParserSupplier(
+      TypeToken.get(TeamArgument.TeamParser.class),
+      params -> new TeamArgument.TeamParser<>(params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE))
+    );
+
+    this.parserRegistry().registerAnnotationMapper(
+      AllTeams.class,
+      (annotation, typeToken) -> ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamMode.ALL)
     );
 
     this.plugin = plugin;
@@ -87,7 +96,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
 
   public AnnotationParser<C> createAnnotationParser(final TypeToken<C> senderType) {
     return new AnnotationParser<>(this, senderType, params -> {
-      final var builder = CommandMeta.simple();
+      final var builder = CommandMeta.simple().with(createDefaultCommandMeta());
       if (params.has(StandardParameters.DESCRIPTION)) {
         builder.with(CommandMeta.DESCRIPTION, params.get(StandardParameters.DESCRIPTION, ""));
       }
@@ -103,8 +112,8 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
   @Override
   public boolean hasPermission(final C sender, final String permission) {
     return permission.isBlank() || senderToAudienceMapper.apply(sender)
-      .getMetadata(StandardMetaKeys.MUUID)
-      .map(muuid -> DistributorPlugin.getPermissionManager().hasPermission(muuid, permission))
+      .getMetadata(StandardKeys.UUID)
+      .map(uuid -> DistributorPlugin.getPermissionManager().test(uuid, permission))
       .orElse(true);
   }
 

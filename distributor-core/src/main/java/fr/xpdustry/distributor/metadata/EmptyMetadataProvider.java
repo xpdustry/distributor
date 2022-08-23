@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.data;
+package fr.xpdustry.distributor.metadata;
 
 import io.leangen.geantyref.*;
 import java.util.*;

@@ -21,8 +21,6 @@ tasks.downloadMindustryClient {
 }
 
 dependencies {
-    implementation("org.spongepowered:configurate-yaml:4.1.2")
-
     api("io.leangen.geantyref:geantyref:1.3.13")
 
     val examination = "1.3.0"

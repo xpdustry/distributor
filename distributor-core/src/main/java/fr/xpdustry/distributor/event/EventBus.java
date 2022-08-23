@@ -1,6 +1,7 @@
 package fr.xpdustry.distributor.event;
 
 import java.util.*;
+import java.util.function.*;
 
 public interface EventBus {
 
@@ -10,11 +11,15 @@ public interface EventBus {
 
   <E> void post(final E event);
 
-  <E> void register(final Class<E> event, final MonoEventListener<E> listener);
-
   void register(final EventListener listener);
 
-  <E> void unregister(final Class<E> event, final MonoEventListener<E> listener);
+  <E> void register(final Class<E> event, final EventPriority priority, final Consumer<E> listener);
+
+  default <E> void register(final Class<E> event, final Consumer<E> listener) {
+    register(event, EventPriority.LAST, listener);
+  }
+
+  <E> void unregister(final Class<E> event, final Consumer<E> listener);
 
   void unregister(final EventListener listener);
 }

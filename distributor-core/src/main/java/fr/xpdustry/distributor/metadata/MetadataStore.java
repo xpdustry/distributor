@@ -1,20 +1,20 @@
-package fr.xpdustry.distributor.data;
+package fr.xpdustry.distributor.metadata;
 
 import fr.xpdustry.distributor.util.*;
 import io.leangen.geantyref.*;
 import java.util.*;
 import java.util.function.*;
 
-public final class MetadataContainer implements MetadataProvider, Buildable<MetadataContainer, MetadataContainer.Builder> {
+public final class MetadataStore implements MetadataProvider, Buildable<MetadataStore, MetadataStore.Builder> {
 
   private final Map<String, Supplier<?>> metas;
 
-  private MetadataContainer(final Map<String, Supplier<?>> metas) {
+  private MetadataStore(final Map<String, Supplier<?>> metas) {
     this.metas = metas;
   }
 
-  public static MetadataContainer.Builder builder() {
-    return new MetadataContainer.Builder();
+  public static MetadataStore.Builder builder() {
+    return new MetadataStore.Builder();
   }
 
   @SuppressWarnings("unchecked")
@@ -32,7 +32,7 @@ public final class MetadataContainer implements MetadataProvider, Buildable<Meta
     return builder;
   }
 
-  public static final class Builder implements Buildable.Builder<MetadataContainer> {
+  public static final class Builder implements Buildable.Builder<MetadataStore> {
 
     private final Map<String, Supplier<?>> metas = new HashMap<>();
 
@@ -45,7 +45,7 @@ public final class MetadataContainer implements MetadataProvider, Buildable<Meta
     }
 
     public <T> Builder withConstant(final Key<T> key, final T value) {
-      this.metas.put(key.getNamespacedName(), new ObjectSupplier<>(value));
+      this.metas.put(key.getName(), new ObjectSupplier<>(value));
       return this;
     }
 
@@ -55,13 +55,13 @@ public final class MetadataContainer implements MetadataProvider, Buildable<Meta
     }
 
     public <T> Builder withSupplier(final Key<T> key, final Supplier<T> supplier) {
-      this.metas.put(key.getNamespacedName(), supplier);
+      this.metas.put(key.getName(), supplier);
       return this;
     }
 
     @Override
-    public MetadataContainer build() {
-      return new MetadataContainer(Map.copyOf(metas));
+    public MetadataStore build() {
+      return new MetadataStore(Map.copyOf(metas));
     }
   }
 

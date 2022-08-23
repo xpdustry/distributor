@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.text.serializer;
 
 import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.text.*;
 import fr.xpdustry.distributor.text.format.*;
 import java.util.*;
@@ -29,7 +29,7 @@ public abstract class AbstractComponentSerializer implements ComponentSerializer
     } else if (component instanceof ListComponent list) {
       list.getComponents().forEach(element -> render(element, context, metadata));
     } else if (component instanceof TranslatableComponent translatable) {
-      final var locale = metadata.getMetadata(StandardMetaKeys.LOCALE)
+      final var locale = metadata.getMetadata(StandardKeys.LOCALE)
         .orElseGet(Locale::getDefault);
       var text = DistributorPlugin.getGlobalTranslator()
         .translate(translatable.getKey(), locale);

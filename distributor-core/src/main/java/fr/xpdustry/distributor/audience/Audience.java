@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.audience;
 
 import arc.audio.*;
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.text.*;
 import io.leangen.geantyref.*;
 import java.util.*;

@@ -4,6 +4,7 @@ import fr.xpdustry.distributor.plugin.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+// TODO Replace completable futures with dedicated Task classes
 public interface PluginScheduler extends PluginAware {
 
   CompletableFuture<Void> scheduleRunnableTask(boolean async, float delay, Runnable runnable);

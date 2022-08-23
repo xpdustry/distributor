@@ -5,7 +5,6 @@ import cloud.commandframework.captions.*;
 import cloud.commandframework.exceptions.*;
 import cloud.commandframework.exceptions.parsing.*;
 import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.struct.*;
 import fr.xpdustry.distributor.text.*;
 import fr.xpdustry.distributor.text.format.*;
 import mindustry.gen.*;
@@ -42,11 +41,10 @@ public final class CloudCommand<C> extends CommandHandler.Command {
     @Override
     public void accept(final String[] args, final @Nullable Player player) {
       final var audience = player != null
-        ? DistributorPlugin.getAudienceProvider().player(MUUID.of(player))
+        ? DistributorPlugin.getAudienceProvider().player(player)
         : DistributorPlugin.getAudienceProvider().console();
 
       final var sender = manager.getAudienceToSenderMapper().apply(audience);
-
       final var input = new StringBuilder(name);
       for (final var arg : args) {
         input.append(' ').append(arg);

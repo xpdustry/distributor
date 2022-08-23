@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import mindustry.gen.*;
+import org.checkerframework.checker.nullness.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -107,10 +108,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));
       }
 
-      final var name = stripAndLower(input);
-      final var players = StreamSupport.stream(Groups.player.spliterator(), false)
-        .filter(p -> stripAndLower(p.name()).contains(name))
-        .toList();
+      final var players = findPlayer(input);
 
       if (players.isEmpty()) {
         return ArgumentParseResult.failure(new PlayerNotFoundException(input, ctx));
@@ -123,12 +121,24 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
 
     @Override
+    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
+      return findPlayer(input).stream().map(Player::plainName).toList();
+    }
+
+    @Override
     public boolean isContextFree() {
       return true;
     }
 
     private String stripAndLower(final String string) {
       return Strings.stripColors(string.toLowerCase(Locale.ROOT));
+    }
+
+    private List<Player> findPlayer(final String input) {
+      final var name = stripAndLower(input);
+      return StreamSupport.stream(Groups.player.spliterator(), false)
+        .filter(p -> stripAndLower(p.name()).contains(name))
+        .toList();
     }
   }
 

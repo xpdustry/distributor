@@ -11,7 +11,6 @@ import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
 import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.struct.*;
 import fr.xpdustry.distributor.text.*;
 import java.lang.reflect.*;
 import mindustry.gen.*;
@@ -34,8 +33,8 @@ public final class ArcRegistrationHandler<C> implements CommandRegistrationHandl
     }
   }
 
-  final CommandHandler handler;
   private final ArcCommandManager<C> manager;
+  private final CommandHandler handler;
   private final ObjectMap<String, CommandHandler.Command> commands;
 
   @SuppressWarnings("unchecked")
@@ -76,8 +75,8 @@ public final class ArcRegistrationHandler<C> implements CommandRegistrationHandl
   public void unregisterRootCommand(final StaticArgument<?> root) {
     root.getAliases().stream()
       .map(commands::get)
-      .filter(CloudCommand.class::isInstance)
-      .map(c -> c.text) // Name
+      .filter(command -> command instanceof CloudCommand<?> cloud && cloud.getManager() == this.manager)
+      .map(c -> c.text)
       .forEach(handler::removeCommand);
   }
 }

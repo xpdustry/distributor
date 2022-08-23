@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.ui;
 
 import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.text.*;
 import fr.xpdustry.distributor.text.serializer.*;
 import fr.xpdustry.distributor.util.*;
@@ -17,13 +17,15 @@ public final class MenuInterface implements Interface {
   private final int id;
   private final Map<Player, MenuView> views = new HashMap<>();
 
-  @SuppressWarnings("NullAway")
   public MenuInterface(final InterfaceAction<MenuInterface> closeHandler, final InterfaceView.Factory<MenuView> viewFactory) {
     this.closeHandler = closeHandler;
     this.viewFactory = viewFactory;
     this.id = Menus.registerMenu((player, option) -> {
       final var view = MenuInterface.this.views.remove(player);
-      if (option == -1) {
+      if (view == null) {
+        // TODO Better message :)
+        player.sendMessage("The menu has timed out.");
+      } else if (option == -1) {
         MenuInterface.this.closeHandler.accept(player, MenuInterface.this);
       } else {
         view.getOption(option).orElseThrow().action.accept(player, MenuInterface.this);

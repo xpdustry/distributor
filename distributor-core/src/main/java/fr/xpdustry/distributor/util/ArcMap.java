@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.struct;
+package fr.xpdustry.distributor.util;
 
 import arc.struct.*;
 import java.io.*;

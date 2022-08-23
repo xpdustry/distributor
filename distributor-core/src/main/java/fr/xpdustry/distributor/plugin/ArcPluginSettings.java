@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.plugin;
 
 import arc.*;
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.metadata.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;

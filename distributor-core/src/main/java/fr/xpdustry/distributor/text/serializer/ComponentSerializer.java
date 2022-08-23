@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.text.serializer;
 
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.text.*;
 
 public interface ComponentSerializer<O> {

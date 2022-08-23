@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.ui;
 
-import fr.xpdustry.distributor.data.*;
+import fr.xpdustry.distributor.metadata.*;
 import java.util.*;
 import mindustry.gen.*;
 

@@ -23,6 +23,11 @@ public final class ArcCaptionKeys {
   public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY = of("argument.parse.failure.player.too_many");
 
   /**
+   * Variables: {@code {input}}, {@code {teamMode}}.
+   */
+  public static final Caption ARGUMENT_PARSE_FAILURE_TEAM = of("argument.parse.failure.team");
+
+  /**
    * Variables: {@code {syntax}}.
    */
   public static final Caption COMMAND_INVALID_SYNTAX = of("command.invalid.syntax");

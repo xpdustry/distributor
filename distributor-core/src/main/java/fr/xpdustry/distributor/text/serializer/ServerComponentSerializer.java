@@ -10,6 +10,7 @@ final class ServerComponentSerializer extends AbstractComponentSerializer {
   private ServerComponentSerializer() {
   }
 
+  // TODO Remove the warnings
   @SuppressWarnings({"ConstantConditions", "NullAway"})
   @Override
   protected void startStyle(Context context) {

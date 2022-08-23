@@ -17,7 +17,7 @@ final class ResourceBundleTranslator implements Translator {
   public @Nullable String translate(final String key, final Locale locale) {
     try {
       return ResourceBundle.getBundle(baseName, locale, loader).getString(key);
-    } catch (MissingResourceException e) {
+    } catch (final MissingResourceException e) {
       return null;
     }
   }

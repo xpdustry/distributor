@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor.audience;
 
-import fr.xpdustry.distributor.struct.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 
@@ -10,7 +9,7 @@ public interface AudienceProvider {
 
   Audience console();
 
-  Audience player(final MUUID muuid);
+  Audience player(final String uuid);
 
   Audience player(final Player player);
 
