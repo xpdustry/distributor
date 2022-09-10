@@ -2,39 +2,56 @@ package fr.xpdustry.distributor.scheduler;
 
 import arc.*;
 import arc.util.*;
+import arc.util.Timer;
+import cloud.commandframework.tasks.*;
+import fr.xpdustry.distributor.scheduler.old.*;
 import fr.xpdustry.distributor.util.*;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.*;
 import mindustry.mod.*;
+import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
-public class SimplePluginScheduler implements PluginScheduler {
+final class SimplePluginScheduler implements PluginScheduler {
 
+  private final ExecutorService executor;
   private final Plugin plugin;
-  private final ExecutorService service;
-
-  private final PriorityQueue<PluginTask> tasks = new PriorityQueue<>();
   private final AtomicInteger idGenerator = new AtomicInteger();
+  private final PriorityQueue<SimplePluginTask> tasks = new PriorityQueue<>(Comparator.comparing(t -> t.nextRun));
+  private @MonotonicNonNull TaskSynchronizer synchronizer;
 
   public SimplePluginScheduler(final Plugin plugin, final int workers) {
     this.plugin = plugin;
-    this.service = Executors.newFixedThreadPool(workers, runnable -> {
+    this.executor = Executors.newFixedThreadPool(workers, runnable -> {
       final var thread = new Thread(runnable);
       thread.setName(Magik.getPluginNamespace(plugin) + " / MindustrySchedulerWorker - " + idGenerator.incrementAndGet());
       return thread;
     });
-
     Core.app.addListener(new ApplicationListener() {
 
       @Override
       public void update() {
         final var time = Time.globalTime;
-        while (!tasks.isEmpty()) {
+        while (!SimplePluginScheduler.this.tasks.isEmpty()) {
           final var task = tasks.peek();
-          if (task.nextRun < time) {
-            tasks.remove();
-            task.task.run();
+          if (task.isCancelled()) {
+            SimplePluginScheduler.this.tasks.remove();
+          } else if (task.nextRun < time) {
+            SimplePluginScheduler.this.tasks.remove();
+            if (task.future == null || task.future.isDone()) {
+              task.future = CompletableFuture.runAsync(
+                task.runner,
+                task.async ? SimplePluginScheduler.this.executor : Core.app::post
+              );
+            }
+            if (task.period != -1) {
+              task.nextRun = time + task.period;
+              SimplePluginScheduler.this.tasks.add(task);
+            } else {
+              task.future.complete(null);
+            }
           } else {
             break;
           }
@@ -44,107 +61,119 @@ public class SimplePluginScheduler implements PluginScheduler {
   }
 
   @Override
-  public CompletableFuture<Void> scheduleRunnableTask(boolean async, float delay, Runnable runnable) {
-    return CompletableFuture.runAsync(runnable, getDelayedExecutor(async, delay));
-  }
-
-  @Override
-  public CompletableFuture<Void> scheduleRunnableTask(boolean async, Runnable runnable) {
-    return CompletableFuture.runAsync(runnable, getDelayedExecutor(async, 0F));
-  }
-
-  @Override
-  public <V> CompletableFuture<V> scheduleCompletableTask(boolean async, float delay, Supplier<V> supplier) {
-    return CompletableFuture.supplyAsync(supplier, getDelayedExecutor(async, delay));
-  }
-
-  @Override
-  public <V> CompletableFuture<V> scheduleCompletableTask(boolean async, Supplier<V> supplier) {
-    return CompletableFuture.supplyAsync(supplier, getDelayedExecutor(async, 0F));
-  }
-
-  @Override
-  public Future<Void> scheduleRepeatableTask(boolean async, float delay, float interval, Runnable runnable) {
-    return new RepeatableFuture(async, delay, interval, runnable);
-  }
-
-  @Override
-  public Future<Void> scheduleRepeatableTask(boolean async, float interval, Runnable runnable) {
-    return new RepeatableFuture(async, 0F, interval, runnable);
+  public PluginTaskBuilder schedule() {
+    return new SimplePluginTaskBuilder();
   }
 
   @Override
   public void shutdown(boolean now) {
     if (now) {
-      this.service.shutdownNow();
+      this.executor.shutdownNow();
     } else {
-      this.service.shutdown();
+      this.executor.shutdown();
     }
   }
 
   @Override
-  public Plugin getPlugin() {
-    return this.plugin;
+  public synchronized TaskSynchronizer asTaskSynchronizer() {
+    if (synchronizer == null) {
+      synchronizer = new PluginTaskSynchronizer(this);
+    }
+    return synchronizer;
   }
 
-  private DelayedExecutor getDelayedExecutor(final boolean async, final float delay) {
-    return new DelayedExecutor(delay, async ? this.service : Core.app::post);
+  @Override
+  public @NotNull Plugin getPlugin() {
+    return plugin;
   }
 
-  private static final class PluginTask implements Comparable<PluginTask> {
+  private void update() {
+    final var time = Time.globalTime;
+    while (!tasks.isEmpty()) {
+      final var task = tasks.peek();
+      if (task.isCancelled()) {
+        tasks.remove();
+      } else if (task.nextRun < time) {
+        tasks.remove();
+        if (task.future == null || task.future.isDone()) {
+          task.future = CompletableFuture.runAsync(task.runner, task.async ? this.executor : Core.app::post);
+        }
+        if (task.period != -1) {
+          task.nextRun = time + task.period;
+          tasks.add(task);
+        } else {
+          task.future.complete(null);
+        }
+      } else {
+        break;
+      }
+    }
+  }
 
-    private final float nextRun;
-    private final Runnable task;
+  private final class SimplePluginTaskBuilder implements PluginTaskBuilder {
 
-    private PluginTask(float nextRun, Runnable task) {
-      this.nextRun = nextRun;
-      this.task = task;
+    private boolean async = false;
+    private int delay = 0;
+    private int period = -1;
+    private @MonotonicNonNull Runnable runner = null;
+
+    @Override
+    public PluginTaskBuilder withAsync(boolean async) {
+      this.async = async;
+      return this;
     }
 
     @Override
-    public int compareTo(PluginTask o) {
-      return Float.compare(this.nextRun, o.nextRun);
-    }
-  }
-
-  private final class DelayedExecutor implements Executor {
-
-    private final float delay;
-    private final Executor executor;
-
-    private DelayedExecutor(float delay, Executor executor) {
+    public PluginTaskBuilder withDelay(int delay) {
       this.delay = delay;
-      this.executor = executor;
+      return this;
     }
 
     @Override
-    public void execute(final Runnable command) {
-      SimplePluginScheduler.this.tasks.add(
-        new PluginTask(Time.globalTime + this.delay, () -> this.executor.execute(command))
-      );
+    public PluginTaskBuilder withRepeat(int period) {
+      this.period = period;
+      return this;
+    }
+
+    @Override
+    public PluginTaskBuilder withRunner(Runnable runner) {
+      this.runner = runner;
+      return this;
+    }
+
+    @Override
+    public PluginTask start() {
+      final var task = new SimplePluginTask(async, period, runner);
+      task.nextRun = Time.globalTime + delay;
+      tasks.add(task);
+      return task;
     }
   }
 
-  private final class RepeatableFuture implements Future<Void> {
+  private static final class SimplePluginTask implements PluginTask {
 
-    private final CountDownLatch lock = new CountDownLatch(1);
+    private final boolean async;
+    private final int period;
+    private final Runnable runner;
 
-    private final Executor executor;
-    private final Runnable runnable;
-    private CompletableFuture<Void> future;
+    private float nextRun;
+    private @MonotonicNonNull CompletableFuture<Void> future = null;
     private boolean cancelled = false;
 
-    private RepeatableFuture(boolean async, float delay, float interval, Runnable runnable) {
-      this.executor = getDelayedExecutor(async, interval);
-      this.runnable = runnable;
-      this.future = SimplePluginScheduler.this.scheduleRunnableTask(async, delay, runnable);
-      reschedule();
+    private SimplePluginTask(boolean async, int period, Runnable runner) {
+      this.async = async;
+      this.period = period;
+      this.runner = runner;
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-      cancelled = mayInterruptIfRunning;
-      return future.cancel(true);
+    public boolean isAsync() {
+      return async;
+    }
+
+    @Override
+    public boolean isCompleted() {
+      return period != -1 && future != null && future.isDone();
     }
 
     @Override
@@ -153,36 +182,10 @@ public class SimplePluginScheduler implements PluginScheduler {
     }
 
     @Override
-    public boolean isDone() {
-      return false;
-    }
-
-    @Override
-    public Void get() throws InterruptedException {
-      lock.await();
-      return null;
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Override
-    public Void get(long timeout, TimeUnit unit) throws InterruptedException {
-      lock.await(timeout, unit);
-      return null;
-    }
-
-    private void reschedule() {
-      if (!cancelled) {
-        if (future.isDone()) {
-          future = CompletableFuture.runAsync(this.runnable, this.executor);
-        }
-        future.whenComplete((result, throwable) -> {
-          if (throwable != null) {
-            RepeatableFuture.this.cancelled = true;
-            RepeatableFuture.this.lock.countDown();
-          } else {
-            RepeatableFuture.this.reschedule();
-          }
-        });
+    public void cancel() {
+      this.cancelled = true;
+      if (future != null) {
+        future.cancel(true);
       }
     }
   }

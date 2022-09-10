@@ -10,7 +10,6 @@ import java.util.function.*;
  *
  * @param <E> the element type
  */
-// TODO Benchmarks + Compliance tests
 public final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAccess {
 
   @Serial

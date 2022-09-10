@@ -2,6 +2,7 @@ package fr.xpdustry.distributor.metadata;
 
 import io.leangen.geantyref.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 public final class Key<V> {
 
@@ -38,10 +39,8 @@ public final class Key<V> {
   }
 
   @Override
-  public boolean equals(final Object o) {
-    return this == o || (
-      o instanceof Key<?> key && this.valueType.equals(key.valueType) && this.name.equals(key.name)
-    );
+  public boolean equals(final @Nullable Object o) {
+    return this == o || (o instanceof Key<?> key && this.valueType.equals(key.valueType) && this.name.equals(key.name));
   }
 
   @Override

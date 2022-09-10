@@ -1,11 +1,13 @@
 package fr.xpdustry.distributor.util;
 
+import org.jetbrains.annotations.*;
+
 public interface Buildable<T, B extends Buildable.Builder<T>> {
 
-  B toBuilder();
+  @NotNull B toBuilder();
 
   interface Builder<T> {
 
-    T build();
+    @NotNull T build();
   }
 }

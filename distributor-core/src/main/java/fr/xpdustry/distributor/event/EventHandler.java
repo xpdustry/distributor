@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 
-  EventPriority priority() default EventPriority.LAST;
+  EventPriority priority() default EventPriority.NORMAL;
 }
 
 

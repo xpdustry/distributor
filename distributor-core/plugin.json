@@ -3,7 +3,7 @@
   "displayName": "Distributor core",
   "main": "fr.xpdustry.distributor.DistributorPlugin",
   "author": "Xpdustry",
-  "minGameVersion": "137",
+  "minGameVersion": "138",
   "hidden": true,
   "java": true,
   "repo": "Xpdustry/Distributor"

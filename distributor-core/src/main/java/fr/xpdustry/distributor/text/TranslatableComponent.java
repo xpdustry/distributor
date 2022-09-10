@@ -3,6 +3,7 @@ package fr.xpdustry.distributor.text;
 import fr.xpdustry.distributor.text.format.*;
 import fr.xpdustry.distributor.util.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 public final class TranslatableComponent extends Component implements Buildable<TranslatableComponent, TranslatableComponent.Builder> {
 
@@ -29,7 +30,7 @@ public final class TranslatableComponent extends Component implements Buildable<
   }
 
   @Override
-  public Builder toBuilder() {
+  public @NotNull Builder toBuilder() {
     return new Builder().withStyle(getStyle()).withKey(getKey()).withArguments(getArguments());
   }
 
@@ -65,7 +66,7 @@ public final class TranslatableComponent extends Component implements Buildable<
     }
 
     @Override
-    public TranslatableComponent build() {
+    public @NotNull TranslatableComponent build() {
       return new TranslatableComponent(key, arguments, getStyle());
     }
   }

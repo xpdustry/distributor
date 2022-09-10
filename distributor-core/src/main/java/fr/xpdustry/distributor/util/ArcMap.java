@@ -4,16 +4,15 @@ import arc.struct.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import org.checkerframework.checker.nullness.qual.*;
+import org.jetbrains.annotations.*;
 
-// TODO Benchmarks + Compliance tests
 public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
 
   @Serial
   private static final long serialVersionUID = 1261308433311045675L;
 
   private final ObjectMap<K, V> map;
-  private transient @MonotonicNonNull EntrySet entries = null;
+  private transient @UnknownNullability EntrySet entries = null;
 
   public ArcMap(final ObjectMap<K, V> map) {
     this.map = map;
@@ -108,7 +107,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     }
 
     @Override
-    public @NonNull Iterator<Map.Entry<K, V>> iterator() {
+    public @NotNull Iterator<Map.Entry<K, V>> iterator() {
       return new EntryIterator();
     }
   }

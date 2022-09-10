@@ -1,6 +1,6 @@
 package fr.xpdustry.distributor.audience;
 
-import java.util.function.*;
+import java.util.stream.*;
 
 final class EmptyAudience implements Audience {
 
@@ -10,11 +10,7 @@ final class EmptyAudience implements Audience {
   }
 
   @Override
-  public void forEachAudience(Consumer<? super Audience> action) {
-  }
-
-  @Override
-  public Audience filterAudience(Predicate<Audience> predicate) {
-    return this;
+  public Stream<Audience> toStream() {
+    return Stream.empty();
   }
 }

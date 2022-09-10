@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.translate;
+package fr.xpdustry.distributor.localization;
 
 public interface DelegatingTranslator extends Translator {
 

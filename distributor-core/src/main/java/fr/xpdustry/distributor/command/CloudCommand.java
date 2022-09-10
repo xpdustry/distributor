@@ -15,11 +15,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public final class CloudCommand<C> extends CommandHandler.Command {
 
-  private static final String DEFAULT_ARGS = "[args...]";
   private final ArcCommandManager<C> manager;
 
   CloudCommand(final String name, final String description, final ArcCommandManager<C> manager) {
-    super(name, DEFAULT_ARGS, description, new CloudCommandRunner<>(name, manager));
+    super(name, "[args...]", description, new CloudCommandRunner<>(name, manager));
     this.manager = manager;
   }
 

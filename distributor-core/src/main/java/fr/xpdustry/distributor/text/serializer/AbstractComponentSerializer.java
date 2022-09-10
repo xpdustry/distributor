@@ -10,13 +10,13 @@ import org.checkerframework.checker.nullness.qual.*;
 public abstract class AbstractComponentSerializer implements ComponentSerializer<String> {
 
   @Override
-  public String serialize(final Component component, MetadataProvider metadata) {
+  public String serialize(final Component component, MetadataContainer metadata) {
     final var context = new Context();
     render(component, context, metadata);
     return context.toString();
   }
 
-  private void render(final Component component, final Context context, MetadataProvider metadata) {
+  private void render(final Component component, final Context context, MetadataContainer metadata) {
     if (component.isEmpty()) {
       return;
     }

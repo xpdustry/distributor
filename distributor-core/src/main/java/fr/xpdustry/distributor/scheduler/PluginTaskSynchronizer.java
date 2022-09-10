@@ -1,34 +1,53 @@
 package fr.xpdustry.distributor.scheduler;
 
 import cloud.commandframework.tasks.*;
+import fr.xpdustry.distributor.scheduler.old.*;
 import java.util.concurrent.*;
+import org.checkerframework.checker.nullness.qual.*;
 
-@SuppressWarnings("NullableProblems")
-public class PluginTaskSynchronizer implements TaskSynchronizer {
+final class PluginTaskSynchronizer implements TaskSynchronizer {
 
   private final PluginScheduler scheduler;
 
-  public PluginTaskSynchronizer(final PluginScheduler scheduler) {
+  PluginTaskSynchronizer(final PluginScheduler scheduler) {
     this.scheduler = scheduler;
   }
 
   @Override
-  public <I> CompletableFuture<Void> runSynchronous(final I input, final TaskConsumer<I> consumer) {
-    return scheduler.scheduleRunnableTask(false, 0, () -> consumer.accept(input));
+  public <I> CompletableFuture<Void> runSynchronous(@NonNull I input, @NonNull TaskConsumer<I> consumer) {
+    final var future = new CompletableFuture<Void>();
+    scheduler.schedule().withRunner(() -> {
+      consumer.accept(input);
+      future.complete(null);
+    }).start();
+    return future;
   }
 
   @Override
-  public <I, O> CompletableFuture<O> runSynchronous(final I input, final TaskFunction<I, O> function) {
-    return scheduler.scheduleCompletableTask(false, 0, () -> function.apply(input));
+  public <I, O> CompletableFuture<O> runSynchronous(@NonNull I input, @NonNull TaskFunction<I, O> function) {
+    final var future = new CompletableFuture<O>();
+    scheduler.schedule()
+      .withRunner(() -> future.complete(function.apply(input)))
+      .start();
+    return future;
   }
 
   @Override
-  public <I> CompletableFuture<Void> runAsynchronous(final I input, final TaskConsumer<I> consumer) {
-    return scheduler.scheduleRunnableTask(true, 0, () -> consumer.accept(input));
+  public <I> CompletableFuture<Void> runAsynchronous(@NonNull I input, @NonNull TaskConsumer<I> consumer) {
+    final var future = new CompletableFuture<Void>();
+    scheduler.schedule().withAsync().withRunner(() -> {
+      consumer.accept(input);
+      future.complete(null);
+    }).start();
+    return future;
   }
 
   @Override
-  public <I, O> CompletableFuture<O> runAsynchronous(final I input, final TaskFunction<I, O> function) {
-    return scheduler.scheduleCompletableTask(true, 0, () -> function.apply(input));
+  public <I, O> CompletableFuture<O> runAsynchronous(@NonNull I input, @NonNull TaskFunction<I, O> function) {
+    final var future = new CompletableFuture<O>();
+    scheduler.schedule().withAsync()
+      .withRunner(() -> future.complete(function.apply(input)))
+      .start();
+    return future;
   }
 }

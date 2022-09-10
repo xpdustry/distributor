@@ -3,17 +3,19 @@ package fr.xpdustry.distributor.text.format;
 // TODO Add colors
 public final class TextColor {
 
-  private static final int WHITE_VALUE = 0xFFFFFF;
-  private static final int BLACK_VALUE = 0x000000;
-  private static final int RED_VALUE = 0xFF0000;
-  private static final int YELLOW_VALUE = 0xFFFF00;
-  private static final int ACCENT_VALUE = 0xFFD37F;
+  private static final int
+    WHITE_VALUE     = 0xFFFFFF,
+    BLACK_VALUE     = 0x000000,
+    RED_VALUE       = 0xFF0000,
+    YELLOW_VALUE    = 0xFFFF00,
+    ACCENT_VALUE    = 0xFFD37F;
 
-  public static final TextColor WHITE = new TextColor(WHITE_VALUE);
-  public static final TextColor BLACK = new TextColor(BLACK_VALUE);
-  public static final TextColor RED = new TextColor(RED_VALUE);
-  public static final TextColor YELLOW = new TextColor(YELLOW_VALUE);
-  public static final TextColor ACCENT = new TextColor(ACCENT_VALUE);
+  public static final TextColor
+    WHITE           = new TextColor(WHITE_VALUE),
+    BLACK           = new TextColor(BLACK_VALUE),
+    RED             = new TextColor(RED_VALUE),
+    YELLOW          = new TextColor(YELLOW_VALUE),
+    ACCENT          = new TextColor(ACCENT_VALUE);
 
   private final int value;
 
@@ -27,11 +29,11 @@ public final class TextColor {
 
   public static TextColor ofRGB(final int value) {
     return switch (value & 0xFFFFFF) {
-      case WHITE_VALUE -> TextColor.WHITE;
-      case BLACK_VALUE -> TextColor.BLACK;
-      case RED_VALUE -> TextColor.RED;
-      case ACCENT_VALUE -> TextColor.ACCENT;
-      default -> new TextColor(value);
+      case WHITE_VALUE    -> TextColor.WHITE;
+      case BLACK_VALUE    -> TextColor.BLACK;
+      case RED_VALUE      -> TextColor.RED;
+      case ACCENT_VALUE   -> TextColor.ACCENT;
+      default             -> new TextColor(value);
     };
   }
 
@@ -55,6 +57,10 @@ public final class TextColor {
     return value & 0xFF;
   }
 
+  public String toHEX() {
+    return "#" + Integer.toHexString(value);
+  }
+
   @Override
   public int hashCode() {
     return Integer.hashCode(value);
@@ -63,5 +69,10 @@ public final class TextColor {
   @Override
   public boolean equals(final Object obj) {
     return this == obj || (obj instanceof TextColor color && this.value == color.value);
+  }
+
+  @Override
+  public String toString() {
+    return toHEX();
   }
 }

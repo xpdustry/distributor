@@ -3,6 +3,7 @@ package fr.xpdustry.distributor.text;
 import fr.xpdustry.distributor.text.format.*;
 import fr.xpdustry.distributor.util.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 public final class ListComponent extends Component implements Buildable<ListComponent, ListComponent.Builder> {
 
@@ -32,7 +33,7 @@ public final class ListComponent extends Component implements Buildable<ListComp
   }
 
   @Override
-  public Builder toBuilder() {
+  public @NotNull Builder toBuilder() {
     return new Builder().withStyle(getStyle()).withComponents(getComponents());
   }
 
@@ -63,7 +64,7 @@ public final class ListComponent extends Component implements Buildable<ListComp
     }
 
     @Override
-    public ListComponent build() {
+    public @NotNull ListComponent build() {
       return new ListComponent(components, getStyle());
     }
   }

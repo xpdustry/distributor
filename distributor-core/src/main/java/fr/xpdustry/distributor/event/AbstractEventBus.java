@@ -2,65 +2,84 @@ package fr.xpdustry.distributor.event;
 
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.*;
 
 public abstract class AbstractEventBus implements EventBus {
 
-  @SuppressWarnings("rawtypes")
-  private final Map<EventListener, List<MethodEventListener>> objects = new HashMap<>();
+  private static final Comparator<EventSubscriber<?>> COMPARATOR = Comparator.comparing(EventSubscriber::getPriority);
+
+  private final Set<Object> subscribed = new HashSet<>();
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public void register(final EventListener listener) {
-    if (objects.containsKey(listener)) {
-      return;
+  public EventPostResult post(Object event) {
+    Map<EventSubscriber<?>, Throwable> exceptions = null;
+    final var subscribers = getEventSubscribers(event.getClass());
+    subscribers.sort(COMPARATOR);
+    for (final EventSubscriber subscriber : subscribers) {
+      try {
+        subscriber.onEvent(event);
+      } catch (final Throwable throwable) {
+        if (exceptions == null) {
+          exceptions = new HashMap<>();
+        }
+        exceptions.put(subscriber, throwable);
+      }
+    }
+    return exceptions == null ? EventPostResult.success() : EventPostResult.failure(exceptions);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Override
+  public EventSubscription subscribe(final Object object) {
+    if (!subscribed.add(object)) {
+      return () -> {};
     }
 
-    final List<MethodEventListener> handlers = new ArrayList<>();
-    for (final var method : listener.getClass().getDeclaredMethods()) {
+    final var subscriptions = new ArrayList<EventSubscription>();
+    for (final var method : object.getClass().getDeclaredMethods()) {
       final var annotation = method.getAnnotation(EventHandler.class);
       if (annotation == null) {
         continue;
       } else if (method.getParameterCount() != 1) {
         throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
+      } else if (!method.canAccess(object) || !method.trySetAccessible()) {
+        throw new RuntimeException("Unable to make " + method + " accessible.");
       }
 
-      final var handler = new MethodEventListener(method.getParameterTypes()[0], listener, method);
-      handlers.add(handler);
-      register(handler.clazz, annotation.priority(), handler);
+      subscriptions.add(
+        subscribe(method.getParameterTypes()[0], new MethodEventSubscriber(object, method, annotation.priority()))
+      );
     }
 
-    objects.put(listener, handlers.isEmpty() ? Collections.emptyList() : handlers);
+    return () -> subscriptions.forEach(EventSubscription::unsubscribe);
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public void unregister(final EventListener listener) {
-    final var listeners = objects.remove(listener);
-    if (listeners != null) {
-      listeners.forEach(l -> unregister(l.clazz, l));
-    }
-  }
+  protected abstract List<EventSubscriber<?>> getEventSubscribers(final Class<?> clazz);
 
-  private static final class MethodEventListener<E> implements Consumer<E> {
+  private static final class MethodEventSubscriber<E> implements EventSubscriber<E> {
 
-    private final Class<E> clazz;
-    private final Object object;
+    private final Object target;
     private final Method method;
+    private final EventPriority priority;
 
-    MethodEventListener(final Class<E> clazz, final Object object, final Method method) {
-      this.clazz = clazz;
-      this.object = object;
+    private MethodEventSubscriber(final Object target, final Method method, final EventPriority priority) {
+      this.target = target;
       this.method = method;
+      this.priority = priority;
     }
 
     @Override
-    public void accept(final E event) {
+    public void onEvent(final E event) {
       try {
-        method.invoke(object, event);
+        this.method.invoke(event);
       } catch (final ReflectiveOperationException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException("Failed to call " + this.method + " on " + this.target, e);
       }
+    }
+
+    @Override
+    public EventPriority getPriority() {
+      return priority;
     }
   }
 }

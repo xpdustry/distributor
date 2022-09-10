@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.function.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
+import org.jetbrains.annotations.*;
 
 public class ArcCommandManager<C> extends CommandManager<C> implements PluginAware {
 
@@ -33,29 +34,47 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
   private final Function<C, Audience> senderToAudienceMapper;
   private final Function<Audience, C> audienceToSenderMapper;
 
-  public static ArcCommandManager<Audience> audience(final Plugin plugin) {
+  public static ArcCommandManager<Audience> audience(final @NotNull Plugin plugin) {
     return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
   }
 
-  public static ArcCommandManager<Player> player(final Plugin plugin) {
+  public static ArcCommandManager<Player> player(final @NotNull Plugin plugin) {
     return new ArcCommandManager<>(
       plugin,
-      audience -> {
-        final var uuid = audience.getMetadata(StandardKeys.UUID).orElseThrow();
-        return Objects.requireNonNull(Groups.player.find(p -> p.uuid().equals(uuid)));
-      },
-      player -> DistributorPlugin.getAudienceProvider().player(player)
+      audience -> audience.getMetadata()
+        .getMetadata(StandardKeys.UUID)
+        .map(uuid -> Groups.player.find(p -> p.uuid().equals(uuid)))
+        .orElseThrow(),
+      player -> DistributorPlugin.getAudienceProvider()
+        .player(player)
     );
   }
 
   public ArcCommandManager(
-    final Plugin plugin,
-    final Function<Audience, C> audienceToSenderMapper,
-    final Function<C, Audience> senderToAudienceMapper
+    final @NotNull Plugin plugin,
+    final @NotNull Function<@NotNull Audience, @NotNull C> audienceToSenderMapper,
+    final @NotNull Function<@NotNull C, @NotNull Audience> senderToAudienceMapper
   ) {
     super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
     registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
-    captionRegistry(new TranslatorCaptionRegistry<>(this, DistributorPlugin.getGlobalTranslator()));
+    captionRegistry((caption, sender) -> {
+      final var locale = ArcCommandManager.this.getSenderToAudienceMapper()
+        .apply(sender)
+        .getMetadata()
+        .getMetadata(StandardKeys.LOCALE)
+        .orElseGet(Locale::getDefault);
+      final var translation = DistributorPlugin
+        .getGlobalTranslator()
+        .translate(caption.getKey(), locale);
+      return translation != null
+        ? translation
+        : "???" + caption.getKey() + "???";
+    });
+
+    this.parserRegistry().registerAnnotationMapper(
+      AllTeams.class,
+      (annotation, typeToken) -> ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamMode.ALL)
+    );
 
     this.parserRegistry().registerParserSupplier(
       TypeToken.get(PlayerArgument.PlayerParser.class),
@@ -67,34 +86,25 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
       params -> new TeamArgument.TeamParser<>(params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE))
     );
 
-    this.parserRegistry().registerAnnotationMapper(
-      AllTeams.class,
-      (annotation, typeToken) -> ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamMode.ALL)
-    );
-
     this.plugin = plugin;
     this.audienceToSenderMapper = audienceToSenderMapper;
     this.senderToAudienceMapper = senderToAudienceMapper;
   }
 
-  public final void initialize(final CommandHandler handler) {
+  public final void initialize(final @NotNull CommandHandler handler) {
     commandRegistrationHandler(new ArcRegistrationHandler<>(this, handler));
     transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
   }
 
-  public final Function<Audience, C> getAudienceToSenderMapper() {
+  public final @NotNull Function<Audience, C> getAudienceToSenderMapper() {
     return audienceToSenderMapper;
   }
 
-  public final Function<C, Audience> getSenderToAudienceMapper() {
+  public final @NotNull Function<C, Audience> getSenderToAudienceMapper() {
     return senderToAudienceMapper;
   }
 
-  public final void lockCommandRegistration() {
-    lockRegistration();
-  }
-
-  public AnnotationParser<C> createAnnotationParser(final TypeToken<C> senderType) {
+  public @NotNull AnnotationParser<C> createAnnotationParser(final @NotNull TypeToken<C> senderType) {
     return new AnnotationParser<>(this, senderType, params -> {
       final var builder = CommandMeta.simple().with(createDefaultCommandMeta());
       if (params.has(StandardParameters.DESCRIPTION)) {
@@ -104,28 +114,32 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     });
   }
 
-  public AnnotationParser<C> createAnnotationParser(final Class<C> senderClass) {
+  public @NotNull AnnotationParser<C> createAnnotationParser(final @NotNull Class<C> senderClass) {
     return createAnnotationParser(TypeToken.get(senderClass));
   }
 
-  @SuppressWarnings("NullableProblems")
   @Override
-  public boolean hasPermission(final C sender, final String permission) {
-    return permission.isBlank() || senderToAudienceMapper.apply(sender)
-      .getMetadata(StandardKeys.UUID)
-      .map(uuid -> DistributorPlugin.getPermissionManager().test(uuid, permission))
-      .orElse(true);
+  public boolean hasPermission(final @NotNull C sender, final @NotNull String permission) {
+    if (permission.isEmpty()) {
+      return true;
+    }
+    final var metadata = senderToAudienceMapper.apply(sender).getMetadata();
+    if (metadata.getMetadata(StandardKeys.PRIVILEGED).orElse(false)) {
+      return true;
+    } else {
+      return metadata.getMetadata(StandardKeys.UUID)
+        .map(uuid -> DistributorPlugin.getPermissionManager().checkPermission(uuid, permission))
+        .orElse(false);
+    }
   }
 
   @Override
-  public CommandMeta createDefaultCommandMeta() {
-    return CommandMeta.simple()
-      .with(PLUGIN, Magik.getPluginNamespace(plugin))
-      .build();
+  public @NotNull CommandMeta createDefaultCommandMeta() {
+    return CommandMeta.simple().with(PLUGIN, Magik.getPluginNamespace(plugin)).build();
   }
 
   @Override
-  public final Plugin getPlugin() {
+  public final @NotNull Plugin getPlugin() {
     return plugin;
   }
 }

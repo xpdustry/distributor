@@ -11,11 +11,11 @@ import mindustry.gen.*;
 final class PlayerAudience implements Audience {
 
   private final Player player;
-  private final MetadataStore metas;
+  private final MetadataContainer metas;
 
   PlayerAudience(final Player player) {
     this.player = player;
-    this.metas = MetadataStore.builder()
+    this.metas = MetadataContainer.builder()
       .withConstant(StandardKeys.UUID, this.player.uuid())
       .withConstant(StandardKeys.USID, this.player.usid())
       .withConstant(StandardKeys.LOCALE, getPlayerLocale())
@@ -27,27 +27,27 @@ final class PlayerAudience implements Audience {
 
   @Override
   public void sendMessage(final Component component) {
-    Call.sendMessage(player.con(), ComponentSerializer.client().serialize(component, this), null, null);
+    Call.sendMessage(player.con(), ComponentSerializer.client().serialize(component, this.metas), null, null);
   }
 
   @Override
   public void sendWarning(final Component component) {
-    Call.announce(player.con(), ComponentSerializer.client().serialize(component, this));
+    Call.announce(player.con(), ComponentSerializer.client().serialize(component, this.metas));
   }
 
   @Override
   public void sendAnnouncement(final Component component) {
-    Call.infoMessage(player.con(), ComponentSerializer.client().serialize(component, this));
+    Call.infoMessage(player.con(), ComponentSerializer.client().serialize(component, this.metas));
   }
 
   @Override
   public void sendNotification(final Component component, final char icon) {
-    Call.warningToast(player.con(), icon, ComponentSerializer.client().serialize(component, this));
+    Call.warningToast(player.con(), icon, ComponentSerializer.client().serialize(component, this.metas));
   }
 
   @Override
   public void sendNotification(final Component component) {
-    Call.warningToast(player.con(), 0, ComponentSerializer.client().serialize(component, this));
+    Call.warningToast(player.con(), 0, ComponentSerializer.client().serialize(component, this.metas));
   }
 
   @Override
@@ -61,18 +61,18 @@ final class PlayerAudience implements Audience {
   }
 
   @Override
-  public void setHud(final Component component) {
-    Call.setHudText(ComponentSerializer.client().serialize(component, this));
+  public void showHud(final Component component) {
+    Call.setHudText(ComponentSerializer.client().serialize(component, this.metas));
   }
 
   @Override
-  public void clearHud() {
+  public void hideHud() {
     Call.hideHudText(player.con());
   }
 
   @Override
-  public <T> Optional<T> getMetadata(String key, TypeToken<T> type) {
-    return metas.getMetadata(key, type);
+  public MetadataContainer getMetadata() {
+    return metas;
   }
 
   private Locale getPlayerLocale() {

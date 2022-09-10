@@ -1,4 +1,4 @@
-package fr.xpdustry.distributor.translate;
+package fr.xpdustry.distributor.localization;
 
 import java.util.*;
 import org.checkerframework.checker.nullness.qual.*;

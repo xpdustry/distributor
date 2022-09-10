@@ -14,6 +14,8 @@ import java.util.stream.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import org.checkerframework.checker.nullness.qual.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.*;
 
 public final class TeamArgument<C> extends CommandArgument<C, Team> {
 
@@ -67,7 +69,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
      * @return the constructed player argument
      */
     @Override
-    public TeamArgument<C> build() {
+    public @NotNull TeamArgument<C> build() {
       return new TeamArgument<>(
         this.isRequired(),
         this.getName(),
@@ -99,7 +101,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
 
     @Override
-    public ArgumentParseResult<Team> parse(final CommandContext<C> ctx, final Queue<String> inputQueue) {
+    public @NotNull ArgumentParseResult<Team> parse(final @NotNull CommandContext<C> ctx, final @NotNull Queue<String> inputQueue) {
       final var input = inputQueue.peek();
       if (input == null) {
         return ArgumentParseResult.failure(new NoInputProvidedException(TeamArgument.TeamParser.class, ctx));
@@ -115,7 +117,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
 
     @Override
-    public List<String> suggestions(final CommandContext<C> ctx, final String input) {
+    public @NotNull List<String> suggestions(final @NotNull CommandContext<C> ctx, final @NotNull String input) {
       final var name = input.toLowerCase(Locale.ROOT);
       return getTeamIndex().keySet().stream().filter(t -> t.startsWith(name)).sorted().toList();
     }
@@ -131,8 +133,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
   }
 
   public enum TeamMode {
-    BASE,
-    ALL
+    BASE, ALL
   }
 
   public static final class TeamParseException extends ParserException {

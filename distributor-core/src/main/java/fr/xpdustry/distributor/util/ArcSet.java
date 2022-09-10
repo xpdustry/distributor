@@ -1,16 +1,20 @@
 package fr.xpdustry.distributor.util;
 
 import arc.struct.*;
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 /**
  * A {@link Set} view of a {@link ObjectSet}.
  *
  * @param <E> the element type
  */
-// TODO Benchmarks + Compliance tests
-public final class ArcSet<E> extends AbstractSet<E> {
+public final class ArcSet<E> extends AbstractSet<E> implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = -3011659975952643135L;
 
   private final ObjectSet<E> set;
 
@@ -24,7 +28,7 @@ public final class ArcSet<E> extends AbstractSet<E> {
   }
 
   @Override
-  public Iterator<E> iterator() {
+  public @NotNull Iterator<E> iterator() {
     return set.iterator();
   }
 

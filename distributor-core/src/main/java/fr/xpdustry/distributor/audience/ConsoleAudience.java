@@ -10,29 +10,30 @@ final class ConsoleAudience implements Audience {
 
   static final ConsoleAudience INSTANCE = new ConsoleAudience();
 
+  private final MetadataContainer metadata = MetadataContainer.builder()
+    .withConstant(StandardKeys.PRIVILEGED, true)
+    .withSupplier(StandardKeys.LOCALE, Locale::getDefault)
+    .build();
+
   private ConsoleAudience() {
   }
 
   @Override
   public void sendMessage(final Component component) {
-    for (final var line : ComponentSerializer.server().serialize(component, this).split("\n", -1)) {
+    for (final var line : ComponentSerializer.server().serialize(component, this.metadata).split("\n", -1)) {
       Log.info(line);
     }
   }
 
   @Override
   public void sendWarning(final Component component) {
-    for (final var line : ComponentSerializer.server().serialize(component, this).split("\n", -1)) {
+    for (final var line : ComponentSerializer.server().serialize(component, this.metadata).split("\n", -1)) {
       Log.warn(line);
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public <T> Optional<T> getMetadata(String key, Class<T> type) {
-    if (key.equals(StandardKeys.LOCALE.getName())) {
-      return (Optional<T>) Optional.of(Locale.getDefault());
-    }
-    return Optional.empty();
+  public MetadataContainer getMetadata() {
+    return metadata;
   }
 }

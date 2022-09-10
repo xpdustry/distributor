@@ -15,6 +15,7 @@ import java.util.stream.*;
 import mindustry.gen.*;
 import org.checkerframework.checker.nullness.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.*;
 
 /**
  * A command argument for an online {@link Player}.
@@ -83,7 +84,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
      * @return the constructed player argument
      */
     @Override
-    public PlayerArgument<C> build() {
+    public @NotNull PlayerArgument<C> build() {
       return new PlayerArgument<>(
         this.isRequired(),
         this.getName(),
@@ -102,7 +103,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   public static final class PlayerParser<C> implements ArgumentParser<C, Player> {
 
     @Override
-    public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final Queue<String> inputQueue) {
+    public @NotNull ArgumentParseResult<Player> parse(final @NotNull CommandContext<C> ctx, final Queue<String> inputQueue) {
       final var input = inputQueue.peek();
       if (input == null) {
         return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));

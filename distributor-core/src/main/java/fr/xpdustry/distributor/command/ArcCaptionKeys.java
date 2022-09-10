@@ -2,6 +2,7 @@ package fr.xpdustry.distributor.command;
 
 import cloud.commandframework.captions.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 /**
  * {@link Caption} instances for {@link ArcCommandManager} error messages.
@@ -10,7 +11,7 @@ import java.util.*;
  */
 public final class ArcCaptionKeys {
 
-  private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(6);
+  private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(7);
 
   /**
    * Variables: {@code {input}}.
@@ -59,7 +60,8 @@ public final class ArcCaptionKeys {
   /**
    * Returns an unmodifiable view of all the captions used in the {@link ArcCommandManager}.
    */
-  public static Collection<Caption> getCaptionKeys() {
+  @UnmodifiableView
+  public static @NotNull Collection<Caption> getCaptionKeys() {
     return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);
   }
 }

@@ -18,6 +18,8 @@ public final class StandardKeys {
 
   public static final Key<Locale> LOCALE = Key.of(Locale.class, DistributorPlugin.NAMESPACE, "locale");
 
+  public static final Key<Boolean> PRIVILEGED = Key.of(Boolean.class, DistributorPlugin.NAMESPACE, "privileged");
+
   private StandardKeys() {
   }
 }

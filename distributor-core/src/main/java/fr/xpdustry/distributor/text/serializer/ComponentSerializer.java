@@ -17,5 +17,5 @@ public interface ComponentSerializer<O> {
     return PlainTextComponentSerializer.INSTANCE;
   }
 
-  O serialize(final Component component, final MetadataProvider metadata);
+  O serialize(final Component component, final MetadataContainer metadata);
 }

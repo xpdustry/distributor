@@ -10,7 +10,7 @@ final class AdminPermissionChecker implements PermissionChecker {
   }
 
   @Override
-  public boolean test(final String uuid, final String permission) {
+  public boolean checkPermission(final String uuid, final String permission) {
     final var info = Vars.netServer.admins.getInfoOptional(uuid);
     return info != null && info.admin;
   }

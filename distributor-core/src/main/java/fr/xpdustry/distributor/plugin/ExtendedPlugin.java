@@ -12,7 +12,6 @@ import mindustry.server.*;
 public abstract class ExtendedPlugin extends Plugin {
 
   private final PluginDescriptor descriptor = PluginDescriptor.from(this);
-  private PluginSettings settings = PluginSettings.mindustry();
 
   {
     this.getDirectory().mkdirs();
@@ -34,14 +33,6 @@ public abstract class ExtendedPlugin extends Plugin {
   }
 
   public void onSharedCommandsRegistration(final CommandHandler handler) {
-  }
-
-  public final PluginSettings getSettings() {
-    return this.settings;
-  }
-
-  protected final void setSettings(final PluginSettings settings) {
-    this.settings = settings;
   }
 
   public File getDirectory() {

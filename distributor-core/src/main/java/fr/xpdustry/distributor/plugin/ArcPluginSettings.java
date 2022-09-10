@@ -1,7 +1,7 @@
 package fr.xpdustry.distributor.plugin;
 
 import arc.*;
-import fr.xpdustry.distributor.metadata.*;
+import io.leangen.geantyref.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -18,47 +18,77 @@ final class ArcPluginSettings implements PluginSettings {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <V> Optional<V> getValue(final Key<V> key) {
-    final Object value;
-    if (key.getValueType().getType() instanceof Class<?> clazz) {
-      value = settings.getJson(key.toString(), clazz, () -> null);
-    } else if (key.getValueType().getType() instanceof ParameterizedType parameterized) {
+  public <V> Optional<V> getValue(TypeToken<V> type, String key) {
+    if (type.getType() instanceof Class<?> clazz) {
+      return getValue((Class<V>) clazz, key);
+    } else if (type.getType() instanceof ParameterizedType parameterized) {
       final var clazz = getClassFromType(parameterized.getRawType());
-      if (!Collection.class.equals(clazz)) {
-        throw new IllegalArgumentException(clazz + " is not a collection.");
+      if (Collection.class.isAssignableFrom(clazz)) {
+        final var element = getClassFromType(parameterized.getActualTypeArguments()[0]);
+        return Optional.ofNullable((V) settings.getJson(key, clazz, element, () -> null));
+      } else {
+        return Optional.ofNullable((V) this.settings.getJson(key, clazz, () -> null));
       }
-      final var element = getClassFromType(parameterized.getActualTypeArguments()[0]);
-      value = settings.getJson(key.toString(), clazz, element, () -> null);
     } else {
-      throw new RuntimeException("Unexpected type: " + key.getValueType().getType().getClass());
-    }
-    return Optional.ofNullable((V) value);
-  }
-
-  @Override
-  public <V> boolean hasValue(final Key<V> key) {
-    return settings.has(key.toString());
-  }
-
-  @Override
-  public <V> void setValue(final Key<V> key, final V value) {
-    if (key.getValueType().getType() instanceof Class<?>) {
-      settings.putJson(key.toString(), value);
-    } else if (key.getValueType().getType() instanceof ParameterizedType parameterized) {
-      final var clazz = getClassFromType(parameterized.getRawType());
-      if (!Collection.class.isAssignableFrom(clazz)) {
-        throw new RuntimeException(clazz + " is not a collection.");
-      }
-      final var element = getClassFromType(parameterized.getActualTypeArguments()[0]);
-      settings.putJson(key.toString(), element, value);
-    } else {
-      throw new RuntimeException("Unexpected type: " + key.getValueType().getType().getClass());
+      throw new IllegalArgumentException("Unexpected type: " + type.getType().getClass());
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public <V> void deleteValue(final Key<V> key) {
-    settings.remove(key.toString());
+  public <V> Optional<V> getValue(Class<V> type, String key) {
+    if ((type.isPrimitive() && !type.isArray()) || type.equals(byte[].class)) {
+      return Optional.ofNullable((V) this.settings.get(key, null));
+    } else {
+      return Optional.ofNullable(this.settings.getJson(key, type, () -> null));
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <V> void setValue(TypeToken<V> type, String key, V value) {
+    if (type.getType() instanceof Class<?> clazz) {
+      setValue((Class<V>) clazz, key, value);
+    } else if (type.getType() instanceof ParameterizedType parameterized) {
+      final var clazz = getClassFromType(parameterized.getRawType());
+      if (Collection.class.isAssignableFrom(clazz)) {
+        final var element = getClassFromType(parameterized.getActualTypeArguments()[0]);
+        settings.putJson(key, element, value);
+      } else {
+        settings.putJson(key, value);
+      }
+    } else {
+      throw new IllegalArgumentException("Unexpected type: " + type.getType().getClass());
+    }
+  }
+
+  @Override
+  public <V> void setValue(Class<V> type, String key, V value) {
+    if ((type.isPrimitive() && !type.isArray()) || type.equals(byte[].class)) {
+      this.settings.put(key, value);
+    } else {
+      this.settings.putJson(key, value);
+    }
+  }
+
+  @Override
+  public boolean hasValue(String key) {
+    return this.settings.has(key);
+  }
+
+  @Override
+  public void deleteValue(String key) {
+    this.settings.remove(key);
+  }
+
+  @Override
+  public int getSize() {
+    return settings.keySize();
+  }
+
+  @Override
+  public Set<String> getKeys() {
+    return (Set<String>) settings.keys();
   }
 
   @Override

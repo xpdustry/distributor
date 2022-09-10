@@ -3,6 +3,7 @@ package fr.xpdustry.distributor.text;
 import fr.xpdustry.distributor.text.TextComponent.*;
 import fr.xpdustry.distributor.text.format.*;
 import fr.xpdustry.distributor.util.*;
+import org.jetbrains.annotations.*;
 
 public final class TextComponent extends Component implements Buildable<TextComponent, Builder> {
 
@@ -35,7 +36,7 @@ public final class TextComponent extends Component implements Buildable<TextComp
   }
 
   @Override
-  public Builder toBuilder() {
+  public @NotNull Builder toBuilder() {
     return new Builder().withStyle(getStyle()).withContent(content);
   }
 
@@ -56,7 +57,7 @@ public final class TextComponent extends Component implements Buildable<TextComp
     }
 
     @Override
-    public TextComponent build() {
+    public @NotNull TextComponent build() {
       return content.isEmpty() ? EMPTY : new TextComponent(content, getStyle());
     }
   }

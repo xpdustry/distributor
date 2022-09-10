@@ -1,5 +1,5 @@
 package fr.xpdustry.distributor.event;
 
 public enum EventPriority {
-  FIRST, LAST
+  LOWEST, LOW, NORMAL, HIGH, HIGHEST,
 }

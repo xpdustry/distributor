@@ -1,14 +1,18 @@
 package fr.xpdustry.distributor;
 
+import arc.*;
 import arc.util.*;
 import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.audience.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.plugin.*;
-import fr.xpdustry.distributor.translate.*;
+import fr.xpdustry.distributor.localization.*;
 import java.util.*;
+import mindustry.*;
+import mindustry.game.*;
+import mindustry.game.EventType.*;
+import mindustry.gen.*;
 
-@SuppressWarnings("NotNullFieldNotInitialized")
 public final class DistributorPlugin extends ExtendedPlugin {
 
   public static final String NAMESPACE = "xpdustry-distributor";

@@ -37,10 +37,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
 
-    val checker = "3.23.0"
-    compileOnly("org.checkerframework:checker-qual:$checker")
-    testCompileOnly("org.checkerframework:checker-qual:$checker")
-
     annotationProcessor("com.uber.nullaway:nullaway:0.9.4")
     errorprone("com.google.errorprone:error_prone_core:2.10.0")
 }
