@@ -1,10 +1,15 @@
 package fr.xpdustry.distributor.event;
 
-public interface EventSubscriber<E> {
+import java.lang.annotation.*;
 
-  void onEvent(final E event);
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface EventSubscriber {
 
-  default EventPriority getPriority() {
-    return EventPriority.NORMAL;
+  Priority priority() default Priority.NORMAL;
+
+  enum Priority {
+    LOWEST, LOW, NORMAL, HIGH, HIGHEST,
   }
 }

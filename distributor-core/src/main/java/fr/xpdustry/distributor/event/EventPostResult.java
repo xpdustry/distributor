@@ -7,20 +7,20 @@ public final class EventPostResult {
 
   private static final EventPostResult SUCCESS = new EventPostResult(Collections.emptyMap());
 
-  private final Map<EventSubscriber<?>, Throwable> exceptions;
+  private final Map<Object, List<Throwable>> exceptions;
 
   public static @NotNull EventPostResult success() {
     return SUCCESS;
   }
 
-  public static @NotNull EventPostResult failure(final @NotNull Map<EventSubscriber<?>, Throwable> exceptions) {
+  public static @NotNull EventPostResult failure(final @NotNull Map<Object, List<Throwable>> exceptions) {
     if (exceptions.isEmpty()) {
       throw new IllegalArgumentException("exceptions is empty");
     }
     return new EventPostResult(exceptions);
   }
 
-  private EventPostResult(final @NotNull Map<EventSubscriber<?>, Throwable> exceptions) {
+  private EventPostResult(final @NotNull Map<Object, List<Throwable>> exceptions) {
     this.exceptions = Map.copyOf(exceptions);
   }
 
@@ -33,7 +33,7 @@ public final class EventPostResult {
   }
 
   @Unmodifiable
-  public @NotNull Map<EventSubscriber<?>, Throwable> getExceptions() {
+  public @NotNull Map<Object, List<Throwable>> getExceptions() {
     return this.exceptions;
   }
 }

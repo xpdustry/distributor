@@ -8,7 +8,7 @@ public interface EventBus {
 
   EventPostResult post(final Object event);
 
-  <E> EventSubscription subscribe(final Class<E> event, final EventSubscriber<E> subscriber);
+  void register(final Object object);
 
-  EventSubscription subscribe(final Object object);
+  void unregister(final Object object);
 }
