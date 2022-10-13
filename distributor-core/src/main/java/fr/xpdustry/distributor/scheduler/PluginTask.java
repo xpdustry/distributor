@@ -1,18 +1,9 @@
 package fr.xpdustry.distributor.scheduler;
 
+import fr.xpdustry.distributor.plugin.*;
 import java.util.concurrent.*;
 
-public interface PluginTask {
+public interface PluginTask extends Future<Void>, PluginAware {
 
   boolean isAsync();
-
-  boolean isCompleted();
-
-  boolean isCancelled();
-
-  void cancel();
-
-  public static void main(String[] args) {
-    ScheduledFuture
-  }
 }

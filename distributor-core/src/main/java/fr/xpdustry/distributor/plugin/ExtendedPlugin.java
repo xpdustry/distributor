@@ -4,17 +4,29 @@ import arc.*;
 import arc.files.*;
 import arc.util.*;
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.Files;
+import java.util.*;
 import mindustry.*;
 import mindustry.mod.*;
-import mindustry.server.*;
+import org.jetbrains.annotations.*;
+import org.slf4j.*;
+import org.slf4j.helpers.*;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
 public abstract class ExtendedPlugin extends Plugin {
 
   private final PluginDescriptor descriptor = PluginDescriptor.from(this);
+  private final Path directory = Vars.modDirectory.child(getDescriptor().getName()).file().toPath();
+  private final Logger logger;
 
   {
-    this.getDirectory().mkdirs();
+    final var candidate = LoggerFactory.getLogger(descriptor.getDisplayName());
+    this.logger = candidate instanceof NOPLogger ? new PluginLogger(descriptor.getDisplayName()) : candidate;
+    try {
+      Files.createDirectories(directory);
+    } catch (final IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public void onInit() {
@@ -26,26 +38,31 @@ public abstract class ExtendedPlugin extends Plugin {
   public void onExit() {
   }
 
-  public void onServerCommandsRegistration(final CommandHandler handler) {
+  public void onServerCommandsRegistration(final @NotNull CommandHandler handler) {
   }
 
-  public void onClientCommandsRegistration(final CommandHandler handler) {
+  public void onClientCommandsRegistration(final @NotNull CommandHandler handler) {
   }
 
-  public void onSharedCommandsRegistration(final CommandHandler handler) {
+  public final @NotNull Path getDirectory() {
+    return this.directory;
   }
 
-  public File getDirectory() {
-    return Vars.dataDirectory.child("data/" + getDescriptor().getName()).file();
+  public final @NotNull PluginDescriptor getDescriptor() {
+    return this.descriptor;
   }
 
-  public final PluginDescriptor getDescriptor() {
-    return descriptor;
+  public final @NotNull Logger getLogger() {
+    return this.logger;
+  }
+
+  public @NotNull Map<String, Boolean> getPermissions() {
+    return Collections.emptyMap();
   }
 
   @Deprecated
   @Override
-  public void registerServerCommands(final CommandHandler handler) {
+  public void registerServerCommands(final @NotNull CommandHandler handler) {
     this.onInit();
     this.onServerCommandsRegistration(handler);
 
@@ -65,11 +82,8 @@ public abstract class ExtendedPlugin extends Plugin {
 
   @Deprecated
   @Override
-  public void registerClientCommands(final CommandHandler handler) {
+  public void registerClientCommands(final @NotNull CommandHandler handler) {
     this.onClientCommandsRegistration(handler);
-    final var control = (ServerControl) Core.app.getListeners().find(ServerControl.class::isInstance);
-    this.onSharedCommandsRegistration(control.handler);
-    this.onSharedCommandsRegistration(handler);
   }
 
   @Deprecated

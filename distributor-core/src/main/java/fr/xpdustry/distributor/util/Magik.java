@@ -12,20 +12,6 @@ public final class Magik {
       : PluginDescriptor.from(plugin).getName();
   }
 
-  public static <T> T[] removeElementFromArray(final T[] array, final int index) {
-    if (index < 0 || index >= array.length) {
-      throw new IllegalArgumentException("The index is out of bounds: " + index);
-    }
-    @SuppressWarnings("unchecked")
-    final var copy = (T[]) Array.newInstance(array.getClass().getComponentType(), array.length - 1);
-    for (int i = 0, j = 0; i < array.length; i++) {
-      if (i != index) {
-        copy[j++] = array[i];
-      }
-    }
-    return copy;
-  }
-
   private Magik() {
   }
 }

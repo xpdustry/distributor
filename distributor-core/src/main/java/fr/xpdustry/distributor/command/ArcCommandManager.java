@@ -7,17 +7,14 @@ import cloud.commandframework.arguments.parser.*;
 import cloud.commandframework.execution.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
-import cloud.commandframework.meta.CommandMeta.Key;
 import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.audience.*;
 import fr.xpdustry.distributor.command.argument.*;
 import fr.xpdustry.distributor.command.argument.TeamArgument.*;
+import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.command.specifier.*;
-import fr.xpdustry.distributor.metadata.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.util.*;
 import io.leangen.geantyref.*;
-import java.util.*;
 import java.util.function.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
@@ -28,48 +25,42 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
   /**
    * The owning plugin of the command.
    */
-  public static final Key<String> PLUGIN = Key.of(String.class, DistributorPlugin.NAMESPACE + ":plugin");
+  public static final CommandMeta.Key<String> PLUGIN = CommandMeta.Key.of(String.class, DistributorPlugin.NAMESPACE + ":plugin");
 
   private final Plugin plugin;
-  private final Function<C, Audience> senderToAudienceMapper;
-  private final Function<Audience, C> audienceToSenderMapper;
+  private final Function<C, CommandSender> nativeToSenderMapper;
+  private final Function<CommandSender, C> senderToNativeMapper;
 
-  public static ArcCommandManager<Audience> audience(final @NotNull Plugin plugin) {
+  public static ArcCommandManager<CommandSender> standard(final @NotNull Plugin plugin) {
     return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
   }
 
   public static ArcCommandManager<Player> player(final @NotNull Plugin plugin) {
-    return new ArcCommandManager<>(
-      plugin,
-      audience -> audience.getMetadata()
-        .getMetadata(StandardKeys.UUID)
-        .map(uuid -> Groups.player.find(p -> p.uuid().equals(uuid)))
-        .orElseThrow(),
-      player -> DistributorPlugin.getAudienceProvider()
-        .player(player)
-    );
+    return new ArcCommandManager<>(plugin, sender -> sender.getPlayer().orElseThrow(), CommandSender::player);
   }
 
   public ArcCommandManager(
     final @NotNull Plugin plugin,
-    final @NotNull Function<@NotNull Audience, @NotNull C> audienceToSenderMapper,
-    final @NotNull Function<@NotNull C, @NotNull Audience> senderToAudienceMapper
+    final @NotNull Function<@NotNull CommandSender, @NotNull C> senderToNativeMapper,
+    final @NotNull Function<@NotNull C, @NotNull CommandSender> nativeToSenderMapper
   ) {
     super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
     registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
     captionRegistry((caption, sender) -> {
-      final var locale = ArcCommandManager.this.getSenderToAudienceMapper()
-        .apply(sender)
-        .getMetadata()
-        .getMetadata(StandardKeys.LOCALE)
-        .orElseGet(Locale::getDefault);
-      final var translation = DistributorPlugin
-        .getGlobalTranslator()
-        .translate(caption.getKey(), locale);
-      return translation != null
-        ? translation
-        : "???" + caption.getKey() + "???";
+      final var source = DistributorPlugin.getGlobalLocalizationSource();
+      final var locale = getNativeToSenderMapper().apply(sender).getLocale();
+      final var translation = source.localize(caption.getKey(), locale);
+      return translation != null ? translation : "???" + caption.getKey() + "???";
     });
+
+    this.plugin = plugin;
+    this.senderToNativeMapper = senderToNativeMapper;
+    this.nativeToSenderMapper = nativeToSenderMapper;
+
+    this.parameterInjectorRegistry().registerInjector(
+      Plugin.class,
+      (ctx, annotation) -> ArcCommandManager.this.plugin
+    );
 
     this.parserRegistry().registerAnnotationMapper(
       AllTeams.class,
@@ -85,10 +76,6 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
       TypeToken.get(TeamArgument.TeamParser.class),
       params -> new TeamArgument.TeamParser<>(params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE))
     );
-
-    this.plugin = plugin;
-    this.audienceToSenderMapper = audienceToSenderMapper;
-    this.senderToAudienceMapper = senderToAudienceMapper;
   }
 
   public final void initialize(final @NotNull CommandHandler handler) {
@@ -96,12 +83,12 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
   }
 
-  public final @NotNull Function<Audience, C> getAudienceToSenderMapper() {
-    return audienceToSenderMapper;
+  public final @NotNull Function<CommandSender, C> getSenderToNativeMapper() {
+    return senderToNativeMapper;
   }
 
-  public final @NotNull Function<C, Audience> getSenderToAudienceMapper() {
-    return senderToAudienceMapper;
+  public final @NotNull Function<C, CommandSender> getNativeToSenderMapper() {
+    return nativeToSenderMapper;
   }
 
   public @NotNull AnnotationParser<C> createAnnotationParser(final @NotNull TypeToken<C> senderType) {
@@ -114,7 +101,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     });
   }
 
-  public @NotNull AnnotationParser<C> createAnnotationParser(final @NotNull Class<C> senderClass) {
+  public final @NotNull AnnotationParser<C> createAnnotationParser(final @NotNull Class<C> senderClass) {
     return createAnnotationParser(TypeToken.get(senderClass));
   }
 
@@ -123,19 +110,16 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     if (permission.isEmpty()) {
       return true;
     }
-    final var metadata = senderToAudienceMapper.apply(sender).getMetadata();
-    if (metadata.getMetadata(StandardKeys.PRIVILEGED).orElse(false)) {
-      return true;
-    } else {
-      return metadata.getMetadata(StandardKeys.UUID)
-        .map(uuid -> DistributorPlugin.getPermissionManager().checkPermission(uuid, permission))
-        .orElse(false);
-    }
+    return nativeToSenderMapper.apply(sender)
+      .getPlayer().map(p -> DistributorPlugin.getPermissionProvider().hasPermission(p.uuid(), permission))
+      .orElse(true);
   }
 
   @Override
   public @NotNull CommandMeta createDefaultCommandMeta() {
-    return CommandMeta.simple().with(PLUGIN, Magik.getPluginNamespace(plugin)).build();
+    return CommandMeta.simple()
+      .with(PLUGIN, Magik.getPluginNamespace(plugin))
+      .build();
   }
 
   @Override

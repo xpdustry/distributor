@@ -12,7 +12,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
   private static final long serialVersionUID = 1261308433311045675L;
 
   private final ObjectMap<K, V> map;
-  private transient @UnknownNullability EntrySet entries = null;
+  private transient @Nullable EntrySet entries = null;
 
   public ArcMap(final ObjectMap<K, V> map) {
     this.map = map;

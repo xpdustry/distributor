@@ -36,10 +36,10 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         run: ./gradlew publish
         env:
-          ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_REPO_USERNAME }}"
-          ORG_GRADLE_PROJECT_xpdustryPassword: "${{ secrets.XPDUSTRY_REPO_PASSWORD }}"
-          ORG_GRADLE_PROJECT_signingKey: "${{ secrets.XPDUSTRY_SIGNING_KEY }}"
-          ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.XPDUSTRY_SIGNING_PASSWORD }}"
+          ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_MAVEN_USERNAME }}"
+          ORG_GRADLE_PROJECT_xpdustryPassword: "${{ secrets.XPDUSTRY_MAVEN_PASSWORD }}"
+          ORG_GRADLE_PROJECT_signingKey: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_KEY }}"
+          ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_PASSWORD }}"
 
       - name: Determine Status
         run: |

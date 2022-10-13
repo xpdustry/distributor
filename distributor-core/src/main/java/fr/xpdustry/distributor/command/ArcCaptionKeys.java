@@ -60,8 +60,7 @@ public final class ArcCaptionKeys {
   /**
    * Returns an unmodifiable view of all the captions used in the {@link ArcCommandManager}.
    */
-  @UnmodifiableView
-  public static @NotNull Collection<Caption> getCaptionKeys() {
+  public static @UnmodifiableView @NotNull Collection<Caption> getCaptionKeys() {
     return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);
   }
 }

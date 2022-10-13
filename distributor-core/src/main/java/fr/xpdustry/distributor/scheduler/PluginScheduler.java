@@ -1,13 +1,27 @@
 package fr.xpdustry.distributor.scheduler;
 
 import cloud.commandframework.tasks.*;
-import fr.xpdustry.distributor.plugin.*;
+import mindustry.mod.*;
 
-public interface PluginScheduler extends PluginAware {
+public interface PluginScheduler {
 
-  PluginTaskBuilder schedule();
+  PluginTask syncTask(final Plugin plugin, final Runnable runnable);
 
-  TaskSynchronizer asTaskSynchronizer();
+  PluginTask syncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
 
-  void shutdown(boolean now);
+  PluginTask syncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
+
+  PluginTask syncRepeatingDelayedTask(final Plugin plugin, final Runnable runnable, final int delay, final int period);
+
+  PluginTask asyncTask(final Plugin plugin, final Runnable runnable);
+
+  PluginTask asyncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
+
+  PluginTask asyncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
+
+  PluginTask asyncRepeatingDelayedTask(final Plugin plugin, final Runnable runnable, final int delay, final int period);
+
+  TaskSynchronizer getTaskSynchronizer(final Plugin plugin);
+
+  void shutdown();
 }

@@ -1,14 +1,16 @@
 package fr.xpdustry.distributor.event;
 
+import org.jetbrains.annotations.*;
+
 public interface EventBus {
 
-  static EventBus mindustry() {
+  static @NotNull EventBus mindustry() {
     return ArcEventBus.INSTANCE;
   }
 
-  EventPostResult post(final Object event);
+  void post(final @NotNull Object event);
 
-  void register(final Object object);
+  void register(final @NotNull Object object);
 
-  void unregister(final Object object);
+  void unregister(final @NotNull Object object);
 }

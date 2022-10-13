@@ -3,21 +3,21 @@ package fr.xpdustry.distributor.event;
 import arc.*;
 import arc.func.*;
 import arc.struct.*;
-import fr.xpdustry.distributor.event.EventSubscriber.*;
 import java.lang.reflect.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 final class ArcEventBus implements EventBus {
 
   static final ArcEventBus INSTANCE = new ArcEventBus();
 
   private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
-    final var priorityA = a instanceof MethodEventSubscriber<?> m ? m.priority : Priority.NORMAL;
-    final var priorityB = b instanceof MethodEventSubscriber<?> m ? m.priority : Priority.NORMAL;
+    final var priorityA = a instanceof MethodEventHandler<?> m ? m.priority : EventPriority.NORMAL;
+    final var priorityB = b instanceof MethodEventHandler<?> m ? m.priority : EventPriority.NORMAL;
     return priorityA.compareTo(priorityB);
   };
 
-  private final Set<Object> objects = new HashSet<>();
+  private final Map<Object, List<MethodEventHandler<?>>> listeners = new HashMap<>();
   private final ObjectMap<Class<?>, Seq<Cons<?>>> events;
 
   @SuppressWarnings("unchecked")
@@ -33,35 +33,24 @@ final class ArcEventBus implements EventBus {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public EventPostResult post(final Object event) {
-    Map<Object, List<Throwable>> exceptions = null;
-
-    final var subscribers = events.get(event.getClass());
-    if (subscribers != null) {
-      for(final Cons subscriber : subscribers.copy().sort(COMPARATOR)) {
-        try {
-          subscriber.get(event);
-        } catch (final Throwable e) {
-          if (exceptions == null) {
-            exceptions = new HashMap<>();
-          }
-          final var key = subscriber instanceof MethodEventSubscriber<?> m ? m.target : subscriber;
-          exceptions.computeIfAbsent(key, k -> new ArrayList<>()).add(e);
-        }
+  public void post(final @NotNull Object event) {
+    final var handlers = events.get(event.getClass());
+    if (handlers != null) {
+      for (final Cons subscriber : handlers.copy().sort(COMPARATOR)) {
+        subscriber.get(event);
       }
     }
-
-    return exceptions == null ? EventPostResult.success() : EventPostResult.failure(exceptions);
   }
 
   @Override
-  public void register(final Object object) {
-    if (!objects.add(object)) {
+  public void register(final @NotNull Object object) {
+    if (listeners.containsKey(object)) {
       return;
     }
 
+    final var handlers = new ArrayList<MethodEventHandler<?>>();
     for (final var method : object.getClass().getDeclaredMethods()) {
-      final var annotation = method.getAnnotation(EventSubscriber.class);
+      final var annotation = method.getAnnotation(EventHandler.class);
       if (annotation == null) {
         continue;
       } else if (method.getParameterCount() != 1) {
@@ -70,57 +59,51 @@ final class ArcEventBus implements EventBus {
         throw new RuntimeException("Unable to make " + method + " accessible.");
       }
 
-      final var event = method.getParameterTypes()[0];
-      final var subscriber = new MethodEventSubscriber<>(object, method, annotation.priority());
-      if (subscriber.priority.ordinal() <= Priority.NORMAL.ordinal()) {
-        events.get(event, () -> new Seq<>(Cons.class)).add(subscriber);
-      } else {
-        events.get(event, () -> new Seq<>(Cons.class)).insert(0, subscriber);
-      }
+      final var handler = new MethodEventHandler<>(object, method, annotation.priority());
+      events.get(handler.getEventType(), () -> new Seq<>(Cons.class)).add(handler).sort(COMPARATOR);
+      handlers.add(handler);
     }
+
+    listeners.put(object, handlers);
   }
 
   @Override
-  public void unregister(final Object object) {
-    if (!objects.remove(object)) {
-      return;
-    }
-
-    final var entries = events.iterator();
-    while (entries.hasNext()) {
-      final var entry = entries.next();
-      final var subscribers = entry.value.iterator();
-      while (subscribers.hasNext()) {
-        final var subscriber = subscribers.next();
-        if (subscriber instanceof MethodEventSubscriber<?> m && m.target == object) {
-          subscribers.remove();
+  public void unregister(final @NotNull Object object) {
+    final var handlers = listeners.remove(object);
+    if (handlers != null) {
+      for (final var subscriber : handlers) {
+        final var listeners = events.get(subscriber.getEventType());
+        if (listeners != null && listeners.remove(subscriber) && listeners.size == 0) {
+          events.remove(subscriber.getEventType());
         }
-      }
-      if (entry.value.isEmpty()) {
-        entries.remove();
       }
     }
   }
 
-  private static final class MethodEventSubscriber<T> implements Cons<T> {
+  private static final class MethodEventHandler<E> implements Cons<E> {
 
     private final Object target;
     private final Method method;
-    private final EventSubscriber.Priority priority;
+    private final EventPriority priority;
 
-    private MethodEventSubscriber(final Object target, final Method method, final Priority priority) {
+    private MethodEventHandler(final @NotNull Object target, final @NotNull Method method, final @NotNull EventPriority priority) {
       this.target = target;
       this.method = method;
       this.priority = priority;
     }
 
     @Override
-    public void get(final T event) {
+    public void get(final @NotNull E event) {
       try {
         this.method.invoke(event);
       } catch (final ReflectiveOperationException e) {
-        throw new RuntimeException("Failed to call " + this.method + " on " + this.target, e);
+        throw new RuntimeException("Failed to call " + method + " on " + target, e);
       }
+    }
+
+    @SuppressWarnings("unchecked")
+    public @NotNull Class<E> getEventType() {
+      return (Class<E>) method.getParameterTypes()[0];
     }
   }
 }

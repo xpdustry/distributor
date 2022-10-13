@@ -13,9 +13,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import mindustry.gen.*;
-import org.checkerframework.checker.nullness.qual.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A command argument for an online {@link Player}.
@@ -122,7 +121,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
 
     @Override
-    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
+    public @NotNull List<@NotNull String> suggestions(@NotNull CommandContext<C> commandContext, @NotNull String input) {
       return findPlayer(input).stream().map(Player::plainName).toList();
     }
 

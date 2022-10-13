@@ -5,16 +5,9 @@ import arc.util.*;
 import cloud.commandframework.*;
 import cloud.commandframework.CommandManager.*;
 import cloud.commandframework.arguments.*;
-import cloud.commandframework.captions.*;
-import cloud.commandframework.exceptions.*;
-import cloud.commandframework.exceptions.parsing.*;
 import cloud.commandframework.internal.*;
 import cloud.commandframework.meta.*;
-import fr.xpdustry.distributor.*;
-import fr.xpdustry.distributor.text.*;
 import java.lang.reflect.*;
-import mindustry.gen.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * This class acts as a bridge between the {@link ArcCommandManager} and the
