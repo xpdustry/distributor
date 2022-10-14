@@ -32,6 +32,8 @@ repositories {
 }
 
 dependencies {
+    compileOnly("org.jetbrains:annotations:23.0.0")
+
     val junit = "5.8.2"
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
@@ -48,7 +50,13 @@ tasks.test {
 tasks.withType<JavaCompile> {
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
-        disable("MissingSummary", "BadImport", "FutureReturnValueIgnored", "InlineMeSuggester")
+        disable(
+            "MissingSummary",
+            "BadImport",
+            "FutureReturnValueIgnored",
+            "InlineMeSuggester",
+            "EmptyCatch"
+        )
         if (!name.contains("test", true)) {
             check("NullAway", CheckSeverity.ERROR)
             option("NullAway:AnnotatedPackages", "fr.xpdustry.distributor")

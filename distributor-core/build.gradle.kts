@@ -25,5 +25,4 @@ dependencies {
         exclude("org.checkerframework", "checker-qual")
     }
     annotationProcessor("cloud.commandframework:cloud-annotations:$cloud")
-    compileOnly("org.jetbrains:annotations:23.0.0")
 }

@@ -1,37 +1,67 @@
-package fr.xpdustry.distributor.plugin;
+package fr.xpdustry.distributor.logging;
 
 import arc.util.*;
+import fr.xpdustry.distributor.plugin.*;
 import java.io.*;
+import mindustry.mod.*;
 import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 import org.slf4j.event.*;
 import org.slf4j.helpers.*;
 
-final class PluginLogger extends AbstractLogger {
+public class ArcLogger extends AbstractLogger {
 
   @Serial
   private static final long serialVersionUID = 3476499937056865545L;
 
-  PluginLogger(final @NotNull String name) {
-    this.name = name;
+  private final @Nullable Class<?> clazz;
+  private final Type type;
+
+  @SuppressWarnings("unchecked")
+  ArcLogger(final @NotNull String name) {
+    Class<?> clazz = null;
+    try {
+      clazz = Class.forName(name);
+    } catch (final ClassNotFoundException ignored) {
+    }
+
+    this.clazz = clazz;
+
+    if (clazz != null) {
+      if (Plugin.class.isAssignableFrom(clazz)) {
+        this.name = PluginDescriptor.from((Class<? extends Plugin>) clazz).getDisplayName();
+        this.type = Type.PLUGIN;
+      } else {
+        this.name = clazz.getSimpleName();
+        this.type = Type.CLASS;
+      }
+    } else {
+      this.name = name;
+      this.type = Type.NAMED;
+    }
   }
 
   @Override
   protected @Nullable String getFullyQualifiedCallerName() {
-    return null;
+    return clazz != null ? name : null;
   }
 
   @Override
   protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
     final var builder = new StringBuilder();
-    if (marker == null || !marker.contains("NO_PLUGIN_NAME")) {
+    if (marker == null || (type == Type.PLUGIN && !marker.contains("NO_PLUGIN_NAME"))) {
+      final var color = switch (type) {
+        case NAMED -> ColorCodes.white;
+        case CLASS -> ColorCodes.green;
+        case PLUGIN -> ColorCodes.cyan;
+      };
       builder
-        .append(ColorCodes.cyan)
+        .append(color)
         .append('[')
         .append(ColorCodes.white)
         .append(name)
-        .append(ColorCodes.cyan)
+        .append(color)
         .append(']')
         .append(ColorCodes.reset)
         .append(' ');
@@ -109,4 +139,9 @@ final class PluginLogger extends AbstractLogger {
       case ERROR -> Log.LogLevel.err;
     };
   }
+
+  private enum Type {
+    NAMED, CLASS, PLUGIN
+  }
 }
+

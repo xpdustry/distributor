@@ -1,6 +1,5 @@
 package fr.xpdustry.distributor;
 
-import fr.xpdustry.distributor.internal.*;
 import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.localization.*;
@@ -15,8 +14,6 @@ import org.slf4j.*;
 
 @SuppressWarnings("NullAway.Init")
 public final class DistributorPlugin extends ExtendedPlugin {
-
-  public static final String NAMESPACE = "xpdustry-distributor";
 
   private static OwnerDistributorConfig config;
   private static final MultiLocalizationSource source = new MultiLocalizationSource();
@@ -50,7 +47,7 @@ public final class DistributorPlugin extends ExtendedPlugin {
 
   @Override
   public void onInit() {
-    // Display our cool ass banner
+    // Display the cool ass banner
     try (
       final var input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("banner.txt"));
       final var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))

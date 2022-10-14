@@ -1,0 +1,13 @@
+{
+  "name": "xpdustry-distributor-logging",
+  "displayName": "DistributorLogging",
+  "main": "fr.xpdustry.distributor.logging.DistributorLoggingPlugin",
+  "author": "Xpdustry",
+  "minGameVersion": "137",
+  "hidden": true,
+  "java": true,
+  "repo": "Xpdustry/Distributor",
+  "dependencies": [
+    "xpdustry-distributor-core"
+  ]
+}

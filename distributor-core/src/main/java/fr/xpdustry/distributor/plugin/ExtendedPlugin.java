@@ -6,22 +6,19 @@ import arc.util.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.Files;
-import java.util.*;
 import mindustry.*;
 import mindustry.mod.*;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
-import org.slf4j.helpers.*;
 
 public abstract class ExtendedPlugin extends Plugin {
 
   private final PluginDescriptor descriptor = PluginDescriptor.from(this);
   private final Path directory = Vars.modDirectory.child(getDescriptor().getName()).file().toPath();
-  private final Logger logger;
+  @SuppressWarnings("NullAway.Init")
+  private Logger logger;
 
   {
-    final var candidate = LoggerFactory.getLogger(descriptor.getDisplayName());
-    this.logger = candidate instanceof NOPLogger ? new PluginLogger(descriptor.getDisplayName()) : candidate;
     try {
       Files.createDirectories(directory);
     } catch (final IOException e) {
@@ -56,13 +53,10 @@ public abstract class ExtendedPlugin extends Plugin {
     return this.logger;
   }
 
-  public @NotNull Map<String, Boolean> getPermissions() {
-    return Collections.emptyMap();
-  }
-
   @Deprecated
   @Override
   public void registerServerCommands(final @NotNull CommandHandler handler) {
+    this.logger = LoggerFactory.getLogger(getClass());
     this.onInit();
     this.onServerCommandsRegistration(handler);
 

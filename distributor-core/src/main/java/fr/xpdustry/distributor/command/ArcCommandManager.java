@@ -25,7 +25,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
   /**
    * The owning plugin of the command.
    */
-  public static final CommandMeta.Key<String> PLUGIN = CommandMeta.Key.of(String.class, DistributorPlugin.NAMESPACE + ":plugin");
+  public static final CommandMeta.Key<String> PLUGIN = CommandMeta.Key.of(String.class, "xpdustry-distributor-core:plugin");
 
   private final Plugin plugin;
   private final Function<C, CommandSender> nativeToSenderMapper;

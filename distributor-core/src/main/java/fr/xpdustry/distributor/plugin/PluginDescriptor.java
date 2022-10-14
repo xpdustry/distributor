@@ -36,9 +36,13 @@ public final class PluginDescriptor {
   }
 
   public static PluginDescriptor from(final Plugin plugin) {
-    var resource = plugin.getClass().getClassLoader().getResourceAsStream("plugin.json");
+    return from(plugin.getClass());
+  }
+
+  public static PluginDescriptor from(final Class<? extends Plugin> clazz) {
+    var resource = clazz.getClassLoader().getResourceAsStream("plugin.json");
     if (resource == null) {
-      resource = plugin.getClass().getClassLoader().getResourceAsStream("plugin.hjson");
+      resource = clazz.getClassLoader().getResourceAsStream("plugin.hjson");
       if (resource == null) {
         throw new IllegalStateException("Missing plugin descriptor.");
       }
