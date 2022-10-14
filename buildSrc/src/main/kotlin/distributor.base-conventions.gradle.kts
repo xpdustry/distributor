@@ -4,24 +4,10 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     id("net.kyori.indra")
     id("net.kyori.indra.checkstyle")
-    // id("net.kyori.indra.license-header")
+    id("com.diffplug.spotless")
+    id("net.kyori.indra.licenser.spotless")
     id("net.ltgt.errorprone")
 }
-
-indra {
-    checkstyle("9.3")
-
-    javaVersions {
-        target(17)
-        minimumToolchain(17)
-    }
-}
-
-/*
-license {
-    header(rootProject.file("LICENSE_HEADER.md"))
-}
- */
 
 repositories {
     mavenCentral()
@@ -41,6 +27,25 @@ dependencies {
 
     annotationProcessor("com.uber.nullaway:nullaway:0.9.4")
     errorprone("com.google.errorprone:error_prone_core:2.10.0")
+}
+
+indra {
+    checkstyle("9.3")
+
+    javaVersions {
+        target(17)
+        minimumToolchain(17)
+    }
+}
+
+indraSpotlessLicenser {
+    licenseHeaderFile(rootProject.file("LICENSE_HEADER.md"))
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
 }
 
 tasks.test {
@@ -63,3 +68,6 @@ tasks.withType<JavaCompile> {
         }
     }
 }
+
+// Gradle provider issues with Indra
+tasks.compileJava.get().sourceCompatibility = "17"

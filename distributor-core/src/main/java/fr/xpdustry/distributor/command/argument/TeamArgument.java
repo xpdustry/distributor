@@ -1,3 +1,21 @@
+/*
+ * Distributor, a feature-rich framework for Mindustry plugins.
+ *
+ * Copyright (C) 2022 Xpdustry
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package fr.xpdustry.distributor.command.argument;
 
 import cloud.commandframework.*;
@@ -18,14 +36,20 @@ import org.jetbrains.annotations.*;
 public final class TeamArgument<C> extends CommandArgument<C, Team> {
 
   private TeamArgument(
-    final boolean required,
-    final String name,
-    final String defaultValue,
-    final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
-    final ArgumentDescription defaultDescription,
-    final TeamMode teamMode
-  ) {
-    super(required, name, new TeamParser<>(teamMode), defaultValue, Team.class, suggestionsProvider, defaultDescription);
+      final boolean required,
+      final String name,
+      final String defaultValue,
+      final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
+      final ArgumentDescription defaultDescription,
+      final TeamMode teamMode) {
+    super(
+        required,
+        name,
+        new TeamParser<>(teamMode),
+        defaultValue,
+        Team.class,
+        suggestionsProvider,
+        defaultDescription);
   }
 
   public static <C> TeamArgument.Builder<C> newBuilder(final String name) {
@@ -69,13 +93,12 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     @Override
     public @NotNull TeamArgument<C> build() {
       return new TeamArgument<>(
-        this.isRequired(),
-        this.getName(),
-        this.getDefaultValue(),
-        this.getSuggestionsProvider(),
-        this.getDefaultDescription(),
-        teamMode
-      );
+          this.isRequired(),
+          this.getName(),
+          this.getDefaultValue(),
+          this.getSuggestionsProvider(),
+          this.getDefaultDescription(),
+          teamMode);
     }
   }
 
@@ -86,11 +109,17 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
    */
   public static final class TeamParser<C> implements ArgumentParser<C, Team> {
 
-    private static final Map<String, Team> BASE_TEAMS = Arrays.stream(Team.baseTeams)
-      .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
+    private static final Map<String, Team> BASE_TEAMS =
+        Arrays.stream(Team.baseTeams)
+            .collect(
+                Collectors.toUnmodifiableMap(
+                    t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
 
-    private static final Map<String, Team> ALL_TEAMS = Arrays.stream(Team.all)
-      .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
+    private static final Map<String, Team> ALL_TEAMS =
+        Arrays.stream(Team.all)
+            .collect(
+                Collectors.toUnmodifiableMap(
+                    t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
 
     private final TeamMode teamMode;
 
@@ -99,10 +128,12 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
 
     @Override
-    public @NotNull ArgumentParseResult<Team> parse(final @NotNull CommandContext<C> ctx, final @NotNull Queue<String> inputQueue) {
+    public @NotNull ArgumentParseResult<Team> parse(
+        final @NotNull CommandContext<C> ctx, final @NotNull Queue<String> inputQueue) {
       final var input = inputQueue.peek();
       if (input == null) {
-        return ArgumentParseResult.failure(new NoInputProvidedException(TeamArgument.TeamParser.class, ctx));
+        return ArgumentParseResult.failure(
+            new NoInputProvidedException(TeamArgument.TeamParser.class, ctx));
       }
 
       final var name = input.toLowerCase(Locale.ROOT);
@@ -115,7 +146,8 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
 
     @Override
-    public @NotNull List<String> suggestions(final @NotNull CommandContext<C> ctx, final @NotNull String input) {
+    public @NotNull List<String> suggestions(
+        final @NotNull CommandContext<C> ctx, final @NotNull String input) {
       final var name = input.toLowerCase(Locale.ROOT);
       return getTeamIndex().keySet().stream().filter(t -> t.startsWith(name)).sorted().toList();
     }
@@ -131,24 +163,25 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
   }
 
   public enum TeamMode {
-    BASE, ALL
+    BASE,
+    ALL
   }
 
   public static final class TeamParseException extends ParserException {
 
-    @Serial
-    private static final long serialVersionUID = -2213430000642727576L;
+    @Serial private static final long serialVersionUID = -2213430000642727576L;
 
     private final String input;
     private final TeamMode teamMode;
 
-    public TeamParseException(final String input, final CommandContext<?> ctx, final TeamMode teamMode) {
+    public TeamParseException(
+        final String input, final CommandContext<?> ctx, final TeamMode teamMode) {
       super(
-        PlayerArgument.PlayerParser.class,
-        ctx,
-        ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
-        CaptionVariable.of("input", input), CaptionVariable.of("teamMode", teamMode.name())
-      );
+          PlayerArgument.PlayerParser.class,
+          ctx,
+          ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
+          CaptionVariable.of("input", input),
+          CaptionVariable.of("teamMode", teamMode.name()));
       this.input = input;
       this.teamMode = teamMode;
     }
