@@ -21,14 +21,19 @@ package fr.xpdustry.distributor.scheduler;
 import arc.*;
 import arc.util.*;
 import cloud.commandframework.tasks.*;
+import fr.xpdustry.distributor.util.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import mindustry.mod.*;
 import org.jetbrains.annotations.*;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus.*;
+import org.slf4j.*;
 
-public final class SimplePluginScheduler implements PluginScheduler {
+@Internal
+public final class SimplePluginScheduler implements PluginScheduler, ApplicationListener {
+
+  private static final Logger logger = LoggerFactory.getLogger(SimplePluginScheduler.class);
 
   private final ExecutorService executor;
   private final AtomicInteger idGenerator = new AtomicInteger();
@@ -40,13 +45,7 @@ public final class SimplePluginScheduler implements PluginScheduler {
       thread.setName("PluginSchedulerWorker - " + idGenerator.incrementAndGet());
       return thread;
     });
-    Core.app.addListener(new ApplicationListener() {
-
-      @Override
-      public void update() {
-        SimplePluginScheduler.this.update();
-      }
-    });
+    Core.app.addListener(this);
   }
 
   @Override
@@ -94,18 +93,8 @@ public final class SimplePluginScheduler implements PluginScheduler {
     return new SimplePluginTaskSynchronizer(this, plugin);
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Override
-  public void shutdown() {
-    this.executor.shutdown();
-    try {
-      this.executor.awaitTermination(15L, TimeUnit.SECONDS);
-    } catch (final InterruptedException e) {
-      this.executor.shutdownNow();
-    }
-  }
-
-  private void update() {
+  public void update() {
     final var time = Time.globalTime;
     while (!tasks.isEmpty()) {
       final var task = tasks.peek();
@@ -113,15 +102,17 @@ public final class SimplePluginScheduler implements PluginScheduler {
         tasks.remove();
       } else if (task.nextRun < time) {
         tasks.remove();
-        if (task.future == null || task.future.isDone()) {
-          task.future = CompletableFuture.runAsync(task.runnable, task.async ? this.executor : Core.app::post);
-          task.latch.countDown();
+        if (!task.isDone()) {
+          final Executor executor = task.async ? this.executor : Core.app::post;
+          if (task.period != 1) {
+            executor.execute(task::runAndReset);
+          } else {
+            executor.execute(task);
+          }
         }
         if (task.period != -1) {
           task.nextRun = time + task.period;
           tasks.add(task);
-        } else {
-          task.future.complete(null);
         }
       } else {
         break;
@@ -129,36 +120,53 @@ public final class SimplePluginScheduler implements PluginScheduler {
     }
   }
 
+  @Override
+  public void dispose() {
+    logger.info("Shutdown plugin scheduler.");
+    executor.shutdown();
+    try {
+      if (!executor.awaitTermination(15, TimeUnit.SECONDS)) {
+        executor.shutdownNow();
+        if (!executor.awaitTermination(15, TimeUnit.SECONDS)) {
+          logger.error("Failed to properly shutdown the plugin scheduler.");
+        }
+      }
+    } catch (final InterruptedException ignored) {
+      logger.warn("The plugin scheduler shutdown have been interrupted.");
+    }
+  }
+
   private SimplePluginTask schedule(final Plugin plugin, final boolean async, final Runnable runnable, final int delay, final int period) {
-    final var future = new SimplePluginTask(plugin, async, period, runnable);
+    final var future = new SimplePluginTask(runnable, plugin, async, period);
     future.nextRun = Time.globalTime + delay;
     tasks.add(future);
+    logger.trace("A task has been scheduled by {} (async={}, delay={}, period={})", Magik.getDescriptor(plugin).getDisplayName(), async, delay, period);
     return future;
   }
 
-  private static final class SimplePluginTask implements PluginTask, Comparable<SimplePluginTask> {
+  private static final class SimplePluginTask extends FutureTask<Void> implements PluginTask, Comparable<SimplePluginTask> {
 
     private final Plugin plugin;
     private final boolean async;
     private final int period;
-    private final Runnable runnable;
-
     private float nextRun;
-    @SuppressWarnings("NullAway")
-    private @UnknownNullability CompletableFuture<Void> future = null;
-    private boolean cancelled = false;
-    private final CountDownLatch latch = new CountDownLatch(1);
 
-    private SimplePluginTask(final Plugin plugin, boolean async, int period, Runnable runnable) {
+    private SimplePluginTask(final @NotNull Runnable runnable, final Plugin plugin, boolean async, int period) {
+      super(runnable, null);
       this.plugin = plugin;
       this.async = async;
       this.period = period;
-      this.runnable = runnable;
     }
 
     @Override
-    public boolean isAsync() {
-      return async;
+    public boolean runAndReset() {
+      return super.runAndReset();
+    }
+
+    @Override
+    protected void setException(Throwable t) {
+      super.setException(t);
+      logger.error("An error occurred in a scheduled task of " + Magik.getDescriptor(plugin).getDisplayName(), t);
     }
 
     @Override
@@ -167,38 +175,12 @@ public final class SimplePluginScheduler implements PluginScheduler {
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-      this.cancelled = true;
-      if (future != null) {
-        return future.cancel(true);
-      }
-      return true;
+    public boolean isAsync() {
+      return async;
     }
 
     @Override
-    public boolean isCancelled() {
-      return cancelled;
-    }
-
-    @Override
-    public boolean isDone() {
-      return period != -1 && future != null && future.isDone();
-    }
-
-    @Override
-    public Void get() throws InterruptedException, ExecutionException {
-      latch.await();
-      return future.get();
-    }
-
-    @Override
-    public Void get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-      latch.await();
-      return future.get(timeout, unit);
-    }
-
-    @Override
-    public int compareTo(final SimplePluginTask o) {
+    public int compareTo(final @NotNull SimplePluginTask o) {
       return Float.compare(this.nextRun, o.nextRun);
     }
   }

@@ -27,7 +27,8 @@ final class ConsoleCommandSender implements CommandSender {
 
   static final ConsoleCommandSender INSTANCE = new ConsoleCommandSender();
 
-  private ConsoleCommandSender() {}
+  private ConsoleCommandSender() {
+  }
 
   @Override
   public void sendMessage(final @NotNull String content) {
@@ -45,7 +46,17 @@ final class ConsoleCommandSender implements CommandSender {
   }
 
   @Override
-  public @NotNull Optional<Player> getPlayer() {
-    return Optional.empty();
+  public @NotNull Player getPlayer() {
+    throw new UnsupportedOperationException("This sender is not a player.");
+  }
+
+  @Override
+  public boolean isPlayer() {
+    return false;
+  }
+
+  @Override
+  public boolean isConsole() {
+    return true;
   }
 }

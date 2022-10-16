@@ -9,5 +9,8 @@ dependencies {
 }
 
 tasks.runMindustryServer {
-    mods.from(project(":distributor-core").tasks.named("shadowJar"), tasks.shadowJar)
+    mods.from(
+        project(":distributor-core").tasks.named("shadowJar"),
+        tasks.shadowJar
+    )
 }

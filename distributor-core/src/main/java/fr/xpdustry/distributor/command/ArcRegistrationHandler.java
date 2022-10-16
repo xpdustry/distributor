@@ -85,11 +85,9 @@ public final class ArcRegistrationHandler<C> implements CommandRegistrationHandl
   @Override
   public void unregisterRootCommand(final StaticArgument<?> root) {
     root.getAliases().stream()
-        .map(commands::get)
-        .filter(
-            command ->
-                command instanceof CloudCommand<?> cloud && cloud.getManager() == this.manager)
-        .map(c -> c.text)
-        .forEach(handler::removeCommand);
+      .map(commands::get)
+      .filter(command -> command instanceof CloudCommand<?> cloud && cloud.getManager() == this.manager)
+      .map(c -> c.text)
+      .forEach(handler::removeCommand);
   }
 }

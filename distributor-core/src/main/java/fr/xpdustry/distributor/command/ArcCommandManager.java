@@ -46,34 +46,29 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
   public static final CommandMeta.Key<String> PLUGIN = CommandMeta.Key.of(String.class, "xpdustry-distributor-core:plugin");
 
   private final Plugin plugin;
-  private final Function<C, CommandSender> nativeToSenderMapper;
-  private final Function<CommandSender, C> senderToNativeMapper;
-
-  public static ArcCommandManager<CommandSender> standard(final @NotNull Plugin plugin) {
-    return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
-  }
-
-  public static ArcCommandManager<Player> player(final @NotNull Plugin plugin) {
-    return new ArcCommandManager<>(plugin, sender -> sender.getPlayer().orElseThrow(), CommandSender::player);
-  }
+  private final Function<CommandSender, C> commandSenderMapper;
+  private final Function<C, CommandSender> backwardsCommandSenderMapper;
 
   public ArcCommandManager(
     final @NotNull Plugin plugin,
-    final @NotNull Function<@NotNull CommandSender, @NotNull C> senderToNativeMapper,
-    final @NotNull Function<@NotNull C, @NotNull CommandSender> nativeToSenderMapper
+    final @NotNull Function<@NotNull CommandSender, @NotNull C> commandSenderMapper,
+    final @NotNull Function<@NotNull C, @NotNull CommandSender> backwardsCommandSenderMapper
   ) {
-    super(CommandExecutionCoordinator.simpleCoordinator(), CommandRegistrationHandler.nullCommandRegistrationHandler());
+    super(
+      CommandExecutionCoordinator.simpleCoordinator(),
+      CommandRegistrationHandler.nullCommandRegistrationHandler()
+    );
     registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
     captionRegistry((caption, sender) -> {
       final var source = DistributorPlugin.getGlobalLocalizationSource();
-      final var locale = getNativeToSenderMapper().apply(sender).getLocale();
+      final var locale = getBackwardsCommandSenderMapper().apply(sender).getLocale();
       final var translation = source.localize(caption.getKey(), locale);
       return translation != null ? translation : "???" + caption.getKey() + "???";
     });
 
     this.plugin = plugin;
-    this.senderToNativeMapper = senderToNativeMapper;
-    this.nativeToSenderMapper = nativeToSenderMapper;
+    this.commandSenderMapper = commandSenderMapper;
+    this.backwardsCommandSenderMapper = backwardsCommandSenderMapper;
 
     this.parameterInjectorRegistry().registerInjector(
       Plugin.class,
@@ -96,17 +91,25 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     );
   }
 
+  public static ArcCommandManager<CommandSender> standard(final @NotNull Plugin plugin) {
+    return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
+  }
+
+  public static ArcCommandManager<Player> player(final @NotNull Plugin plugin) {
+    return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player);
+  }
+
   public final void initialize(final @NotNull CommandHandler handler) {
     commandRegistrationHandler(new ArcRegistrationHandler<>(this, handler));
     transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
   }
 
-  public final @NotNull Function<CommandSender, C> getSenderToNativeMapper() {
-    return senderToNativeMapper;
+  public final @NotNull Function<CommandSender, C> getCommandSenderMapper() {
+    return commandSenderMapper;
   }
 
-  public final @NotNull Function<C, CommandSender> getNativeToSenderMapper() {
-    return nativeToSenderMapper;
+  public final @NotNull Function<C, CommandSender> getBackwardsCommandSenderMapper() {
+    return backwardsCommandSenderMapper;
   }
 
   public @NotNull AnnotationParser<C> createAnnotationParser(final @NotNull TypeToken<C> senderType) {
@@ -128,15 +131,14 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     if (permission.isEmpty()) {
       return true;
     }
-    return nativeToSenderMapper.apply(sender)
-      .getPlayer().map(p -> DistributorPlugin.getPermissionProvider().hasPermission(p.uuid(), permission))
-      .orElse(true);
+    final var caller = backwardsCommandSenderMapper.apply(sender);
+    return caller.isConsole() || DistributorPlugin.getPermissionManager().hasPermission(caller.getPlayer().uuid(), permission);
   }
 
   @Override
   public @NotNull CommandMeta createDefaultCommandMeta() {
     return CommandMeta.simple()
-      .with(PLUGIN, Magik.getPluginNamespace(plugin))
+      .with(PLUGIN, Magik.getDescriptor(plugin).getName())
       .build();
   }
 

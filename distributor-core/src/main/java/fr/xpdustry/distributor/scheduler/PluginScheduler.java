@@ -40,6 +40,4 @@ public interface PluginScheduler {
   PluginTask asyncRepeatingDelayedTask(final Plugin plugin, final Runnable runnable, final int delay, final int period);
 
   TaskSynchronizer getTaskSynchronizer(final Plugin plugin);
-
-  void shutdown();
 }

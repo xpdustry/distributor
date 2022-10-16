@@ -16,18 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.util;
+package fr.xpdustry.distributor.permission;
 
+import fr.xpdustry.distributor.util.*;
+import java.util.*;
+import java.util.regex.*;
 import org.jetbrains.annotations.*;
 
-public interface Buildable<T, B extends Buildable.Builder<T>> {
+public interface PermissionHolder {
 
-  @NotNull
-  B toBuilder();
+  String PERMISSION_REGEX ="^(\\*|[\\w\\-]+)(\\.(\\*|[\\w\\-]+))*$";
+  Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
 
-  interface Builder<T> {
+  String getName();
 
-    @NotNull
-    T build();
-  }
+  Tristate getPermission(final @NotNull String permission);
+
+  void setPermission(final @NotNull String permission, final @NotNull Tristate state);
+
+  Map<String, Boolean> getPermissions();
+
+  void setPermissions(final Map<String, Boolean> permissions);
+
+  List<String> getParentGroups();
+
+  void setParentGroups(final List<String> parents);
+
+  void addParentGroup(final String group);
+
+  void removeParentGroup(final String group);
 }

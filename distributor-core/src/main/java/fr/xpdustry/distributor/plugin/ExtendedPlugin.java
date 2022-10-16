@@ -22,18 +22,18 @@ import arc.*;
 import arc.files.*;
 import arc.util.*;
 import java.io.*;
-import java.nio.file.*;
 import java.nio.file.Files;
+import java.nio.file.*;
 import mindustry.*;
 import mindustry.mod.*;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
+@SuppressWarnings("NullAway.Init")
 public abstract class ExtendedPlugin extends Plugin {
 
   private final PluginDescriptor descriptor = PluginDescriptor.from(this);
   private final Path directory = Vars.modDirectory.child(getDescriptor().getName()).file().toPath();
-  @SuppressWarnings("NullAway.Init")
   private Logger logger;
 
   {

@@ -16,17 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.util;
+package fr.xpdustry.distributor.permission;
 
-import fr.xpdustry.distributor.plugin.*;
-import mindustry.mod.*;
+public interface PermissionGroup extends PermissionHolder {
 
-public final class Magik {
+  int getWeight();
 
-  private Magik() {
-  }
-
-  public static PluginDescriptor getDescriptor(final Plugin plugin) {
-    return plugin instanceof ExtendedPlugin extended ? extended.getDescriptor() : PluginDescriptor.from(plugin);
-  }
+  void setWeight(int weight);
 }

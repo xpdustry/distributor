@@ -5,8 +5,12 @@ plugins {
 }
 
 dependencies {
-    api("org.slf4j:slf4j-api:2.0.3")
+    implementation("org.spongepowered:configurate-yaml:4.1.2")
     implementation("org.aeonbits.owner:owner-java8:1.0.12")
+
+    val slf4j = "2.0.3"
+    api("org.slf4j:slf4j-api:$slf4j")
+    testImplementation("org.slf4j:slf4j-simple:$slf4j")
 
     val geantyref = "1.3.13"
     api("io.leangen.geantyref:geantyref:$geantyref")

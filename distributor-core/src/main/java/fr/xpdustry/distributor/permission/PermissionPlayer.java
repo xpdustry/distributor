@@ -16,17 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.util;
+package fr.xpdustry.distributor.permission;
 
-import fr.xpdustry.distributor.plugin.*;
-import mindustry.mod.*;
+public interface PermissionPlayer extends PermissionHolder {
 
-public final class Magik {
-
-  private Magik() {
-  }
-
-  public static PluginDescriptor getDescriptor(final Plugin plugin) {
-    return plugin instanceof ExtendedPlugin extended ? extended.getDescriptor() : PluginDescriptor.from(plugin);
-  }
+  String getUuid();
 }

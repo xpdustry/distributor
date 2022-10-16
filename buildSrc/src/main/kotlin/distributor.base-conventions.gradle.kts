@@ -4,7 +4,6 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     id("net.kyori.indra")
     id("net.kyori.indra.checkstyle")
-    id("com.diffplug.spotless")
     id("net.kyori.indra.licenser.spotless")
     id("net.ltgt.errorprone")
 }
@@ -42,16 +41,6 @@ indraSpotlessLicenser {
     licenseHeaderFile(rootProject.file("LICENSE_HEADER.md"))
 }
 
-spotless {
-    java {
-        googleJavaFormat()
-    }
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
 tasks.withType<JavaCompile> {
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
@@ -70,4 +59,11 @@ tasks.withType<JavaCompile> {
 }
 
 // Gradle provider issues with Indra
-tasks.compileJava.get().sourceCompatibility = "17"
+tasks.compileJava {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+}
+tasks.compileTestJava {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+}

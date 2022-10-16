@@ -37,7 +37,7 @@ tasks.shadowJar {
     }
 }
 
-tasks.create("getArtifactPath") {
+tasks.register("getArtifactPath") {
     doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
 }
 
@@ -47,4 +47,6 @@ tasks.shadowJar {
     }
 }
 
-tasks.build.get().dependsOn(tasks.shadowJar)
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}

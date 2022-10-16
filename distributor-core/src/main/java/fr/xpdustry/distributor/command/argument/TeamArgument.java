@@ -36,20 +36,20 @@ import org.jetbrains.annotations.*;
 public final class TeamArgument<C> extends CommandArgument<C, Team> {
 
   private TeamArgument(
-      final boolean required,
-      final String name,
-      final String defaultValue,
-      final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
-      final ArgumentDescription defaultDescription,
-      final TeamMode teamMode) {
+    final boolean required,
+    final String name,
+    final String defaultValue,
+    final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
+    final ArgumentDescription defaultDescription,
+    final TeamMode teamMode) {
     super(
-        required,
-        name,
-        new TeamParser<>(teamMode),
-        defaultValue,
-        Team.class,
-        suggestionsProvider,
-        defaultDescription);
+      required,
+      name,
+      new TeamParser<>(teamMode),
+      defaultValue,
+      Team.class,
+      suggestionsProvider,
+      defaultDescription);
   }
 
   public static <C> TeamArgument.Builder<C> newBuilder(final String name) {
@@ -70,6 +70,11 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
 
   public static <C> CommandArgument<C, Team> all(final String name) {
     return new TeamArgument.Builder<C>(name).withTeamMode(TeamMode.ALL).build();
+  }
+
+  public enum TeamMode {
+    BASE,
+    ALL
   }
 
   public static final class Builder<C> extends CommandArgument.Builder<C, Team> {
@@ -93,12 +98,12 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     @Override
     public @NotNull TeamArgument<C> build() {
       return new TeamArgument<>(
-          this.isRequired(),
-          this.getName(),
-          this.getDefaultValue(),
-          this.getSuggestionsProvider(),
-          this.getDefaultDescription(),
-          teamMode);
+        this.isRequired(),
+        this.getName(),
+        this.getDefaultValue(),
+        this.getSuggestionsProvider(),
+        this.getDefaultDescription(),
+        teamMode);
     }
   }
 
@@ -109,17 +114,11 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
    */
   public static final class TeamParser<C> implements ArgumentParser<C, Team> {
 
-    private static final Map<String, Team> BASE_TEAMS =
-        Arrays.stream(Team.baseTeams)
-            .collect(
-                Collectors.toUnmodifiableMap(
-                    t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
+    private static final Map<String, Team> BASE_TEAMS = Arrays.stream(Team.baseTeams)
+      .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
 
-    private static final Map<String, Team> ALL_TEAMS =
-        Arrays.stream(Team.all)
-            .collect(
-                Collectors.toUnmodifiableMap(
-                    t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
+    private static final Map<String, Team> ALL_TEAMS = Arrays.stream(Team.all)
+      .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
 
     private final TeamMode teamMode;
 
@@ -129,11 +128,10 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
 
     @Override
     public @NotNull ArgumentParseResult<Team> parse(
-        final @NotNull CommandContext<C> ctx, final @NotNull Queue<String> inputQueue) {
+      final @NotNull CommandContext<C> ctx, final @NotNull Queue<String> inputQueue) {
       final var input = inputQueue.peek();
       if (input == null) {
-        return ArgumentParseResult.failure(
-            new NoInputProvidedException(TeamArgument.TeamParser.class, ctx));
+        return ArgumentParseResult.failure(new NoInputProvidedException(TeamArgument.TeamParser.class, ctx));
       }
 
       final var name = input.toLowerCase(Locale.ROOT);
@@ -146,10 +144,12 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
 
     @Override
-    public @NotNull List<String> suggestions(
-        final @NotNull CommandContext<C> ctx, final @NotNull String input) {
+    public @NotNull List<String> suggestions(final @NotNull CommandContext<C> ctx, final @NotNull String input) {
       final var name = input.toLowerCase(Locale.ROOT);
-      return getTeamIndex().keySet().stream().filter(t -> t.startsWith(name)).sorted().toList();
+      return getTeamIndex().keySet().stream()
+        .filter(t -> t.startsWith(name))
+        .sorted()
+        .toList();
     }
 
     @Override
@@ -162,26 +162,21 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
   }
 
-  public enum TeamMode {
-    BASE,
-    ALL
-  }
-
   public static final class TeamParseException extends ParserException {
 
-    @Serial private static final long serialVersionUID = -2213430000642727576L;
+    @Serial
+    private static final long serialVersionUID = -2213430000642727576L;
 
     private final String input;
     private final TeamMode teamMode;
 
-    public TeamParseException(
-        final String input, final CommandContext<?> ctx, final TeamMode teamMode) {
+    public TeamParseException(final String input, final CommandContext<?> ctx, final TeamMode teamMode) {
       super(
-          PlayerArgument.PlayerParser.class,
-          ctx,
-          ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
-          CaptionVariable.of("input", input),
-          CaptionVariable.of("teamMode", teamMode.name()));
+        PlayerArgument.PlayerParser.class,
+        ctx,
+        ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
+        CaptionVariable.of("input", input),
+        CaptionVariable.of("teamMode", teamMode.name()));
       this.input = input;
       this.teamMode = teamMode;
     }

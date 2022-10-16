@@ -16,50 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.command.sender;
+package fr.xpdustry.distributor.permission;
 
-import java.util.*;
-import mindustry.gen.*;
 import org.jetbrains.annotations.*;
 
-final class PlayerCommandSender implements CommandSender {
+final class SimpleGroupPermissible extends AbstractPermissionHolder implements PermissionGroup {
 
-  private final Player player;
-  private final Locale locale;
+  private final String name;
+  private int weight = 0;
 
-  PlayerCommandSender(final @NotNull Player player) {
-    this.player = player;
-    this.locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
+  SimpleGroupPermissible(final @NotNull String name) {
+    this.name = name;
   }
 
   @Override
-  public void sendMessage(final @NotNull String content) {
-    player.sendMessage(content);
+  public @NotNull String getName() {
+    return name;
   }
 
   @Override
-  public void sendWarning(final @NotNull String content) {
-    player.sendMessage("[red]" + content);
-  }
-
-  @NotNull
-  @Override
-  public Locale getLocale() {
-    return locale;
+  public int getWeight() {
+    return weight;
   }
 
   @Override
-  public @NotNull Player getPlayer() {
-    return player;
-  }
-
-  @Override
-  public boolean isPlayer() {
-    return true;
-  }
-
-  @Override
-  public boolean isConsole() {
-    return false;
+  public void setWeight(final int weight) {
+    this.weight = weight;
   }
 }

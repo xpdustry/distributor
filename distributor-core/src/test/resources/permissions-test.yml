@@ -1,0 +1,14 @@
+primary-group: default
+groups:
+  default:
+    permissions:
+      - name: fr.xpdustry.permission.list
+        value: true
+
+  admin:
+    parents:
+      - default
+    permissions:
+      '*':
+        value: true
+    weight: 100

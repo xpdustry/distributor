@@ -29,14 +29,11 @@ final class ArcEventBus implements EventBus {
 
   static final ArcEventBus INSTANCE = new ArcEventBus();
 
-  private static final Comparator<Cons<?>> COMPARATOR =
-      (a, b) -> {
-        final var priorityA =
-            a instanceof MethodEventHandler<?> m ? m.priority : EventPriority.NORMAL;
-        final var priorityB =
-            b instanceof MethodEventHandler<?> m ? m.priority : EventPriority.NORMAL;
-        return priorityA.compareTo(priorityB);
-      };
+  private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
+    final var priorityA = a instanceof MethodEventHandler<?> m ? m.priority : EventPriority.NORMAL;
+    final var priorityB = b instanceof MethodEventHandler<?> m ? m.priority : EventPriority.NORMAL;
+    return priorityA.compareTo(priorityB);
+  };
 
   private final Map<Object, List<MethodEventHandler<?>>> listeners = new HashMap<>();
   private final ObjectMap<Class<?>, Seq<Cons<?>>> events;
@@ -75,8 +72,7 @@ final class ArcEventBus implements EventBus {
       if (annotation == null) {
         continue;
       } else if (method.getParameterCount() != 1) {
-        throw new IllegalArgumentException(
-            "The event handler on " + method + " hasn't the right parameter count.");
+        throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
       } else if (!method.canAccess(object) || !method.trySetAccessible()) {
         throw new RuntimeException("Unable to make " + method + " accessible.");
       }
@@ -108,10 +104,7 @@ final class ArcEventBus implements EventBus {
     private final Method method;
     private final EventPriority priority;
 
-    private MethodEventHandler(
-        final @NotNull Object target,
-        final @NotNull Method method,
-        final @NotNull EventPriority priority) {
+    private MethodEventHandler(final @NotNull Object target, final @NotNull Method method, final @NotNull EventPriority priority) {
       this.target = target;
       this.method = method;
       this.priority = priority;

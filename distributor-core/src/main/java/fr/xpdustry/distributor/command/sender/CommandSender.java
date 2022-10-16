@@ -36,9 +36,11 @@ public interface CommandSender {
 
   void sendWarning(final @NotNull String content);
 
-  @NotNull
-  Locale getLocale();
+  @NotNull Locale getLocale();
 
-  @NotNull
-  Optional<Player> getPlayer();
+  @NotNull Player getPlayer();
+
+  boolean isPlayer();
+
+  boolean isConsole();
 }

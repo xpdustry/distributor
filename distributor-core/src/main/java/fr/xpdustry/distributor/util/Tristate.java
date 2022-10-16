@@ -18,15 +18,24 @@
  */
 package fr.xpdustry.distributor.util;
 
-import fr.xpdustry.distributor.plugin.*;
-import mindustry.mod.*;
+import org.jetbrains.annotations.*;
 
-public final class Magik {
+public enum Tristate {
+  FALSE(false),
+  TRUE(true),
+  UNDEFINED(false);
 
-  private Magik() {
+  private final boolean value;
+
+  Tristate(final boolean value) {
+    this.value = value;
   }
 
-  public static PluginDescriptor getDescriptor(final Plugin plugin) {
-    return plugin instanceof ExtendedPlugin extended ? extended.getDescriptor() : PluginDescriptor.from(plugin);
+  public static @NotNull Tristate of(final @Nullable Boolean state) {
+    return state == null ? UNDEFINED : state ? TRUE : FALSE;
+  }
+
+  public boolean asBoolean() {
+    return value;
   }
 }

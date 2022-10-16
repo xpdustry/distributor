@@ -45,8 +45,7 @@ public final class PluginDescriptor {
     this.minGameVersion = meta.getMinMajor();
     this.repository = Objects.requireNonNullElse(meta.repo, "");
     this.dependencies = Collections.unmodifiableList(
-      Objects.requireNonNull(meta.dependencies).list()
-    );
+      Objects.requireNonNull(meta.dependencies).list());
   }
 
   public static PluginDescriptor from(final Mods.ModMeta meta) {

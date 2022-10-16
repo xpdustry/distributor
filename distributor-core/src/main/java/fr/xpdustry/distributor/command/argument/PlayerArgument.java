@@ -31,8 +31,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import mindustry.gen.*;
-import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 /**
  * A command argument for an online {@link Player}.
@@ -42,26 +42,26 @@ import org.jetbrains.annotations.Nullable;
 public final class PlayerArgument<C> extends CommandArgument<C, Player> {
 
   private PlayerArgument(
-      final boolean required,
-      final String name,
-      final String defaultValue,
-      final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
-      final ArgumentDescription defaultDescription) {
+    final boolean required,
+    final String name,
+    final String defaultValue,
+    final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
+    final ArgumentDescription defaultDescription) {
     super(
-        required,
-        name,
-        new PlayerParser<>(),
-        defaultValue,
-        Player.class,
-        suggestionsProvider,
-        defaultDescription);
+      required,
+      name,
+      new PlayerParser<>(),
+      defaultValue,
+      Player.class,
+      suggestionsProvider,
+      defaultDescription);
   }
 
   /**
    * Creates a new {@link Builder}.
    *
    * @param name the name of the argument
-   * @param <C> the command sender type
+   * @param <C>  the command sender type
    * @return the created builder
    */
   public static <C> Builder<C> newBuilder(final String name) {
@@ -72,7 +72,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
    * Creates a new required {@link PlayerArgument}.
    *
    * @param name the name of the argument
-   * @param <C> the command sender type
+   * @param <C>  the command sender type
    * @return the created builder
    */
   public static <C> CommandArgument<C, Player> of(final String name) {
@@ -83,7 +83,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
    * Creates a new optional {@link PlayerArgument}.
    *
    * @param name the name of the argument
-   * @param <C> the command sender type
+   * @param <C>  the command sender type
    * @return the created builder
    */
   public static <C> CommandArgument<C, Player> optional(final String name) {
@@ -109,11 +109,11 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     @Override
     public @NotNull PlayerArgument<C> build() {
       return new PlayerArgument<>(
-          this.isRequired(),
-          this.getName(),
-          this.getDefaultValue(),
-          this.getSuggestionsProvider(),
-          this.getDefaultDescription());
+        this.isRequired(),
+        this.getName(),
+        this.getDefaultValue(),
+        this.getSuggestionsProvider(),
+        this.getDefaultDescription());
     }
   }
 
@@ -126,7 +126,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
 
     @Override
     public @NotNull ArgumentParseResult<Player> parse(
-        final @NotNull CommandContext<C> ctx, final Queue<String> inputQueue) {
+      final @NotNull CommandContext<C> ctx, final Queue<String> inputQueue) {
       final var input = inputQueue.peek();
       if (input == null) {
         return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));
@@ -146,7 +146,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
 
     @Override
     public @NotNull List<@NotNull String> suggestions(
-        @NotNull CommandContext<C> commandContext, @NotNull String input) {
+      @NotNull CommandContext<C> commandContext, @NotNull String input) {
       return findPlayer(input).stream().map(Player::plainName).toList();
     }
 
@@ -162,15 +162,18 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     private List<Player> findPlayer(final String input) {
       final var name = stripAndLower(input);
       return StreamSupport.stream(Groups.player.spliterator(), false)
-          .filter(p -> stripAndLower(p.name()).contains(name))
-          .toList();
+        .filter(p -> stripAndLower(p.name()).contains(name))
+        .toList();
     }
   }
 
-  /** Exception thrown when no players have been found for the corresponding input. */
+  /**
+   * Exception thrown when no players have been found for the corresponding input.
+   */
   public static class PlayerParseException extends ParserException {
 
-    @Serial private static final long serialVersionUID = 3264229396134848993L;
+    @Serial
+    private static final long serialVersionUID = 3264229396134848993L;
 
     private final String input;
 
@@ -178,15 +181,16 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
      * Creates a new {@link PlayerParseException}.
      *
      * @param input the input string
-     * @param ctx the command context
+     * @param ctx   the command context
      */
-    public PlayerParseException(
-        final String input, final CommandContext<?> ctx, final Caption caption) {
+    public PlayerParseException(final String input, final CommandContext<?> ctx, final Caption caption) {
       super(PlayerParser.class, ctx, caption, CaptionVariable.of("input", input));
       this.input = input;
     }
 
-    /** Returns the input string. */
+    /**
+     * Returns the input string.
+     */
     public String getInput() {
       return this.input;
     }
@@ -195,7 +199,8 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   // TODO Make documentation
   public static final class TooManyPlayersFoundException extends PlayerParseException {
 
-    @Serial private static final long serialVersionUID = 2964533701700707264L;
+    @Serial
+    private static final long serialVersionUID = 2964533701700707264L;
 
     public TooManyPlayersFoundException(final String input, final CommandContext<?> ctx) {
       super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
@@ -205,7 +210,8 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   // TODO Make documentation
   public static final class PlayerNotFoundException extends PlayerParseException {
 
-    @Serial private static final long serialVersionUID = 4683487234146844501L;
+    @Serial
+    private static final long serialVersionUID = 4683487234146844501L;
 
     public PlayerNotFoundException(final String input, final CommandContext<?> ctx) {
       super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);

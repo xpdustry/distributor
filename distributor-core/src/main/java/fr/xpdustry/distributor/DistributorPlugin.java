@@ -18,29 +18,30 @@
  */
 package fr.xpdustry.distributor;
 
+import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.plugin.*;
-import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.scheduler.*;
 import java.io.*;
 import java.nio.charset.*;
-import java.nio.file.*;
+import java.nio.file.Files;
 import java.util.*;
 import org.aeonbits.owner.*;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
+// TODO Make basic permission commands
 @SuppressWarnings("NullAway.Init")
 public final class DistributorPlugin extends ExtendedPlugin {
 
-  private static OwnerDistributorConfig config;
   private static final MultiLocalizationSource source = new MultiLocalizationSource();
+  private static OwnerDistributorConfig config;
   private static PluginScheduler scheduler;
-  private static PermissionProvider permissions = new SimplePermissionProvider();
+  private static PermissionManager permissions;
 
   static {
     source.addLocalizationSource(LocalizationSource.router());
-    source.addLocalizationSource(LocalizationSource.bundle("bundle/bundles", DistributorPlugin.class.getClassLoader()));
+    source.addLocalizationSource(LocalizationSource.bundle("bundles/bundle", DistributorPlugin.class.getClassLoader()));
   }
 
   public static @NotNull DistributorConfig getDistributorConfig() {
@@ -55,11 +56,11 @@ public final class DistributorPlugin extends ExtendedPlugin {
     return scheduler;
   }
 
-  public static @NotNull PermissionProvider getPermissionProvider() {
+  public static @NotNull PermissionManager getPermissionManager() {
     return permissions;
   }
 
-  public static void setPermissionProvider(final PermissionProvider permissions) {
+  public static void setPermissionManager(final PermissionManager permissions) {
     DistributorPlugin.permissions = permissions;
   }
 
@@ -70,9 +71,9 @@ public final class DistributorPlugin extends ExtendedPlugin {
       final var input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("banner.txt"));
       final var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))
     ) {
-      final var marker = MarkerFactory.getMarker("NO_PLUGIN_NAME");
-      reader.lines().forEach(line -> getLogger().info(marker, " > {}", line));
-      getLogger().info(" > Loaded Distributor core v{}", getDescriptor().getVersion());
+      final var marker = MarkerFactory.getMarker("NO_NAME");
+      reader.lines().forEach(line -> getLogger().info(marker, "> {}", line));
+      getLogger().info("> Loaded Distributor core v{}", getDescriptor().getVersion());
     } catch (final IOException e) {
       getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
     }
@@ -101,5 +102,6 @@ public final class DistributorPlugin extends ExtendedPlugin {
     }
 
     scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
+    permissions = new SimplePermissionManager(getDirectory().resolve("permissions.yml"));
   }
 }

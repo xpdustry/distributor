@@ -16,18 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.logging;
+package fr.xpdustry.distributor.test;
 
-import java.util.*;
+import arc.*;
 import java.util.concurrent.*;
-import org.slf4j.*;
+import mindustry.server.*;
+import org.junit.jupiter.api.extension.*;
 
-public final class ArcLoggerFactory implements ILoggerFactory {
-
-  private final Map<String, ArcLogger> cache = new ConcurrentHashMap<>();
+public final class MindustryServerExtension implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
 
   @Override
-  public Logger getLogger(final String name) {
-    return cache.computeIfAbsent(name, ArcLogger::new);
+  public void beforeAll(final ExtensionContext context) {
+    if (Core.app == null) {
+      System.out.println("Starting Mindustry server");
+      ServerLauncher.main(new String[]{});
+      final var future = new CompletableFuture<Void>();
+      Core.app.addListener(new ApplicationListener() {
+        @Override
+        public void init() {
+          future.complete(null);
+        }
+      });
+      future.orTimeout(10L, TimeUnit.SECONDS).join();
+    }
+  }
+
+  @Override
+  public void close() {
+    Core.app.exit();
   }
 }

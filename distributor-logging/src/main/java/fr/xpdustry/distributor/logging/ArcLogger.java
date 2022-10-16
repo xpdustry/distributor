@@ -33,62 +33,32 @@ public class ArcLogger extends AbstractLogger {
   @Serial
   private static final long serialVersionUID = 3476499937056865545L;
 
-  private final @Nullable Class<?> clazz;
-  private final Type type;
-
   @SuppressWarnings("unchecked")
   ArcLogger(final @NotNull String name) {
-    Class<?> clazz = null;
     try {
-      clazz = Class.forName(name);
-    } catch (final ClassNotFoundException ignored) {
-    }
-
-    this.clazz = clazz;
-
-    if (clazz != null) {
-      if (Plugin.class.isAssignableFrom(clazz)) {
-        this.name = PluginDescriptor.from((Class<? extends Plugin>) clazz).getDisplayName();
-        this.type = Type.PLUGIN;
+      final var caller = Class.forName(name);
+      if (Plugin.class.isAssignableFrom(caller)) {
+        this.name = PluginDescriptor.from((Class<? extends Plugin>) caller).getDisplayName();
       } else {
-        this.name = clazz.getSimpleName();
-        this.type = Type.CLASS;
+        this.name = caller.getSimpleName();
       }
-    } else {
+    } catch (final ClassNotFoundException ignored) {
       this.name = name;
-      this.type = Type.NAMED;
     }
   }
 
   @Override
   protected @Nullable String getFullyQualifiedCallerName() {
-    return clazz != null ? name : null;
+    return null;
   }
 
   @Override
   protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
-    final var builder = new StringBuilder();
-    if (marker == null || (type == Type.PLUGIN && !marker.contains("NO_PLUGIN_NAME"))) {
-      final var color = switch (type) {
-        case NAMED -> ColorCodes.white;
-        case CLASS -> ColorCodes.green;
-        case PLUGIN -> ColorCodes.cyan;
-      };
-      builder
-        .append(color)
-        .append('[')
-        .append(ColorCodes.white)
-        .append(name)
-        .append(color)
-        .append(']')
-        .append(ColorCodes.reset)
-        .append(' ');
-    }
-    builder.append(MessageFormatter.basicArrayFormat(messagePattern, arguments));
-    if (arguments != null && arguments.length == 0 && throwable != null && getNativeLogLevel(level) == Log.LogLevel.err) {
-      Log.err(builder.toString(), throwable);
+    final var string = formatLog(marker, messagePattern, arguments);
+    if (arguments != null && arguments.length == 0 && throwable != null && level == Level.ERROR) {
+      Log.err(string, throwable);
     } else {
-      Log.log(getNativeLogLevel(level), builder.toString());
+      Log.log(getNativeLogLevel(level), string);
       if (throwable != null) {
         Log.err(throwable);
       }
@@ -145,6 +115,23 @@ public class ArcLogger extends AbstractLogger {
     return isNativeLogLevelAtLeast(Log.LogLevel.err);
   }
 
+  private String formatLog(Marker marker, String messagePattern, Object[] arguments) {
+    final var builder = new StringBuilder();
+    if (!(name.equals(ROOT_LOGGER_NAME) || (marker != null && marker.contains("NO_NAME")))) {
+      builder.append(ColorCodes.white)
+        .append('[')
+        .append(ColorCodes.reset)
+        .append(name)
+        .append(ColorCodes.white)
+        .append(']')
+        .append(ColorCodes.reset)
+        .append(' ');
+    }
+    return builder
+      .append(MessageFormatter.basicArrayFormat(messagePattern.replace("{}", "&fb&lb{}&fr"), arguments))
+      .toString();
+  }
+
   private boolean isNativeLogLevelAtLeast(final Log.LogLevel level) {
     return Log.level.ordinal() <= level.ordinal();
   }
@@ -156,9 +143,5 @@ public class ArcLogger extends AbstractLogger {
       case WARN -> Log.LogLevel.warn;
       case ERROR -> Log.LogLevel.err;
     };
-  }
-
-  private enum Type {
-    NAMED, CLASS, PLUGIN
   }
 }

@@ -24,8 +24,8 @@ import io.leangen.geantyref.*;
 
 public final class ArcParserParameters {
 
-  public static final ParserParameter<TeamMode> TEAM_MODE =
-      new ParserParameter<>("team_mode", TypeToken.get(TeamMode.class));
+  public static final ParserParameter<TeamMode> TEAM_MODE = new ParserParameter<>("team_mode", TypeToken.get(TeamMode.class));
 
-  private ArcParserParameters() {}
+  private ArcParserParameters() {
+  }
 }

@@ -16,9 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.permission;
+package fr.xpdustry.distributor.plugin;
 
-public interface PermissionProvider {
+import java.io.*;
 
-  boolean hasPermission(final String uuid, final String permission);
+public interface PluginResource {
+
+  void load() throws IOException;
+
+  default boolean canLoad() {
+    return true;
+  }
+
+  void save() throws IOException;
+
+  default boolean canSave() {
+    return true;
+  }
 }
