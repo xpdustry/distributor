@@ -23,13 +23,14 @@ import java.util.concurrent.*;
 import mindustry.server.*;
 import org.junit.jupiter.api.extension.*;
 
+// TODO Testing this thing
 public final class MindustryServerExtension implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
 
   @Override
   public void beforeAll(final ExtensionContext context) {
     if (Core.app == null) {
       System.out.println("Starting Mindustry server");
-      ServerLauncher.main(new String[]{});
+      ServerLauncher.main(new String[] {});
       final var future = new CompletableFuture<Void>();
       Core.app.addListener(new ApplicationListener() {
         @Override

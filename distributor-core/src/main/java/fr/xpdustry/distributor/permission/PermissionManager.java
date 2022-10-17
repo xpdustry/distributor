@@ -22,11 +22,11 @@ import java.util.*;
 
 public interface PermissionManager {
 
-  // TODO Divide groups and users between 2 managers
-
   boolean hasPermission(final String uuid, final String permission);
 
   PermissionPlayer getPlayerPermissible(final String uuid);
+
+  boolean existsPlayerPermissibleByUuid(final String uuid);
 
   void savePlayerPermissible(final PermissionPlayer player);
 
@@ -39,6 +39,8 @@ public interface PermissionManager {
   }
 
   PermissionGroup getGroupPermissible(final String group);
+
+  boolean existsGroupPermissibleByName(final String name);
 
   void saveGroupPermissible(final PermissionGroup group);
 

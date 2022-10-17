@@ -18,19 +18,23 @@
  */
 package fr.xpdustry.distributor;
 
+import arc.util.*;
+import fr.xpdustry.distributor.command.*;
+import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.commands.*;
 import fr.xpdustry.distributor.localization.*;
 import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.plugin.*;
 import fr.xpdustry.distributor.scheduler.*;
 import java.io.*;
 import java.nio.charset.*;
-import java.nio.file.Files;
+import java.nio.file.*;
 import java.util.*;
 import org.aeonbits.owner.*;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
-// TODO Make basic permission commands
+// TODO Change the objects of Distributor to be loaded as services and not instances to be set
 @SuppressWarnings("NullAway.Init")
 public final class DistributorPlugin extends ExtendedPlugin {
 
@@ -43,6 +47,9 @@ public final class DistributorPlugin extends ExtendedPlugin {
     source.addLocalizationSource(LocalizationSource.router());
     source.addLocalizationSource(LocalizationSource.bundle("bundles/bundle", DistributorPlugin.class.getClassLoader()));
   }
+
+  private final ArcCommandManager<CommandSender> serverCommands = ArcCommandManager.standard(this);
+  private final ArcCommandManager<CommandSender> clientCommands = ArcCommandManager.standard(this);
 
   public static @NotNull DistributorConfig getDistributorConfig() {
     return config;
@@ -103,5 +110,27 @@ public final class DistributorPlugin extends ExtendedPlugin {
 
     scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
     permissions = new SimplePermissionManager(getDirectory().resolve("permissions.yml"));
+  }
+
+  @Override
+  public void onServerCommandsRegistration(@NotNull CommandHandler handler) {
+    serverCommands.initialize(handler);
+  }
+
+  @Override
+  public void onClientCommandsRegistration(@NotNull CommandHandler handler) {
+    clientCommands.initialize(handler);
+  }
+
+  @Override
+  public void onLoad() {
+    // Loads shared commands
+    final var commands = List.of(
+      new PermissionCommand(permissions)
+    );
+    for (final var manager : List.of(serverCommands, clientCommands)) {
+      final var parser = manager.createAnnotationParser(CommandSender.class);
+      commands.forEach(parser::parse);
+    }
   }
 }

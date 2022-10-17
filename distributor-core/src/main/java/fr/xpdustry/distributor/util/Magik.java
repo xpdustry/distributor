@@ -18,7 +18,11 @@
  */
 package fr.xpdustry.distributor.util;
 
+import arc.util.*;
 import fr.xpdustry.distributor.plugin.*;
+import java.util.*;
+import java.util.stream.*;
+import mindustry.gen.*;
 import mindustry.mod.*;
 
 public final class Magik {
@@ -28,5 +32,25 @@ public final class Magik {
 
   public static PluginDescriptor getDescriptor(final Plugin plugin) {
     return plugin instanceof ExtendedPlugin extended ? extended.getDescriptor() : PluginDescriptor.from(plugin);
+  }
+
+  public static List<Player> findPlayers(final String name) {
+    final var input = stripAndLower(name);
+    return StreamSupport.stream(Groups.player.spliterator(), false)
+      .filter(p -> stripAndLower(p.name()).contains(input))
+      .toList();
+  }
+
+  private static String stripAndLower(final String string) {
+    return Strings.stripColors(string.toLowerCase(Locale.ROOT));
+  }
+
+  public static boolean isUuid(final String uuid) {
+    try {
+      final var bytes = Base64.getDecoder().decode(uuid);
+      return bytes.length == 16;
+    } catch (final IllegalArgumentException e) {
+      return false;
+    }
   }
 }

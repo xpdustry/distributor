@@ -18,7 +18,6 @@
  */
 package fr.xpdustry.distributor.permission;
 
-import java.util.*;
 import mindustry.*;
 import org.jetbrains.annotations.*;
 
@@ -43,6 +42,4 @@ final class SimplePlayerPermissible extends AbstractPermissionHolder implements 
   public @NotNull String getUuid() {
     return uuid;
   }
-
-  // TODO Implement Equals + Hashcode
 }

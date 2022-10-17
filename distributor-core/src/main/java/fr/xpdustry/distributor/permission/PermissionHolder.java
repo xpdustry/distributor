@@ -25,7 +25,7 @@ import org.jetbrains.annotations.*;
 
 public interface PermissionHolder {
 
-  String PERMISSION_REGEX ="^(\\*|[\\w\\-]+)(\\.(\\*|[\\w\\-]+))*$";
+  String PERMISSION_REGEX = "^(\\*|[a-z\\d_\\-]+)(\\.(\\*|[a-z\\d_\\-]+))*$";
   Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
 
   String getName();

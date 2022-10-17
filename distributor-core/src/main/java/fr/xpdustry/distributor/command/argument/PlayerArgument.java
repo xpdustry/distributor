@@ -18,7 +18,6 @@
  */
 package fr.xpdustry.distributor.command.argument;
 
-import arc.util.*;
 import cloud.commandframework.*;
 import cloud.commandframework.arguments.*;
 import cloud.commandframework.arguments.parser.*;
@@ -26,12 +25,11 @@ import cloud.commandframework.captions.*;
 import cloud.commandframework.context.*;
 import cloud.commandframework.exceptions.parsing.*;
 import fr.xpdustry.distributor.command.*;
+import fr.xpdustry.distributor.util.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.*;
 import mindustry.gen.*;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
 /**
@@ -46,7 +44,8 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     final String name,
     final String defaultValue,
     final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
-    final ArgumentDescription defaultDescription) {
+    final ArgumentDescription defaultDescription
+  ) {
     super(
       required,
       name,
@@ -54,7 +53,8 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
       defaultValue,
       Player.class,
       suggestionsProvider,
-      defaultDescription);
+      defaultDescription
+    );
   }
 
   /**
@@ -125,14 +125,13 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
   public static final class PlayerParser<C> implements ArgumentParser<C, Player> {
 
     @Override
-    public @NotNull ArgumentParseResult<Player> parse(
-      final @NotNull CommandContext<C> ctx, final Queue<String> inputQueue) {
+    public @NotNull ArgumentParseResult<Player> parse(final @NotNull CommandContext<C> ctx, final Queue<String> inputQueue) {
       final var input = inputQueue.peek();
       if (input == null) {
         return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));
       }
 
-      final var players = findPlayer(input);
+      final var players = Magik.findPlayers(input);
 
       if (players.isEmpty()) {
         return ArgumentParseResult.failure(new PlayerNotFoundException(input, ctx));
@@ -145,25 +144,13 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
 
     @Override
-    public @NotNull List<@NotNull String> suggestions(
-      @NotNull CommandContext<C> commandContext, @NotNull String input) {
-      return findPlayer(input).stream().map(Player::plainName).toList();
+    public @NotNull List<@NotNull String> suggestions(@NotNull CommandContext<C> commandContext, @NotNull String input) {
+      return Magik.findPlayers(input).stream().map(Player::plainName).toList();
     }
 
     @Override
     public boolean isContextFree() {
       return true;
-    }
-
-    private String stripAndLower(final String string) {
-      return Strings.stripColors(string.toLowerCase(Locale.ROOT));
-    }
-
-    private List<Player> findPlayer(final String input) {
-      final var name = stripAndLower(input);
-      return StreamSupport.stream(Groups.player.spliterator(), false)
-        .filter(p -> stripAndLower(p.name()).contains(name))
-        .toList();
     }
   }
 

@@ -47,16 +47,16 @@ public abstract class ExtendedPlugin extends Plugin {
   public void onInit() {
   }
 
-  public void onLoad() {
-  }
-
-  public void onExit() {
-  }
-
   public void onServerCommandsRegistration(final @NotNull CommandHandler handler) {
   }
 
   public void onClientCommandsRegistration(final @NotNull CommandHandler handler) {
+  }
+
+  public void onLoad() {
+  }
+
+  public void onExit() {
   }
 
   public final @NotNull Path getDirectory() {

@@ -114,6 +114,11 @@ public final class SimplePermissionManager implements PermissionManager {
   }
 
   @Override
+  public boolean existsPlayerPermissibleByUuid(String uuid) {
+    return players.containsKey(uuid);
+  }
+
+  @Override
   public void savePlayerPermissible(PermissionPlayer player) {
     players.put(player.getUuid(), player);
     save();
@@ -134,6 +139,11 @@ public final class SimplePermissionManager implements PermissionManager {
   @Override
   public PermissionGroup getGroupPermissible(String group) {
     return groups.containsKey(group) ? groups.get(group) : new SimpleGroupPermissible(group);
+  }
+
+  @Override
+  public boolean existsGroupPermissibleByName(String name) {
+    return groups.containsKey(name);
   }
 
   @Override

@@ -26,8 +26,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import mindustry.mod.*;
-import org.jetbrains.annotations.*;
 import org.jetbrains.annotations.ApiStatus.*;
+import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
 @Internal

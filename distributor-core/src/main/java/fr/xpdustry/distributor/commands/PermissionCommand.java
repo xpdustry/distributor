@@ -19,34 +19,33 @@
 package fr.xpdustry.distributor.commands;
 
 import cloud.commandframework.annotations.*;
+import cloud.commandframework.annotations.parsers.*;
 import cloud.commandframework.annotations.processing.*;
+import cloud.commandframework.context.*;
+import cloud.commandframework.exceptions.parsing.*;
 import fr.xpdustry.distributor.*;
+import fr.xpdustry.distributor.command.argument.PlayerArgument.*;
 import fr.xpdustry.distributor.command.sender.*;
+import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.util.*;
-import mindustry.gen.*;
+import java.util.*;
 
-@CommandContainer
 public final class PermissionCommand {
+
+  private final PermissionManager permissions;
+
+  public PermissionCommand(final PermissionManager permissions) {
+    this.permissions = permissions;
+  }
 
   @CommandMethod("permission player <player> set <permission> <state>")
   public void setPlayerPermission(
     final CommandSender sender,
-    final @Argument("player") Player player,
-    final @Argument("permission") String permission,
+    final @Argument(value = "player", parserName = "permission-player") String player,
+    final @Argument("permission") @Regex(PermissionHolder.PERMISSION_REGEX) String permission,
     final @Argument("state") Tristate state
   ) {
-    setPlayerPermission(sender, player.uuid(), permission, state);
-  }
-
-  @CommandMethod("permission player <uuid> set <permission> <state>")
-  public void setPlayerPermission(
-    final CommandSender sender,
-    final @Argument("uuid") String uuid,
-    final @Argument("permission") String permission,
-    final @Argument("state") Tristate state
-  ) {
-    final var permissions = DistributorPlugin.getPermissionManager();
-    final var permissible = permissions.getPlayerPermissible(uuid);
+    final var permissible = permissions.getPlayerPermissible(player);
     if (permissible.getPermission(permission) == state) {
       sender.sendMessage("The permission is already set to the given state.");
     } else {
@@ -56,20 +55,46 @@ public final class PermissionCommand {
     }
   }
 
-  /* TODO
-  @CommandMethod("permission player <uuid> delete")
-  public void deletePLayerPermissions(final CommandSender sender, final String uuid) {
-    final var permissions = DistributorPlugin.getPermissionManager();
-    permissions.deletePlayerPermissibleByUuid(uuid);
-    sender.sendMessage("All permission data of ");
+  @CommandMethod("permission player <player> groups")
+  public void listPlayerGroups(
+    final CommandSender sender,
+    final @Argument(value = "player", parserName = "permission-player") String player
+  ) {
+    final var permissible = permissions.getPlayerPermissible(player);
+    if (permissible.getParentGroups().isEmpty()) {
+      sender.sendMessage("The player " + permissible.getName() + " has no parent groups.");
+    } else {
+      final var builder = new StringBuilder();
+      final var groups = permissible.getParentGroups();
+      for (int i = 0; i < groups.size(); i++) {
+        builder.append(i).append(". ").append(groups);
+        if (i != groups.size() - 1) {
+          builder.append('\n');
+        }
+      }
+      sender.sendMessage(builder.toString());
+    }
   }
-  */
+
+  @CommandMethod("permission player <player> delete")
+  public void deletePLayerPermissions(
+    final CommandSender sender,
+    final @Argument(value = "player", parserName = "permission-player") String player
+  ) {
+    if (permissions.existsPlayerPermissibleByUuid(player)) {
+      sender.sendMessage("No permission data is attached to this player.");
+    } else {
+      final var permissible = permissions.getPlayerPermissible(player);
+      permissions.deletePlayerPermissible(permissible);
+      sender.sendMessage("All permission data of " + permissible.getName() + " have been deleted.");
+    }
+  }
 
   @CommandMethod("permission group <name> set <permission> <state>")
   public void setGroupPermission(
     final CommandSender sender,
     final @Argument("name") String name,
-    final @Argument("permission") String permission,
+    final @Argument("permission") @Regex(PermissionHolder.PERMISSION_REGEX) String permission,
     final @Argument("state") Tristate state
   ) {
     final var permissions = DistributorPlugin.getPermissionManager();
@@ -80,6 +105,30 @@ public final class PermissionCommand {
       permissible.setPermission(permission, state);
       permissions.saveGroupPermissible(permissible);
       sender.sendMessage("The permission " + permission + " of " + permissible.getName() + " has been set to " + state);
+    }
+  }
+
+  @Parser(name = "permission-player")
+  public String findPlayer(final CommandContext<CommandSender> ctx, Queue<String> inputQueue) {
+    final var input = inputQueue.peek();
+    if (input == null) {
+      throw new NoInputProvidedException(PlayerParser.class, ctx);
+    }
+
+    final var players = Magik.findPlayers(input);
+
+    if (players.isEmpty()) {
+      if (Magik.isUuid(input)) {
+        inputQueue.remove();
+        return input;
+      } else {
+        throw new PlayerNotFoundException(input, ctx);
+      }
+    } else if (players.size() > 1) {
+      throw new TooManyPlayersFoundException(input, ctx);
+    } else {
+      inputQueue.remove();
+      return players.get(0).uuid();
     }
   }
 }
