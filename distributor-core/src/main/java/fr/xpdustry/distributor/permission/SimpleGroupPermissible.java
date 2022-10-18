@@ -20,7 +20,7 @@ package fr.xpdustry.distributor.permission;
 
 import org.jetbrains.annotations.*;
 
-final class SimpleGroupPermissible extends AbstractPermissionHolder implements PermissionGroup {
+final class SimpleGroupPermissible extends AbstractPermissible implements GroupPermissible {
 
   private final String name;
   private int weight = 0;

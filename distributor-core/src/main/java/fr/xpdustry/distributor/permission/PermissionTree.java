@@ -37,7 +37,7 @@ public final class PermissionTree {
   }
 
   public @NotNull Tristate getPermission(final @NotNull String permission) {
-    if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
+    if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
       return Tristate.UNDEFINED;
     }
     var state = Tristate.UNDEFINED;
@@ -57,7 +57,7 @@ public final class PermissionTree {
   }
 
   public void setPermission(final @NotNull String permission, final @NotNull Tristate state) {
-    if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
+    if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
       return;
     }
     final var parts = permission.split("\\.", -1);

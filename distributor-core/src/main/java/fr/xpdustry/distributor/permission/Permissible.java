@@ -18,7 +18,31 @@
  */
 package fr.xpdustry.distributor.permission;
 
-public interface PermissionPlayer extends PermissionHolder {
+import fr.xpdustry.distributor.util.*;
+import java.util.*;
+import java.util.regex.*;
+import org.jetbrains.annotations.*;
 
-  String getUuid();
+public interface Permissible {
+
+  String PERMISSION_REGEX = "^(\\*|[a-z\\d_\\-]+)(\\.(\\*|[a-z\\d_\\-]+))*$";
+  Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
+
+  String getName();
+
+  Tristate getPermission(final @NotNull String permission);
+
+  void setPermission(final @NotNull String permission, final @NotNull Tristate state);
+
+  Map<String, Boolean> getPermissions();
+
+  void setPermissions(final Map<String, Boolean> permissions);
+
+  Collection<String> getParentGroups();
+
+  void setParents(final Collection<String> parents);
+
+  void addParent(final String group);
+
+  void removeParent(final String group);
 }

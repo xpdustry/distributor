@@ -18,31 +18,21 @@
  */
 package fr.xpdustry.distributor.permission;
 
-import fr.xpdustry.distributor.util.*;
-import java.util.*;
-import java.util.regex.*;
-import org.jetbrains.annotations.*;
+import java.nio.file.*;
 
-public interface PermissionHolder {
+public final class SimplePlayerPermissibleManager extends AbstractPermissibleManager<PlayerPermissible> implements PlayerPermissibleManager {
 
-  String PERMISSION_REGEX = "^(\\*|[a-z\\d_\\-]+)(\\.(\\*|[a-z\\d_\\-]+))*$";
-  Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
+  public SimplePlayerPermissibleManager(final Path path) {
+    super(path);
+  }
 
-  String getName();
+  @Override
+  protected PlayerPermissible createPermissible(String id) {
+    return new SimplePlayerPermissible(id);
+  }
 
-  Tristate getPermission(final @NotNull String permission);
-
-  void setPermission(final @NotNull String permission, final @NotNull Tristate state);
-
-  Map<String, Boolean> getPermissions();
-
-  void setPermissions(final Map<String, Boolean> permissions);
-
-  List<String> getParentGroups();
-
-  void setParentGroups(final List<String> parents);
-
-  void addParentGroup(final String group);
-
-  void removeParentGroup(final String group);
+  @Override
+  protected String getIdentifier(PlayerPermissible permissible) {
+    return permissible.getUuid();
+  }
 }

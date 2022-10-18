@@ -18,33 +18,34 @@
  */
 package fr.xpdustry.distributor.permission;
 
+import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.util.*;
 import java.util.*;
 import org.jetbrains.annotations.*;
 
-public abstract class AbstractPermissionHolder implements PermissionHolder {
+public abstract class AbstractPermissible implements Permissible {
 
-  private final List<String> parents = new ArrayList<>();
+  private final Set<String> parents = new HashSet<>();
   private final PermissionTree tree = new PermissionTree();
 
   @Override
-  public @NotNull List<String> getParentGroups() {
-    return Collections.unmodifiableList(parents);
+  public @NotNull Collection<String> getParentGroups() {
+    return Collections.unmodifiableCollection(parents);
   }
 
   @Override
-  public void setParentGroups(List<String> parents) {
+  public void setParents(Collection<String> parents) {
     this.parents.clear();
     this.parents.addAll(parents);
   }
 
   @Override
-  public void addParentGroup(String group) {
+  public void addParent(String group) {
     parents.add(group);
   }
 
   @Override
-  public void removeParentGroup(String group) {
+  public void removeParent(String group) {
     parents.remove(group);
   }
 

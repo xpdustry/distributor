@@ -18,45 +18,21 @@
  */
 package fr.xpdustry.distributor.permission;
 
-import java.util.*;
+import java.util.concurrent.*;
 
 public interface PermissionManager {
 
-  boolean hasPermission(final String uuid, final String permission);
+  CompletableFuture<Boolean> hasPermission(final String uuid, final String permission);
 
-  PermissionPlayer getPlayerPermissible(final String uuid);
+  PlayerPermissibleManager getPlayerPermissionManager();
 
-  boolean existsPlayerPermissibleByUuid(final String uuid);
+  GroupPermissibleManager getGroupPermissionManager();
 
-  void savePlayerPermissible(final PermissionPlayer player);
+  CompletableFuture<String> getPrimaryGroup();
 
-  List<PermissionPlayer> getAllPlayerPermissible();
+  CompletableFuture<Void> setPrimaryGroup(final String group);
 
-  void deletePlayerPermissibleByUuid(final String uuid);
+  CompletableFuture<Boolean> getVerifyAdmin();
 
-  default void deletePlayerPermissible(final PermissionPlayer player) {
-    deletePlayerPermissibleByUuid(player.getUuid());
-  }
-
-  PermissionGroup getGroupPermissible(final String group);
-
-  boolean existsGroupPermissibleByName(final String name);
-
-  void saveGroupPermissible(final PermissionGroup group);
-
-  List<PermissionGroup> getAllGroupPermissible();
-
-  void deleteGroupPermissibleByName(final String name);
-
-  default void deleteGroupPermissible(final PermissionGroup group) {
-    deleteGroupPermissibleByName(group.getName());
-  }
-
-  PermissionGroup getPrimaryGroup();
-
-  void setPrimaryGroup(final PermissionGroup group);
-
-  boolean getVerifyAdmin();
-
-  void setVerifyAdmin(final boolean status);
+  CompletableFuture<Void> setVerifyAdmin(final boolean status);
 }

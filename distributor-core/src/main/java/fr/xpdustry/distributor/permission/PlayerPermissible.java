@@ -18,28 +18,7 @@
  */
 package fr.xpdustry.distributor.permission;
 
-import mindustry.*;
-import org.jetbrains.annotations.*;
+public interface PlayerPermissible extends Permissible {
 
-final class SimplePlayerPermissible extends AbstractPermissible implements PlayerPermissible {
-
-  private final String uuid;
-
-  SimplePlayerPermissible(final String uuid) {
-    this.uuid = uuid;
-  }
-
-  @Override
-  public @NotNull String getName() {
-    if (Vars.netServer != null) {
-      final var info = Vars.netServer.admins.getInfoOptional(uuid);
-      return info == null ? "unknown" : info.lastName;
-    }
-    return "unknown";
-  }
-
-  @Override
-  public @NotNull String getUuid() {
-    return uuid;
-  }
+  String getUuid();
 }

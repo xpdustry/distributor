@@ -23,7 +23,7 @@ import java.nio.file.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
 
-public final class SimplePermissionManagerTest {
+public final class SimplePermissionPersistenceManagerTest {
 
   private static final String PLAYER1 = "Anuke";
   private static final String GROUP1 = "group1";
@@ -36,18 +36,20 @@ public final class SimplePermissionManagerTest {
 
   @BeforeEach
   void setup() {
-    manager = new SimplePermissionManager(tempDir.resolve("permissions.yml"));
+    manager = new SimplePermissionManager(tempDir);
   }
 
   // TODO Improve tests
   @Test
   void test_player_save() {
-    final var player = manager.getPlayerPermissible(PLAYER1);
+    final var players = manager.getPlayerPermissionManager();
+    final var player = players.findOrCreateById(PLAYER1).join();
     player.setPermission("fr.xpdustry.test.a", Tristate.TRUE);
     player.setPermission("fr.xpdustry.test.b", Tristate.FALSE);
 
-    Assertions.assertTrue(manager.getAllPlayerPermissible().isEmpty());
-    manager.savePlayerPermissible(player);
-    Assertions.assertEquals(player, manager.getAllPlayerPermissible().get(0));
+    // TODO Use assert4j
+    Assertions.assertEquals(0, players.count().join());
+    players.save(player).join();
+    Assertions.assertEquals(1, players.count().join());
   }
 }
