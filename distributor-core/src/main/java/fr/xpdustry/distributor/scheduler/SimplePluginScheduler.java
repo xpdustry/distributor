@@ -90,7 +90,7 @@ public final class SimplePluginScheduler implements PluginScheduler, Application
 
   @Override
   public TaskSynchronizer getTaskSynchronizer(Plugin plugin) {
-    return new SimplePluginTaskSynchronizer(this, plugin);
+    return new SimpleTaskSynchronizer(this, plugin);
   }
 
   @Override

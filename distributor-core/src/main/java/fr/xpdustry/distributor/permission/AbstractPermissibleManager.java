@@ -22,21 +22,19 @@ import fr.xpdustry.distributor.persistence.*;
 import fr.xpdustry.distributor.util.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.*;
 import org.spongepowered.configurate.*;
 import org.spongepowered.configurate.yaml.*;
 
-abstract class AbstractPermissibleManager<T extends Permissible> implements PersistenceManager<T, String> {
+abstract class AbstractPermissibleManager<E extends Permissible> implements PersistenceManager<E, String> {
 
-  private final Map<String, T> permissibles = new HashMap<>();
+  private final Map<String, E> permissibles = new HashMap<>();
   private final YamlConfigurationLoader loader;
 
   protected AbstractPermissibleManager(final Path path) {
-    /* TODO The check does not work, fix this...
-    if (!path.endsWith(".yml") || !path.endsWith(".yaml")) {
+    final var extension = Magik.getFileExtension(path);
+    if (extension.isEmpty() || !(extension.get().equals("yml") || extension.get().equals("yaml"))) {
       throw new IllegalArgumentException("Unsupported file extension " + path);
     }
-     */
 
     this.loader = YamlConfigurationLoader.builder()
       .indent(2)
@@ -49,7 +47,7 @@ abstract class AbstractPermissibleManager<T extends Permissible> implements Pers
       for (final var entry : root.childrenMap().entrySet()) {
         final var permissible = createPermissible((String) entry.getKey());
         loadPermissibleData(permissible, entry.getValue());
-        permissibles.put(getIdentifier(permissible), permissible);
+        permissibles.put(extractId(permissible), permissible);
       }
     } catch (final ConfigurateException e) {
       throw new RuntimeException("Unable to load the permissions.", e);
@@ -57,50 +55,72 @@ abstract class AbstractPermissibleManager<T extends Permissible> implements Pers
   }
 
   @Override
-  public CompletableFuture<T> findOrCreateById(String id) {
-    return CompletableFuture.completedFuture(permissibles.containsKey(id) ? permissibles.get(id) : createPermissible(id));
+  public void save(E entity) {
+    permissibles.put(extractId(entity), entity);
+    save();
   }
 
   @Override
-  public CompletableFuture<Optional<T>> findById(String id) {
-    return CompletableFuture.completedFuture(Optional.ofNullable(permissibles.get(id)));
+  public void saveAll(Iterable<E> entities) {
+    entities.forEach(this::save);
+    save();
   }
 
   @Override
-  public CompletableFuture<List<T>> findAll() {
-    return CompletableFuture.completedFuture(List.copyOf(permissibles.values()));
+  public E findOrCreateById(String id) {
+    return permissibles.containsKey(id) ? permissibles.get(id) : createPermissible(id);
   }
 
   @Override
-  public CompletableFuture<Long> count() {
-    return CompletableFuture.completedFuture((long) permissibles.size());
+  public Optional<E> findById(String id) {
+    return Optional.ofNullable(permissibles.get(id));
   }
 
   @Override
-  public CompletableFuture<Void> save(T entity) {
-    permissibles.put(getIdentifier(entity), entity);
-    return save();
+  public Iterable<E> findAll() {
+    return List.copyOf(permissibles.values());
   }
 
   @Override
-  public CompletableFuture<Void> deleteById(String id) {
-    return permissibles.remove(id) != null
-      ? save()
-      : CompletableFuture.completedFuture(null);
+  public boolean exists(E entity) {
+    return existsById(extractId(entity));
   }
 
   @Override
-  public CompletableFuture<Void> delete(T entity) {
-    return deleteById(getIdentifier(entity));
+  public long count() {
+    return permissibles.size();
   }
 
   @Override
-  public CompletableFuture<Void> deleteAll() {
+  public void deleteById(String id) {
+    if (permissibles.remove(id) != null) {
+      save();
+    }
+  }
+
+  @Override
+  public void delete(E entity) {
+    deleteById(extractId(entity));
+  }
+
+  @Override
+  public void deleteAll(Iterable<E> entities) {
+    var changed = false;
+    for (final var entity : entities) {
+      changed |= permissibles.remove(extractId(entity)) != null;
+    }
+    if (changed) {
+      save();
+    }
+  }
+
+  @Override
+  public void deleteAll() {
     permissibles.clear();
-    return save();
+    save();
   }
 
-  protected void loadPermissibleData(final T permissible, final ConfigurationNode node) throws ConfigurateException {
+  void loadPermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
     for (final var parent : node.node("parents").getList(String.class, Collections.emptyList())) {
       permissible.addParent(parent);
     }
@@ -109,7 +129,7 @@ abstract class AbstractPermissibleManager<T extends Permissible> implements Pers
     }
   }
 
-  protected void savePermissibleData(final T permissible, final ConfigurationNode node) throws ConfigurateException {
+  void savePermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
     for (final var parent : permissible.getParentGroups()) {
       node.node("parents").appendListNode().set(parent);
     }
@@ -118,197 +138,20 @@ abstract class AbstractPermissibleManager<T extends Permissible> implements Pers
     }
   }
 
-  protected abstract T createPermissible(final String id);
+  protected abstract String extractId(final E permissible);
 
-  protected abstract String getIdentifier(final T permissible);
-
-  private CompletableFuture<Void> save() {
-    try {
-      final var root = loader.createNode();
-      for (final var permissible : permissibles.values()) {
-        final var node = root.node(getIdentifier(permissible));
-        savePermissibleData(permissible, node);
-      }
-      loader.save(root);
-      return CompletableFuture.completedFuture(null);
-    } catch (final ConfigurateException e) {
-      return CompletableFuture.failedFuture(e);
-    }
-  }
-
-  /*
-  private final Map<String, PlayerPermissible> players = new HashMap<>();
-  private final Map<String, GroupPermissible> groups = new HashMap<>();
-  private final ConfigurationLoader<?> loader;
-  private String primaryGroup;
-  private boolean verifyAdmin;
-
-  public SimplePermissionManager(final Path path) {
-    if (path.endsWith(".yml")) {
-      throw new IllegalArgumentException("Unsupported file extension " + path);
-    }
-
-    this.loader = YamlConfigurationLoader.builder()
-      .indent(2)
-      .path(path)
-      .nodeStyle(NodeStyle.BLOCK)
-      .build();
-
-    try {
-      final var root = loader.load();
-      this.primaryGroup = root.node("primary-group").getString("default");
-      this.verifyAdmin = root.node("verify-admin").getBoolean(true);
-      for (final var entry : root.node("players").childrenMap().entrySet()) {
-        final var player = new SimplePlayerPermissiblePermissible((String) entry.getKey());
-        loadPermissionHolderNode(player, entry.getValue());
-        this.players.put(player.getUuid(), player);
-      }
-      for (final var entry : root.node("groups").childrenMap().entrySet()) {
-        final var group = new SimpleGroupPermissiblePermissible((String) entry.getKey());
-        loadPermissionHolderNode(group, entry.getValue());
-        group.setWeight(entry.getValue().node("weight").getInt());
-        this.groups.put(group.getName(), group);
-      }
-    } catch (final ConfigurateException e) {
-      throw new RuntimeException("Unable to load the permissions.", e);
-    }
-  }
-
-  @Override
-  public boolean hasPermission(String uuid, String permission) {
-    if (verifyAdmin && Vars.netServer.admins.getInfoOptional(uuid).admin) {
-      return true;
-    }
-
-    permission = permission.toLowerCase(Locale.ROOT);
-    var state = Tristate.UNDEFINED;
-    final var visited = new HashSet<String>();
-    final var queue = new ArrayDeque<Permissible>();
-
-    if (players.containsKey(uuid)) {
-      queue.add(players.get(uuid));
-    } else if (groups.containsKey(primaryGroup)) {
-      queue.add(groups.get(primaryGroup));
-    } else {
-      return false;
-    }
-
-    while (!queue.isEmpty()) {
-      final var holder = queue.remove();
-      state = holder.getPermission(permission);
-      if (state != Tristate.UNDEFINED) {
-        break;
-      }
-      holder.getParentGroups()
-        .stream()
-        .filter(g -> visited.add(g) && groups.containsKey(g))
-        .map(groups::get)
-        .sorted(GROUP_COMPARATOR)
-        .forEach(queue::add);
-      if (queue.isEmpty() && !visited.add(primaryGroup) && groups.containsKey(primaryGroup)) {
-        queue.add(groups.get(primaryGroup));
-      }
-    }
-    return state.asBoolean();
-  }
-
-  @Override
-  public PlayerPermissible getPlayerPermissible(String uuid) {
-    return players.containsKey(uuid) ? players.get(uuid) : new SimplePlayerPermissiblePermissible(uuid);
-  }
-
-  @Override
-  public boolean existsPlayerPermissibleByUuid(String uuid) {
-    return players.containsKey(uuid);
-  }
-
-  @Override
-  public void savePlayerPermissible(PlayerPermissible player) {
-    players.put(player.getUuid(), player);
-    save();
-  }
-
-  @Override
-  public List<PlayerPermissible> getAllPlayerPermissible() {
-    return List.copyOf(players.values());
-  }
-
-  @Override
-  public void deletePlayerPermissibleByUuid(String uuid) {
-    if (players.remove(uuid) != null) {
-      save();
-    }
-  }
-
-  @Override
-  public GroupPermissible getGroupPermissible(String group) {
-    return groups.containsKey(group) ? groups.get(group) : new SimpleGroupPermissiblePermissible(group);
-  }
-
-  @Override
-  public boolean existsGroupPermissibleByName(String name) {
-    return groups.containsKey(name);
-  }
-
-  @Override
-  public void saveGroupPermissible(GroupPermissible group) {
-    groups.put(group.getName(), group);
-    save();
-  }
-
-  @Override
-  public List<GroupPermissible> getAllGroupPermissible() {
-    return List.copyOf(groups.values());
-  }
-
-  @Override
-  public void deleteGroupPermissibleByName(String name) {
-    if (groups.remove(name) != null) {
-      save();
-    }
-  }
-
-  @Override
-  public GroupPermissible getPrimaryGroup() {
-    return getGroupPermissible(primaryGroup);
-  }
-
-  @Override
-  public void setPrimaryGroup(GroupPermissible group) {
-    this.primaryGroup = group.getName();
-    save();
-  }
-
-  @Override
-  public boolean getVerifyAdmin() {
-    return verifyAdmin;
-  }
-
-  @Override
-  public void setVerifyAdmin(boolean status) {
-    this.verifyAdmin = status;
-    save();
-  }
+  protected abstract E createPermissible(final String id);
 
   private void save() {
     try {
-      final var root = this.loader.createNode();
-      root.node("primary-group").set(primaryGroup);
-      root.node("verify-admin").set(verifyAdmin);
-      for (final var player : this.players.values()) {
-        final var node = root.node("players", player.getUuid());
-        savePermissionHolderData(player, node);
+      final var root = loader.createNode();
+      for (final var permissible : permissibles.values()) {
+        final var node = root.node(extractId(permissible));
+        savePermissibleData(permissible, node);
       }
-      for (final var group : this.groups.values()) {
-        final var node = root.node("groups", group.getName());
-        savePermissionHolderData(group, node);
-        node.node("weight").set(group.getWeight());
-      }
-      this.loader.save(root);
-    } catch (final IOException e) {
+      loader.save(root);
+    } catch (final ConfigurateException e) {
       throw new RuntimeException("Failed to save the permissions.", e);
     }
   }
-
-   */
 }

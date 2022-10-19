@@ -18,21 +18,19 @@
  */
 package fr.xpdustry.distributor.permission;
 
-import java.util.concurrent.*;
-
 public interface PermissionManager {
 
-  CompletableFuture<Boolean> hasPermission(final String uuid, final String permission);
+  boolean hasPermission(final String uuid, final String permission);
+
+  String getPrimaryGroup();
+
+  void setPrimaryGroup(final String group);
+
+  boolean getVerifyAdmin();
+
+  void setVerifyAdmin(final boolean status);
 
   PlayerPermissibleManager getPlayerPermissionManager();
 
   GroupPermissibleManager getGroupPermissionManager();
-
-  CompletableFuture<String> getPrimaryGroup();
-
-  CompletableFuture<Void> setPrimaryGroup(final String group);
-
-  CompletableFuture<Boolean> getVerifyAdmin();
-
-  CompletableFuture<Void> setVerifyAdmin(final boolean status);
 }

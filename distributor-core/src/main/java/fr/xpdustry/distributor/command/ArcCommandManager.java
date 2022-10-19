@@ -132,11 +132,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
       return true;
     }
     final var caller = backwardsCommandSenderMapper.apply(sender);
-    return caller.isConsole() || DistributorPlugin
-      .getPermissionManager()
-      .hasPermission(caller.getPlayer().uuid(), permission)
-      .exceptionally(t -> false)
-      .join();
+    return caller.isConsole() || DistributorPlugin.getPermissionManager().hasPermission(caller.getPlayer().uuid(), permission);
   }
 
   @Override

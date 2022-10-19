@@ -28,13 +28,13 @@ public final class SimpleGroupPermissibleManager extends AbstractPermissibleMana
   }
 
   @Override
-  protected void loadPermissibleData(GroupPermissible permissible, ConfigurationNode node) throws ConfigurateException {
+  void loadPermissibleData(GroupPermissible permissible, ConfigurationNode node) throws ConfigurateException {
     permissible.setWeight(node.node("weight").getInt());
     super.loadPermissibleData(permissible, node);
   }
 
   @Override
-  protected void savePermissibleData(GroupPermissible permissible, ConfigurationNode node) throws ConfigurateException {
+  void savePermissibleData(GroupPermissible permissible, ConfigurationNode node) throws ConfigurateException {
     node.node("weight").set(permissible.getWeight());
     super.savePermissibleData(permissible, node);
   }
@@ -45,7 +45,7 @@ public final class SimpleGroupPermissibleManager extends AbstractPermissibleMana
   }
 
   @Override
-  protected String getIdentifier(GroupPermissible permissible) {
+  protected String extractId(GroupPermissible permissible) {
     return permissible.getName();
   }
 }
