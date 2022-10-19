@@ -11,9 +11,7 @@ plugins {
     id("fr.xpdustry.toxopid")
 }
 
-val metadata = ModMetadata.fromJson(project.file("plugin.json"))
-metadata.version = rootProject.version.toString()
-metadata.description = rootProject.description.toString()
+val metadata = ModMetadata.fromJson(rootProject.file("plugin.json"))
 
 toxopid {
     compileVersion.set("v" + metadata.minGameVersion)
@@ -29,24 +27,6 @@ dependencies {
     mindustryDependencies()
 }
 
-tasks.shadowJar {
-    doFirst {
-        val temp = temporaryDir.resolve("plugin.json")
-        temp.writeText(metadata.toJson(true))
-        from(temp)
-    }
-}
-
-tasks.register("getArtifactPath") {
-    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
-}
-
-tasks.shadowJar {
-    from(rootProject.file("LICENSE.md")) {
-        into("META-INF")
-    }
-}
-
-tasks.build {
-    dependsOn(tasks.shadowJar)
+tasks.runMindustryClient {
+    mods.setFrom()
 }

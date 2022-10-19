@@ -4,33 +4,40 @@ plugins {
     id("distributor.mindustry-conventions")
 }
 
-val cloud = "1.7.1"
-
-fun DependencyHandler.cloudCommandFramework(module: String) {
-    api("cloud.commandframework:cloud-$module:$cloud") {
-        exclude("org.checkerframework", "checker-qual")
-        exclude("org.apiguardian", "apiguardian-api")
-    }
-}
-
 dependencies {
+    implementation(project(":distributor-api"))
     implementation("org.spongepowered:configurate-yaml:4.1.2")
     implementation("org.aeonbits.owner:owner-java8:1.0.12")
 
-    val slf4j = "2.0.3"
-    api("org.slf4j:slf4j-api:$slf4j")
-    testImplementation("org.slf4j:slf4j-simple:$slf4j")
-
-    val geantyref = "1.3.13"
-    api("io.leangen.geantyref:geantyref:$geantyref")
-
-    cloudCommandFramework("core")
-    cloudCommandFramework("annotations")
-    cloudCommandFramework("tasks")
-    cloudCommandFramework("services")
-    annotationProcessor("cloud.commandframework:cloud-annotations:$cloud")
-
     // Temporary compile time artifacts until PRs are merged
-    compileOnly("org.apiguardian:apiguardian-api:1.1.2")
-    compileOnly("org.checkerframework:checker-qual:3.26.0")
+    implementation("org.apiguardian:apiguardian-api:1.1.2")
+    implementation("org.checkerframework:checker-qual:3.26.0")
+
+    annotationProcessor("cloud.commandframework:cloud-annotations:${Versions.cloud}")
+}
+
+val metadata = fr.xpdustry.toxopid.util.ModMetadata.fromJson(rootProject.file("plugin.json"))
+metadata.version = rootProject.version.toString()
+metadata.description = rootProject.description.toString()
+metadata.name = "xpdustry-distributor-core"
+metadata.displayName = "Distributor"
+metadata.main = "fr.xpdustry.distributor.core.DistributorPlugin"
+
+tasks.shadowJar {
+    doFirst {
+        val temp = temporaryDir.resolve("plugin.json")
+        temp.writeText(metadata.toJson(true))
+        from(temp)
+    }
+    from(rootProject.file("LICENSE.md")) {
+        into("META-INF")
+    }
+}
+
+tasks.register("getArtifactPath") {
+    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
+}
+
+tasks.build {
+    dependsOn(tasks.shadowJar)
 }

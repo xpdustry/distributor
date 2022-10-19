@@ -18,61 +18,31 @@
  */
 package cloud.commandframework.annotations;
 
-import cloud.commandframework.ArgumentDescription;
-import cloud.commandframework.Command;
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.annotations.injection.ParameterInjectorRegistry;
-import cloud.commandframework.annotations.injection.RawArgs;
-import cloud.commandframework.annotations.parsers.MethodArgumentParser;
-import cloud.commandframework.annotations.parsers.Parser;
-import cloud.commandframework.annotations.processing.CommandContainerProcessor;
-import cloud.commandframework.annotations.specifier.Completions;
-import cloud.commandframework.annotations.suggestions.MethodSuggestionsProvider;
-import cloud.commandframework.annotations.suggestions.Suggestions;
-import cloud.commandframework.arguments.CommandArgument;
-import cloud.commandframework.arguments.flags.CommandFlag;
-import cloud.commandframework.arguments.parser.ArgumentParseResult;
-import cloud.commandframework.arguments.parser.ArgumentParser;
-import cloud.commandframework.arguments.parser.ParserParameter;
-import cloud.commandframework.arguments.parser.ParserParameters;
-import cloud.commandframework.arguments.parser.StandardParameters;
-import cloud.commandframework.arguments.preprocessor.RegexPreprocessor;
-import cloud.commandframework.captions.Caption;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.CommandExecutionHandler;
-import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
-import cloud.commandframework.meta.CommandMeta;
-import cloud.commandframework.meta.SimpleCommandMeta;
-import io.leangen.geantyref.GenericTypeReflector;
-import io.leangen.geantyref.TypeToken;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import org.apiguardian.api.API;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import cloud.commandframework.*;
+import cloud.commandframework.annotations.injection.*;
+import cloud.commandframework.annotations.parsers.*;
+import cloud.commandframework.annotations.processing.*;
+import cloud.commandframework.annotations.specifier.*;
+import cloud.commandframework.annotations.suggestions.*;
+import cloud.commandframework.arguments.*;
+import cloud.commandframework.arguments.flags.*;
+import cloud.commandframework.arguments.parser.*;
+import cloud.commandframework.arguments.preprocessor.*;
+import cloud.commandframework.captions.*;
+import cloud.commandframework.context.*;
+import cloud.commandframework.execution.*;
+import cloud.commandframework.extra.confirmation.*;
+import cloud.commandframework.meta.*;
+import io.leangen.geantyref.*;
+import java.io.*;
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
+import org.apiguardian.api.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 //
 // The above header is not to anger spotless. Here is the real copyright:
@@ -99,6 +69,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
+
 /**
  * Parser that parses class instances {@link Command commands}
  * note: feature version of this <a href="https://github.com/Incendo/cloud/pull/396">PR</a>.
@@ -268,7 +239,7 @@ public final class AnnotationParser<C> {
   }
 
   /**
-   * Returns the command manager that was used to create this parser
+   * Returns the command manager that was used to create this parser.
    *
    * @return Command manager
    * @since 1.6.0
@@ -312,7 +283,7 @@ public final class AnnotationParser<C> {
   }
 
   /**
-   * Register an annotation mapper
+   * Register an annotation mapper.
    *
    * @param annotation Annotation class
    * @param mapper     Mapping function
@@ -327,7 +298,7 @@ public final class AnnotationParser<C> {
   }
 
   /**
-   * Register a preprocessor mapper
+   * Register a preprocessor mapper.
    *
    * @param annotation         Annotation class
    * @param preprocessorMapper Preprocessor mapper

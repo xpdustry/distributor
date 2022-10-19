@@ -3,14 +3,13 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     id("net.kyori.indra")
-    id("net.kyori.indra.checkstyle")
+    // id("net.kyori.indra.checkstyle")
     id("net.kyori.indra.licenser.spotless")
     id("net.ltgt.errorprone")
 }
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven("https://repo.xpdustry.fr/releases") {
         name = "xpdustry-repository-releases"
         mavenContent { releasesOnly() }
@@ -18,19 +17,21 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:23.0.0")
+    compileOnly("org.checkerframework:checker-qual:3.26.0")
 
     val junit = "5.8.2"
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
+    testImplementation("org.assertj:assertj-core:3.23.1")
 
     annotationProcessor("com.uber.nullaway:nullaway:0.9.4")
     errorprone("com.google.errorprone:error_prone_core:2.10.0")
 }
 
 indra {
-    checkstyle("9.3")
+    // TODO Update checkstyle style file cauz its chaotic...
+    // checkstyle("9.3")
 
     javaVersions {
         target(17)

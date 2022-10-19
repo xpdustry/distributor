@@ -18,21 +18,16 @@
  */
 package cloud.commandframework.annotations;
 
-import cloud.commandframework.annotations.injection.ParameterInjectorRegistry;
-import cloud.commandframework.arguments.CommandArgument;
-import cloud.commandframework.arguments.flags.FlagContext;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.exceptions.CommandExecutionException;
-import cloud.commandframework.execution.CommandExecutionHandler;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import cloud.commandframework.annotations.injection.*;
+import cloud.commandframework.arguments.*;
+import cloud.commandframework.arguments.flags.*;
+import cloud.commandframework.context.*;
+import cloud.commandframework.exceptions.*;
+import cloud.commandframework.execution.*;
+import java.lang.invoke.*;
+import java.lang.reflect.*;
+import java.util.*;
+import org.checkerframework.checker.nullness.qual.*;
 
 //
 // The above header is not to anger spotless. Here is the real copyright:
@@ -59,6 +54,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
+
 /**
  * A command execution handler that invokes a method.
  * note: patched version of this <a href="https://github.com/Incendo/cloud/pull/397">PR</a>.
@@ -180,7 +176,7 @@ public class MethodCommandExecutionHandler<C> implements CommandExecutionHandler
   }
 
   /**
-   * Returns the command method context
+   * Returns the command method context.
    *
    * @return The context
    * @since 1.6.0
@@ -190,7 +186,7 @@ public class MethodCommandExecutionHandler<C> implements CommandExecutionHandler
   }
 
   /**
-   * Returns all parameters passed to the method
+   * Returns all parameters passed to the method.
    *
    * @return The parameters
    * @since 1.6.0

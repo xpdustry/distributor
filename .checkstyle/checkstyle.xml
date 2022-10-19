@@ -28,6 +28,7 @@
   <!-- See https://checkstyle.org/config_filefilters.html -->
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern" value="module\-info\.java$"/>
+    <property name="fileNamePattern" value=".*[\\/]src[\\/]main[\\/]java[\\/]cloud[\\/].*$"/>
   </module>
   <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
   <module name="SuppressionFilter">

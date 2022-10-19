@@ -1,0 +1,52 @@
+name: Release Drafter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get Latest Released Tag
+        id: current-tag
+        run: |
+          branch=${GITHUB_REF#refs/heads/}
+          tag=$(git tag -l --merged "$branch" "v*.*.*" --sort=-committerdate | head -n 1);
+          echo "::set-output name=tag::$tag";
+      - name: Generate Changelog
+        uses: dlavrenuek/conventional-changelog-action@v1.2.0
+        id: changelog
+        with:
+          from: ${{ steps.current-tag.outputs.tag }}
+          to: HEAD
+
+      - name: Parse Current Tag
+        id: semver
+        uses: WyriHaximus/github-action-next-semvers@v1
+        with:
+          version: ${{ steps.current-tag.outputs.tag }}
+
+      - name: Get Next Tag
+        id: next-tag
+        run: |
+          if [ "${{ steps.changelog.outputs.bump }}" == "major" ]; then
+            echo "::set-output name=tag::${{ steps.semver.outputs.v_major }}";
+          elif [ "${{ steps.changelog.outputs.bump }}" == "minor" ]; then
+            echo "::set-output name=tag::${{ steps.semver.outputs.v_minor }}";
+          else
+            echo "::set-output name=tag::${{ steps.semver.outputs.v_patch }}";
+          fi
+      - name: Draft release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          draft: true
+          tag: ${{ steps.next-tag.outputs.tag }}
+          name: ${{ steps.next-tag.outputs.tag }} release
+          body: ${{ steps.changelog.outputs.body }}
