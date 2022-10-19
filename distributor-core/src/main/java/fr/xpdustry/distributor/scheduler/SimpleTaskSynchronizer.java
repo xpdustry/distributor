@@ -23,12 +23,12 @@ import java.util.concurrent.*;
 import mindustry.mod.*;
 import org.jetbrains.annotations.*;
 
-final class SimplePluginTaskSynchronizer implements TaskSynchronizer {
+final class SimpleTaskSynchronizer implements TaskSynchronizer {
 
   private final PluginScheduler scheduler;
   private final Plugin plugin;
 
-  SimplePluginTaskSynchronizer(final PluginScheduler scheduler, final Plugin plugin) {
+  SimpleTaskSynchronizer(final PluginScheduler scheduler, final Plugin plugin) {
     this.scheduler = scheduler;
     this.plugin = plugin;
   }

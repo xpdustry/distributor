@@ -20,6 +20,7 @@ package fr.xpdustry.distributor.util;
 
 import arc.util.*;
 import fr.xpdustry.distributor.plugin.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 import mindustry.gen.*;
@@ -41,10 +42,6 @@ public final class Magik {
       .toList();
   }
 
-  private static String stripAndLower(final String string) {
-    return Strings.stripColors(string.toLowerCase(Locale.ROOT));
-  }
-
   public static boolean isUuid(final String uuid) {
     try {
       final var bytes = Base64.getDecoder().decode(uuid);
@@ -52,5 +49,18 @@ public final class Magik {
     } catch (final IllegalArgumentException e) {
       return false;
     }
+  }
+
+  public static Optional<String> getFileExtension(final Path path) {
+    final var name = path.getFileName().toString();
+    if (name.contains(".")) {
+      return Optional.of(name.substring(name.lastIndexOf(".") + 1));
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  private static String stripAndLower(final String string) {
+    return Strings.stripColors(string.toLowerCase(Locale.ROOT));
   }
 }

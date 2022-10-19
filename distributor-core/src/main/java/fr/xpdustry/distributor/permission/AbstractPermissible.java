@@ -18,7 +18,6 @@
  */
 package fr.xpdustry.distributor.permission;
 
-import fr.xpdustry.distributor.permission.*;
 import fr.xpdustry.distributor.util.*;
 import java.util.*;
 import org.jetbrains.annotations.*;
@@ -65,7 +64,7 @@ public abstract class AbstractPermissible implements Permissible {
   }
 
   @Override
-  public void setPermissions(Map<String, Boolean> permissions) {
+  public void setPermissions(final Map<String, Boolean> permissions) {
     permissions.forEach((permission, state) -> setPermission(permission, Tristate.of(state)));
   }
 }

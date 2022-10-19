@@ -21,15 +21,14 @@ package fr.xpdustry.distributor.permission;
 import fr.xpdustry.distributor.util.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.*;
 import mindustry.*;
 import org.spongepowered.configurate.*;
 import org.spongepowered.configurate.yaml.*;
 
-public class SimplePermissionManager implements PermissionManager {
+public final class SimplePermissionManager implements PermissionManager {
 
   private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
-    Comparator.comparing(GroupPermissible::getWeight);
+    Comparator.comparing(GroupPermissible::getWeight).reversed();
 
   private final PlayerPermissibleManager players;
   private final GroupPermissibleManager groups;
@@ -41,9 +40,10 @@ public class SimplePermissionManager implements PermissionManager {
   public SimplePermissionManager(final Path directory) {
     this.loader = YamlConfigurationLoader.builder()
       .indent(2)
-      .path(directory.resolve("preferences.yaml"))
+      .path(directory.resolve("settings.yaml"))
       .nodeStyle(NodeStyle.BLOCK)
       .build();
+
     this.players = new SimplePlayerPermissibleManager(directory.resolve("players.yaml"));
     this.groups = new SimpleGroupPermissibleManager(directory.resolve("groups.yaml"));
 
@@ -57,46 +57,67 @@ public class SimplePermissionManager implements PermissionManager {
   }
 
   @Override
-  public CompletableFuture<Boolean> hasPermission(String uuid, String permission) {
+  public boolean hasPermission(String uuid, String permission) {
     if (verifyAdmin && Vars.netServer.admins.getInfoOptional(uuid).admin) {
-      return CompletableFuture.completedFuture(true);
+      return true;
     }
-    return CompletableFuture.supplyAsync(() -> {
-      final var perm = permission.toLowerCase(Locale.ROOT);
-      var state = Tristate.UNDEFINED;
-      final var visited = new HashSet<String>();
-      final var queue = new ArrayDeque<Permissible>();
+    final var perm = permission.toLowerCase(Locale.ROOT);
+    var state = Tristate.UNDEFINED;
+    final var visited = new HashSet<String>();
+    final var queue = new ArrayDeque<Permissible>();
 
-      final var player = players.findById(uuid).join();
-      final var primary = groups.findById(primaryGroup).join();
-      if (player.isPresent()) {
-        queue.add(player.get());
-      } else if (primary.isPresent()) {
+    final var player = players.findById(uuid);
+    final var primary = groups.findById(primaryGroup);
+    if (player.isPresent()) {
+      queue.add(player.get());
+    } else if (primary.isPresent()) {
+      queue.add(primary.get());
+    } else {
+      return false;
+    }
+
+    while (!queue.isEmpty()) {
+      final var holder = queue.remove();
+      state = holder.getPermission(perm);
+      if (state != Tristate.UNDEFINED) {
+        break;
+      }
+      holder.getParentGroups()
+        .stream()
+        .filter(visited::add)
+        .map(groups::findById)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .sorted(GROUP_COMPARATOR)
+        .forEach(queue::add);
+      System.out.println(queue.stream().map(p -> p.getName()).toList());
+      if (queue.isEmpty() && !visited.add(primaryGroup) && primary.isPresent()) {
         queue.add(primary.get());
-      } else {
-        return false;
       }
+    }
+    return state.asBoolean();
+  }
 
-      while (!queue.isEmpty()) {
-        final var holder = queue.remove();
-        state = holder.getPermission(perm);
-        if (state != Tristate.UNDEFINED) {
-          break;
-        }
-        holder.getParentGroups()
-          .stream()
-          .filter(g -> visited.add(g) && groups.existsById(g).join())
-          .map(g -> groups.findById(g).join())
-          .filter(Optional::isPresent)
-          .map(Optional::get)
-          .sorted(GROUP_COMPARATOR)
-          .forEach(queue::add);
-        if (queue.isEmpty() && !visited.add(primaryGroup) && primary.isPresent()) {
-          queue.add(primary.get());
-        }
-      }
-      return state.asBoolean();
-    });
+  @Override
+  public String getPrimaryGroup() {
+    return primaryGroup;
+  }
+
+  @Override
+  public void setPrimaryGroup(String group) {
+    this.primaryGroup = group;
+    save();
+  }
+
+  @Override
+  public boolean getVerifyAdmin() {
+    return verifyAdmin;
+  }
+
+  @Override
+  public void setVerifyAdmin(boolean status) {
+    this.verifyAdmin = status;
+    save();
   }
 
   @Override
@@ -109,37 +130,14 @@ public class SimplePermissionManager implements PermissionManager {
     return groups;
   }
 
-  @Override
-  public CompletableFuture<String> getPrimaryGroup() {
-    return CompletableFuture.completedFuture(primaryGroup);
-  }
-
-  @Override
-  public CompletableFuture<Void> setPrimaryGroup(String group) {
-    this.primaryGroup = group;
-    return save();
-  }
-
-  @Override
-  public CompletableFuture<Boolean> getVerifyAdmin() {
-    return CompletableFuture.completedFuture(verifyAdmin);
-  }
-
-  @Override
-  public CompletableFuture<Void> setVerifyAdmin(boolean status) {
-    this.verifyAdmin = status;
-    return save();
-  }
-
-  private CompletableFuture<Void> save() {
+  private void save() {
     try {
       final var root = loader.createNode();
       root.node("primary-group").set(primaryGroup);
       root.node("verify-admin").set(verifyAdmin);
       loader.save(root);
-      return CompletableFuture.completedFuture(null);
     } catch (final ConfigurateException e) {
-      return CompletableFuture.failedFuture(e);
+      throw new RuntimeException("Failed to save the permission manager settings.", e);
     }
   }
 }

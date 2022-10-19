@@ -32,7 +32,7 @@ public final class SimplePlayerPermissibleManager extends AbstractPermissibleMan
   }
 
   @Override
-  protected String getIdentifier(PlayerPermissible permissible) {
+  protected String extractId(PlayerPermissible permissible) {
     return permissible.getUuid();
   }
 }

@@ -22,13 +22,13 @@ import fr.xpdustry.distributor.util.*;
 import java.util.*;
 import org.jetbrains.annotations.*;
 
-public final class PermissionTree {
+final class PermissionTree {
 
   private final @Nullable PermissionTree parent;
   private final Map<String, PermissionTree> children = new HashMap<>();
   private Tristate value = Tristate.UNDEFINED;
 
-  public PermissionTree() {
+  PermissionTree() {
     this.parent = null;
   }
 
@@ -36,9 +36,9 @@ public final class PermissionTree {
     this.parent = parent;
   }
 
-  public @NotNull Tristate getPermission(final @NotNull String permission) {
+  public Tristate getPermission(final String permission) {
     if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
-      return Tristate.UNDEFINED;
+      throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
     }
     var state = Tristate.UNDEFINED;
     var node = this;
@@ -56,9 +56,9 @@ public final class PermissionTree {
     return state;
   }
 
-  public void setPermission(final @NotNull String permission, final @NotNull Tristate state) {
+  public void setPermission(final String permission, final Tristate state) {
     if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
-      return;
+      throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
     }
     final var parts = permission.split("\\.", -1);
     var node = this;
@@ -84,7 +84,7 @@ public final class PermissionTree {
     }
   }
 
-  public @NotNull @Unmodifiable Map<String, Boolean> getPermissions() {
+  public Map<String, Boolean> getPermissions() {
     final Map<String, Boolean> permissions = new HashMap<>();
     for (final var child : children.entrySet()) {
       if (child.getValue().value != Tristate.UNDEFINED) {
@@ -95,18 +95,5 @@ public final class PermissionTree {
       }
     }
     return Collections.unmodifiableMap(permissions);
-  }
-
-  public void clear() {
-    children.clear();
-  }
-
-  @Override
-  public @NotNull String toString() {
-    if (parent == null) {
-      return "[" + children + "]";
-    } else {
-      return "[" + value + " > " + children + "]";
-    }
   }
 }

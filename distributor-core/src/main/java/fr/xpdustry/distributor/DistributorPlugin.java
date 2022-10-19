@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor;
 
 import arc.util.*;
+import cloud.commandframework.arguments.standard.*;
 import fr.xpdustry.distributor.command.*;
 import fr.xpdustry.distributor.command.sender.*;
 import fr.xpdustry.distributor.commands.*;
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
 // TODO Change the objects of Distributor to be loaded as services and not instances to be set
+// TODO Add a help command compatible with cloud based commands
 @SuppressWarnings("NullAway.Init")
 public final class DistributorPlugin extends ExtendedPlugin {
 
@@ -65,10 +67,6 @@ public final class DistributorPlugin extends ExtendedPlugin {
 
   public static @NotNull PermissionManager getPermissionManager() {
     return permissions;
-  }
-
-  public static void setPermissionManager(final PermissionManager permissions) {
-    DistributorPlugin.permissions = permissions;
   }
 
   @Override
@@ -109,28 +107,70 @@ public final class DistributorPlugin extends ExtendedPlugin {
     }
 
     scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
-    permissions = new SimplePermissionManager(getDirectory().resolve("permissions.yml"));
+    permissions = new SimplePermissionManager(getDirectory().resolve("permissions"));
   }
 
   @Override
   public void onServerCommandsRegistration(@NotNull CommandHandler handler) {
     serverCommands.initialize(handler);
+
+    {
+      final var parser = serverCommands.createAnnotationParser(CommandSender.class);
+      parser.stringProcessor(input -> input.replace("permissible", "player"));
+      parser.parse(new PlayerPermissibleCommand(permissions.getPlayerPermissionManager()));
+    }
+
+    {
+      final var parser = serverCommands.createAnnotationParser(CommandSender.class);
+      parser.stringProcessor(input -> input.replace("permissible", "group"));
+      parser.parse(new GroupPermissibleCommand(permissions.getGroupPermissionManager()));
+    }
+
+    // TODO Remove repeatability
+
+    serverCommands.command(
+      serverCommands
+        .commandBuilder("permission")
+        .literal("primary-group")
+        .argument(StringArgument.optional("primary-group"))
+        .handler(ctx -> {
+          if (ctx.contains("primary-group")) {
+            final var newPrimaryGroup = ctx.<String>get("primary-group");
+            if (permissions.getPrimaryGroup().equalsIgnoreCase(newPrimaryGroup)) {
+              ctx.getSender().sendMessage("The primary group is already set to " + newPrimaryGroup);
+            } else {
+              permissions.setPrimaryGroup(newPrimaryGroup);
+              ctx.getSender().sendMessage("The primary group has been set to " + newPrimaryGroup);
+            }
+          } else {
+            ctx.getSender().sendMessage("The primary group is set to " + permissions.getPrimaryGroup());
+          }
+        })
+    );
+
+    serverCommands.command(
+      serverCommands
+        .commandBuilder("permission")
+        .literal("verify-admin")
+        .argument(BooleanArgument.optional("verify-admin"))
+        .handler(ctx -> {
+          if (ctx.contains("verify-admin")) {
+            final boolean newStatus = ctx.<Boolean>get("verify-admin");
+            if (permissions.getVerifyAdmin() == newStatus) {
+              ctx.getSender().sendMessage("verify-admin is already set to " + newStatus);
+            } else {
+              permissions.setVerifyAdmin(newStatus);
+              ctx.getSender().sendMessage("verify-admin has been set to " + newStatus);
+            }
+          } else {
+            ctx.getSender().sendMessage("verify-admin is set to " + permissions.getVerifyAdmin());
+          }
+        })
+    );
   }
 
   @Override
   public void onClientCommandsRegistration(@NotNull CommandHandler handler) {
     clientCommands.initialize(handler);
-  }
-
-  @Override
-  public void onLoad() {
-    // Loads shared commands
-    final var commands = List.of(
-      new PermissionCommand(permissions)
-    );
-    for (final var manager : List.of(serverCommands, clientCommands)) {
-      final var parser = manager.createAnnotationParser(CommandSender.class);
-      commands.forEach(parser::parse);
-    }
   }
 }

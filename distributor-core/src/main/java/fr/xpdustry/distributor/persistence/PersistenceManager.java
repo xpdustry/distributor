@@ -19,38 +19,36 @@
 package fr.xpdustry.distributor.persistence;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.*;
 
-// TODO Decide whether to keep the completable futures or not
 public interface PersistenceManager<E, I> {
 
-  CompletableFuture<E> findOrCreateById(final I id);
+  void save(final E entity);
 
-  CompletableFuture<Optional<E>> findById(final I id);
-
-  CompletableFuture<List<E>> findAll();
-
-  CompletableFuture<Long> count();
-
-  default CompletableFuture<Boolean> existsById(final I id) {
-    return findById(id).thenApply(Optional::isPresent);
+  default void saveAll(final Iterable<E> entities) {
+    entities.forEach(this::save);
   }
 
-  CompletableFuture<Void> save(final E entity);
+  E findOrCreateById(final I id);
 
-  CompletableFuture<Void> deleteById(I id);
+  Optional<E> findById(final I id);
 
-  CompletableFuture<Void> delete(final E entity);
+  Iterable<E> findAll();
 
-  CompletableFuture<Void> deleteAll();
-
-  default CompletableFuture<Void> modify(final I id, final Consumer<E> action) {
-    return findOrCreateById(id)
-      .thenApplyAsync(entity -> {
-        action.accept(entity);
-        return entity;
-      })
-      .thenCompose(this::save);
+  default boolean existsById(final I id) {
+    return findById(id).isPresent();
   }
+
+  boolean exists(final E entity);
+
+  long count();
+
+  void deleteById(final I id);
+
+  void delete(final E entity);
+
+  default void deleteAll(final Iterable<E> entities) {
+    entities.forEach(this::delete);
+  }
+
+  void deleteAll();
 }
