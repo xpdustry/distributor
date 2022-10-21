@@ -42,19 +42,12 @@ jobs:
         id: upload
         run: |
           echo '::set-output name=CORE_ARTIFACT_PATH::'$(./gradlew :distributor-core:getArtifactPath -q)
-          echo '::set-output name=LOGGING_ARTIFACT_PATH::'$(./gradlew :distributor-logging:getArtifactPath -q)
 
       - name: Upload Artifact to Actions (Core)
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.event.repository.name }}
           path: ${{ steps.upload.outputs.CORE_ARTIFACT_PATH }}
-
-      - name: Upload Artifact to Actions (Logging)
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.event.repository.name }}
-          path: ${{ steps.upload.outputs.LOGGING_ARTIFACT_PATH }}
 
       - name: Publish to Xpdustry
         if: ${{ github.event_name != 'pull_request' }}
@@ -78,15 +71,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           asset_name: DistributorCore.jar
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ steps.upload.outputs.CORE_ARTIFACT_PATH }}
-          tag: ${{ github.ref }}
-
-      - name: Upload Artifact to Release (Logging)
-        if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
-        uses: svenstaro/upload-release-action@v2
-        with:
-          asset_name: DistributorLogging.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.upload.outputs.CORE_ARTIFACT_PATH }}
           tag: ${{ github.ref }}
