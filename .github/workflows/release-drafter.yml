@@ -19,6 +19,7 @@ jobs:
           branch=${GITHUB_REF#refs/heads/}
           tag=$(git tag -l --merged "$branch" "v*.*.*" --sort=-committerdate | head -n 1);
           echo "::set-output name=tag::$tag";
+
       - name: Generate Changelog
         uses: dlavrenuek/conventional-changelog-action@v1.2.0
         id: changelog
@@ -42,6 +43,7 @@ jobs:
           else
             echo "::set-output name=tag::${{ steps.semver.outputs.v_patch }}";
           fi
+
       - name: Draft release
         uses: ncipollo/release-action@v1
         with:
