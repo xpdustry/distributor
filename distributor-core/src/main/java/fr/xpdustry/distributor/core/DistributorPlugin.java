@@ -39,7 +39,6 @@ import org.aeonbits.owner.*;
 import org.checkerframework.checker.nullness.qual.*;
 import org.slf4j.*;
 
-// TODO Add a help command compatible with cloud based commands
 public final class DistributorPlugin extends ExtendedPlugin implements DistributorAPI {
 
   private final DelegatingLocalizationSource source = DelegatingLocalizationSource.create();
@@ -172,7 +171,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
   }
 
   @Override
-  public void setPermissionManager(PermissionService permissions) {
+  public void setPermissionManager(final PermissionService permissions) {
     this.permissions = permissions;
   }
 }

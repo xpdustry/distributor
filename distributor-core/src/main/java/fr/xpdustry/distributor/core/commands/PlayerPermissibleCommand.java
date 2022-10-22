@@ -23,14 +23,14 @@ import fr.xpdustry.distributor.api.permission.*;
 import fr.xpdustry.distributor.api.util.*;
 import java.util.*;
 
-public class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermissible> {
+public final class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermission> {
 
   public PlayerPermissibleCommand(final PermissionService service) {
     super(service, "player");
   }
 
   @Override
-  public Optional<PlayerPermissible> findPermissible(String input) {
+  protected Optional<PlayerPermission> findPermissible(String input) {
     final var players = Magik.findPlayers(input);
     if (players.isEmpty() && Magik.isUuid(input)) {
       return Optional.of(getManager().findOrCreateById(input));
@@ -42,7 +42,7 @@ public class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermissib
   }
 
   @Override
-  public Manager<PlayerPermissible, String> getManager() {
+  protected Manager<PlayerPermission, String> getManager() {
     return getPermissionManager().getPlayerPermissionManager();
   }
 }

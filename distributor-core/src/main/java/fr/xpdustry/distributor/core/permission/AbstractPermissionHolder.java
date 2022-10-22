@@ -22,7 +22,7 @@ import fr.xpdustry.distributor.api.permission.*;
 import fr.xpdustry.distributor.api.util.*;
 import java.util.*;
 
-public abstract class AbstractPermissible implements Permissible {
+public abstract class AbstractPermissionHolder implements PermissionHolder {
 
   private final Set<String> parents = new HashSet<>();
   private final PermissionTree tree = new PermissionTree();

@@ -83,9 +83,9 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
         return MessageFormat.format(format, arguments);
       } catch (final IllegalArgumentException e) {
         if (this.plugin instanceof ExtendedPlugin extended) {
-          extended.getLogger().error("Failed to format;", e);
+          extended.getLogger().error("Failed to format {}.", format, e);
         } else {
-          Log.err(e);
+          Log.err("Failed to format " + format + ".", e);
         }
         return "???" + format + "???";
       }
@@ -159,7 +159,13 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
       return true;
     }
     final var caller = backwardsCommandSenderMapper.apply(sender);
-    return caller.isConsole() || Distributor.getAPI().getPermissionService().getPermission(caller.getPlayer().uuid(), permission).asBoolean();
+    if (caller.isConsole()) {
+      return true;
+    }
+    return Distributor.getAPI()
+      .getPermissionService()
+      .getPermission(caller.getPlayer().uuid(), permission)
+      .asBoolean();
   }
 
   @Override

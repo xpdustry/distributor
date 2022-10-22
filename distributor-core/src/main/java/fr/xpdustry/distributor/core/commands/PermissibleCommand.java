@@ -30,7 +30,9 @@ import fr.xpdustry.distributor.api.util.*;
 import java.io.*;
 import java.util.*;
 
-public abstract class PermissibleCommand<P extends Permissible> {
+@CommandMethod("permission permissible")
+@CommandDescription("Permission management commands.")
+public abstract class PermissibleCommand<P extends PermissionHolder> {
 
   private final String category;
   private final PermissionService permissions;
@@ -40,15 +42,12 @@ public abstract class PermissibleCommand<P extends Permissible> {
     this.permissions = permissions;
   }
 
-  @CommandMethod("permission permissible <permissible> info")
+  @CommandPermission("distributor.permission.permissible.permission.info")
+  @CommandMethod("<permissible> info")
   public void getPermissibleInfo(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible
   ) {
-    if (checkViewPermissible(sender, permissible, formatPermission("permission.info"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     final var permissions = new TreeMap<>(permissible.getPermissions());
     if (permissions.isEmpty()) {
       sender.sendMessage(permissible.getName() + " have no set permissions.");
@@ -66,30 +65,24 @@ public abstract class PermissibleCommand<P extends Permissible> {
     }
   }
 
-  @CommandMethod("permission permissible <permissible> set <permission> <state>")
+  @CommandPermission("distributor.permission.permissible.permission.set")
+  @CommandMethod("<permissible> set <permission> <state>")
   public void setPermissiblePermission(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
-    final @Argument("permission") @Regex(Permissible.PERMISSION_REGEX) String permission,
+    final @Argument("permission") @Regex(PermissionHolder.PERMISSION_REGEX) String permission,
     final @Argument("state") boolean state
   ) {
-    if (checkEditPermissible(sender, permissible, formatPermission("permission.set"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     setPermissiblePermission(sender, permissible, permission, Tristate.of(state));
   }
 
-  @CommandMethod("permission permissible <permissible> unset <permission>")
+  @CommandPermission("distributor.permission.permissible.permission.unset")
+  @CommandMethod("<permissible> unset <permission>")
   public void setPermissiblePermission(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
-    final @Argument("permission") @Regex(Permissible.PERMISSION_REGEX) String permission
+    final @Argument("permission") @Regex(PermissionHolder.PERMISSION_REGEX) String permission
   ) {
-    if (checkEditPermissible(sender, permissible, formatPermission("permission.unset"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     setPermissiblePermission(sender, permissible, permission, Tristate.UNDEFINED);
   }
 
@@ -108,15 +101,12 @@ public abstract class PermissibleCommand<P extends Permissible> {
     }
   }
 
-  @CommandMethod("permission permissible <permissible> parent info")
+  @CommandPermission("distributor.permission.permissible.parent.info")
+  @CommandMethod("<permissible> parent info")
   public void getPermissibleParentsInfo(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible
   ) {
-    if (checkViewPermissible(sender, permissible, formatPermission("parent.info"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     if (permissible.getParentGroups().isEmpty()) {
       sender.sendMessage("The player " + permissible.getName() + " has no parent groups.");
     } else {
@@ -132,16 +122,13 @@ public abstract class PermissibleCommand<P extends Permissible> {
     }
   }
 
-  @CommandMethod("permission permissible <permissible> parent add <parent>")
+  @CommandPermission("distributor.permission.permissible.parent.add")
+  @CommandMethod("<permissible> parent add <parent>")
   public void addPermissibleParent(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
     final @Argument("parent") String parent
   ) {
-    if (checkEditPermissible(sender, permissible, formatPermission("parent.add"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     if (permissible.getParentGroups().contains(parent)) {
       sender.sendWarning("The " + category + " is already in the group " + parent);
     } else {
@@ -151,16 +138,13 @@ public abstract class PermissibleCommand<P extends Permissible> {
     }
   }
 
-  @CommandMethod("permission permissible <permissible> parent remove <parent>")
+  @CommandPermission("distributor.permission.permissible.parent.remove")
+  @CommandMethod("<permissible> parent remove <parent>")
   public void removePermissibleParent(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
     final @Argument("parent") String parent
   ) {
-    if (checkEditPermissible(sender, permissible, formatPermission("parent.remove"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     if (permissible.getParentGroups().contains(parent)) {
       permissible.removeParent(parent);
       getManager().save(permissible);
@@ -170,15 +154,12 @@ public abstract class PermissibleCommand<P extends Permissible> {
     }
   }
 
-  @CommandMethod("permission permissible <permissible> delete")
+  @CommandPermission("distributor.permission.permissible.delete")
+  @CommandMethod("<permissible> delete")
   public void deletePermissionPermissions(
     final CommandSender sender,
     final @Argument(value = "permissible", parserName = "permissible-parser") P permissible
   ) {
-    if (checkEditPermissible(sender, permissible, formatPermission("delete"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
     if (getManager().exists(permissible)) {
       sender.sendMessage("No permission data is attached to this " + category + ".");
     } else {
@@ -202,65 +183,13 @@ public abstract class PermissibleCommand<P extends Permissible> {
     throw new PermissibleParseException((Class<? extends PermissibleCommand<?>>) this.getClass(), input, ctx);
   }
 
-  public abstract Optional<P> findPermissible(final String input);
+  protected abstract Optional<P> findPermissible(final String input);
 
-  public abstract Manager<P, String> getManager();
+  protected abstract Manager<P, String> getManager();
 
-  public final PermissionService getPermissionManager() {
+  protected final PermissionService getPermissionManager() {
     return permissions;
   }
-
-  protected boolean checkPermissibleAction(final CommandSender sender, final P target, final String permission, final String action) {
-    if (sender.isPlayer()) {
-      if (target instanceof PlayerPermissible permissible) {
-        final var category = permissible.getUuid().equals(sender.getPlayer().uuid()) ? "self" : "others";
-        var value = permissions.getPermission(
-          sender.getPlayer().uuid(),
-          String.join(".", permission, category)
-        );
-        if (value == Tristate.UNDEFINED) {
-          value = permissions.getPermission(
-            sender.getPlayer().uuid(),
-            String.join(".", "distributor.permission.player", category)
-          );
-        }
-        return !value.asBoolean();
-      } else if (target instanceof GroupPermissible permissible) {
-        var value = permissions.getPermission(
-          sender.getPlayer().uuid(),
-          String.join(".", permission, permissible.getName())
-        );
-        if (value == Tristate.UNDEFINED) {
-          value = permissions.getPermission(
-            sender.getPlayer().uuid(),
-            "distributor.permission.group." + permissible.getName()
-          );
-        }
-        return !value.asBoolean();
-      } else {
-        throw new IllegalStateException("Unknown permissible instance " + target.getClass());
-      }
-    }
-    return false;
-  }
-
-  protected boolean checkEditPermissible(final CommandSender sender, final P target, final String permission) {
-    return checkPermissibleAction(sender, target, permission, "edit");
-  }
-
-  protected boolean checkViewPermissible(final CommandSender sender, final P target, final String permission) {
-    return checkPermissibleAction(sender, target, permission, "view");
-  }
-
-  protected String formatPermission(final String permission) {
-    return String.join(".", "distributor.permission", category, permission);
-  }
-
-  /*
-  protected boolean checkModifyPermission(final CommandSender sender, final P permissible, final String action) {
-    return checkModifyPermission(sender, permissible, action, null);
-  }
-   */
 
   public static class PermissibleParseException extends ParserException {
 

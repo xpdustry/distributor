@@ -38,7 +38,7 @@ public final class PermissionTree {
   }
 
   public Tristate getPermission(final String permission) {
-    if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
+    if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
       throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
     }
     var state = Tristate.UNDEFINED;
@@ -58,7 +58,7 @@ public final class PermissionTree {
   }
 
   public void setPermission(final String permission, final Tristate state) {
-    if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
+    if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
       throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
     }
     final var parts = permission.split("\\.", -1);

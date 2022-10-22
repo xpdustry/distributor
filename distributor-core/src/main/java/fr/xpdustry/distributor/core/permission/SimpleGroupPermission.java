@@ -19,27 +19,28 @@
 package fr.xpdustry.distributor.core.permission;
 
 import fr.xpdustry.distributor.api.permission.*;
-import mindustry.*;
 
-public final class SimplePlayerPermissible extends AbstractPermissible implements PlayerPermissible {
+public final class SimpleGroupPermission extends AbstractPermissionHolder implements GroupPermission {
 
-  private final String uuid;
+  private final String name;
+  private int weight = 0;
 
-  public SimplePlayerPermissible(final String uuid) {
-    this.uuid = uuid;
+  public SimpleGroupPermission(final String name) {
+    this.name = name;
   }
 
   @Override
   public String getName() {
-    if (Vars.netServer != null) {
-      final var info = Vars.netServer.admins.getInfoOptional(uuid);
-      return info == null ? "unknown" : info.lastName;
-    }
-    return "unknown";
+    return name;
   }
 
   @Override
-  public String getUuid() {
-    return uuid;
+  public int getWeight() {
+    return weight;
+  }
+
+  @Override
+  public void setWeight(final int weight) {
+    this.weight = weight;
   }
 }

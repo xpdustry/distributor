@@ -103,14 +103,17 @@ public final class SimplePermissionServiceTest {
       player.addParent(GROUP1);
       player.addParent(GROUP2);
     });
+
     setupGroup(GROUP1, group -> {
       group.setPermission(PERMISSION1, Tristate.FALSE);
       group.setWeight(10);
     });
+
     setupGroup(GROUP2, group -> {
       group.setPermission(PERMISSION1, Tristate.TRUE);
       group.setWeight(20);
     });
+
     Assertions.assertTrue(manager.getPermission(PLAYER, PERMISSION1).asBoolean());
   }
 
@@ -120,14 +123,14 @@ public final class SimplePermissionServiceTest {
     Assertions.assertTrue(manager.getPermission(PLAYER, PERMISSION2).asBoolean());
   }
 
-  private void setupPlayer(final Consumer<PlayerPermissible> setup) {
+  private void setupPlayer(final Consumer<PlayerPermission> setup) {
     final var players = manager.getPlayerPermissionManager();
     final var player = players.findOrCreateById(SimplePermissionServiceTest.PLAYER);
     setup.accept(player);
     players.save(player);
   }
 
-  private void setupGroup(final String name, final Consumer<GroupPermissible> setup) {
+  private void setupGroup(final String name, final Consumer<GroupPermission> setup) {
     final var groups = manager.getGroupPermissionManager();
     final var group = groups.findOrCreateById(name);
     setup.accept(group);

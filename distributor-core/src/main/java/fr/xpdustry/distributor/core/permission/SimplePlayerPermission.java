@@ -16,34 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.test;
+package fr.xpdustry.distributor.core.permission;
 
-import arc.*;
-import java.util.concurrent.*;
-import mindustry.server.*;
-import org.junit.jupiter.api.extension.*;
+import fr.xpdustry.distributor.api.permission.*;
+import mindustry.*;
 
-// TODO Testing this thing
-public final class MindustryServerExtension implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
+public final class SimplePlayerPermission extends AbstractPermissionHolder implements PlayerPermission {
 
-  @Override
-  public void beforeAll(final ExtensionContext context) {
-    if (Core.app == null) {
-      System.out.println("Starting Mindustry server");
-      ServerLauncher.main(new String[] {});
-      final var future = new CompletableFuture<Void>();
-      Core.app.addListener(new ApplicationListener() {
-        @Override
-        public void init() {
-          future.complete(null);
-        }
-      });
-      future.orTimeout(10L, TimeUnit.SECONDS).join();
-    }
+  private final String uuid;
+
+  public SimplePlayerPermission(final String uuid) {
+    this.uuid = uuid;
   }
 
   @Override
-  public void close() {
-    Core.app.exit();
+  public String getName() {
+    if (Vars.netServer != null) {
+      final var info = Vars.netServer.admins.getInfoOptional(uuid);
+      return info == null ? "unknown" : info.lastName;
+    }
+    return "unknown";
+  }
+
+  @Override
+  public String getUuid() {
+    return uuid;
   }
 }

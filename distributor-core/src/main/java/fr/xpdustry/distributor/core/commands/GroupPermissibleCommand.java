@@ -25,14 +25,40 @@ import fr.xpdustry.distributor.api.manager.*;
 import fr.xpdustry.distributor.api.permission.*;
 import java.util.*;
 
-public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermissible> {
+public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermission> {
 
   public GroupPermissibleCommand(final PermissionService service) {
     super(service, "group");
   }
 
+  @CommandPermission("distributor.permission.group.weight.info")
+  @CommandMethod("<group> weight info")
+  public void getGroupPermissibleWeight(
+    final CommandSender sender,
+    final @Argument(value = "group", parserName = "group-parser") GroupPermission permissible
+  ) {
+    sender.sendMessage("The group " + permissible.getName() + " has a weight of " + permissible.getWeight());
+  }
+
+  @CommandPermission("distributor.permission.group.weight.edit")
+  @CommandMethod("<group> weight <weight>")
+  public void setGroupPermissibleWeight(
+    final CommandSender sender,
+    final @Argument(value = "group", parserName = "group-parser") GroupPermission permissible,
+    final @Argument("weight") @Range(min = "0") int weight
+  ) {
+    if (permissible.getWeight() == weight) {
+      sender.sendMessage(permissible.getName() + " already have a weight of " + weight);
+    } else {
+      permissible.setWeight(weight);
+      getManager().save(permissible);
+      sender.sendMessage("The weight of " + permissible.getName() + " has been set to " + weight);
+    }
+  }
+
+  // FIXME For some reason, putting this method as the first produce a class cast exception...
   @CommandPermission("distributor.permission.group.create")
-  @CommandMethod("permission create-group <group>")
+  @CommandMethod("<group> create")
   public void createGroupPermissible(
     final CommandSender sender,
     final @Argument(value = "group") String group
@@ -45,44 +71,13 @@ public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermi
     }
   }
 
-  @CommandMethod("permission group <group> weight info")
-  public void getGroupPermissibleWeight(
-    final CommandSender sender,
-    final @Argument(value = "group", parserName = "group-parser") GroupPermissible permissible
-  ) {
-    if (checkViewPermissible(sender, permissible, formatPermission("weight.info"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
-    sender.sendMessage("The group " + permissible.getName() + " has a weight of " + permissible.getWeight());
-  }
-
-  @CommandMethod("permission group <group> weight <weight>")
-  public void setGroupPermissibleWeight(
-    final CommandSender sender,
-    final @Argument(value = "group", parserName = "group-parser") GroupPermissible permissible,
-    final @Argument("weight") @Range(min = "0") int weight
-  ) {
-    if (checkEditPermissible(sender, permissible, formatPermission("weight.set"))) {
-      sender.sendWarning("You cannot execute this action.");
-      return;
-    }
-    if (permissible.getWeight() == weight) {
-      sender.sendMessage(permissible.getName() + " already have a weight of " + weight);
-    } else {
-      permissible.setWeight(weight);
-      getManager().save(permissible);
-      sender.sendMessage("The weight of " + permissible.getName() + " has been set to " + weight);
-    }
-  }
-
   @Override
-  public Optional<GroupPermissible> findPermissible(String input) {
+  protected Optional<GroupPermission> findPermissible(String input) {
     return getManager().findById(input.toLowerCase(Locale.ROOT));
   }
 
   @Override
-  public Manager<GroupPermissible, String> getManager() {
+  protected Manager<GroupPermission, String> getManager() {
     return getPermissionManager().getGroupPermissionManager();
   }
 }

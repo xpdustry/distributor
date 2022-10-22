@@ -26,7 +26,7 @@ import java.util.*;
 import org.spongepowered.configurate.*;
 import org.spongepowered.configurate.yaml.*;
 
-public abstract class AbstractPermissibleManager<E extends Permissible> implements Manager<E, String> {
+public abstract class AbstractPermissibleManager<E extends PermissionHolder> implements Manager<E, String> {
 
   private final Map<String, E> permissibles = new HashMap<>();
   private final YamlConfigurationLoader loader;

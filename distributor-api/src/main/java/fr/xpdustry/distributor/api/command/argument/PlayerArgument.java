@@ -183,7 +183,6 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
   }
 
-  // TODO Make documentation
   public static final class TooManyPlayersFoundException extends PlayerParseException {
 
     @Serial
@@ -194,7 +193,6 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
   }
 
-  // TODO Make documentation
   public static final class PlayerNotFoundException extends PlayerParseException {
 
     @Serial

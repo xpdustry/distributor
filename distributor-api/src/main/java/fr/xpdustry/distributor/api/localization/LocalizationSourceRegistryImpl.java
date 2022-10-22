@@ -25,7 +25,7 @@ import org.checkerframework.checker.nullness.qual.*;
 
 final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry {
 
-  private final Map<String, Translation> entries = new ConcurrentHashMap<>();
+  private final Map<String, Localization> entries = new ConcurrentHashMap<>();
 
   @Override
   public @Nullable MessageFormat localize(String key, Locale locale) {
@@ -34,7 +34,7 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
 
   @Override
   public void register(String key, Locale locale, MessageFormat format) {
-    if (!this.entries.computeIfAbsent(key, k -> new Translation()).register(locale, format)) {
+    if (!this.entries.computeIfAbsent(key, k -> new Localization()).register(locale, format)) {
       throw new IllegalArgumentException(String.format("A localization is already present: %s for %s.", locale, key));
     }
   }
@@ -44,11 +44,11 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
     this.entries.remove(key);
   }
 
-  private static final class Translation {
+  private static final class Localization {
 
     private final Map<Locale, MessageFormat> formats;
 
-    private Translation() {
+    private Localization() {
       this.formats = new ConcurrentHashMap<>();
     }
 

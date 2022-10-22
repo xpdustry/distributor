@@ -31,11 +31,11 @@ import org.spongepowered.configurate.yaml.*;
 public final class SimplePermissionService implements PermissionService {
 
   private static final Logger logger = LoggerFactory.getLogger(SimplePermissionService.class);
-  private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
-    Comparator.comparing(GroupPermissible::getWeight).reversed();
+  private static final Comparator<GroupPermission> GROUP_COMPARATOR =
+    Comparator.comparing(GroupPermission::getWeight).reversed();
 
-  private final PlayerPermissibleManager players;
-  private final GroupPermissibleManager groups;
+  private final PlayerPermissionManager players;
+  private final GroupPermissionManager groups;
   private final YamlConfigurationLoader loader;
 
   private String primaryGroup;
@@ -48,8 +48,8 @@ public final class SimplePermissionService implements PermissionService {
       .nodeStyle(NodeStyle.BLOCK)
       .build();
 
-    this.players = new SimplePlayerPermissibleManager(directory.resolve("players.yaml"));
-    this.groups = new SimpleGroupPermissibleManager(directory.resolve("groups.yaml"));
+    this.players = new SimplePlayerPermissionManager(directory.resolve("players.yaml"));
+    this.groups = new SimpleGroupPermissionManager(directory.resolve("groups.yaml"));
 
     try {
       final var root = loader.load();
@@ -73,7 +73,7 @@ public final class SimplePermissionService implements PermissionService {
     final var perm = permission.toLowerCase(Locale.ROOT);
     var state = Tristate.UNDEFINED;
     final var visited = new HashSet<String>();
-    final Queue<Permissible> queue = new ArrayDeque<>();
+    final Queue<PermissionHolder> queue = new ArrayDeque<>();
     final var player = players.findById(uuid);
     final var primary = groups.findById(primaryGroup);
 
@@ -132,12 +132,12 @@ public final class SimplePermissionService implements PermissionService {
   }
 
   @Override
-  public PlayerPermissibleManager getPlayerPermissionManager() {
+  public PlayerPermissionManager getPlayerPermissionManager() {
     return players;
   }
 
   @Override
-  public GroupPermissibleManager getGroupPermissionManager() {
+  public GroupPermissionManager getGroupPermissionManager() {
     return groups;
   }
 

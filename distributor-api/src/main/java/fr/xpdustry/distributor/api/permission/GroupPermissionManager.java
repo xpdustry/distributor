@@ -16,31 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.api.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
+import fr.xpdustry.distributor.api.manager.*;
 
-public final class SimpleGroupPermissible extends AbstractPermissible implements GroupPermissible {
+public interface GroupPermissionManager extends Manager<GroupPermission, String> {
 
-  private final String name;
-  private int weight = 0;
-
-  public SimpleGroupPermissible(final String name) {
-    this.name = name;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public int getWeight() {
-    return weight;
-  }
-
-  @Override
-  public void setWeight(final int weight) {
-    this.weight = weight;
-  }
 }

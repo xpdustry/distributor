@@ -18,9 +18,7 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-public interface GroupPermissible extends Permissible {
+public interface PlayerPermission extends PermissionHolder {
 
-  int getWeight();
-
-  void setWeight(int weight);
+  String getUuid();
 }

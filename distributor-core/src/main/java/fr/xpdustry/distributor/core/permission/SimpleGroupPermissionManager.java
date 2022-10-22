@@ -22,31 +22,31 @@ import fr.xpdustry.distributor.api.permission.*;
 import java.nio.file.*;
 import org.spongepowered.configurate.*;
 
-public final class SimpleGroupPermissibleManager extends AbstractPermissibleManager<GroupPermissible> implements GroupPermissibleManager {
+public final class SimpleGroupPermissionManager extends AbstractPermissibleManager<GroupPermission> implements GroupPermissionManager {
 
-  public SimpleGroupPermissibleManager(final Path path) {
+  public SimpleGroupPermissionManager(final Path path) {
     super(path);
   }
 
   @Override
-  void loadPermissibleData(GroupPermissible permissible, ConfigurationNode node) throws ConfigurateException {
+  void loadPermissibleData(GroupPermission permissible, ConfigurationNode node) throws ConfigurateException {
     permissible.setWeight(node.node("weight").getInt());
     super.loadPermissibleData(permissible, node);
   }
 
   @Override
-  void savePermissibleData(GroupPermissible permissible, ConfigurationNode node) throws ConfigurateException {
+  void savePermissibleData(GroupPermission permissible, ConfigurationNode node) throws ConfigurateException {
     node.node("weight").set(permissible.getWeight());
     super.savePermissibleData(permissible, node);
   }
 
   @Override
-  protected GroupPermissible createPermissible(String id) {
-    return new SimpleGroupPermissible(id);
+  protected GroupPermission createPermissible(String id) {
+    return new SimpleGroupPermission(id);
   }
 
   @Override
-  protected String extractId(GroupPermissible permissible) {
+  protected String extractId(GroupPermission permissible) {
     return permissible.getName();
   }
 }

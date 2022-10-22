@@ -32,7 +32,7 @@ public interface PermissionService {
 
   void setVerifyAdmin(final boolean status);
 
-  PlayerPermissibleManager getPlayerPermissionManager();
+  PlayerPermissionManager getPlayerPermissionManager();
 
-  GroupPermissibleManager getGroupPermissionManager();
+  GroupPermissionManager getGroupPermissionManager();
 }
