@@ -9,8 +9,6 @@
 **Distributor** is a plugin framework which provides a powerful command system,
 better Mindustry API bindings and other nice features, making plugin development time much faster.
 
-Here is the list of the available modules:
-
 ## Usage
 
 To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such as :
