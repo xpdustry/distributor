@@ -23,7 +23,7 @@ Then, add the needed artifacts in your dependencies :
 
 ```gradle
 dependencies {
-    compileOnly("fr.xpdustry:distributor-api:3.0.0-rc1")
+    compileOnly("fr.xpdustry:distributor-api:3.0.0-rc.1")
 }
 ```
 
@@ -36,6 +36,8 @@ After that, add the internal name of the module you are using in your `plugin.js
   ]
 }
 ```
+
+Access the api in-code with `Distributor.getAPI()`, and enjoy.
 
 Finally, when you are ready to deploy your plugin, get the necessary Distributor jars :
 
