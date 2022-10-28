@@ -18,17 +18,26 @@
  */
 package fr.xpdustry.distributor.api;
 
-import fr.xpdustry.distributor.api.localization.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.scheduler.*;
+import org.checkerframework.checker.nullness.qual.*;
 
-public interface DistributorAPI {
+public final class DistributorProvider {
 
-  DelegatingLocalizationSource getGlobalLocalizationSource();
+  private static @Nullable Distributor instance = null;
 
-  PluginScheduler getPluginScheduler();
+  public static Distributor get() {
+    if (DistributorProvider.instance == null) {
+      throw new IllegalStateException("The API hasn't been initialized yet.");
+    }
+    return DistributorProvider.instance;
+  }
 
-  PermissionService getPermissionService();
+  public static void set(final Distributor distributor) {
+    if (DistributorProvider.instance != null) {
+      throw new IllegalStateException("The API has already been initialized.");
+    }
+    DistributorProvider.instance = distributor;
+  }
 
-  void setPermissionManager(final PermissionService permissions);
+  private DistributorProvider() {
+  }
 }

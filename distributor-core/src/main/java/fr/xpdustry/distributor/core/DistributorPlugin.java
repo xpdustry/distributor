@@ -26,6 +26,7 @@ import fr.xpdustry.distributor.api.localization.*;
 import fr.xpdustry.distributor.api.permission.*;
 import fr.xpdustry.distributor.api.plugin.*;
 import fr.xpdustry.distributor.api.scheduler.*;
+import fr.xpdustry.distributor.api.secutiry.*;
 import fr.xpdustry.distributor.core.commands.*;
 import fr.xpdustry.distributor.core.config.*;
 import fr.xpdustry.distributor.core.logging.*;
@@ -35,11 +36,12 @@ import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
+import mindustry.*;
 import org.aeonbits.owner.*;
 import org.checkerframework.checker.nullness.qual.*;
 import org.slf4j.*;
 
-public final class DistributorPlugin extends ExtendedPlugin implements DistributorAPI {
+public final class DistributorPlugin extends ExtendedPlugin implements Distributor {
 
   private final DelegatingLocalizationSource source = DelegatingLocalizationSource.create();
   private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
@@ -47,14 +49,22 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
 
   private @MonotonicNonNull PluginScheduler scheduler = null;
   private @MonotonicNonNull PermissionService permissions = null;
+  private MUUIDAuthenticator authenticator = muuid -> true;
 
-  {
+  static {
     // Class loader trickery to use the ModClassLoader instead of the root
     final var temp = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-    LoggerFactory.getILoggerFactory();
+    Thread.currentThread().setContextClassLoader(Vars.mods.mainLoader());
+    if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
+      throw new RuntimeException("""
+        The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).
+        Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.
+        """.formatted(LoggerFactory.getILoggerFactory().getClass().getName()));
+    }
     Thread.currentThread().setContextClassLoader(temp);
+  }
 
+  {
     final var registry = LocalizationSourceRegistry.create();
     registry.registerAll(Locale.ENGLISH, "bundles/bundle", getClass().getClassLoader());
     registry.registerAll(Locale.FRENCH, "bundles/bundle", getClass().getClassLoader());
@@ -70,8 +80,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
       final var input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("banner.txt"));
       final var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))
     ) {
-      final var marker = MarkerFactory.getMarker("NO_NAME");
-      reader.lines().forEach(line -> getLogger().info(marker, "> {}", line));
+      reader.lines().forEach(line -> LoggerFactory.getLogger("ROOT").info("> {}", line));
       getLogger().info("> Loaded Distributor core v{}", getDescriptor().getVersion());
     } catch (final IOException e) {
       getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
@@ -101,16 +110,10 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
       }
     }
 
-    if (getLogger() instanceof ArcLogger) {
-      getLogger().info("Successfully loaded Distributor slf4j.");
-    } else {
-      Log.warn("Failed to load Distributor logger.");
-    }
-
     scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
     permissions = new SimplePermissionService(getDirectory().resolve("permissions"));
 
-    Distributor.setAPI(this);
+    DistributorProvider.set(this);
   }
 
   @Override
@@ -173,5 +176,15 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
   @Override
   public void setPermissionManager(final PermissionService permissions) {
     this.permissions = permissions;
+  }
+
+  @Override
+  public MUUIDAuthenticator getMUUIDAuthenticator() {
+    return authenticator;
+  }
+
+  @Override
+  public void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator) {
+    this.authenticator = authenticator;
   }
 }

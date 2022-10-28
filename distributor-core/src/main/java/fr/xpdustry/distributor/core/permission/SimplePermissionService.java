@@ -18,19 +18,18 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
+import fr.xpdustry.distributor.api.*;
 import fr.xpdustry.distributor.api.permission.*;
+import fr.xpdustry.distributor.api.secutiry.*;
 import fr.xpdustry.distributor.api.util.*;
 import java.nio.file.*;
 import java.util.*;
 import mindustry.*;
-import org.slf4j.*;
-import org.slf4j.Logger;
 import org.spongepowered.configurate.*;
 import org.spongepowered.configurate.yaml.*;
 
 public final class SimplePermissionService implements PermissionService {
 
-  private static final Logger logger = LoggerFactory.getLogger(SimplePermissionService.class);
   private static final Comparator<GroupPermission> GROUP_COMPARATOR =
     Comparator.comparing(GroupPermission::getWeight).reversed();
 
@@ -61,20 +60,23 @@ public final class SimplePermissionService implements PermissionService {
   }
 
   @Override
-  public Tristate getPermission(String uuid, String permission) {
-    logger.trace("Lookup permission {} for {}.", permission, uuid);
+  public Tristate getPermission(final MUUID muuid, final String permission) {
     if (verifyAdmin) {
-      final var info = Vars.netServer.admins.getInfoOptional(uuid);
+      final var info = Vars.netServer.admins.getInfoOptional(muuid.getUuid());
       if (info != null && info.admin) {
         return Tristate.TRUE;
       }
+    }
+
+    if (!DistributorProvider.get().getMUUIDAuthenticator().authenticate(muuid)) {
+      return Tristate.UNDEFINED;
     }
 
     final var perm = permission.toLowerCase(Locale.ROOT);
     var state = Tristate.UNDEFINED;
     final var visited = new HashSet<String>();
     final Queue<PermissionHolder> queue = new ArrayDeque<>();
-    final var player = players.findById(uuid);
+    final var player = players.findById(muuid.getUuid());
     final var primary = groups.findById(primaryGroup);
 
     if (player.isPresent()) {
@@ -115,7 +117,7 @@ public final class SimplePermissionService implements PermissionService {
   }
 
   @Override
-  public void setPrimaryGroup(String group) {
+  public void setPrimaryGroup(final String group) {
     this.primaryGroup = group;
     save();
   }
@@ -126,8 +128,8 @@ public final class SimplePermissionService implements PermissionService {
   }
 
   @Override
-  public void setVerifyAdmin(boolean status) {
-    this.verifyAdmin = status;
+  public void setVerifyAdmin(final boolean verify) {
+    this.verifyAdmin = verify;
     save();
   }
 

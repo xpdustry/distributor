@@ -31,6 +31,7 @@ import fr.xpdustry.distributor.api.command.argument.TeamArgument.*;
 import fr.xpdustry.distributor.api.command.sender.*;
 import fr.xpdustry.distributor.api.command.specifier.*;
 import fr.xpdustry.distributor.api.plugin.*;
+import fr.xpdustry.distributor.api.secutiry.*;
 import fr.xpdustry.distributor.api.util.*;
 import io.leangen.geantyref.*;
 import java.text.*;
@@ -68,12 +69,11 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
 
     registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
     captionRegistry((caption, sender) -> {
-      final var source = Distributor.getAPI().getGlobalLocalizationSource();
+      final var source = DistributorProvider.get().getGlobalLocalizationSource();
       final var locale = getBackwardsCommandSenderMapper().apply(sender).getLocale();
       final var format = source.localize(caption.getKey(), locale);
       return format != null ? format.toPattern() : "???" + caption.getKey() + "???";
     });
-
     captionVariableReplacementHandler((format, variables) -> {
       final var arguments = new Object[variables.length];
       for (int i = 0; i < variables.length; i++) {
@@ -162,9 +162,9 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     if (caller.isConsole()) {
       return true;
     }
-    return Distributor.getAPI()
+    return DistributorProvider.get()
       .getPermissionService()
-      .getPermission(caller.getPlayer().uuid(), permission)
+      .getPermission(MUUID.of(caller.getPlayer()), permission)
       .asBoolean();
   }
 

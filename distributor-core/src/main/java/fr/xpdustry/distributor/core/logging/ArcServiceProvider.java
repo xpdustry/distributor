@@ -18,16 +18,21 @@
  */
 package fr.xpdustry.distributor.core.logging;
 
+import org.checkerframework.checker.nullness.qual.*;
 import org.slf4j.*;
 import org.slf4j.helpers.*;
 import org.slf4j.spi.*;
 
-@SuppressWarnings("NullAway.Init")
 public final class ArcServiceProvider implements SLF4JServiceProvider {
 
-  private ILoggerFactory loggerFactory;
-  private IMarkerFactory markerFactory;
-  private MDCAdapter mdcAdapter;
+  @MonotonicNonNull
+  private ILoggerFactory loggerFactory = null;
+
+  @MonotonicNonNull
+  private IMarkerFactory markerFactory = null;
+
+  @MonotonicNonNull
+  private MDCAdapter mdcAdapter = null;
 
   @Override
   public ILoggerFactory getLoggerFactory() {

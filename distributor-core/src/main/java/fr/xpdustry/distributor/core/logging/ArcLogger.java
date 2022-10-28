@@ -21,18 +21,20 @@ package fr.xpdustry.distributor.core.logging;
 import arc.util.*;
 import fr.xpdustry.distributor.api.plugin.*;
 import java.io.*;
+import java.util.*;
 import mindustry.mod.*;
 import org.slf4j.*;
 import org.slf4j.event.*;
 import org.slf4j.helpers.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class ArcLogger extends AbstractLogger {
+public final class ArcLogger extends AbstractLogger {
 
   @Serial
   private static final long serialVersionUID = 3476499937056865545L;
 
   @SuppressWarnings("unchecked")
-  ArcLogger(final String name) {
+  public ArcLogger(final String name) {
     try {
       final var caller = Class.forName(name);
       if (Plugin.class.isAssignableFrom(caller)) {
@@ -46,77 +48,73 @@ public class ArcLogger extends AbstractLogger {
   }
 
   @Override
+  public boolean isTraceEnabled() {
+    return isArcLogLevelAtLeast(Log.LogLevel.debug);
+  }
+
+  @Override
+  public boolean isTraceEnabled(Marker marker) {
+    return isArcLogLevelAtLeast(Log.LogLevel.debug);
+  }
+
+  @Override
+  public boolean isDebugEnabled() {
+    return isArcLogLevelAtLeast(Log.LogLevel.debug);
+  }
+
+  @Override
+  public boolean isDebugEnabled(Marker marker) {
+    return isArcLogLevelAtLeast(Log.LogLevel.debug);
+  }
+
+  @Override
+  public boolean isInfoEnabled() {
+    return isArcLogLevelAtLeast(Log.LogLevel.info);
+  }
+
+  @Override
+  public boolean isInfoEnabled(Marker marker) {
+    return isArcLogLevelAtLeast(Log.LogLevel.info);
+  }
+
+  @Override
+  public boolean isWarnEnabled() {
+    return isArcLogLevelAtLeast(Log.LogLevel.warn);
+  }
+
+  @Override
+  public boolean isWarnEnabled(Marker marker) {
+    return isArcLogLevelAtLeast(Log.LogLevel.warn);
+  }
+
+  @Override
+  public boolean isErrorEnabled() {
+    return isArcLogLevelAtLeast(Log.LogLevel.err);
+  }
+
+  @Override
+  public boolean isErrorEnabled(Marker marker) {
+    return isArcLogLevelAtLeast(Log.LogLevel.err);
+  }
+
+  @Override
   protected @Nullable String getFullyQualifiedCallerName() {
     return null;
   }
 
   @Override
-  protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
-    final var string = formatLog(marker, messagePattern, arguments);
-    if (arguments != null && arguments.length == 0 && throwable != null && level == Level.ERROR) {
-      Log.err(string, throwable);
-    } else {
-      Log.log(getNativeLogLevel(level), string);
-      if (throwable != null) {
-        Log.err(throwable);
-      }
-    }
-  }
-
-  @Override
-  public boolean isTraceEnabled() {
-    return isNativeLogLevelAtLeast(Log.LogLevel.debug);
-  }
-
-  @Override
-  public boolean isTraceEnabled(Marker marker) {
-    return isNativeLogLevelAtLeast(Log.LogLevel.debug);
-  }
-
-  @Override
-  public boolean isDebugEnabled() {
-    return isNativeLogLevelAtLeast(Log.LogLevel.debug);
-  }
-
-  @Override
-  public boolean isDebugEnabled(Marker marker) {
-    return isNativeLogLevelAtLeast(Log.LogLevel.debug);
-  }
-
-  @Override
-  public boolean isInfoEnabled() {
-    return isNativeLogLevelAtLeast(Log.LogLevel.info);
-  }
-
-  @Override
-  public boolean isInfoEnabled(Marker marker) {
-    return isNativeLogLevelAtLeast(Log.LogLevel.info);
-  }
-
-  @Override
-  public boolean isWarnEnabled() {
-    return isNativeLogLevelAtLeast(Log.LogLevel.warn);
-  }
-
-  @Override
-  public boolean isWarnEnabled(Marker marker) {
-    return isNativeLogLevelAtLeast(Log.LogLevel.warn);
-  }
-
-  @Override
-  public boolean isErrorEnabled() {
-    return isNativeLogLevelAtLeast(Log.LogLevel.err);
-  }
-
-  @Override
-  public boolean isErrorEnabled(Marker marker) {
-    return isNativeLogLevelAtLeast(Log.LogLevel.err);
-  }
-
-  private String formatLog(Marker marker, String messagePattern, Object[] arguments) {
+  protected void handleNormalizedLoggingCall(
+    final Level level,
+    final @Nullable Marker marker,
+    final String messagePattern,
+    @Nullable Object @Nullable [] arguments,
+    @Nullable Throwable throwable
+  ) {
     final var builder = new StringBuilder();
-    if (!(name.equals(ROOT_LOGGER_NAME) || (marker != null && marker.contains("NO_NAME")))) {
-      builder.append(ColorCodes.white)
+
+    if (!name.equals(ROOT_LOGGER_NAME)) {
+      builder
+        .append(ColorCodes.white)
         .append('[')
         .append(ColorCodes.reset)
         .append(name)
@@ -125,16 +123,31 @@ public class ArcLogger extends AbstractLogger {
         .append(ColorCodes.reset)
         .append(' ');
     }
-    return builder
+
+    if (throwable == null && arguments != null && arguments.length != 0 && arguments[arguments.length - 1] instanceof Throwable last) {
+      throwable = last;
+      arguments = arguments.length == 1 ? null : Arrays.copyOf(arguments, arguments.length - 1);
+    }
+
+    final var string = builder
       .append(MessageFormatter.basicArrayFormat(messagePattern.replace("{}", "&fb&lb{}&fr"), arguments))
       .toString();
+
+    if (throwable != null && (arguments == null || arguments.length == 0)) {
+      Log.err(string, throwable);
+    } else {
+      Log.log(getArcLogLevel(level), string);
+      if (throwable != null) {
+        Log.err(throwable);
+      }
+    }
   }
 
-  private boolean isNativeLogLevelAtLeast(final Log.LogLevel level) {
+  private boolean isArcLogLevelAtLeast(final Log.LogLevel level) {
     return Log.level.ordinal() <= level.ordinal();
   }
 
-  private Log.LogLevel getNativeLogLevel(final Level level) {
+  private Log.LogLevel getArcLogLevel(final Level level) {
     return switch (level) {
       case TRACE, DEBUG -> Log.LogLevel.debug;
       case INFO -> Log.LogLevel.info;

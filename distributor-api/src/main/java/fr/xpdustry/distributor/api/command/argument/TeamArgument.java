@@ -41,7 +41,8 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     final String defaultValue,
     final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
     final ArgumentDescription defaultDescription,
-    final TeamMode teamMode) {
+    final TeamMode teamMode
+  ) {
     super(
       required,
       name,
@@ -49,7 +50,8 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
       defaultValue,
       Team.class,
       suggestionsProvider,
-      defaultDescription);
+      defaultDescription
+    );
   }
 
   public static <C> TeamArgument.Builder<C> newBuilder(final String name) {
@@ -103,7 +105,8 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         this.getDefaultValue(),
         this.getSuggestionsProvider(),
         this.getDefaultDescription(),
-        teamMode);
+        teamMode
+      );
     }
   }
 
@@ -176,7 +179,8 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         ctx,
         ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
         CaptionVariable.of("input", input),
-        CaptionVariable.of("teamMode", teamMode.name()));
+        CaptionVariable.of("teamMode", teamMode.name())
+      );
       this.input = input;
       this.teamMode = teamMode;
     }

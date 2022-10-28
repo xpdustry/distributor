@@ -18,18 +18,21 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
+import fr.xpdustry.distributor.api.*;
 import fr.xpdustry.distributor.api.permission.*;
+import fr.xpdustry.distributor.api.secutiry.*;
 import fr.xpdustry.distributor.api.util.*;
 import java.nio.file.*;
 import java.util.function.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
+import org.mockito.*;
 import org.spongepowered.configurate.*;
 import org.spongepowered.configurate.yaml.*;
 
 public final class SimplePermissionServiceTest {
 
-  private static final String PLAYER = "Anuke";
+  private static final MUUID PLAYER = MUUID.of("AAAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
 
   private static final String GROUP1 = "group1";
   private static final String GROUP2 = "group2";
@@ -42,6 +45,13 @@ public final class SimplePermissionServiceTest {
 
   private SimplePermissionService manager;
 
+  @BeforeAll
+  static void setupAll() {
+    final var distributor = Mockito.mock(Distributor.class);
+    Mockito.when(distributor.getMUUIDAuthenticator()).thenReturn(muuid -> true);
+    DistributorProvider.set(distributor);
+  }
+
   @BeforeEach
   void setup() {
     manager = new SimplePermissionService(tempDir);
@@ -51,7 +61,7 @@ public final class SimplePermissionServiceTest {
   @Test
   void test_player_save() throws ConfigurateException {
     final var players = manager.getPlayerPermissionManager();
-    final var player = players.findOrCreateById(PLAYER);
+    final var player = players.findOrCreateById(PLAYER.getUuid());
 
     player.setPermission(PERMISSION1, Tristate.TRUE);
     player.setPermission(PERMISSION2, Tristate.FALSE);
@@ -61,8 +71,8 @@ public final class SimplePermissionServiceTest {
     Assertions.assertEquals(1, players.count());
 
     final var root = YamlConfigurationLoader.builder().path(tempDir.resolve("players.yaml")).build().load();
-    Assertions.assertTrue(root.node(PLAYER, "permissions", PERMISSION1).getBoolean());
-    Assertions.assertFalse(root.node(PLAYER, "permissions", PERMISSION2).getBoolean());
+    Assertions.assertTrue(root.node(PLAYER.getUuid(), "permissions", PERMISSION1).getBoolean());
+    Assertions.assertFalse(root.node(PLAYER.getUuid(), "permissions", PERMISSION2).getBoolean());
   }
 
   @Test
@@ -125,7 +135,7 @@ public final class SimplePermissionServiceTest {
 
   private void setupPlayer(final Consumer<PlayerPermission> setup) {
     final var players = manager.getPlayerPermissionManager();
-    final var player = players.findOrCreateById(SimplePermissionServiceTest.PLAYER);
+    final var player = players.findOrCreateById(PLAYER.getUuid());
     setup.accept(player);
     players.save(player);
   }

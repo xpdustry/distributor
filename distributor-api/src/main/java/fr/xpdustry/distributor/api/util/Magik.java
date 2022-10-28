@@ -51,6 +51,15 @@ public final class Magik {
     }
   }
 
+  public static boolean isUsid(final String usid) {
+    try {
+      final var bytes = Base64.getDecoder().decode(usid);
+      return bytes.length == 8;
+    } catch (final IllegalArgumentException e) {
+      return false;
+    }
+  }
+
   public static Optional<String> getFileExtension(final Path path) {
     final var name = path.getFileName().toString();
     if (name.contains(".")) {

@@ -34,7 +34,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
   private final ArcCommandManager<C> manager;
 
   ArcCommand(final String name, final String description, final ArcCommandManager<C> manager) {
-    super(name, "[args...]", description, new CloudCommandRunner<>(name, manager));
+    super(name, "[args...]", description, new ArcCommandRunner<>(name, manager));
     this.manager = manager;
   }
 
@@ -42,12 +42,12 @@ public final class ArcCommand<C> extends CommandHandler.Command {
     return manager;
   }
 
-  private static final class CloudCommandRunner<C> implements CommandHandler.CommandRunner<Player> {
+  private static final class ArcCommandRunner<C> implements CommandHandler.CommandRunner<Player> {
 
     private final String name;
     private final ArcCommandManager<C> manager;
 
-    private CloudCommandRunner(final String name, ArcCommandManager<C> manager) {
+    private ArcCommandRunner(final String name, final ArcCommandManager<C> manager) {
       this.name = name;
       this.manager = manager;
     }
@@ -104,15 +104,18 @@ public final class ArcCommand<C> extends CommandHandler.Command {
             t,
             (s, e) -> sendException(sender, e.errorCaption(), e.captionVariables()));
         } else if (throwable instanceof CommandExecutionException t) {
+          final var temp = throwable;
           manager.handleException(
             sender,
             CommandExecutionException.class,
             t,
-            (s, e) -> sendException(
-              sender,
-              ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
-              CaptionVariable.of("message", getErrorMessage(e))));
-          Log.err(throwable);
+            (s, e) -> {
+              sendException(
+                sender,
+                ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
+                CaptionVariable.of("message", getErrorMessage(e)));
+              Log.err(temp);
+            });
         } else {
           sendException(
             sender,

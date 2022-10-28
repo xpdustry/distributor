@@ -23,6 +23,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
+    testImplementation("org.mockito:mockito-core:4.8.1")
     testImplementation("org.assertj:assertj-core:3.23.1")
 
     annotationProcessor("com.uber.nullaway:nullaway:0.9.4")

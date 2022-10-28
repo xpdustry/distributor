@@ -16,24 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api;
+package fr.xpdustry.distributor.api.secutiry;
 
-import fr.xpdustry.distributor.api.localization.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.scheduler.*;
-import fr.xpdustry.distributor.api.secutiry.*;
+public interface MUUIDAuthenticator {
 
-public interface Distributor {
-
-  DelegatingLocalizationSource getGlobalLocalizationSource();
-
-  PluginScheduler getPluginScheduler();
-
-  PermissionService getPermissionService();
-
-  void setPermissionManager(final PermissionService permissions);
-
-  MUUIDAuthenticator getMUUIDAuthenticator();
-
-  void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator);
+  boolean authenticate(final MUUID muuid);
 }
