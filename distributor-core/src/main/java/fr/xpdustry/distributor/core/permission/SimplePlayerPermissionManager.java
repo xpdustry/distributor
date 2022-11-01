@@ -18,22 +18,24 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
-import java.nio.file.*;
+import fr.xpdustry.distributor.api.permission.PlayerPermission;
+import fr.xpdustry.distributor.api.permission.PlayerPermissionManager;
+import java.nio.file.Path;
 
-public final class SimplePlayerPermissionManager extends AbstractPermissibleManager<PlayerPermission> implements PlayerPermissionManager {
+public final class SimplePlayerPermissionManager extends AbstractPermissibleManager<PlayerPermission>
+        implements PlayerPermissionManager {
 
-  public SimplePlayerPermissionManager(final Path path) {
-    super(path);
-  }
+    public SimplePlayerPermissionManager(final Path path) {
+        super(path);
+    }
 
-  @Override
-  protected PlayerPermission createPermissible(String id) {
-    return new SimplePlayerPermission(id);
-  }
+    @Override
+    protected PlayerPermission createPermissible(final String id) {
+        return new SimplePlayerPermission(id);
+    }
 
-  @Override
-  protected String extractId(PlayerPermission permissible) {
-    return permissible.getUuid();
-  }
+    @Override
+    protected String extractId(final PlayerPermission permissible) {
+        return permissible.getUuid();
+    }
 }

@@ -18,11 +18,12 @@
  */
 package fr.xpdustry.distributor.core;
 
-import org.aeonbits.owner.*;
+import org.aeonbits.owner.Accessible;
+import org.aeonbits.owner.Config;
 
 public interface DistributorConfig extends Accessible {
 
-  @Config.Key("fr.xpdustry.distributor.api.scheduler.workers")
-  @Config.DefaultValue("4")
-  int getSchedulerWorkers();
+    @Config.Key("fr.xpdustry.distributor.api.scheduler.workers")
+    @Config.DefaultValue("4")
+    int getSchedulerWorkers();
 }

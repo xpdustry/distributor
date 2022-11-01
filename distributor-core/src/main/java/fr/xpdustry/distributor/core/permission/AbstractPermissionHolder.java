@@ -18,53 +18,57 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.util.*;
-import java.util.*;
+import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.util.Tristate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractPermissionHolder implements PermissionHolder {
 
-  private final Set<String> parents = new HashSet<>();
-  private final PermissionTree tree = new PermissionTree();
+    private final Set<String> parents = new HashSet<>();
+    private final PermissionTree tree = new PermissionTree();
 
-  @Override
-  public Collection<String> getParentGroups() {
-    return Collections.unmodifiableCollection(parents);
-  }
+    @Override
+    public Collection<String> getParentGroups() {
+        return Collections.unmodifiableCollection(this.parents);
+    }
 
-  @Override
-  public void setParents(Collection<String> parents) {
-    this.parents.clear();
-    this.parents.addAll(parents);
-  }
+    @Override
+    public void setParents(final Collection<String> parents) {
+        this.parents.clear();
+        this.parents.addAll(parents);
+    }
 
-  @Override
-  public void addParent(String group) {
-    parents.add(group);
-  }
+    @Override
+    public void addParent(final String group) {
+        this.parents.add(group);
+    }
 
-  @Override
-  public void removeParent(String group) {
-    parents.remove(group);
-  }
+    @Override
+    public void removeParent(final String group) {
+        this.parents.remove(group);
+    }
 
-  @Override
-  public Tristate getPermission(final String permission) {
-    return tree.getPermission(permission);
-  }
+    @Override
+    public Tristate getPermission(final String permission) {
+        return this.tree.getPermission(permission);
+    }
 
-  @Override
-  public void setPermission(String permission, Tristate state) {
-    tree.setPermission(permission, state);
-  }
+    @Override
+    public void setPermission(final String permission, final Tristate state) {
+        this.tree.setPermission(permission, state);
+    }
 
-  @Override
-  public Map<String, Boolean> getPermissions() {
-    return tree.getPermissions();
-  }
+    @Override
+    public Map<String, Boolean> getPermissions() {
+        return this.tree.getPermissions();
+    }
 
-  @Override
-  public void setPermissions(final Map<String, Boolean> permissions) {
-    permissions.forEach((permission, state) -> setPermission(permission, Tristate.of(state)));
-  }
+    @Override
+    public void setPermissions(final Map<String, Boolean> permissions) {
+        permissions.forEach((permission, state) -> this.setPermission(permission, Tristate.of(state)));
+    }
 }

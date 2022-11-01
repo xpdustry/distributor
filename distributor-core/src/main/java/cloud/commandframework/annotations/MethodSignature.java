@@ -18,8 +18,9 @@
  */
 package cloud.commandframework.annotations;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 
 //
 // The above header is not to anger spotless. Here is the real copyright:
@@ -48,27 +49,27 @@ import java.util.*;
 //
 final class MethodSignature {
 
-  private final String name;
-  private final Class<?>[] parameters;
+    private final String name;
+    private final Class<?>[] parameters;
 
-  MethodSignature(final Method method) {
-    this.name = method.getName();
-    this.parameters = method.getParameterTypes();
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj == this) {
-      return true;
+    MethodSignature(final Method method) {
+        this.name = method.getName();
+        this.parameters = method.getParameterTypes();
     }
-    if (obj instanceof final MethodSignature other) {
-      return this.name.equals(other.name) && Arrays.equals(this.parameters, other.parameters);
-    }
-    return false;
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.name, Arrays.hashCode(this.parameters));
-  }
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof final MethodSignature other) {
+            return this.name.equals(other.name) && Arrays.equals(this.parameters, other.parameters);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name, Arrays.hashCode(this.parameters));
+    }
 }

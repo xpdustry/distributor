@@ -18,57 +18,59 @@
  */
 package fr.xpdustry.distributor.core.scheduler;
 
-import cloud.commandframework.tasks.*;
-import fr.xpdustry.distributor.api.scheduler.*;
-import java.util.concurrent.*;
-import mindustry.mod.*;
+import cloud.commandframework.tasks.TaskConsumer;
+import cloud.commandframework.tasks.TaskFunction;
+import cloud.commandframework.tasks.TaskSynchronizer;
+import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+import java.util.concurrent.CompletableFuture;
+import mindustry.mod.Plugin;
 
 @SuppressWarnings("NullableProblems")
 final class SimpleTaskSynchronizer implements TaskSynchronizer {
 
-  private final PluginScheduler scheduler;
-  private final Plugin plugin;
+    private final PluginScheduler scheduler;
+    private final Plugin plugin;
 
-  SimpleTaskSynchronizer(final PluginScheduler scheduler, final Plugin plugin) {
-    this.scheduler = scheduler;
-    this.plugin = plugin;
-  }
+    SimpleTaskSynchronizer(final PluginScheduler scheduler, final Plugin plugin) {
+        this.scheduler = scheduler;
+        this.plugin = plugin;
+    }
 
-  @Override
-  public <I> CompletableFuture<Void> runSynchronous(I input, TaskConsumer<I> consumer) {
-    final var future = new CompletableFuture<Void>();
-    scheduler.syncTask(plugin, () -> {
-      consumer.accept(input);
-      future.complete(null);
-    });
-    return future;
-  }
+    @Override
+    public <I> CompletableFuture<Void> runSynchronous(final I input, final TaskConsumer<I> consumer) {
+        final var future = new CompletableFuture<Void>();
+        this.scheduler.syncTask(this.plugin, () -> {
+            consumer.accept(input);
+            future.complete(null);
+        });
+        return future;
+    }
 
-  @Override
-  public <I, O> CompletableFuture<O> runSynchronous(I input, TaskFunction<I, O> function) {
-    final var future = new CompletableFuture<O>();
-    scheduler.syncTask(plugin, () -> {
-      future.complete(function.apply(input));
-    });
-    return future;
-  }
+    @Override
+    public <I, O> CompletableFuture<O> runSynchronous(final I input, final TaskFunction<I, O> function) {
+        final var future = new CompletableFuture<O>();
+        this.scheduler.syncTask(this.plugin, () -> {
+            future.complete(function.apply(input));
+        });
+        return future;
+    }
 
-  @Override
-  public <I> CompletableFuture<Void> runAsynchronous(I input, TaskConsumer<I> consumer) {
-    final var future = new CompletableFuture<Void>();
-    scheduler.asyncTask(plugin, () -> {
-      consumer.accept(input);
-      future.complete(null);
-    });
-    return future;
-  }
+    @Override
+    public <I> CompletableFuture<Void> runAsynchronous(final I input, final TaskConsumer<I> consumer) {
+        final var future = new CompletableFuture<Void>();
+        this.scheduler.asyncTask(this.plugin, () -> {
+            consumer.accept(input);
+            future.complete(null);
+        });
+        return future;
+    }
 
-  @Override
-  public <I, O> CompletableFuture<O> runAsynchronous(I input, TaskFunction<I, O> function) {
-    final var future = new CompletableFuture<O>();
-    scheduler.syncTask(plugin, () -> {
-      future.complete(function.apply(input));
-    });
-    return future;
-  }
+    @Override
+    public <I, O> CompletableFuture<O> runAsynchronous(final I input, final TaskFunction<I, O> function) {
+        final var future = new CompletableFuture<O>();
+        this.scheduler.syncTask(this.plugin, () -> {
+            future.complete(function.apply(input));
+        });
+        return future;
+    }
 }

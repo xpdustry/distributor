@@ -18,97 +18,92 @@
  */
 package fr.xpdustry.distributor.api.plugin;
 
-import arc.*;
-import arc.files.*;
-import arc.util.*;
-import java.io.*;
+import arc.ApplicationListener;
+import arc.Core;
+import arc.files.Fi;
+import arc.util.CommandHandler;
+import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.*;
-import mindustry.*;
-import mindustry.mod.*;
-import org.checkerframework.checker.nullness.qual.*;
-import org.slf4j.*;
+import java.nio.file.Path;
+import mindustry.Vars;
+import mindustry.mod.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ExtendedPlugin extends Plugin {
 
-  private final PluginDescriptor descriptor = PluginDescriptor.from(this);
-  private final Path directory = Vars.modDirectory.child(getDescriptor().getName()).file().toPath();
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final PluginDescriptor descriptor = PluginDescriptor.from(this);
+    private final Path directory =
+            Vars.modDirectory.child(this.getDescriptor().getName()).file().toPath();
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  {
-    try {
-      Files.createDirectories(directory);
-    } catch (final IOException e) {
-      throw new RuntimeException(e);
+    {
+        try {
+            Files.createDirectories(this.directory);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 
-  public void onInit() {
-  }
+    public void onInit() {}
 
-  public void onServerCommandsRegistration(final CommandHandler handler) {
-  }
+    public void onServerCommandsRegistration(final CommandHandler handler) {}
 
-  public void onClientCommandsRegistration(final CommandHandler handler) {
-  }
+    public void onClientCommandsRegistration(final CommandHandler handler) {}
 
-  public void onLoad() {
-  }
+    public void onLoad() {}
 
-  public void onExit() {
-  }
+    public void onExit() {}
 
-  public final Path getDirectory() {
-    return this.directory;
-  }
+    public final Path getDirectory() {
+        return this.directory;
+    }
 
-  public final PluginDescriptor getDescriptor() {
-    return this.descriptor;
-  }
+    public final PluginDescriptor getDescriptor() {
+        return this.descriptor;
+    }
 
-  public final Logger getLogger() {
-    return this.logger;
-  }
+    public final Logger getLogger() {
+        return this.logger;
+    }
 
-  @Deprecated
-  @Override
-  public void registerServerCommands(final CommandHandler handler) {
-    this.onInit();
-    this.onServerCommandsRegistration(handler);
+    @Deprecated
+    @Override
+    public void registerServerCommands(final CommandHandler handler) {
+        this.onInit();
+        this.onServerCommandsRegistration(handler);
 
-    Core.app.addListener(new ApplicationListener() {
+        Core.app.addListener(new ApplicationListener() {
 
-      @Override
-      public void init() {
-        ExtendedPlugin.this.onLoad();
-      }
+            @Override
+            public void init() {
+                ExtendedPlugin.this.onLoad();
+            }
 
-      @Override
-      public void dispose() {
-        ExtendedPlugin.this.onExit();
-      }
-    });
-  }
+            @Override
+            public void dispose() {
+                ExtendedPlugin.this.onExit();
+            }
+        });
+    }
 
-  @Deprecated
-  @Override
-  public void registerClientCommands(final CommandHandler handler) {
-    this.onClientCommandsRegistration(handler);
-  }
+    @Deprecated
+    @Override
+    public void registerClientCommands(final CommandHandler handler) {
+        this.onClientCommandsRegistration(handler);
+    }
 
-  @Deprecated
-  @Override
-  public Fi getConfig() {
-    return super.getConfig();
-  }
+    @Deprecated
+    @Override
+    public Fi getConfig() {
+        return super.getConfig();
+    }
 
-  @Deprecated
-  @Override
-  public void loadContent() {
-  }
+    @Deprecated
+    @Override
+    public void loadContent() {}
 
-  @Deprecated
-  @Override
-  public void init() {
-  }
+    @Deprecated
+    @Override
+    public void init() {}
 }

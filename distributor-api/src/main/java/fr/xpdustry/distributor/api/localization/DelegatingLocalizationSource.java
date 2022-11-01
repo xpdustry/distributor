@@ -20,9 +20,9 @@ package fr.xpdustry.distributor.api.localization;
 
 public interface DelegatingLocalizationSource extends LocalizationSource {
 
-  static DelegatingLocalizationSource create() {
-    return new DelegatingLocalizationSourceImpl();
-  }
+    static DelegatingLocalizationSource create() {
+        return new DelegatingLocalizationSourceImpl();
+    }
 
-  void addLocalizationSource(final LocalizationSource source);
+    void addLocalizationSource(final LocalizationSource source);
 }

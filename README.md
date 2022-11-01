@@ -11,7 +11,8 @@ better Mindustry API bindings and other nice features, making plugin development
 
 ## Usage
 
-To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such as :
+To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such
+as :
 
 ```gradle
 repositories {
@@ -41,9 +42,11 @@ Access the api in-code with `Distributor.getAPI()`, and enjoy.
 
 Finally, when you are ready to deploy your plugin, get the necessary Distributor jars :
 
-- If you use the official version, you can get the jars in the [releases](https://github.com/Xpdustry/Distributor/releases).
+- If you use the official version, you can get the jars in
+  the [releases](https://github.com/Xpdustry/Distributor/releases).
 
-- If you use the snapshots, you can get the jars in the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml).
+- If you use the snapshots, you can get the jars in
+  the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml).
 
 ## Building
 
@@ -63,6 +66,8 @@ This plugin is compatible with v137+.
 
 ## Credits
 
-- I want to thank Icendo and their amazing work on [cloud](https://github.com/Incendo/cloud), the command library of my dreams.
+- I want to thank Icendo and their amazing work on [cloud](https://github.com/Incendo/cloud), the command library of my
+  dreams.
 
-- The localization system is based on the one you can find in [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
+- The localization system is based on the one you can find
+  in [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).

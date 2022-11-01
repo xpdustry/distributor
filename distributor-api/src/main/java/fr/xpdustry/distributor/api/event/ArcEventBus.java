@@ -18,110 +18,119 @@
  */
 package fr.xpdustry.distributor.api.event;
 
-import arc.*;
-import arc.func.*;
-import arc.struct.*;
-import fr.xpdustry.distributor.api.util.*;
-import java.lang.reflect.*;
-import java.util.*;
+import arc.Events;
+import arc.func.Cons;
+import arc.struct.ObjectMap;
+import arc.struct.Seq;
+import fr.xpdustry.distributor.api.util.Priority;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 final class ArcEventBus implements EventBus {
 
-  static final ArcEventBus INSTANCE = new ArcEventBus();
+    static final ArcEventBus INSTANCE = new ArcEventBus();
 
-  private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
-    final var priorityA = a instanceof MethodEventHandler<?> m ? m.priority : Priority.NORMAL;
-    final var priorityB = b instanceof MethodEventHandler<?> m ? m.priority : Priority.NORMAL;
-    return priorityA.compareTo(priorityB);
-  };
+    private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
+        final var priorityA = a instanceof MethodEventHandler<?> m ? m.priority : Priority.NORMAL;
+        final var priorityB = b instanceof MethodEventHandler<?> m ? m.priority : Priority.NORMAL;
+        return priorityA.compareTo(priorityB);
+    };
 
-  private final Map<Object, List<MethodEventHandler<?>>> listeners = new HashMap<>();
-  private final ObjectMap<Class<?>, Seq<Cons<?>>> events;
+    private final Map<Object, List<MethodEventHandler<?>>> listeners = new HashMap<>();
+    private final ObjectMap<Class<?>, Seq<Cons<?>>> events;
 
-  @SuppressWarnings("unchecked")
-  ArcEventBus() {
-    try {
-      final var field = Events.class.getDeclaredField("events");
-      field.setAccessible(true);
-      events = (ObjectMap<Class<?>, Seq<Cons<?>>>) field.get(null);
-    } catch (final ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  @Override
-  public void post(final Object event) {
-    final var handlers = events.get(event.getClass());
-    if (handlers != null) {
-      for (final Cons subscriber : handlers.copy().sort(COMPARATOR)) {
-        subscriber.get(event);
-      }
-    }
-  }
-
-  @Override
-  public void register(final Object object) {
-    if (listeners.containsKey(object)) {
-      return;
-    }
-
-    final var handlers = new ArrayList<MethodEventHandler<?>>();
-    for (final var method : object.getClass().getDeclaredMethods()) {
-      final var annotation = method.getAnnotation(EventHandler.class);
-      if (annotation == null) {
-        continue;
-      } else if (method.getParameterCount() != 1) {
-        throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
-      } else if (!method.canAccess(object) || !method.trySetAccessible()) {
-        throw new RuntimeException("Unable to make " + method + " accessible.");
-      }
-
-      final var handler = new MethodEventHandler<>(object, method, annotation.priority());
-      events.get(handler.getEventType(), () -> new Seq<>(Cons.class)).add(handler).sort(COMPARATOR);
-      handlers.add(handler);
-    }
-
-    listeners.put(object, handlers);
-  }
-
-  @Override
-  public void unregister(final Object object) {
-    final var handlers = listeners.remove(object);
-    if (handlers != null) {
-      for (final var subscriber : handlers) {
-        final var listeners = events.get(subscriber.getEventType());
-        if (listeners != null && listeners.remove(subscriber) && listeners.size == 0) {
-          events.remove(subscriber.getEventType());
+    @SuppressWarnings("unchecked")
+    ArcEventBus() {
+        try {
+            final var field = Events.class.getDeclaredField("events");
+            field.setAccessible(true);
+            this.events = (ObjectMap<Class<?>, Seq<Cons<?>>>) field.get(null);
+        } catch (final ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
-      }
     }
-  }
 
-  private static final class MethodEventHandler<E> implements Cons<E> {
-
-    private final Object target;
-    private final Method method;
-    private final Priority priority;
-
-    private MethodEventHandler(final Object target, final Method method, final Priority priority) {
-      this.target = target;
-      this.method = method;
-      this.priority = priority;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
+    public void post(final Object event) {
+        final var handlers = this.events.get(event.getClass());
+        if (handlers != null) {
+            for (final Cons subscriber : handlers.copy().sort(COMPARATOR)) {
+                subscriber.get(event);
+            }
+        }
     }
 
     @Override
-    public void get(final E event) {
-      try {
-        this.method.invoke(target, event);
-      } catch (final ReflectiveOperationException e) {
-        throw new RuntimeException("Failed to call " + method + " on " + target, e);
-      }
+    public void register(final Object object) {
+        if (this.listeners.containsKey(object)) {
+            return;
+        }
+
+        final var handlers = new ArrayList<MethodEventHandler<?>>();
+        for (final var method : object.getClass().getDeclaredMethods()) {
+            final var annotation = method.getAnnotation(EventHandler.class);
+            if (annotation == null) {
+                continue;
+            } else if (method.getParameterCount() != 1) {
+                throw new IllegalArgumentException(
+                        "The event handler on " + method + " hasn't the right parameter count.");
+            } else if (!method.canAccess(object) || !method.trySetAccessible()) {
+                throw new RuntimeException("Unable to make " + method + " accessible.");
+            }
+
+            final var handler = new MethodEventHandler<>(object, method, annotation.priority());
+            this.events
+                    .get(handler.getEventType(), () -> new Seq<>(Cons.class))
+                    .add(handler)
+                    .sort(COMPARATOR);
+            handlers.add(handler);
+        }
+
+        this.listeners.put(object, handlers);
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<E> getEventType() {
-      return (Class<E>) method.getParameterTypes()[0];
+    @Override
+    public void unregister(final Object object) {
+        final var handlers = this.listeners.remove(object);
+        if (handlers != null) {
+            for (final var subscriber : handlers) {
+                final var listeners = this.events.get(subscriber.getEventType());
+                if (listeners != null && listeners.remove(subscriber) && listeners.size == 0) {
+                    this.events.remove(subscriber.getEventType());
+                }
+            }
+        }
     }
-  }
+
+    private static final class MethodEventHandler<E> implements Cons<E> {
+
+        private final Object target;
+        private final Method method;
+        private final Priority priority;
+
+        private MethodEventHandler(final Object target, final Method method, final Priority priority) {
+            this.target = target;
+            this.method = method;
+            this.priority = priority;
+        }
+
+        @Override
+        public void get(final E event) {
+            try {
+                this.method.invoke(this.target, event);
+            } catch (final ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to call " + this.method + " on " + this.target, e);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public Class<E> getEventType() {
+            return (Class<E>) this.method.getParameterTypes()[0];
+        }
+    }
 }

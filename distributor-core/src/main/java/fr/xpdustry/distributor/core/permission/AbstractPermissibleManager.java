@@ -18,141 +18,150 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.manager.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.util.*;
-import java.nio.file.*;
-import java.util.*;
-import org.spongepowered.configurate.*;
-import org.spongepowered.configurate.yaml.*;
+import fr.xpdustry.distributor.api.manager.Manager;
+import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.util.Magik;
+import fr.xpdustry.distributor.api.util.Tristate;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 public abstract class AbstractPermissibleManager<E extends PermissionHolder> implements Manager<E, String> {
 
-  private final Map<String, E> permissibles = new HashMap<>();
-  private final YamlConfigurationLoader loader;
+    private final Map<String, E> permissibles = new HashMap<>();
+    private final YamlConfigurationLoader loader;
 
-  protected AbstractPermissibleManager(final Path path) {
-    final var extension = Magik.getFileExtension(path);
-    if (extension.isEmpty() || !(extension.get().equals("yml") || extension.get().equals("yaml"))) {
-      throw new IllegalArgumentException("Unsupported file extension " + path);
+    protected AbstractPermissibleManager(final Path path) {
+        final var extension = Magik.getFileExtension(path);
+        if (extension.isEmpty()
+                || !(extension.get().equals("yml") || extension.get().equals("yaml"))) {
+            throw new IllegalArgumentException("Unsupported file extension " + path);
+        }
+
+        this.loader = YamlConfigurationLoader.builder()
+                .indent(2)
+                .path(path)
+                .nodeStyle(NodeStyle.BLOCK)
+                .build();
+
+        try {
+            final var root = this.loader.load();
+            for (final var entry : root.childrenMap().entrySet()) {
+                final var permissible = this.createPermissible((String) entry.getKey());
+                this.loadPermissibleData(permissible, entry.getValue());
+                this.permissibles.put(this.extractId(permissible), permissible);
+            }
+        } catch (final ConfigurateException e) {
+            throw new RuntimeException("Unable to load the permissions.", e);
+        }
     }
 
-    this.loader = YamlConfigurationLoader.builder()
-      .indent(2)
-      .path(path)
-      .nodeStyle(NodeStyle.BLOCK)
-      .build();
-
-    try {
-      final var root = this.loader.load();
-      for (final var entry : root.childrenMap().entrySet()) {
-        final var permissible = createPermissible((String) entry.getKey());
-        loadPermissibleData(permissible, entry.getValue());
-        permissibles.put(extractId(permissible), permissible);
-      }
-    } catch (final ConfigurateException e) {
-      throw new RuntimeException("Unable to load the permissions.", e);
+    @Override
+    public void save(final E entity) {
+        this.permissibles.put(this.extractId(entity), entity);
+        this.save();
     }
-  }
 
-  @Override
-  public void save(E entity) {
-    permissibles.put(extractId(entity), entity);
-    save();
-  }
-
-  @Override
-  public void saveAll(Iterable<E> entities) {
-    entities.forEach(this::save);
-    save();
-  }
-
-  @Override
-  public E findOrCreateById(String id) {
-    return permissibles.containsKey(id) ? permissibles.get(id) : createPermissible(id);
-  }
-
-  @Override
-  public Optional<E> findById(String id) {
-    return Optional.ofNullable(permissibles.get(id));
-  }
-
-  @Override
-  public Iterable<E> findAll() {
-    return List.copyOf(permissibles.values());
-  }
-
-  @Override
-  public boolean exists(E entity) {
-    return existsById(extractId(entity));
-  }
-
-  @Override
-  public long count() {
-    return permissibles.size();
-  }
-
-  @Override
-  public void deleteById(String id) {
-    if (permissibles.remove(id) != null) {
-      save();
+    @Override
+    public void saveAll(final Iterable<E> entities) {
+        entities.forEach(this::save);
+        this.save();
     }
-  }
 
-  @Override
-  public void delete(E entity) {
-    deleteById(extractId(entity));
-  }
-
-  @Override
-  public void deleteAll(Iterable<E> entities) {
-    var changed = false;
-    for (final var entity : entities) {
-      changed |= permissibles.remove(extractId(entity)) != null;
+    @Override
+    public E findOrCreateById(final String id) {
+        return this.permissibles.containsKey(id) ? this.permissibles.get(id) : this.createPermissible(id);
     }
-    if (changed) {
-      save();
-    }
-  }
 
-  @Override
-  public void deleteAll() {
-    permissibles.clear();
-    save();
-  }
-
-  void loadPermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
-    for (final var parent : node.node("parents").getList(String.class, Collections.emptyList())) {
-      permissible.addParent(parent);
+    @Override
+    public Optional<E> findById(final String id) {
+        return Optional.ofNullable(this.permissibles.get(id));
     }
-    for (final var entry : node.node("permissions").childrenMap().entrySet()) {
-      permissible.setPermission((String) entry.getKey(), Tristate.of(entry.getValue().getBoolean()));
-    }
-  }
 
-  void savePermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
-    for (final var parent : permissible.getParentGroups()) {
-      node.node("parents").appendListNode().set(parent);
+    @Override
+    public Iterable<E> findAll() {
+        return List.copyOf(this.permissibles.values());
     }
-    for (final var permission : permissible.getPermissions().entrySet()) {
-      node.node("permissions", permission.getKey()).set(permission.getValue());
+
+    @Override
+    public boolean exists(final E entity) {
+        return this.existsById(this.extractId(entity));
     }
-  }
 
-  protected abstract String extractId(final E permissible);
-
-  protected abstract E createPermissible(final String id);
-
-  private void save() {
-    try {
-      final var root = loader.createNode();
-      for (final var permissible : permissibles.values()) {
-        final var node = root.node(extractId(permissible));
-        savePermissibleData(permissible, node);
-      }
-      loader.save(root);
-    } catch (final ConfigurateException e) {
-      throw new RuntimeException("Failed to save the permissions.", e);
+    @Override
+    public long count() {
+        return this.permissibles.size();
     }
-  }
+
+    @Override
+    public void deleteById(final String id) {
+        if (this.permissibles.remove(id) != null) {
+            this.save();
+        }
+    }
+
+    @Override
+    public void delete(final E entity) {
+        this.deleteById(this.extractId(entity));
+    }
+
+    @Override
+    public void deleteAll(final Iterable<E> entities) {
+        var changed = false;
+        for (final var entity : entities) {
+            changed |= this.permissibles.remove(this.extractId(entity)) != null;
+        }
+        if (changed) {
+            this.save();
+        }
+    }
+
+    @Override
+    public void deleteAll() {
+        this.permissibles.clear();
+        this.save();
+    }
+
+    void loadPermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
+        for (final var parent : node.node("parents").getList(String.class, Collections.emptyList())) {
+            permissible.addParent(parent);
+        }
+        for (final var entry : node.node("permissions").childrenMap().entrySet()) {
+            permissible.setPermission(
+                    (String) entry.getKey(), Tristate.of(entry.getValue().getBoolean()));
+        }
+    }
+
+    void savePermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
+        for (final var parent : permissible.getParentGroups()) {
+            node.node("parents").appendListNode().set(parent);
+        }
+        for (final var permission : permissible.getPermissions().entrySet()) {
+            node.node("permissions", permission.getKey()).set(permission.getValue());
+        }
+    }
+
+    private void save() {
+        try {
+            final var root = this.loader.createNode();
+            for (final var permissible : this.permissibles.values()) {
+                final var node = root.node(this.extractId(permissible));
+                this.savePermissibleData(permissible, node);
+            }
+            this.loader.save(root);
+        } catch (final ConfigurateException e) {
+            throw new RuntimeException("Failed to save the permissions.", e);
+        }
+    }
+
+    protected abstract String extractId(final E permissible);
+
+    protected abstract E createPermissible(final String id);
 }

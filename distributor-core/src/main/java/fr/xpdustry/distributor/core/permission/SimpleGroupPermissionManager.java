@@ -18,35 +18,40 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
-import java.nio.file.*;
-import org.spongepowered.configurate.*;
+import fr.xpdustry.distributor.api.permission.GroupPermission;
+import fr.xpdustry.distributor.api.permission.GroupPermissionManager;
+import java.nio.file.Path;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
 
-public final class SimpleGroupPermissionManager extends AbstractPermissibleManager<GroupPermission> implements GroupPermissionManager {
+public final class SimpleGroupPermissionManager extends AbstractPermissibleManager<GroupPermission>
+        implements GroupPermissionManager {
 
-  public SimpleGroupPermissionManager(final Path path) {
-    super(path);
-  }
+    public SimpleGroupPermissionManager(final Path path) {
+        super(path);
+    }
 
-  @Override
-  void loadPermissibleData(GroupPermission permissible, ConfigurationNode node) throws ConfigurateException {
-    permissible.setWeight(node.node("weight").getInt());
-    super.loadPermissibleData(permissible, node);
-  }
+    @Override
+    void loadPermissibleData(final GroupPermission permissible, final ConfigurationNode node)
+            throws ConfigurateException {
+        permissible.setWeight(node.node("weight").getInt());
+        super.loadPermissibleData(permissible, node);
+    }
 
-  @Override
-  void savePermissibleData(GroupPermission permissible, ConfigurationNode node) throws ConfigurateException {
-    node.node("weight").set(permissible.getWeight());
-    super.savePermissibleData(permissible, node);
-  }
+    @Override
+    void savePermissibleData(final GroupPermission permissible, final ConfigurationNode node)
+            throws ConfigurateException {
+        node.node("weight").set(permissible.getWeight());
+        super.savePermissibleData(permissible, node);
+    }
 
-  @Override
-  protected GroupPermission createPermissible(String id) {
-    return new SimpleGroupPermission(id);
-  }
+    @Override
+    protected GroupPermission createPermissible(final String id) {
+        return new SimpleGroupPermission(id);
+    }
 
-  @Override
-  protected String extractId(GroupPermission permissible) {
-    return permissible.getName();
-  }
+    @Override
+    protected String extractId(final GroupPermission permissible) {
+        return permissible.getName();
+    }
 }

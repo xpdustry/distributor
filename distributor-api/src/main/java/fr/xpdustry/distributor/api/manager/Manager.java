@@ -18,37 +18,37 @@
  */
 package fr.xpdustry.distributor.api.manager;
 
-import java.util.*;
+import java.util.Optional;
 
 public interface Manager<E, I> {
 
-  void save(final E entity);
+    default void saveAll(final Iterable<E> entities) {
+        entities.forEach(this::save);
+    }
 
-  default void saveAll(final Iterable<E> entities) {
-    entities.forEach(this::save);
-  }
+    default boolean existsById(final I id) {
+        return this.findById(id).isPresent();
+    }
 
-  E findOrCreateById(final I id);
+    default void deleteAll(final Iterable<E> entities) {
+        entities.forEach(this::delete);
+    }
 
-  Optional<E> findById(final I id);
+    void save(final E entity);
 
-  Iterable<E> findAll();
+    E findOrCreateById(final I id);
 
-  default boolean existsById(final I id) {
-    return findById(id).isPresent();
-  }
+    Optional<E> findById(final I id);
 
-  boolean exists(final E entity);
+    Iterable<E> findAll();
 
-  long count();
+    boolean exists(final E entity);
 
-  void deleteById(final I id);
+    long count();
 
-  void delete(final E entity);
+    void deleteById(final I id);
 
-  default void deleteAll(final Iterable<E> entities) {
-    entities.forEach(this::delete);
-  }
+    void delete(final E entity);
 
-  void deleteAll();
+    void deleteAll();
 }

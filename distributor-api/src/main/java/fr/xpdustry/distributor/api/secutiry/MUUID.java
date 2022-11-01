@@ -18,11 +18,11 @@
  */
 package fr.xpdustry.distributor.api.secutiry;
 
-import fr.xpdustry.distributor.api.util.*;
-import java.util.*;
-import mindustry.gen.*;
-import mindustry.net.*;
-import org.checkerframework.checker.nullness.qual.*;
+import fr.xpdustry.distributor.api.util.Magik;
+import java.util.Objects;
+import mindustry.gen.Player;
+import mindustry.net.Administration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * TODO More complete description
@@ -30,49 +30,48 @@ import org.checkerframework.checker.nullness.qual.*;
  */
 public final class MUUID {
 
-  private final String uuid;
-  private final String usid;
+    private final String uuid;
+    private final String usid;
 
-  private MUUID(final String uuid, final String usid) {
-    if (!Magik.isUuid(Objects.requireNonNull(uuid, "uuid"))) {
-      throw new IllegalArgumentException(uuid + " is not a valid uuid.");
+    private MUUID(final String uuid, final String usid) {
+        if (!Magik.isUuid(Objects.requireNonNull(uuid, "uuid"))) {
+            throw new IllegalArgumentException(uuid + " is not a valid uuid.");
+        }
+        if (!Magik.isUsid(Objects.requireNonNull(usid, "usid"))) {
+            throw new IllegalArgumentException(uuid + " is not a valid usid.");
+        }
+        this.uuid = uuid;
+        this.usid = usid;
     }
-    if (!Magik.isUsid(Objects.requireNonNull(usid, "usid"))) {
-      throw new IllegalArgumentException(uuid + " is not a valid usid.");
+
+    public static MUUID of(final String uuid, final String usid) {
+        return new MUUID(uuid, usid);
     }
-    this.uuid = uuid;
-    this.usid = usid;
-  }
 
-  public static MUUID of(final String uuid, final String usid) {
-    return new MUUID(uuid, usid);
-  }
+    public static MUUID of(final Player player) {
+        return new MUUID(player.uuid(), player.usid());
+    }
 
-  public static MUUID of(final Player player) {
-    return new MUUID(player.uuid(), player.usid());
-  }
+    public static MUUID of(final Administration.PlayerInfo info) {
+        return new MUUID(info.id, info.adminUsid);
+    }
 
-  public static MUUID of(final Administration.PlayerInfo info) {
-    return new MUUID(info.id, info.adminUsid);
-  }
+    public String getUuid() {
+        return this.uuid;
+    }
 
-  public String getUuid() {
-    return uuid;
-  }
+    public String getUsid() {
+        return this.usid;
+    }
 
-  public String getUsid() {
-    return usid;
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.uuid, this.usid);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(uuid, usid);
-  }
-
-  @Override
-  public boolean equals(final @Nullable Object obj) {
-    return obj == this || (
-      obj instanceof MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid)
-    );
-  }
+    @Override
+    public boolean equals(final @Nullable Object obj) {
+        return obj == this
+                || (obj instanceof MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid));
+    }
 }

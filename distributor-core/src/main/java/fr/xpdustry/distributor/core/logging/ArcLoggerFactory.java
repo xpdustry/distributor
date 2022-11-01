@@ -18,16 +18,17 @@
  */
 package fr.xpdustry.distributor.core.logging;
 
-import java.util.*;
-import java.util.concurrent.*;
-import org.slf4j.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
 
 public final class ArcLoggerFactory implements ILoggerFactory {
 
-  private final Map<String, ArcLogger> cache = new ConcurrentHashMap<>();
+    private final Map<String, ArcLogger> cache = new ConcurrentHashMap<>();
 
-  @Override
-  public Logger getLogger(final String name) {
-    return cache.computeIfAbsent(name, ArcLogger::new);
-  }
+    @Override
+    public Logger getLogger(final String name) {
+        return this.cache.computeIfAbsent(name, ArcLogger::new);
+    }
 }

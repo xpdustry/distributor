@@ -18,53 +18,55 @@
  */
 package fr.xpdustry.distributor.api.localization;
 
-import java.text.*;
-import java.util.*;
-import java.util.concurrent.*;
-import org.checkerframework.checker.nullness.qual.*;
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry {
 
-  private final Map<String, Localization> entries = new ConcurrentHashMap<>();
+    private final Map<String, Localization> entries = new ConcurrentHashMap<>();
 
-  @Override
-  public @Nullable MessageFormat localize(String key, Locale locale) {
-    return entries.containsKey(key) ? entries.get(key).localize(locale) : null;
-  }
-
-  @Override
-  public void register(String key, Locale locale, MessageFormat format) {
-    if (!this.entries.computeIfAbsent(key, k -> new Localization()).register(locale, format)) {
-      throw new IllegalArgumentException(String.format("A localization is already present: %s for %s.", locale, key));
-    }
-  }
-
-  @Override
-  public void unregister(final String key) {
-    this.entries.remove(key);
-  }
-
-  private static final class Localization {
-
-    private final Map<Locale, MessageFormat> formats;
-
-    private Localization() {
-      this.formats = new ConcurrentHashMap<>();
+    @Override
+    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        return this.entries.containsKey(key) ? this.entries.get(key).localize(locale) : null;
     }
 
-    private boolean register(final Locale locale, final MessageFormat format) {
-      return this.formats.putIfAbsent(locale, format) == null;
-    }
-
-    private @Nullable MessageFormat localize(final Locale locale) {
-      var format = this.formats.get(locale);
-      if (format == null) {
-        format = this.formats.get(new Locale(locale.getLanguage())); // try without country
-        if (format == null) {
-          format = this.formats.get(Locale.getDefault()); // try local default locale
+    @Override
+    public void register(final String key, final Locale locale, final MessageFormat format) {
+        if (!this.entries.computeIfAbsent(key, k -> new Localization()).register(locale, format)) {
+            throw new IllegalArgumentException(
+                    String.format("A localization is already present: %s for %s.", locale, key));
         }
-      }
-      return format;
     }
-  }
+
+    @Override
+    public void unregister(final String key) {
+        this.entries.remove(key);
+    }
+
+    private static final class Localization {
+
+        private final Map<Locale, MessageFormat> formats;
+
+        private Localization() {
+            this.formats = new ConcurrentHashMap<>();
+        }
+
+        private boolean register(final Locale locale, final MessageFormat format) {
+            return this.formats.putIfAbsent(locale, format) == null;
+        }
+
+        private @Nullable MessageFormat localize(final Locale locale) {
+            var format = this.formats.get(locale);
+            if (format == null) {
+                format = this.formats.get(new Locale(locale.getLanguage())); // try without country
+                if (format == null) {
+                    format = this.formats.get(Locale.getDefault()); // try local default locale
+                }
+            }
+            return format;
+        }
+    }
 }

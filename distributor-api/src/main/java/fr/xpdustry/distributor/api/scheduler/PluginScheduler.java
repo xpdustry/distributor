@@ -18,26 +18,28 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import cloud.commandframework.tasks.*;
-import mindustry.mod.*;
+import cloud.commandframework.tasks.TaskSynchronizer;
+import mindustry.mod.Plugin;
 
 public interface PluginScheduler {
 
-  PluginTask syncTask(final Plugin plugin, final Runnable runnable);
+    PluginTask syncTask(final Plugin plugin, final Runnable runnable);
 
-  PluginTask syncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
+    PluginTask syncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
 
-  PluginTask syncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
+    PluginTask syncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
 
-  PluginTask syncRepeatingDelayedTask(final Plugin plugin, final Runnable runnable, final int delay, final int period);
+    PluginTask syncRepeatingDelayedTask(
+            final Plugin plugin, final Runnable runnable, final int delay, final int period);
 
-  PluginTask asyncTask(final Plugin plugin, final Runnable runnable);
+    PluginTask asyncTask(final Plugin plugin, final Runnable runnable);
 
-  PluginTask asyncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
+    PluginTask asyncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
 
-  PluginTask asyncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
+    PluginTask asyncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
 
-  PluginTask asyncRepeatingDelayedTask(final Plugin plugin, final Runnable runnable, final int delay, final int period);
+    PluginTask asyncRepeatingDelayedTask(
+            final Plugin plugin, final Runnable runnable, final int delay, final int period);
 
-  TaskSynchronizer getTaskSynchronizer(final Plugin plugin);
+    TaskSynchronizer getTaskSynchronizer(final Plugin plugin);
 }

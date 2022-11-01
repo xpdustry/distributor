@@ -18,10 +18,10 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.*;
-import java.util.concurrent.*;
+import fr.xpdustry.distributor.api.plugin.PluginAware;
+import java.util.concurrent.Future;
 
 public interface PluginTask extends Future<Void>, PluginAware {
 
-  boolean isAsync();
+    boolean isAsync();
 }

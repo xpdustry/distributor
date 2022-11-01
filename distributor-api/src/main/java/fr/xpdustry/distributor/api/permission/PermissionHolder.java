@@ -18,30 +18,31 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-import fr.xpdustry.distributor.api.util.*;
-import java.util.*;
-import java.util.regex.*;
+import fr.xpdustry.distributor.api.util.Tristate;
+import java.util.Collection;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public interface PermissionHolder {
 
-  String PERMISSION_REGEX = "^(\\*|[a-z\\d\\-]+)(\\.(\\*|[a-z\\d\\-]+))*$";
-  Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
+    String PERMISSION_REGEX = "^(\\*|[a-z\\d\\-]+)(\\.(\\*|[a-z\\d\\-]+))*$";
+    Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
 
-  String getName();
+    String getName();
 
-  Tristate getPermission(final String permission);
+    Tristate getPermission(final String permission);
 
-  void setPermission(final String permission, final Tristate state);
+    void setPermission(final String permission, final Tristate state);
 
-  Map<String, Boolean> getPermissions();
+    Map<String, Boolean> getPermissions();
 
-  void setPermissions(final Map<String, Boolean> permissions);
+    void setPermissions(final Map<String, Boolean> permissions);
 
-  Collection<String> getParentGroups();
+    Collection<String> getParentGroups();
 
-  void setParents(final Collection<String> parents);
+    void setParents(final Collection<String> parents);
 
-  void addParent(final String group);
+    void addParent(final String group);
 
-  void removeParent(final String group);
+    void removeParent(final String group);
 }

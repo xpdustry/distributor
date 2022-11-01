@@ -18,30 +18,32 @@
  */
 package fr.xpdustry.distributor.api.localization;
 
-import java.text.*;
-import java.util.*;
-import org.checkerframework.checker.nullness.qual.*;
+import java.text.MessageFormat;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Locale;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class DelegatingLocalizationSourceImpl implements DelegatingLocalizationSource {
 
-  private final Deque<LocalizationSource> sources = new ArrayDeque<>();
+    private final Deque<LocalizationSource> sources = new ArrayDeque<>();
 
-  @Override
-  public void addLocalizationSource(final LocalizationSource source) {
-    sources.add(source);
-  }
-
-  @Override
-  public @Nullable MessageFormat localize(final String key, final Locale locale) {
-    final var iterator = sources.descendingIterator();
-
-    while (iterator.hasNext()) {
-      final var translation = iterator.next().localize(key, locale);
-      if (translation != null) {
-        return translation;
-      }
+    @Override
+    public void addLocalizationSource(final LocalizationSource source) {
+        this.sources.add(source);
     }
 
-    return null;
-  }
+    @Override
+    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        final var iterator = this.sources.descendingIterator();
+
+        while (iterator.hasNext()) {
+            final var translation = iterator.next().localize(key, locale);
+            if (translation != null) {
+                return translation;
+            }
+        }
+
+        return null;
+    }
 }

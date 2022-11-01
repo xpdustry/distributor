@@ -18,29 +18,29 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
+import fr.xpdustry.distributor.api.permission.GroupPermission;
 
 public final class SimpleGroupPermission extends AbstractPermissionHolder implements GroupPermission {
 
-  private final String name;
-  private int weight = 0;
+    private final String name;
+    private int weight = 0;
 
-  public SimpleGroupPermission(final String name) {
-    this.name = name;
-  }
+    public SimpleGroupPermission(final String name) {
+        this.name = name;
+    }
 
-  @Override
-  public String getName() {
-    return name;
-  }
+    @Override
+    public String getName() {
+        return this.name;
+    }
 
-  @Override
-  public int getWeight() {
-    return weight;
-  }
+    @Override
+    public int getWeight() {
+        return this.weight;
+    }
 
-  @Override
-  public void setWeight(final int weight) {
-    this.weight = weight;
-  }
+    @Override
+    public void setWeight(final int weight) {
+        this.weight = weight;
+    }
 }

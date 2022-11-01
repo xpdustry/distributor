@@ -18,30 +18,30 @@
  */
 package fr.xpdustry.distributor.api.command.sender;
 
-import java.util.*;
-import mindustry.gen.*;
+import java.util.Locale;
+import mindustry.gen.Player;
 
 public interface CommandSender {
 
-  static CommandSender player(final Player player) {
-    return new PlayerCommandSender(player);
-  }
+    static CommandSender player(final Player player) {
+        return new PlayerCommandSender(player);
+    }
 
-  static CommandSender console() {
-    return ConsoleCommandSender.INSTANCE;
-  }
+    static CommandSender console() {
+        return ConsoleCommandSender.INSTANCE;
+    }
 
-  void sendMessage(final String content);
+    void sendMessage(final String content);
 
-  void sendWarning(final String content);
+    void sendWarning(final String content);
 
-  // void sendSuccess(final String content);
+    // void sendSuccess(final String content);
 
-  Locale getLocale();
+    Locale getLocale();
 
-  Player getPlayer();
+    Player getPlayer();
 
-  boolean isPlayer();
+    boolean isPlayer();
 
-  boolean isConsole();
+    boolean isConsole();
 }

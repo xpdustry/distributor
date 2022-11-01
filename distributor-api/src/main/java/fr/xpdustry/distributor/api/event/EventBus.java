@@ -20,13 +20,13 @@ package fr.xpdustry.distributor.api.event;
 
 public interface EventBus {
 
-  static EventBus mindustry() {
-    return ArcEventBus.INSTANCE;
-  }
+    static EventBus mindustry() {
+        return ArcEventBus.INSTANCE;
+    }
 
-  void post(final Object event);
+    void post(final Object event);
 
-  void register(final Object object);
+    void register(final Object object);
 
-  void unregister(final Object object);
+    void unregister(final Object object);
 }

@@ -2,8 +2,8 @@ import net.ltgt.gradle.errorprone.CheckSeverity
 import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
+    id("com.diffplug.spotless")
     id("net.kyori.indra")
-    // id("net.kyori.indra.checkstyle")
     id("net.kyori.indra.licenser.spotless")
     id("net.ltgt.errorprone")
 }
@@ -31,9 +31,6 @@ dependencies {
 }
 
 indra {
-    // TODO Update checkstyle style file cauz its chaotic...
-    // checkstyle("9.3")
-
     javaVersions {
         target(17)
         minimumToolchain(17)
@@ -44,29 +41,25 @@ indraSpotlessLicenser {
     licenseHeaderFile(rootProject.file("LICENSE_HEADER.md"))
 }
 
+spotless {
+    java {
+        palantirJavaFormat()
+    }
+}
+
 tasks.withType<JavaCompile> {
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
         disable(
-            "MissingSummary",
-            "BadImport",
-            "FutureReturnValueIgnored",
-            "InlineMeSuggester",
-            "EmptyCatch"
+                "MissingSummary",
+                "BadImport",
+                "FutureReturnValueIgnored",
+                "InlineMeSuggester",
+                "EmptyCatch"
         )
         if (!name.contains("test", true)) {
             check("NullAway", CheckSeverity.ERROR)
             option("NullAway:AnnotatedPackages", "fr.xpdustry.distributor")
         }
     }
-}
-
-// Gradle provider issues with Indra
-tasks.compileJava {
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
-}
-tasks.compileTestJava {
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
 }

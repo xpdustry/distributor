@@ -18,173 +18,182 @@
  */
 package fr.xpdustry.distributor.core;
 
-import arc.util.*;
-import fr.xpdustry.distributor.api.*;
-import fr.xpdustry.distributor.api.command.*;
-import fr.xpdustry.distributor.api.command.sender.*;
-import fr.xpdustry.distributor.api.localization.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.plugin.*;
-import fr.xpdustry.distributor.api.scheduler.*;
-import fr.xpdustry.distributor.api.secutiry.*;
-import fr.xpdustry.distributor.core.commands.*;
-import fr.xpdustry.distributor.core.config.*;
-import fr.xpdustry.distributor.core.logging.*;
-import fr.xpdustry.distributor.core.permission.*;
-import fr.xpdustry.distributor.core.scheduler.*;
-import java.io.*;
-import java.nio.charset.*;
-import java.nio.file.*;
-import java.util.*;
-import mindustry.*;
-import org.aeonbits.owner.*;
-import org.checkerframework.checker.nullness.qual.*;
-import org.slf4j.*;
+import arc.util.CommandHandler;
+import fr.xpdustry.distributor.api.Distributor;
+import fr.xpdustry.distributor.api.DistributorProvider;
+import fr.xpdustry.distributor.api.command.ArcCommandManager;
+import fr.xpdustry.distributor.api.command.sender.CommandSender;
+import fr.xpdustry.distributor.api.localization.DelegatingLocalizationSource;
+import fr.xpdustry.distributor.api.localization.LocalizationSource;
+import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
+import fr.xpdustry.distributor.api.permission.PermissionService;
+import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+import fr.xpdustry.distributor.api.secutiry.MUUIDAuthenticator;
+import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
+import fr.xpdustry.distributor.core.commands.GroupPermissibleCommand;
+import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommand;
+import fr.xpdustry.distributor.core.config.ProxyTypedConfig;
+import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
+import fr.xpdustry.distributor.core.permission.SimplePermissionService;
+import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Properties;
+import org.aeonbits.owner.ConfigFactory;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.slf4j.LoggerFactory;
 
 public final class DistributorPlugin extends ExtendedPlugin implements Distributor {
 
-  private final DelegatingLocalizationSource source = DelegatingLocalizationSource.create();
-  private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
-  private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
-
-  private @MonotonicNonNull PluginScheduler scheduler = null;
-  private @MonotonicNonNull PermissionService permissions = null;
-  private MUUIDAuthenticator authenticator = muuid -> true;
-
-  static {
-    // Class loader trickery to use the ModClassLoader instead of the root
-    final var temp = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
-    if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
-      throw new RuntimeException("""
-        The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).
-        Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.
-        """.formatted(LoggerFactory.getILoggerFactory().getClass().getName()));
-    }
-    Thread.currentThread().setContextClassLoader(temp);
-  }
-
-  {
-    final var registry = LocalizationSourceRegistry.create();
-    registry.registerAll(Locale.ENGLISH, "bundles/bundle", getClass().getClassLoader());
-    registry.registerAll(Locale.FRENCH, "bundles/bundle", getClass().getClassLoader());
-
-    source.addLocalizationSource(registry);
-    source.addLocalizationSource(LocalizationSource.router());
-  }
-
-  @Override
-  public void onInit() {
-    // Display the cool ass banner
-    try (
-      final var input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("banner.txt"));
-      final var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))
-    ) {
-      reader.lines().forEach(line -> LoggerFactory.getLogger("ROOT").info("> {}", line));
-      getLogger().info("> Loaded Distributor core v{}", getDescriptor().getVersion());
-    } catch (final IOException e) {
-      getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
+    static {
+        // Class loader trickery to use the ModClassLoader instead of the root
+        final var temp = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
+        if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
+            throw new RuntimeException(String.format(
+                    """
+                            The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).
+                            Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.
+                            """,
+                    LoggerFactory.getILoggerFactory().getClass().getName()));
+        }
+        Thread.currentThread().setContextClassLoader(temp);
     }
 
-    // Load Distributor config
-    final var file = getDirectory().resolve("config.properties");
-    DistributorConfig config;
-    if (Files.exists(file)) {
-      final var properties = new Properties();
-      try (final var reader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-        properties.load(reader);
-        getLogger().info("Loaded distributor config.");
-      } catch (final IOException e) {
-        getLogger().error("Failed to load distributor config file.", e);
-      }
-      config = ConfigFactory.create(DistributorConfig.class, properties);
-    } else {
-      config = ConfigFactory.create(DistributorConfig.class);
-      try (final var writer = new OutputStreamWriter(Files.newOutputStream(file), StandardCharsets.UTF_8)) {
-        final var properties = new Properties();
-        config.fill(properties);
-        properties.store(writer, null);
-        getLogger().info("Created distributor config.");
-      } catch (final IOException e) {
-        getLogger().error("Failed to create distributor config file.", e);
-      }
-    }
+    private final DelegatingLocalizationSource source = DelegatingLocalizationSource.create();
+    private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
+    private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
 
-    scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
-    permissions = new SimplePermissionService(getDirectory().resolve("permissions"));
-
-    DistributorProvider.set(this);
-  }
-
-  @Override
-  public void onServerCommandsRegistration(CommandHandler handler) {
-    serverCommands.initialize(handler);
-    onSharedCommandsRegistration(serverCommands);
-
-    new ProxyTypedConfig<>(
-      "permission-primary-group",
-      "The primary group assinged to all players.",
-      "default",
-      () -> getPermissionService().getPrimaryGroup(),
-      value -> getPermissionService().setPrimaryGroup(value)
-    );
-
-    new ProxyTypedConfig<>(
-      "permission-verify-admin",
-      "Whether permission check should be skipped on admins.",
-      true,
-      () -> getPermissionService().getVerifyAdmin(),
-      value -> getPermissionService().setVerifyAdmin(value)
-    );
-  }
-
-  @Override
-  public void onClientCommandsRegistration(CommandHandler handler) {
-    clientCommands.initialize(handler);
-    onSharedCommandsRegistration(clientCommands);
-  }
-
-  private void onSharedCommandsRegistration(final ArcCommandManager<CommandSender> manager) {
-    {
-      final var parser = manager.createAnnotationParser(CommandSender.class);
-      parser.stringProcessor(input -> input.replace("permissible", "player"));
-      parser.parse(new PlayerPermissibleCommand(permissions));
-    }
+    private @MonotonicNonNull PluginScheduler scheduler = null;
+    private @MonotonicNonNull PermissionService permissions = null;
+    private MUUIDAuthenticator authenticator = muuid -> true;
 
     {
-      final var parser = manager.createAnnotationParser(CommandSender.class);
-      parser.stringProcessor(input -> input.replace("permissible", "group"));
-      parser.parse(new GroupPermissibleCommand(permissions));
+        final var registry = LocalizationSourceRegistry.create();
+        registry.registerAll(Locale.ENGLISH, "bundles/bundle", this.getClass().getClassLoader());
+        registry.registerAll(Locale.FRENCH, "bundles/bundle", this.getClass().getClassLoader());
+
+        this.source.addLocalizationSource(registry);
+        this.source.addLocalizationSource(LocalizationSource.router());
     }
-  }
 
-  @Override
-  public DelegatingLocalizationSource getGlobalLocalizationSource() {
-    return source;
-  }
+    @Override
+    public void onInit() {
+        // Display the cool ass banner
+        try (final var input =
+                        Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("banner.txt"));
+                final var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+            reader.lines().forEach(line -> LoggerFactory.getLogger("ROOT").info("> {}", line));
+            this.getLogger()
+                    .info("> Loaded Distributor core v{}", this.getDescriptor().getVersion());
+        } catch (final IOException e) {
+            this.getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
+        }
 
-  @Override
-  public PluginScheduler getPluginScheduler() {
-    return scheduler;
-  }
+        // Load Distributor config
+        final var file = this.getDirectory().resolve("config.properties");
+        final DistributorConfig config;
+        if (Files.exists(file)) {
+            final var properties = new Properties();
+            try (final var reader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
+                properties.load(reader);
+                this.getLogger().info("Loaded distributor config.");
+            } catch (final IOException e) {
+                this.getLogger().error("Failed to load distributor config file.", e);
+            }
+            config = ConfigFactory.create(DistributorConfig.class, properties);
+        } else {
+            config = ConfigFactory.create(DistributorConfig.class);
+            try (final var writer = new OutputStreamWriter(Files.newOutputStream(file), StandardCharsets.UTF_8)) {
+                final var properties = new Properties();
+                config.fill(properties);
+                properties.store(writer, null);
+                this.getLogger().info("Created distributor config.");
+            } catch (final IOException e) {
+                this.getLogger().error("Failed to create distributor config file.", e);
+            }
+        }
 
-  @Override
-  public PermissionService getPermissionService() {
-    return permissions;
-  }
+        this.scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
+        this.permissions = new SimplePermissionService(this.getDirectory().resolve("permissions"));
 
-  @Override
-  public void setPermissionManager(final PermissionService permissions) {
-    this.permissions = permissions;
-  }
+        DistributorProvider.set(this);
+    }
 
-  @Override
-  public MUUIDAuthenticator getMUUIDAuthenticator() {
-    return authenticator;
-  }
+    @Override
+    public void onServerCommandsRegistration(final CommandHandler handler) {
+        this.serverCommands.initialize(handler);
+        this.onSharedCommandsRegistration(this.serverCommands);
 
-  @Override
-  public void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator) {
-    this.authenticator = authenticator;
-  }
+        new ProxyTypedConfig<>(
+                "permission-primary-group",
+                "The primary group assinged to all players.",
+                "default",
+                () -> this.getPermissionService().getPrimaryGroup(),
+                value -> this.getPermissionService().setPrimaryGroup(value));
+
+        new ProxyTypedConfig<>(
+                "permission-verify-admin",
+                "Whether permission check should be skipped on admins.",
+                true,
+                () -> this.getPermissionService().getVerifyAdmin(),
+                value -> this.getPermissionService().setVerifyAdmin(value));
+    }
+
+    @Override
+    public void onClientCommandsRegistration(final CommandHandler handler) {
+        this.clientCommands.initialize(handler);
+        this.onSharedCommandsRegistration(this.clientCommands);
+    }
+
+    private void onSharedCommandsRegistration(final ArcCommandManager<CommandSender> manager) {
+        {
+            final var parser = manager.createAnnotationParser(CommandSender.class);
+            parser.stringProcessor(input -> input.replace("permissible", "player"));
+            parser.parse(new PlayerPermissibleCommand(this.permissions));
+        }
+
+        {
+            final var parser = manager.createAnnotationParser(CommandSender.class);
+            parser.stringProcessor(input -> input.replace("permissible", "group"));
+            parser.parse(new GroupPermissibleCommand(this.permissions));
+        }
+    }
+
+    @Override
+    public DelegatingLocalizationSource getGlobalLocalizationSource() {
+        return this.source;
+    }
+
+    @Override
+    public PluginScheduler getPluginScheduler() {
+        return this.scheduler;
+    }
+
+    @Override
+    public PermissionService getPermissionService() {
+        return this.permissions;
+    }
+
+    @Override
+    public void setPermissionManager(final PermissionService permissions) {
+        this.permissions = permissions;
+    }
+
+    @Override
+    public MUUIDAuthenticator getMUUIDAuthenticator() {
+        return this.authenticator;
+    }
+
+    @Override
+    public void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator) {
+        this.authenticator = authenticator;
+    }
 }

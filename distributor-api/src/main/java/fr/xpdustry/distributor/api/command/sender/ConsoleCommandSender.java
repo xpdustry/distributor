@@ -18,48 +18,47 @@
  */
 package fr.xpdustry.distributor.api.command.sender;
 
-import arc.util.*;
-import java.util.*;
-import mindustry.gen.*;
+import arc.util.Log;
+import java.util.Locale;
+import mindustry.gen.Player;
 
 final class ConsoleCommandSender implements CommandSender {
 
-  static final ConsoleCommandSender INSTANCE = new ConsoleCommandSender();
+    static final ConsoleCommandSender INSTANCE = new ConsoleCommandSender();
 
-  private ConsoleCommandSender() {
-  }
+    private ConsoleCommandSender() {}
 
-  @Override
-  public void sendMessage(final String content) {
-    for (final var line : content.split("\n", -1)) {
-      Log.info(line);
+    @Override
+    public void sendMessage(final String content) {
+        for (final var line : content.split("\n", -1)) {
+            Log.info(line);
+        }
     }
-  }
 
-  @Override
-  public void sendWarning(final String content) {
-    for (final var line : content.split("\n", -1)) {
-      Log.warn(line);
+    @Override
+    public void sendWarning(final String content) {
+        for (final var line : content.split("\n", -1)) {
+            Log.warn(line);
+        }
     }
-  }
 
-  @Override
-  public Locale getLocale() {
-    return Locale.getDefault();
-  }
+    @Override
+    public Locale getLocale() {
+        return Locale.getDefault();
+    }
 
-  @Override
-  public Player getPlayer() {
-    throw new UnsupportedOperationException("This sender is not a player.");
-  }
+    @Override
+    public Player getPlayer() {
+        throw new UnsupportedOperationException("This sender is not a player.");
+    }
 
-  @Override
-  public boolean isPlayer() {
-    return false;
-  }
+    @Override
+    public boolean isPlayer() {
+        return false;
+    }
 
-  @Override
-  public boolean isConsole() {
-    return true;
-  }
+    @Override
+    public boolean isConsole() {
+        return true;
+    }
 }

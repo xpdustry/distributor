@@ -18,22 +18,22 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-import fr.xpdustry.distributor.api.secutiry.*;
-import fr.xpdustry.distributor.api.util.*;
+import fr.xpdustry.distributor.api.secutiry.MUUID;
+import fr.xpdustry.distributor.api.util.Tristate;
 
 public interface PermissionService {
 
-  Tristate getPermission(final MUUID muuid, final String permission);
+    Tristate getPermission(final MUUID muuid, final String permission);
 
-  String getPrimaryGroup();
+    String getPrimaryGroup();
 
-  void setPrimaryGroup(final String group);
+    void setPrimaryGroup(final String group);
 
-  boolean getVerifyAdmin();
+    boolean getVerifyAdmin();
 
-  void setVerifyAdmin(final boolean verify);
+    void setVerifyAdmin(final boolean verify);
 
-  PlayerPermissionManager getPlayerPermissionManager();
+    PlayerPermissionManager getPlayerPermissionManager();
 
-  GroupPermissionManager getGroupPermissionManager();
+    GroupPermissionManager getGroupPermissionManager();
 }

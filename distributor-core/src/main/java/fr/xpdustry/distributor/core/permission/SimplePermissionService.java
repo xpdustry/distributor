@@ -18,139 +18,148 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.secutiry.*;
-import fr.xpdustry.distributor.api.util.*;
-import java.nio.file.*;
-import java.util.*;
-import mindustry.*;
-import org.spongepowered.configurate.*;
-import org.spongepowered.configurate.yaml.*;
+import fr.xpdustry.distributor.api.DistributorProvider;
+import fr.xpdustry.distributor.api.permission.GroupPermission;
+import fr.xpdustry.distributor.api.permission.GroupPermissionManager;
+import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.permission.PermissionService;
+import fr.xpdustry.distributor.api.permission.PlayerPermissionManager;
+import fr.xpdustry.distributor.api.secutiry.MUUID;
+import fr.xpdustry.distributor.api.util.Tristate;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Queue;
+import mindustry.Vars;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 public final class SimplePermissionService implements PermissionService {
 
-  private static final Comparator<GroupPermission> GROUP_COMPARATOR =
-    Comparator.comparing(GroupPermission::getWeight).reversed();
+    private static final Comparator<GroupPermission> GROUP_COMPARATOR =
+            Comparator.comparing(GroupPermission::getWeight).reversed();
 
-  private final PlayerPermissionManager players;
-  private final GroupPermissionManager groups;
-  private final YamlConfigurationLoader loader;
+    private final PlayerPermissionManager players;
+    private final GroupPermissionManager groups;
+    private final YamlConfigurationLoader loader;
 
-  private String primaryGroup;
-  private boolean verifyAdmin;
+    private String primaryGroup;
+    private boolean verifyAdmin;
 
-  public SimplePermissionService(final Path directory) {
-    this.loader = YamlConfigurationLoader.builder()
-      .indent(2)
-      .path(directory.resolve("settings.yaml"))
-      .nodeStyle(NodeStyle.BLOCK)
-      .build();
+    public SimplePermissionService(final Path directory) {
+        this.loader = YamlConfigurationLoader.builder()
+                .indent(2)
+                .path(directory.resolve("settings.yaml"))
+                .nodeStyle(NodeStyle.BLOCK)
+                .build();
 
-    this.players = new SimplePlayerPermissionManager(directory.resolve("players.yaml"));
-    this.groups = new SimpleGroupPermissionManager(directory.resolve("groups.yaml"));
+        this.players = new SimplePlayerPermissionManager(directory.resolve("players.yaml"));
+        this.groups = new SimpleGroupPermissionManager(directory.resolve("groups.yaml"));
 
-    try {
-      final var root = loader.load();
-      this.primaryGroup = root.node("primary-group").getString("default");
-      this.verifyAdmin = root.node("verify-admin").getBoolean(true);
-    } catch (final ConfigurateException e) {
-      throw new RuntimeException("Unable to load the permissions.", e);
-    }
-  }
-
-  @Override
-  public Tristate getPermission(final MUUID muuid, final String permission) {
-    if (verifyAdmin) {
-      final var info = Vars.netServer.admins.getInfoOptional(muuid.getUuid());
-      if (info != null && info.admin) {
-        return Tristate.TRUE;
-      }
+        try {
+            final var root = this.loader.load();
+            this.primaryGroup = root.node("primary-group").getString("default");
+            this.verifyAdmin = root.node("verify-admin").getBoolean(true);
+        } catch (final ConfigurateException e) {
+            throw new RuntimeException("Unable to load the permissions.", e);
+        }
     }
 
-    if (!DistributorProvider.get().getMUUIDAuthenticator().authenticate(muuid)) {
-      return Tristate.UNDEFINED;
+    @Override
+    public Tristate getPermission(final MUUID muuid, final String permission) {
+        if (this.verifyAdmin) {
+            final var info = Vars.netServer.admins.getInfoOptional(muuid.getUuid());
+            if (info != null && info.admin) {
+                return Tristate.TRUE;
+            }
+        }
+
+        if (!DistributorProvider.get().getMUUIDAuthenticator().authenticate(muuid)) {
+            return Tristate.UNDEFINED;
+        }
+
+        final var perm = permission.toLowerCase(Locale.ROOT);
+        var state = Tristate.UNDEFINED;
+        final var visited = new HashSet<String>();
+        final Queue<PermissionHolder> queue = new ArrayDeque<>();
+        final var player = this.players.findById(muuid.getUuid());
+        final var primary = this.groups.findById(this.primaryGroup);
+
+        if (player.isPresent()) {
+            queue.add(player.get());
+        } else if (primary.isPresent()) {
+            queue.add(primary.get());
+        } else {
+            return state;
+        }
+
+        while (!queue.isEmpty()) {
+            final var holder = queue.remove();
+            state = holder.getPermission(perm);
+            if (state != Tristate.UNDEFINED) {
+                break;
+            }
+
+            holder.getParentGroups().stream()
+                    .filter(visited::add)
+                    .map(this.groups::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .sorted(GROUP_COMPARATOR)
+                    .forEach(queue::add);
+
+            if (queue.isEmpty() && !visited.add(this.primaryGroup) && primary.isPresent()) {
+                queue.add(primary.get());
+            }
+        }
+
+        return state;
     }
 
-    final var perm = permission.toLowerCase(Locale.ROOT);
-    var state = Tristate.UNDEFINED;
-    final var visited = new HashSet<String>();
-    final Queue<PermissionHolder> queue = new ArrayDeque<>();
-    final var player = players.findById(muuid.getUuid());
-    final var primary = groups.findById(primaryGroup);
-
-    if (player.isPresent()) {
-      queue.add(player.get());
-    } else if (primary.isPresent()) {
-      queue.add(primary.get());
-    } else {
-      return state;
+    @Override
+    public String getPrimaryGroup() {
+        return this.primaryGroup;
     }
 
-    while (!queue.isEmpty()) {
-      final var holder = queue.remove();
-      state = holder.getPermission(perm);
-      if (state != Tristate.UNDEFINED) {
-        break;
-      }
-
-      holder.getParentGroups()
-        .stream()
-        .filter(visited::add)
-        .map(groups::findById)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .sorted(GROUP_COMPARATOR)
-        .forEach(queue::add);
-
-      if (queue.isEmpty() && !visited.add(primaryGroup) && primary.isPresent()) {
-        queue.add(primary.get());
-      }
+    @Override
+    public void setPrimaryGroup(final String group) {
+        this.primaryGroup = group;
+        this.save();
     }
 
-    return state;
-  }
-
-  @Override
-  public String getPrimaryGroup() {
-    return primaryGroup;
-  }
-
-  @Override
-  public void setPrimaryGroup(final String group) {
-    this.primaryGroup = group;
-    save();
-  }
-
-  @Override
-  public boolean getVerifyAdmin() {
-    return verifyAdmin;
-  }
-
-  @Override
-  public void setVerifyAdmin(final boolean verify) {
-    this.verifyAdmin = verify;
-    save();
-  }
-
-  @Override
-  public PlayerPermissionManager getPlayerPermissionManager() {
-    return players;
-  }
-
-  @Override
-  public GroupPermissionManager getGroupPermissionManager() {
-    return groups;
-  }
-
-  private void save() {
-    try {
-      final var root = loader.createNode();
-      root.node("primary-group").set(primaryGroup);
-      root.node("verify-admin").set(verifyAdmin);
-      loader.save(root);
-    } catch (final ConfigurateException e) {
-      throw new RuntimeException("Failed to save the permission manager settings.", e);
+    @Override
+    public boolean getVerifyAdmin() {
+        return this.verifyAdmin;
     }
-  }
+
+    @Override
+    public void setVerifyAdmin(final boolean verify) {
+        this.verifyAdmin = verify;
+        this.save();
+    }
+
+    @Override
+    public PlayerPermissionManager getPlayerPermissionManager() {
+        return this.players;
+    }
+
+    @Override
+    public GroupPermissionManager getGroupPermissionManager() {
+        return this.groups;
+    }
+
+    private void save() {
+        try {
+            final var root = this.loader.createNode();
+            root.node("primary-group").set(this.primaryGroup);
+            root.node("verify-admin").set(this.verifyAdmin);
+            this.loader.save(root);
+        } catch (final ConfigurateException e) {
+            throw new RuntimeException("Failed to save the permission manager settings.", e);
+        }
+    }
 }

@@ -19,9 +19,9 @@
 package fr.xpdustry.distributor.api.util;
 
 public enum Priority {
-  HIGHEST,
-  HIGH,
-  NORMAL,
-  LOW,
-  LOWEST
+    HIGHEST,
+    HIGH,
+    NORMAL,
+    LOW,
+    LOWEST
 }

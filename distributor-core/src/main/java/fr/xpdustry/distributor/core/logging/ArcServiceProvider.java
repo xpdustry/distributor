@@ -18,46 +18,49 @@
  */
 package fr.xpdustry.distributor.core.logging;
 
-import org.checkerframework.checker.nullness.qual.*;
-import org.slf4j.*;
-import org.slf4j.helpers.*;
-import org.slf4j.spi.*;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.IMarkerFactory;
+import org.slf4j.helpers.BasicMarkerFactory;
+import org.slf4j.helpers.NOPMDCAdapter;
+import org.slf4j.spi.MDCAdapter;
+import org.slf4j.spi.SLF4JServiceProvider;
 
 public final class ArcServiceProvider implements SLF4JServiceProvider {
 
-  @MonotonicNonNull
-  private ILoggerFactory loggerFactory = null;
+    @MonotonicNonNull
+    private ILoggerFactory loggerFactory = null;
 
-  @MonotonicNonNull
-  private IMarkerFactory markerFactory = null;
+    @MonotonicNonNull
+    private IMarkerFactory markerFactory = null;
 
-  @MonotonicNonNull
-  private MDCAdapter mdcAdapter = null;
+    @MonotonicNonNull
+    private MDCAdapter mdcAdapter = null;
 
-  @Override
-  public ILoggerFactory getLoggerFactory() {
-    return loggerFactory;
-  }
+    @Override
+    public ILoggerFactory getLoggerFactory() {
+        return this.loggerFactory;
+    }
 
-  @Override
-  public IMarkerFactory getMarkerFactory() {
-    return markerFactory;
-  }
+    @Override
+    public IMarkerFactory getMarkerFactory() {
+        return this.markerFactory;
+    }
 
-  @Override
-  public MDCAdapter getMDCAdapter() {
-    return mdcAdapter;
-  }
+    @Override
+    public MDCAdapter getMDCAdapter() {
+        return this.mdcAdapter;
+    }
 
-  @Override
-  public String getRequestedApiVersion() {
-    return "2.0.0";
-  }
+    @Override
+    public String getRequestedApiVersion() {
+        return "2.0.0";
+    }
 
-  @Override
-  public void initialize() {
-    loggerFactory = new ArcLoggerFactory();
-    markerFactory = new BasicMarkerFactory();
-    mdcAdapter = new NOPMDCAdapter();
-  }
+    @Override
+    public void initialize() {
+        this.loggerFactory = new ArcLoggerFactory();
+        this.markerFactory = new BasicMarkerFactory();
+        this.mdcAdapter = new NOPMDCAdapter();
+    }
 }

@@ -18,27 +18,27 @@
  */
 package fr.xpdustry.distributor.core.config;
 
-import mindustry.net.*;
+import mindustry.net.Administration;
 
 public interface TypedConfig<T> {
 
-  String getKey();
+    enum ValueType {
+        INTEGER,
+        BOOLEAN,
+        STRING
+    }
 
-  String getDescription();
+    String getKey();
 
-  T getValue();
+    String getDescription();
 
-  void setValue(T value);
+    T getValue();
 
-  T getDefaultValue();
+    void setValue(T value);
 
-  ValueType getValueType();
+    T getDefaultValue();
 
-  Administration.Config getConfig();
+    ValueType getValueType();
 
-  enum ValueType {
-    INTEGER,
-    BOOLEAN,
-    STRING
-  }
+    Administration.Config getConfig();
 }

@@ -20,7 +20,7 @@ package fr.xpdustry.distributor.api.permission;
 
 public interface GroupPermission extends PermissionHolder {
 
-  int getWeight();
+    int getWeight();
 
-  void setWeight(int weight);
+    void setWeight(int weight);
 }

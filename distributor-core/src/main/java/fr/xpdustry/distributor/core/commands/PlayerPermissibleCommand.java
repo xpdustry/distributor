@@ -18,31 +18,32 @@
  */
 package fr.xpdustry.distributor.core.commands;
 
-import fr.xpdustry.distributor.api.manager.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.util.*;
-import java.util.*;
+import fr.xpdustry.distributor.api.manager.Manager;
+import fr.xpdustry.distributor.api.permission.PermissionService;
+import fr.xpdustry.distributor.api.permission.PlayerPermission;
+import fr.xpdustry.distributor.api.util.Magik;
+import java.util.Optional;
 
 public final class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermission> {
 
-  public PlayerPermissibleCommand(final PermissionService service) {
-    super(service, "player");
-  }
-
-  @Override
-  protected Optional<PlayerPermission> findPermissible(String input) {
-    final var players = Magik.findPlayers(input);
-    if (players.isEmpty() && Magik.isUuid(input)) {
-      return Optional.of(getManager().findOrCreateById(input));
-    } else if (players.size() == 1) {
-      return Optional.of(getManager().findOrCreateById(players.get(0).uuid()));
-    } else {
-      return Optional.empty();
+    public PlayerPermissibleCommand(final PermissionService service) {
+        super(service, "player");
     }
-  }
 
-  @Override
-  protected Manager<PlayerPermission, String> getManager() {
-    return getPermissionManager().getPlayerPermissionManager();
-  }
+    @Override
+    protected Optional<PlayerPermission> findPermissible(final String input) {
+        final var players = Magik.findPlayers(input);
+        if (players.isEmpty() && Magik.isUuid(input)) {
+            return Optional.of(this.getManager().findOrCreateById(input));
+        } else if (players.size() == 1) {
+            return Optional.of(this.getManager().findOrCreateById(players.get(0).uuid()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    protected Manager<PlayerPermission, String> getManager() {
+        return this.getPermissionManager().getPlayerPermissionManager();
+    }
 }

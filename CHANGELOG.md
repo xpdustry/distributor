@@ -26,4 +26,5 @@ Distributor 3 is now feature complete and now enters the testing phase...
 
 ### Deprecated
 
-- Removed the message API, it was awful. It will be soon replaced by an adventure-like library to send messages regardless of the platform.
+- Removed the message API, it was awful. It will be soon replaced by an adventure-like library to send messages
+  regardless of the platform.

@@ -18,14 +18,14 @@
  */
 package fr.xpdustry.distributor.api.command;
 
-import arc.struct.*;
-import arc.util.*;
-import cloud.commandframework.*;
-import cloud.commandframework.CommandManager.*;
-import cloud.commandframework.arguments.*;
-import cloud.commandframework.internal.*;
-import cloud.commandframework.meta.*;
-import java.lang.reflect.*;
+import arc.struct.ObjectMap;
+import arc.util.CommandHandler;
+import cloud.commandframework.Command;
+import cloud.commandframework.CommandManager.ManagerSettings;
+import cloud.commandframework.arguments.StaticArgument;
+import cloud.commandframework.internal.CommandRegistrationHandler;
+import cloud.commandframework.meta.CommandMeta;
+import java.lang.reflect.Field;
 
 /**
  * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
@@ -33,61 +33,61 @@ import java.lang.reflect.*;
  */
 public final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
 
-  private static final Field COMMAND_MAP_ACCESSOR;
+    private static final Field COMMAND_MAP_ACCESSOR;
 
-  static {
-    try {
-      COMMAND_MAP_ACCESSOR = CommandHandler.class.getDeclaredField("commands");
-      COMMAND_MAP_ACCESSOR.setAccessible(true);
-    } catch (final NoSuchFieldException e) {
-      throw new RuntimeException("Unable to access CommandHandler#commands.", e);
-    }
-  }
-
-  private final ArcCommandManager<C> manager;
-  private final CommandHandler handler;
-  private final ObjectMap<String, CommandHandler.Command> commands;
-
-  @SuppressWarnings("unchecked")
-  ArcRegistrationHandler(final ArcCommandManager<C> manager, final CommandHandler handler) {
-    this.manager = manager;
-    this.handler = handler;
-    try {
-      this.commands = (ObjectMap<String, CommandHandler.Command>) COMMAND_MAP_ACCESSOR.get(handler);
-    } catch (final IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public boolean registerCommand(final Command<?> command) {
-    final var root = (StaticArgument<?>) command.getArguments().get(0);
-    final var description = command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, "");
-
-    if (manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)) {
-      root.getAliases().forEach(handler::removeCommand);
+    static {
+        try {
+            COMMAND_MAP_ACCESSOR = CommandHandler.class.getDeclaredField("commands");
+            COMMAND_MAP_ACCESSOR.setAccessible(true);
+        } catch (final NoSuchFieldException e) {
+            throw new RuntimeException("Unable to access CommandHandler#commands.", e);
+        }
     }
 
-    var added = false;
+    private final ArcCommandManager<C> manager;
+    private final CommandHandler handler;
+    private final ObjectMap<String, CommandHandler.Command> commands;
 
-    for (final var alias : root.getAliases()) {
-      if (!commands.containsKey(alias)) {
-        final var nativeCommand = new ArcCommand<>(alias, description, manager);
-        commands.put(alias, nativeCommand);
-        handler.getCommandList().add(nativeCommand);
-        added = true;
-      }
+    @SuppressWarnings("unchecked")
+    ArcRegistrationHandler(final ArcCommandManager<C> manager, final CommandHandler handler) {
+        this.manager = manager;
+        this.handler = handler;
+        try {
+            this.commands = (ObjectMap<String, CommandHandler.Command>) COMMAND_MAP_ACCESSOR.get(handler);
+        } catch (final IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    return added;
-  }
+    @Override
+    public boolean registerCommand(final Command<?> command) {
+        final var root = (StaticArgument<?>) command.getArguments().get(0);
+        final var description = command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, "");
 
-  @Override
-  public void unregisterRootCommand(final StaticArgument<?> root) {
-    root.getAliases().stream()
-      .map(commands::get)
-      .filter(command -> command instanceof ArcCommand<?> cloud && cloud.getManager() == this.manager)
-      .map(c -> c.text)
-      .forEach(handler::removeCommand);
-  }
+        if (this.manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)) {
+            root.getAliases().forEach(this.handler::removeCommand);
+        }
+
+        var added = false;
+
+        for (final var alias : root.getAliases()) {
+            if (!this.commands.containsKey(alias)) {
+                final var nativeCommand = new ArcCommand<>(alias, description, this.manager);
+                this.commands.put(alias, nativeCommand);
+                this.handler.getCommandList().add(nativeCommand);
+                added = true;
+            }
+        }
+
+        return added;
+    }
+
+    @Override
+    public void unregisterRootCommand(final StaticArgument<?> root) {
+        root.getAliases().stream()
+                .map(this.commands::get)
+                .filter(command -> command instanceof ArcCommand<?> cloud && cloud.getManager() == this.manager)
+                .map(c -> c.text)
+                .forEach(this.handler::removeCommand);
+    }
 }

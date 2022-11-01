@@ -18,14 +18,14 @@
  */
 package fr.xpdustry.distributor.api.command;
 
-import cloud.commandframework.arguments.parser.*;
-import fr.xpdustry.distributor.api.command.argument.TeamArgument.*;
-import io.leangen.geantyref.*;
+import cloud.commandframework.arguments.parser.ParserParameter;
+import fr.xpdustry.distributor.api.command.argument.TeamArgument.TeamMode;
+import io.leangen.geantyref.TypeToken;
 
 public final class ArcParserParameters {
 
-  public static final ParserParameter<TeamMode> TEAM_MODE = new ParserParameter<>("team_mode", TypeToken.get(TeamMode.class));
+    public static final ParserParameter<TeamMode> TEAM_MODE =
+            new ParserParameter<>("team_mode", TypeToken.get(TeamMode.class));
 
-  private ArcParserParameters() {
-  }
+    private ArcParserParameters() {}
 }

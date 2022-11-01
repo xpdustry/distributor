@@ -18,22 +18,22 @@
  */
 package fr.xpdustry.distributor.api;
 
-import fr.xpdustry.distributor.api.localization.*;
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.scheduler.*;
-import fr.xpdustry.distributor.api.secutiry.*;
+import fr.xpdustry.distributor.api.localization.DelegatingLocalizationSource;
+import fr.xpdustry.distributor.api.permission.PermissionService;
+import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+import fr.xpdustry.distributor.api.secutiry.MUUIDAuthenticator;
 
 public interface Distributor {
 
-  DelegatingLocalizationSource getGlobalLocalizationSource();
+    DelegatingLocalizationSource getGlobalLocalizationSource();
 
-  PluginScheduler getPluginScheduler();
+    PluginScheduler getPluginScheduler();
 
-  PermissionService getPermissionService();
+    PermissionService getPermissionService();
 
-  void setPermissionManager(final PermissionService permissions);
+    void setPermissionManager(final PermissionService permissions);
 
-  MUUIDAuthenticator getMUUIDAuthenticator();
+    MUUIDAuthenticator getMUUIDAuthenticator();
 
-  void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator);
+    void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator);
 }

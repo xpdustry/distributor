@@ -18,22 +18,21 @@
  */
 package fr.xpdustry.distributor.api.localization;
 
-import java.text.*;
-import java.util.*;
-import org.checkerframework.checker.nullness.qual.*;
+import java.text.MessageFormat;
+import java.util.Locale;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class RouterLocalizationSource implements LocalizationSource {
 
-  static final RouterLocalizationSource INSTANCE = new RouterLocalizationSource();
+    static final RouterLocalizationSource INSTANCE = new RouterLocalizationSource();
 
-  private static final Locale ROUTER_LOCALE = new Locale("router");
-  private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router");
+    private static final Locale ROUTER_LOCALE = new Locale("router");
+    private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router");
 
-  private RouterLocalizationSource() {
-  }
+    private RouterLocalizationSource() {}
 
-  @Override
-  public @Nullable MessageFormat localize(final String key, final Locale locale) {
-    return locale.equals(ROUTER_LOCALE) ? ROUTER_FORMAT : null;
-  }
+    @Override
+    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        return locale.equals(ROUTER_LOCALE) ? ROUTER_FORMAT : null;
+    }
 }

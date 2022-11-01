@@ -18,83 +18,85 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
-import fr.xpdustry.distributor.api.util.*;
-import java.util.*;
-import org.checkerframework.checker.nullness.qual.*;
+import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.util.Tristate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class PermissionTree {
 
-  private final @Nullable PermissionTree parent;
-  private final Map<String, PermissionTree> children = new HashMap<>();
-  private Tristate value = Tristate.UNDEFINED;
+    private final @Nullable PermissionTree parent;
+    private final Map<String, PermissionTree> children = new HashMap<>();
+    private Tristate value = Tristate.UNDEFINED;
 
-  public PermissionTree() {
-    this.parent = null;
-  }
-
-  private PermissionTree(final @Nullable PermissionTree parent) {
-    this.parent = parent;
-  }
-
-  public Tristate getPermission(final String permission) {
-    if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
-      throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
+    public PermissionTree() {
+        this.parent = null;
     }
-    var state = Tristate.UNDEFINED;
-    var node = this;
-    for (final var part : permission.split("\\.", -1)) {
-      if (node.children.containsKey("*") && node.children.get("*").value != Tristate.UNDEFINED) {
-        state = node.children.get("*").value;
-      }
-      node = node.children.get(part);
-      if (node == null) {
-        return state;
-      } else if (node.value != Tristate.UNDEFINED) {
-        state = node.value;
-      }
-    }
-    return state;
-  }
 
-  public void setPermission(final String permission, final Tristate state) {
-    if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
-      throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
+    private PermissionTree(final @Nullable PermissionTree parent) {
+        this.parent = parent;
     }
-    final var parts = permission.split("\\.", -1);
-    var node = this;
-    if (state != Tristate.UNDEFINED) {
-      for (final var part : parts) {
-        final var parent = node;
-        node = node.children.computeIfAbsent(part, k -> new PermissionTree(parent));
-      }
-      node.value = state;
-    } else {
-      for (final var part : parts) {
-        node = node.children.get(part);
-        if (node == null) {
-          return;
+
+    public Tristate getPermission(final String permission) {
+        if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
+            throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
         }
-      }
-      node.value = state;
-      var index = parts.length - 1;
-      while (node.parent != null && node.children.size() == 0) {
-        node = node.parent;
-        node.children.remove(parts[index--]);
-      }
+        var state = Tristate.UNDEFINED;
+        var node = this;
+        for (final var part : permission.split("\\.", -1)) {
+            if (node.children.containsKey("*") && node.children.get("*").value != Tristate.UNDEFINED) {
+                state = node.children.get("*").value;
+            }
+            node = node.children.get(part);
+            if (node == null) {
+                return state;
+            } else if (node.value != Tristate.UNDEFINED) {
+                state = node.value;
+            }
+        }
+        return state;
     }
-  }
 
-  public Map<String, Boolean> getPermissions() {
-    final Map<String, Boolean> permissions = new HashMap<>();
-    for (final var child : children.entrySet()) {
-      if (child.getValue().value != Tristate.UNDEFINED) {
-        permissions.put(child.getKey(), child.getValue().value.asBoolean());
-      }
-      for (final var entry : child.getValue().getPermissions().entrySet()) {
-        permissions.put(child.getKey() + "." + entry.getKey(), entry.getValue());
-      }
+    public void setPermission(final String permission, final Tristate state) {
+        if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
+            throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
+        }
+        final var parts = permission.split("\\.", -1);
+        var node = this;
+        if (state != Tristate.UNDEFINED) {
+            for (final var part : parts) {
+                final var parent = node;
+                node = node.children.computeIfAbsent(part, k -> new PermissionTree(parent));
+            }
+            node.value = state;
+        } else {
+            for (final var part : parts) {
+                node = node.children.get(part);
+                if (node == null) {
+                    return;
+                }
+            }
+            node.value = state;
+            var index = parts.length - 1;
+            while (node.parent != null && node.children.size() == 0) {
+                node = node.parent;
+                node.children.remove(parts[index--]);
+            }
+        }
     }
-    return Collections.unmodifiableMap(permissions);
-  }
+
+    public Map<String, Boolean> getPermissions() {
+        final Map<String, Boolean> permissions = new HashMap<>();
+        for (final var child : this.children.entrySet()) {
+            if (child.getValue().value != Tristate.UNDEFINED) {
+                permissions.put(child.getKey(), child.getValue().value.asBoolean());
+            }
+            for (final var entry : child.getValue().getPermissions().entrySet()) {
+                permissions.put(child.getKey() + "." + entry.getKey(), entry.getValue());
+            }
+        }
+        return Collections.unmodifiableMap(permissions);
+    }
 }

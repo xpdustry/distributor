@@ -18,15 +18,16 @@
  */
 package fr.xpdustry.distributor.api.localization;
 
-import java.text.*;
-import java.util.*;
-import org.checkerframework.checker.nullness.qual.*;
+import java.text.MessageFormat;
+import java.util.Locale;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface LocalizationSource {
 
-  static LocalizationSource router() {
-    return RouterLocalizationSource.INSTANCE;
-  }
+    static LocalizationSource router() {
+        return RouterLocalizationSource.INSTANCE;
+    }
 
-  @Nullable MessageFormat localize(final String key, final Locale locale);
+    @Nullable
+    MessageFormat localize(final String key, final Locale locale);
 }

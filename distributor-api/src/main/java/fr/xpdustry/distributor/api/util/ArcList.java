@@ -18,10 +18,17 @@
  */
 package fr.xpdustry.distributor.api.util;
 
-import arc.struct.*;
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
+import arc.struct.Seq;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.AbstractList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.RandomAccess;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * A {@link List} view of a {@link Seq}.
@@ -30,116 +37,116 @@ import java.util.function.*;
  */
 public final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAccess {
 
-  @Serial
-  private static final long serialVersionUID = 7102237478555006892L;
+    @Serial
+    private static final long serialVersionUID = 7102237478555006892L;
 
-  private final Seq<E> seq;
+    private final Seq<E> seq;
 
-  public ArcList(final Seq<E> seq) {
-    this.seq = seq;
-  }
+    public ArcList(final Seq<E> seq) {
+        this.seq = seq;
+    }
 
-  @Override
-  public void replaceAll(final UnaryOperator<E> operator) {
-    seq.replace(operator::apply);
-  }
+    @Override
+    public void replaceAll(final UnaryOperator<E> operator) {
+        this.seq.replace(operator::apply);
+    }
 
-  @Override
-  public void sort(final Comparator<? super E> c) {
-    seq.sort(c);
-  }
+    @Override
+    public void sort(final Comparator<? super E> c) {
+        this.seq.sort(c);
+    }
 
-  @Override
-  public boolean removeIf(final Predicate<? super E> filter) {
-    final var size = seq.size;
-    return size != seq.removeAll(filter::test).size;
-  }
+    @Override
+    public boolean removeIf(final Predicate<? super E> filter) {
+        final var size = this.seq.size;
+        return size != this.seq.removeAll(filter::test).size;
+    }
 
-  @Override
-  public void forEach(final Consumer<? super E> action) {
-    seq.forEach(action);
-  }
+    @Override
+    public void forEach(final Consumer<? super E> action) {
+        this.seq.forEach(action);
+    }
 
-  @Override
-  public int size() {
-    return seq.size;
-  }
+    @Override
+    public int size() {
+        return this.seq.size;
+    }
 
-  @Override
-  public boolean isEmpty() {
-    return seq.isEmpty();
-  }
+    @Override
+    public boolean isEmpty() {
+        return this.seq.isEmpty();
+    }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public boolean contains(final Object o) {
-    return seq.contains((E) o);
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean contains(final Object o) {
+        return this.seq.contains((E) o);
+    }
 
-  @Override
-  public Object[] toArray() {
-    return seq.toArray();
-  }
+    @Override
+    public Object[] toArray() {
+        return this.seq.toArray();
+    }
 
-  @Override
-  public <T> T[] toArray(final T[] a) {
-    return seq.toArray(a.getClass().getComponentType());
-  }
+    @Override
+    public <T> T[] toArray(final T[] a) {
+        return this.seq.toArray(a.getClass().getComponentType());
+    }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public boolean remove(final Object o) {
-    return seq.remove((E) o);
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean remove(final Object o) {
+        return this.seq.remove((E) o);
+    }
 
-  @Override
-  public E remove(final int index) {
-    return seq.remove(index);
-  }
+    @Override
+    public E remove(final int index) {
+        return this.seq.remove(index);
+    }
 
-  @Override
-  public boolean addAll(final Collection<? extends E> c) {
-    seq.addAll(c);
-    return true;
-  }
+    @Override
+    public boolean addAll(final Collection<? extends E> c) {
+        this.seq.addAll(c);
+        return true;
+    }
 
-  @Override
-  public boolean add(final E e) {
-    seq.add(e);
-    return true;
-  }
+    @Override
+    public boolean add(final E e) {
+        this.seq.add(e);
+        return true;
+    }
 
-  @Override
-  public void add(final int index, final E element) {
-    seq.insert(index, element);
-  }
+    @Override
+    public void add(final int index, final E element) {
+        this.seq.insert(index, element);
+    }
 
-  @Override
-  public E get(final int index) {
-    return seq.get(index);
-  }
+    @Override
+    public E get(final int index) {
+        return this.seq.get(index);
+    }
 
-  @Override
-  public E set(final int index, final E element) {
-    E old = seq.get(index);
-    seq.set(index, element);
-    return old;
-  }
+    @Override
+    public E set(final int index, final E element) {
+        final E old = this.seq.get(index);
+        this.seq.set(index, element);
+        return old;
+    }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public int indexOf(final Object o) {
-    return seq.indexOf((E) o);
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public int indexOf(final Object o) {
+        return this.seq.indexOf((E) o);
+    }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public int lastIndexOf(final Object o) {
-    return seq.lastIndexOf((E) o, false);
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public int lastIndexOf(final Object o) {
+        return this.seq.lastIndexOf((E) o, false);
+    }
 
-  @Override
-  public void clear() {
-    seq.clear();
-  }
+    @Override
+    public void clear() {
+        this.seq.clear();
+    }
 }

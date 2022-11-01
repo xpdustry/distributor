@@ -18,7 +18,11 @@
  */
 package cloud.commandframework.annotations;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 //
@@ -55,19 +59,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface CommandMethod {
 
-  String ANNOTATION_PATH = "cloud.commandframework.annotations.CommandMethod";
+    String ANNOTATION_PATH = "cloud.commandframework.annotations.CommandMethod";
 
-  /**
-   * Command syntax
-   *
-   * @return Command syntax
-   */
-  @NonNull String value();
+    /**
+     * Command syntax
+     *
+     * @return Command syntax
+     */
+    @NonNull
+    String value();
 
-  /**
-   * The required sender
-   *
-   * @return Required sender
-   */
-  @NonNull Class<?> requiredSender() default Object.class;
+    /**
+     * The required sender
+     *
+     * @return Required sender
+     */
+    @NonNull
+    Class<?> requiredSender() default Object.class;
 }

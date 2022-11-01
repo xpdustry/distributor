@@ -18,15 +18,15 @@
  */
 package fr.xpdustry.distributor.core.commands;
 
-import fr.xpdustry.distributor.api.command.*;
-import fr.xpdustry.distributor.api.command.sender.*;
-import fr.xpdustry.distributor.core.*;
-import java.util.function.*;
+import fr.xpdustry.distributor.api.command.ArcCommandManager;
+import fr.xpdustry.distributor.api.command.sender.CommandSender;
+import fr.xpdustry.distributor.core.DistributorPlugin;
+import java.util.function.Function;
 
 public final class DistributorCommandManager extends ArcCommandManager<CommandSender> {
 
-  public DistributorCommandManager(final DistributorPlugin plugin) {
-    super(plugin, Function.identity(), Function.identity());
-    setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
-  }
+    public DistributorCommandManager(final DistributorPlugin plugin) {
+        super(plugin, Function.identity(), Function.identity());
+        this.setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
+    }
 }

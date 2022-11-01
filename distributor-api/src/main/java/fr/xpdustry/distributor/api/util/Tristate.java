@@ -18,24 +18,24 @@
  */
 package fr.xpdustry.distributor.api.util;
 
-import org.checkerframework.checker.nullness.qual.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public enum Tristate {
-  FALSE(false),
-  TRUE(true),
-  UNDEFINED(false);
+    FALSE(false),
+    TRUE(true),
+    UNDEFINED(false);
 
-  private final boolean value;
+    private final boolean value;
 
-  Tristate(final boolean value) {
-    this.value = value;
-  }
+    Tristate(final boolean value) {
+        this.value = value;
+    }
 
-  public static Tristate of(final @Nullable Boolean state) {
-    return state == null ? UNDEFINED : state ? TRUE : FALSE;
-  }
+    public static Tristate of(final @Nullable Boolean state) {
+        return state == null ? UNDEFINED : state ? TRUE : FALSE;
+    }
 
-  public boolean asBoolean() {
-    return value;
-  }
+    public boolean asBoolean() {
+        return this.value;
+    }
 }

@@ -2,8 +2,6 @@ import fr.xpdustry.toxopid.ModPlatform
 import fr.xpdustry.toxopid.util.ModMetadata
 import fr.xpdustry.toxopid.util.anukenJitpack
 import fr.xpdustry.toxopid.util.mindustryDependencies
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.repositories
 
 plugins {
     id("net.kyori.indra")

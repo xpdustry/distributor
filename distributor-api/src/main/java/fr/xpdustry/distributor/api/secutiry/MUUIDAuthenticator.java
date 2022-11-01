@@ -20,5 +20,5 @@ package fr.xpdustry.distributor.api.secutiry;
 
 public interface MUUIDAuthenticator {
 
-  boolean authenticate(final MUUID muuid);
+    boolean authenticate(final MUUID muuid);
 }

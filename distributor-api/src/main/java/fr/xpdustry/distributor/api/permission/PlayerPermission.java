@@ -20,5 +20,5 @@ package fr.xpdustry.distributor.api.permission;
 
 public interface PlayerPermission extends PermissionHolder {
 
-  String getUuid();
+    String getUuid();
 }

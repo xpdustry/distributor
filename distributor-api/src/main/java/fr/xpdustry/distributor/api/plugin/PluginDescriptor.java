@@ -18,99 +18,101 @@
  */
 package fr.xpdustry.distributor.api.plugin;
 
-import arc.util.serialization.*;
-import java.io.*;
-import java.util.*;
-import mindustry.mod.*;
+import arc.util.serialization.Json;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import mindustry.mod.Mods;
+import mindustry.mod.Plugin;
 
 public final class PluginDescriptor {
 
-  private final String name;
-  private final String displayName;
-  private final String author;
-  private final String description;
-  private final String version;
-  private final String main;
-  private final int minGameVersion;
-  private final String repository;
-  private final List<String> dependencies;
+    private final String name;
+    private final String displayName;
+    private final String author;
+    private final String description;
+    private final String version;
+    private final String main;
+    private final int minGameVersion;
+    private final String repository;
+    private final List<String> dependencies;
 
-  private PluginDescriptor(final Mods.ModMeta meta) {
-    this.name = Objects.requireNonNull(meta.name);
-    this.displayName = meta.displayName();
-    this.author = Objects.requireNonNullElse(meta.author, "unknown");
-    this.description = Objects.requireNonNullElse(meta.description, "");
-    this.version = Objects.requireNonNullElse(meta.version, "1.0.0");
-    this.main = Objects.requireNonNull(meta.main);
-    this.minGameVersion = meta.getMinMajor();
-    this.repository = Objects.requireNonNullElse(meta.repo, "");
-    this.dependencies = Collections.unmodifiableList(
-      Objects.requireNonNull(meta.dependencies).list()
-    );
-  }
-
-  public static PluginDescriptor from(final Mods.ModMeta meta) {
-    return new PluginDescriptor(meta);
-  }
-
-  public static PluginDescriptor from(final Plugin plugin) {
-    return from(plugin.getClass());
-  }
-
-  public static PluginDescriptor from(final Class<? extends Plugin> clazz) {
-    var resource = clazz.getClassLoader().getResourceAsStream("plugin.json");
-    if (resource == null) {
-      resource = clazz.getClassLoader().getResourceAsStream("plugin.hjson");
-      if (resource == null) {
-        throw new IllegalStateException("Missing plugin descriptor.");
-      }
+    private PluginDescriptor(final Mods.ModMeta meta) {
+        this.name = Objects.requireNonNull(meta.name);
+        this.displayName = meta.displayName();
+        this.author = Objects.requireNonNullElse(meta.author, "unknown");
+        this.description = Objects.requireNonNullElse(meta.description, "");
+        this.version = Objects.requireNonNullElse(meta.version, "1.0.0");
+        this.main = Objects.requireNonNull(meta.main);
+        this.minGameVersion = meta.getMinMajor();
+        this.repository = Objects.requireNonNullElse(meta.repo, "");
+        this.dependencies = Collections.unmodifiableList(
+                Objects.requireNonNull(meta.dependencies).list());
     }
-    try (final var input = resource) {
-      final var meta = new Json().fromJson(Mods.ModMeta.class, input);
-      meta.cleanup();
-      return PluginDescriptor.from(meta);
-    } catch (final IOException e) {
-      throw new IllegalStateException("The plugin descriptor is invalid.", e);
+
+    public static PluginDescriptor from(final Mods.ModMeta meta) {
+        return new PluginDescriptor(meta);
     }
-  }
 
-  public String getName() {
-    return name;
-  }
+    public static PluginDescriptor from(final Plugin plugin) {
+        return from(plugin.getClass());
+    }
 
-  public String getDisplayName() {
-    return displayName;
-  }
+    public static PluginDescriptor from(final Class<? extends Plugin> clazz) {
+        var resource = clazz.getClassLoader().getResourceAsStream("plugin.json");
+        if (resource == null) {
+            resource = clazz.getClassLoader().getResourceAsStream("plugin.hjson");
+            if (resource == null) {
+                throw new IllegalStateException("Missing plugin descriptor.");
+            }
+        }
+        try (final var input = resource) {
+            final var meta = new Json().fromJson(Mods.ModMeta.class, input);
+            meta.cleanup();
+            return PluginDescriptor.from(meta);
+        } catch (final IOException e) {
+            throw new IllegalStateException("The plugin descriptor is invalid.", e);
+        }
+    }
 
-  public String getAuthor() {
-    return author;
-  }
+    public String getName() {
+        return this.name;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public String getDisplayName() {
+        return this.displayName;
+    }
 
-  public String getVersion() {
-    return version;
-  }
+    public String getAuthor() {
+        return this.author;
+    }
 
-  public String getMain() {
-    return main;
-  }
+    public String getDescription() {
+        return this.description;
+    }
 
-  public int getMinGameVersion() {
-    return minGameVersion;
-  }
+    public String getVersion() {
+        return this.version;
+    }
 
-  public String getRepository() {
-    return repository;
-  }
+    public String getMain() {
+        return this.main;
+    }
 
-  public List<String> getDependencies() {
-    return dependencies;
-  }
+    public int getMinGameVersion() {
+        return this.minGameVersion;
+    }
 
-  public boolean hasRepository() {
-    return !repository.isEmpty();
-  }
+    public String getRepository() {
+        return this.repository;
+    }
+
+    public List<String> getDependencies() {
+        return this.dependencies;
+    }
+
+    public boolean hasRepository() {
+        return !this.repository.isEmpty();
+    }
 }

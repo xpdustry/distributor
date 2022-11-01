@@ -18,8 +18,6 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-import fr.xpdustry.distributor.api.manager.*;
+import fr.xpdustry.distributor.api.manager.Manager;
 
-public interface GroupPermissionManager extends Manager<GroupPermission, String> {
-
-}
+public interface GroupPermissionManager extends Manager<GroupPermission, String> {}

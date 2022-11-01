@@ -18,28 +18,28 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.*;
-import mindustry.*;
+import fr.xpdustry.distributor.api.permission.PlayerPermission;
+import mindustry.Vars;
 
 public final class SimplePlayerPermission extends AbstractPermissionHolder implements PlayerPermission {
 
-  private final String uuid;
+    private final String uuid;
 
-  public SimplePlayerPermission(final String uuid) {
-    this.uuid = uuid;
-  }
-
-  @Override
-  public String getName() {
-    if (Vars.netServer != null) {
-      final var info = Vars.netServer.admins.getInfoOptional(uuid);
-      return info == null ? "unknown" : info.lastName;
+    public SimplePlayerPermission(final String uuid) {
+        this.uuid = uuid;
     }
-    return "unknown";
-  }
 
-  @Override
-  public String getUuid() {
-    return uuid;
-  }
+    @Override
+    public String getName() {
+        if (Vars.netServer != null) {
+            final var info = Vars.netServer.admins.getInfoOptional(this.uuid);
+            return info == null ? "unknown" : info.lastName;
+        }
+        return "unknown";
+    }
+
+    @Override
+    public String getUuid() {
+        return this.uuid;
+    }
 }
