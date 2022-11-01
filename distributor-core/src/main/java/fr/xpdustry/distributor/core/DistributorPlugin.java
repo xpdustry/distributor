@@ -54,7 +54,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
   static {
     // Class loader trickery to use the ModClassLoader instead of the root
     final var temp = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(Vars.mods.mainLoader());
+    Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
     if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
       throw new RuntimeException("""
         The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).

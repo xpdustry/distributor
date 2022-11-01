@@ -33,7 +33,7 @@ public abstract class ExtendedPlugin extends Plugin {
 
   private final PluginDescriptor descriptor = PluginDescriptor.from(this);
   private final Path directory = Vars.modDirectory.child(getDescriptor().getName()).file().toPath();
-  private @MonotonicNonNull Logger logger = null;
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   {
     try {
@@ -73,7 +73,6 @@ public abstract class ExtendedPlugin extends Plugin {
   @Deprecated
   @Override
   public void registerServerCommands(final CommandHandler handler) {
-    this.logger = LoggerFactory.getLogger(getClass());
     this.onInit();
     this.onServerCommandsRegistration(handler);
 
