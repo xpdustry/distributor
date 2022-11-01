@@ -44,7 +44,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Properties;
 import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -58,10 +57,8 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
         if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
             throw new RuntimeException(String.format(
-                    """
-                            The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).
-                            Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.
-                            """,
+                    "The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).\n"
+                            + "Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.",
                     LoggerFactory.getILoggerFactory().getClass().getName()));
         }
         Thread.currentThread().setContextClassLoader(temp);
@@ -87,9 +84,11 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public void onInit() {
         // Display the cool ass banner
-        try (final var input =
-                        Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("banner.txt"));
-                final var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+        final var banner = this.getClass().getClassLoader().getResourceAsStream("banner.txt");
+        if (banner == null) {
+            throw new RuntimeException("The Distributor banner cannot be found, are you sure the plugin is valid ?");
+        }
+        try (final var reader = new BufferedReader(new InputStreamReader(banner, StandardCharsets.UTF_8))) {
             reader.lines().forEach(line -> LoggerFactory.getLogger("ROOT").info("> {}", line));
             this.getLogger()
                     .info("> Loaded Distributor core v{}", this.getDescriptor().getVersion());

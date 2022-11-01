@@ -96,9 +96,6 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
             }
         });
 
-        this.parameterInjectorRegistry()
-                .registerInjector(Plugin.class, (ctx, annotation) -> ArcCommandManager.this.plugin);
-
         this.parserRegistry()
                 .registerAnnotationMapper(
                         AllTeams.class,
