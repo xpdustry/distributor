@@ -33,7 +33,7 @@ import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * This command delegate it's call to it's command manager.
+ * This special command handler class delegates it's call to it's command manager.
  */
 public final class ArcCommand<C> extends CommandHandler.Command {
 

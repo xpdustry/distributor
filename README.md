@@ -66,8 +66,8 @@ This plugin is compatible with v137+.
 
 ## Credits
 
-- I want to thank Icendo and their amazing work on [cloud](https://github.com/Incendo/cloud), the command library of my
+- I want to thank Incendo and their amazing work on [Cloud](https://github.com/Incendo/cloud), the command library of my
   dreams.
 
-- The localization system is based on the one you can find
-  in [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
+- The localization system is based on the translation system of 
+  [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).

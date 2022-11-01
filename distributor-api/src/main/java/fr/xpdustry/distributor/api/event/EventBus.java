@@ -26,7 +26,7 @@ public interface EventBus {
 
     void post(final Object event);
 
-    void register(final Object object);
+    void register(final EventBusListener listener);
 
-    void unregister(final Object object);
+    void unregister(final EventBusListener listener);
 }

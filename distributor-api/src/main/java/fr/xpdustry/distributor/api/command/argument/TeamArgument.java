@@ -37,9 +37,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import mindustry.game.Team;
-import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A command argument for a {@link Team}.
+ *
+ * @param <C> the command sender type
+ */
 public final class TeamArgument<C> extends CommandArgument<C, Team> {
 
     private TeamArgument(
@@ -59,22 +63,59 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
                 defaultDescription);
     }
 
+    /**
+     * Creates a new {@link TeamArgument.Builder}.
+     *
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
+     */
     public static <C> TeamArgument.Builder<C> newBuilder(final String name) {
         return new TeamArgument.Builder<>(name);
     }
 
+    /**
+     * Creates a new required {@link TeamArgument}.
+     *
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
+     */
     public static <C> CommandArgument<C, Team> of(final String name) {
         return TeamArgument.<C>newBuilder(name).asRequired().build();
     }
 
+    /**
+     * Creates a new optional {@link TeamArgument}.
+     *
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
+     */
     public static <C> CommandArgument<C, Team> optional(final String name) {
         return TeamArgument.<C>newBuilder(name).asOptional().build();
     }
 
+    /**
+     * Creates a new required {@link TeamArgument} with the {@link TeamMode#BASE} mode, which means that only the 6 base
+     * teams can be used.
+     *
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
+     */
     public static <C> CommandArgument<C, Team> base(final String name) {
         return new TeamArgument.Builder<C>(name).withTeamMode(TeamMode.BASE).build();
     }
 
+    /**
+     * Creates a new required {@link TeamArgument} with the {@link TeamMode#ALL} mode, which means that all 256 teams
+     * can be used.
+     *
+     * @param name the name of the argument
+     * @param <C>  the command sender type
+     * @return the created builder
+     */
     public static <C> CommandArgument<C, Team> all(final String name) {
         return new TeamArgument.Builder<C>(name).withTeamMode(TeamMode.ALL).build();
     }
@@ -84,6 +125,11 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         ALL
     }
 
+    /**
+     * The internal builder class of {@link TeamArgument}.
+     *
+     * @param <C> the command sender type
+     */
     public static final class Builder<C> extends CommandArgument.Builder<C, Team> {
 
         private TeamMode teamMode = TeamMode.BASE;
@@ -98,9 +144,9 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         }
 
         /**
-         * Builds a new {@link PlayerArgument}.
+         * Builds a new {@link TeamArgument}.
          *
-         * @return the constructed player argument
+         * @return the constructed team argument
          */
         @Override
         public TeamArgument<C> build() {
@@ -115,7 +161,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     }
 
     /**
-     * An argument parser that outputs an online {@link Player}.
+     * An argument parser that outputs a {@link Team}.
      *
      * @param <C> the command sender type
      */
@@ -168,6 +214,9 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         }
     }
 
+    /**
+     * Exception thrown when a team cannot be found for the given input and {@link TeamMode}.
+     */
     public static final class TeamParseException extends ParserException {
 
         @Serial
@@ -176,6 +225,13 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         private final String input;
         private final TeamMode teamMode;
 
+        /**
+         * Creates a new {@link TeamParseException}.
+         *
+         * @param input    the input string
+         * @param ctx      the command context
+         * @param teamMode the team mode
+         */
         public TeamParseException(final String input, final CommandContext<?> ctx, final TeamMode teamMode) {
             super(
                     PlayerArgument.PlayerParser.class,

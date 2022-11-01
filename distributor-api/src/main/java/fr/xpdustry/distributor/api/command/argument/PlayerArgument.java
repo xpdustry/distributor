@@ -120,7 +120,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
     }
 
     /**
-     * An argument parser that outputs an online {@link Player}.
+     * An argument parser that outputs an online {@link Player} in the current server.
      *
      * @param <C> the command sender type
      */
@@ -156,9 +156,6 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         }
     }
 
-    /**
-     * Exception thrown when no players have been found for the corresponding input.
-     */
     public static class PlayerParseException extends ParserException {
 
         @Serial
@@ -169,8 +166,9 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         /**
          * Creates a new {@link PlayerParseException}.
          *
-         * @param input the input string
-         * @param ctx   the command context
+         * @param input   the input string
+         * @param ctx     the command context
+         * @param caption the error caption of this exception
          */
         public PlayerParseException(final String input, final CommandContext<?> ctx, final Caption caption) {
             super(PlayerParser.class, ctx, caption, CaptionVariable.of("input", input));
@@ -190,6 +188,12 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         @Serial
         private static final long serialVersionUID = 2964533701700707264L;
 
+        /**
+         * Creates a new {@link TooManyPlayersFoundException}.
+         *
+         * @param input the input string
+         * @param ctx   the command context
+         */
         public TooManyPlayersFoundException(final String input, final CommandContext<?> ctx) {
             super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
         }
@@ -200,6 +204,12 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         @Serial
         private static final long serialVersionUID = 4683487234146844501L;
 
+        /**
+         * Creates a new {@link PlayerNotFoundException}.
+         *
+         * @param input the input string
+         * @param ctx   the command context
+         */
         public PlayerNotFoundException(final String input, final CommandContext<?> ctx) {
             super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
         }

@@ -66,24 +66,24 @@ final class ArcEventBus implements EventBus {
     }
 
     @Override
-    public void register(final Object object) {
-        if (this.listeners.containsKey(object)) {
+    public void register(final EventBusListener listener) {
+        if (this.listeners.containsKey(listener)) {
             return;
         }
 
         final var handlers = new ArrayList<MethodEventHandler<?>>();
-        for (final var method : object.getClass().getDeclaredMethods()) {
+        for (final var method : listener.getClass().getDeclaredMethods()) {
             final var annotation = method.getAnnotation(EventHandler.class);
             if (annotation == null) {
                 continue;
             } else if (method.getParameterCount() != 1) {
                 throw new IllegalArgumentException(
                         "The event handler on " + method + " hasn't the right parameter count.");
-            } else if (!method.canAccess(object) || !method.trySetAccessible()) {
+            } else if (!method.canAccess(listener) || !method.trySetAccessible()) {
                 throw new RuntimeException("Unable to make " + method + " accessible.");
             }
 
-            final var handler = new MethodEventHandler<>(object, method, annotation.priority());
+            final var handler = new MethodEventHandler<>(listener, method, annotation.priority());
             this.events
                     .get(handler.getEventType(), () -> new Seq<>(Cons.class))
                     .add(handler)
@@ -91,12 +91,12 @@ final class ArcEventBus implements EventBus {
             handlers.add(handler);
         }
 
-        this.listeners.put(object, handlers);
+        this.listeners.put(listener, handlers);
     }
 
     @Override
-    public void unregister(final Object object) {
-        final var handlers = this.listeners.remove(object);
+    public void unregister(final EventBusListener listener) {
+        final var handlers = this.listeners.remove(listener);
         if (handlers != null) {
             for (final var subscriber : handlers) {
                 final var listeners = this.events.get(subscriber.getEventType());

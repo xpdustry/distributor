@@ -103,7 +103,7 @@ public class ArcEventBusTest {
 
     private static final class TestEvent {}
 
-    private static final class SimpleEventListener {
+    private static final class SimpleEventListener implements EventBusListener {
 
         private CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -113,7 +113,7 @@ public class ArcEventBusTest {
         }
     }
 
-    private static final class EventOrderListener {
+    private static final class EventOrderListener implements EventBusListener {
 
         private final CompletableFuture<Long> future1 = new CompletableFuture<>();
         private final CompletableFuture<Long> future2 = new CompletableFuture<>();

@@ -45,10 +45,15 @@ import mindustry.gen.Player;
 import mindustry.mod.Plugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
+/**
+ * Command manager implementation for Mindustry.
+ *
+ * @param <C> the command sender type
+ */
 public class ArcCommandManager<C> extends CommandManager<C> implements PluginAware {
 
     /**
-     * The owning plugin of the command.
+     * The owning plugin name of the command.
      */
     public static final CommandMeta.Key<String> PLUGIN =
             CommandMeta.Key.of(String.class, "xpdustry-distributor-core:plugin");
@@ -59,6 +64,15 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
 
     private @MonotonicNonNull CommandHandler handler;
 
+    /**
+     * Creates a new {@link ArcCommandManager}.
+     *
+     * @param plugin                       the owning plugin
+     * @param commandSenderMapper          the function that will convert the {@link CommandSender} to the command sender type of
+     *                                     your choice
+     * @param backwardsCommandSenderMapper the function that will convert your command sender
+     *                                     type to {@link CommandSender}
+     */
     public ArcCommandManager(
             final Plugin plugin,
             final Function<CommandSender, C> commandSenderMapper,
@@ -122,6 +136,11 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
         return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player);
     }
 
+    /**
+     * Initializes the command manager with it's backing command handler.
+     *
+     * @param handler the backing command handler
+     */
     public final void initialize(final CommandHandler handler) {
         this.commandRegistrationHandler(new ArcRegistrationHandler<>(this, handler));
         this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
