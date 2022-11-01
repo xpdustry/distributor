@@ -2,51 +2,15 @@
 
 [![Xpdustry latest](https://maven.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor-core?color=00FFFF&name=Distributor&prefix=v)](https://github.com/Xpdustry/Distributor/releases)
 [![Build](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
-[![Mindustry 6.0 | 7.0 ](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
+[![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Description
 
 **Distributor** is a plugin framework which provides a powerful command system,
 better Mindustry API bindings and other nice features, making plugin development time much faster.
-
-## Usage
-
-To develop a plugin using Distributor, you will first need to add the Xpdustry repository in your `build.gradle` such
-as :
-
-```gradle
-repositories {
-    maven { url = uri("https://maven.xpdustry.fr/releases") }
-}
-```
-
-Then, add the needed artifacts in your dependencies :
-
-```gradle
-dependencies {
-    compileOnly("fr.xpdustry:distributor-api:3.0.0-rc.1")
-}
-```
-
-After that, add the internal name of the module you are using in your `plugin.json` :
-
-```json
-{
-  "dependencies": [
-    "xpdustry-distributor-core"
-  ]
-}
-```
-
-Access the api in-code with `Distributor.getAPI()`, and enjoy.
-
-Finally, when you are ready to deploy your plugin, get the necessary Distributor jars :
-
-- If you use the official version, you can get the jars in
-  the [releases](https://github.com/Xpdustry/Distributor/releases).
-
-- If you use the snapshots, you can get the jars in
-  the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml).
+You can find the documentation [here](https://github.com/Xpdustry/Distributor/wiki), the official plugin jars in the
+[releases](https://github.com/Xpdustry/Distributor/releases) and the snapshot jars in
+the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml).
 
 ## Building
 
