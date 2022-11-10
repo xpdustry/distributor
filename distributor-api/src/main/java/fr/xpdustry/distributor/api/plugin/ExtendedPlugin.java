@@ -51,7 +51,6 @@ public abstract class ExtendedPlugin extends Plugin {
 
     public void onClientCommandsRegistration(final CommandHandler handler) {}
 
-    @Deprecated
     public void onLoad() {}
 
     public void onExit() {}
