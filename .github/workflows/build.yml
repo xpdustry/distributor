@@ -47,15 +47,6 @@ jobs:
           name: ${{ github.event.repository.name }}
           path: ${{ steps.upload.outputs.CORE_ARTIFACT_PATH }}
 
-      - name: Publish to Xpdustry
-        if: ${{ github.event_name != 'pull_request' }}
-        run: ./gradlew publish --no-daemon
-        env:
-          ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_MAVEN_USERNAME }}"
-          ORG_GRADLE_PROJECT_xpdustryPassword: "${{ secrets.XPDUSTRY_MAVEN_PASSWORD }}"
-          ORG_GRADLE_PROJECT_signingKey: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_KEY }}"
-          ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_PASSWORD }}"
-
       - name: Determine Status
         run: |
           if [ "$(./gradlew properties --no-daemon | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
@@ -63,6 +54,15 @@ jobs:
           else
             echo "STATUS=release" >> $GITHUB_ENV
           fi
+
+      - name: Publish to Xpdustry
+        if: "${{ env.STATUS == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}"
+        run: ./gradlew publish --no-daemon
+        env:
+          ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_MAVEN_USERNAME }}"
+          ORG_GRADLE_PROJECT_xpdustryPassword: "${{ secrets.XPDUSTRY_MAVEN_PASSWORD }}"
+          ORG_GRADLE_PROJECT_signingKey: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_KEY }}"
+          ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_PASSWORD }}"
 
       - name: Upload Artifact to Release (Core)
         if: "${{ env.STATUS == 'release' }}"
