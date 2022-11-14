@@ -16,30 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.command.sender;
+package fr.xpdustry.distributor.api.scheduler;
 
-import java.util.Locale;
-import mindustry.gen.Player;
+import java.util.concurrent.TimeUnit;
 
-public interface CommandSender {
+public interface PluginFutureBuilder {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
-    }
+    PluginFutureBuilder asyncExecution();
 
-    static CommandSender console() {
-        return ConsoleCommandSender.INSTANCE;
-    }
+    PluginFutureBuilder syncExecution();
 
-    void sendMessage(final String content);
+    PluginFutureBuilder initialDelay(final long delay, final TimeUnit unit);
 
-    void sendWarning(final String content);
+    PluginFutureBuilder repeatInterval(final long interval, final TimeUnit unit);
 
-    Locale getLocale();
+    PluginFutureBuilder repeatRate(final long period, final TimeUnit unit);
 
-    Player getPlayer();
-
-    boolean isPlayer();
-
-    boolean isConsole();
+    PluginFuture<Void> execute(final Runnable runnable);
 }

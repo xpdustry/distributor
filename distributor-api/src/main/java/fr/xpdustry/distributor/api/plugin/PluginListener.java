@@ -16,30 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.command.sender;
+package fr.xpdustry.distributor.api.plugin;
 
-import java.util.Locale;
-import mindustry.gen.Player;
+import arc.util.CommandHandler;
 
-public interface CommandSender {
+public interface PluginListener {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
-    }
+    default void onPluginInit(final ExtendedPlugin plugin) {}
 
-    static CommandSender console() {
-        return ConsoleCommandSender.INSTANCE;
-    }
+    default void onPluginServerCommandsRegistration(final ExtendedPlugin plugin, final CommandHandler handler) {}
 
-    void sendMessage(final String content);
+    default void onPluginClientCommandsRegistration(final ExtendedPlugin plugin, final CommandHandler handler) {}
 
-    void sendWarning(final String content);
+    default void onPluginLoad(final ExtendedPlugin plugin) {}
 
-    Locale getLocale();
+    default void onPluginUpdate(final ExtendedPlugin plugin) {}
 
-    Player getPlayer();
-
-    boolean isPlayer();
-
-    boolean isConsole();
+    default void onPluginExit(final ExtendedPlugin plugin) {}
 }

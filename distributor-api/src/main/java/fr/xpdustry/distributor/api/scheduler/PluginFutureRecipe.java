@@ -16,30 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.command.sender;
+package fr.xpdustry.distributor.api.scheduler;
 
-import java.util.Locale;
-import mindustry.gen.Player;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-public interface CommandSender {
+public interface PluginFutureRecipe<V> {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
-    }
+    PluginFutureRecipe<V> thenAccept(final Consumer<V> consumer);
 
-    static CommandSender console() {
-        return ConsoleCommandSender.INSTANCE;
-    }
+    <R> PluginFutureRecipe<R> thenApply(final Function<V, R> function);
 
-    void sendMessage(final String content);
+    PluginFutureRecipe<V> thenRun(final Runnable runnable);
 
-    void sendWarning(final String content);
+    PluginFutureRecipe<V> thenAcceptAsync(final Consumer<V> consumer);
 
-    Locale getLocale();
+    <R> PluginFutureRecipe<R> thenApplyAsync(final Function<V, R> function);
 
-    Player getPlayer();
+    PluginFutureRecipe<V> thenRunAsync(final Runnable runnable);
 
-    boolean isPlayer();
-
-    boolean isConsole();
+    PluginFuture<V> execute();
 }

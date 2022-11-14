@@ -25,6 +25,8 @@ import arc.util.CommandHandler;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import mindustry.Vars;
 import mindustry.mod.Plugin;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ public abstract class ExtendedPlugin extends Plugin {
     private final Path directory =
             Vars.modDirectory.child(this.getDescriptor().getName()).file().toPath();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final List<PluginListener> listeners = new ArrayList<>();
 
     {
         try {
@@ -53,6 +56,8 @@ public abstract class ExtendedPlugin extends Plugin {
 
     public void onLoad() {}
 
+    public void onUpdate() {}
+
     public void onExit() {}
 
     public final Path getDirectory() {
@@ -67,22 +72,47 @@ public abstract class ExtendedPlugin extends Plugin {
         return this.logger;
     }
 
+    public final void addListener(final PluginListener listener) {
+        this.listeners.add(listener);
+    }
+
     @Deprecated
     @Override
     public void registerServerCommands(final CommandHandler handler) {
         this.onInit();
+        for (final var listener : ExtendedPlugin.this.listeners) {
+            listener.onPluginInit(ExtendedPlugin.this);
+        }
+
         this.onServerCommandsRegistration(handler);
+        for (final var listener : ExtendedPlugin.this.listeners) {
+            listener.onPluginServerCommandsRegistration(ExtendedPlugin.this, handler);
+        }
 
         Core.app.addListener(new ApplicationListener() {
 
             @Override
             public void init() {
                 ExtendedPlugin.this.onLoad();
+                for (final var listener : ExtendedPlugin.this.listeners) {
+                    listener.onPluginLoad(ExtendedPlugin.this);
+                }
+            }
+
+            @Override
+            public void update() {
+                ExtendedPlugin.this.onUpdate();
+                for (final var listener : ExtendedPlugin.this.listeners) {
+                    listener.onPluginUpdate(ExtendedPlugin.this);
+                }
             }
 
             @Override
             public void dispose() {
                 ExtendedPlugin.this.onExit();
+                for (final var listener : ExtendedPlugin.this.listeners) {
+                    listener.onPluginExit(ExtendedPlugin.this);
+                }
             }
         });
     }
@@ -91,6 +121,9 @@ public abstract class ExtendedPlugin extends Plugin {
     @Override
     public void registerClientCommands(final CommandHandler handler) {
         this.onClientCommandsRegistration(handler);
+        for (final var listener : ExtendedPlugin.this.listeners) {
+            listener.onPluginClientCommandsRegistration(ExtendedPlugin.this, handler);
+        }
     }
 
     @Deprecated

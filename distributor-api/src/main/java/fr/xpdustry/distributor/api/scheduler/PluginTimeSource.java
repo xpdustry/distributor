@@ -18,10 +18,17 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.PluginAware;
-import java.util.concurrent.Future;
+import arc.util.Time;
 
-public interface PluginTask extends Future<Void>, PluginAware {
+public interface PluginTimeSource {
 
-    boolean isAsync();
+    static PluginTimeSource arc() {
+        return () -> (long) (Time.globalTime * 16);
+    }
+
+    static PluginTimeSource standard() {
+        return System::currentTimeMillis;
+    }
+
+    long getCurrentMillis();
 }

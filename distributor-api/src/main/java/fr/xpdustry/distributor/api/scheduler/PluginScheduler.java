@@ -18,28 +18,26 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import cloud.commandframework.tasks.TaskSynchronizer;
-import mindustry.mod.Plugin;
+import arc.Core;
+import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import java.util.concurrent.Executor;
 
 public interface PluginScheduler {
 
-    PluginTask syncTask(final Plugin plugin, final Runnable runnable);
+    static PluginScheduler create(final ExtendedPlugin plugin, final int parallelism) {
+        return new PluginSchedulerImpl(plugin, parallelism, PluginTimeSource.arc(), Core.app::post);
+    }
 
-    PluginTask syncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
+    static PluginScheduler create(final ExtendedPlugin plugin) {
+        return new PluginSchedulerImpl(
+                plugin, Runtime.getRuntime().availableProcessors(), PluginTimeSource.arc(), Core.app::post);
+    }
 
-    PluginTask syncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
+    PluginFutureBuilder schedule();
 
-    PluginTask syncRepeatingDelayedTask(
-            final Plugin plugin, final Runnable runnable, final int delay, final int period);
+    <V> PluginFutureRecipe<V> recipe(final V value);
 
-    PluginTask asyncTask(final Plugin plugin, final Runnable runnable);
+    Executor getSyncExecutor();
 
-    PluginTask asyncDelayedTask(final Plugin plugin, final Runnable runnable, final int delay);
-
-    PluginTask asyncRepeatingTask(final Plugin plugin, final Runnable runnable, final int period);
-
-    PluginTask asyncRepeatingDelayedTask(
-            final Plugin plugin, final Runnable runnable, final int delay, final int period);
-
-    TaskSynchronizer getTaskSynchronizer(final Plugin plugin);
+    Executor getAsyncExecutor();
 }
