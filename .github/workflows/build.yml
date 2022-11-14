@@ -56,7 +56,7 @@ jobs:
           fi
 
       - name: Publish to Xpdustry
-        if: ${{ env.STATUS == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
+        if: "${{ env.STATUS == 'release' || github.ref == 'refs/heads/master' }}"
         run: ./gradlew publish --no-daemon
         env:
           ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_MAVEN_USERNAME }}"
