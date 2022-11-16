@@ -18,13 +18,12 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.permission.GroupPermission;
 import fr.xpdustry.distributor.api.permission.GroupPermissionManager;
 import fr.xpdustry.distributor.api.permission.PermissionHolder;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.permission.PlayerPermissionManager;
-import fr.xpdustry.distributor.api.secutiry.MUUID;
+import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -76,10 +75,6 @@ public final class SimplePermissionService implements PermissionService {
             if (info != null && info.admin) {
                 return Tristate.TRUE;
             }
-        }
-
-        if (!DistributorProvider.get().getMUUIDAuthenticator().authenticate(muuid)) {
-            return Tristate.UNDEFINED;
         }
 
         final var perm = permission.toLowerCase(Locale.ROOT);

@@ -29,7 +29,6 @@ import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
-import fr.xpdustry.distributor.api.secutiry.MUUIDAuthenticator;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommand;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommand;
@@ -70,7 +69,6 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
 
     private @MonotonicNonNull PluginScheduler scheduler = null;
     private @MonotonicNonNull PermissionService permissions = null;
-    private MUUIDAuthenticator authenticator = muuid -> true;
 
     {
         final var registry = LocalizationSourceRegistry.create();
@@ -182,17 +180,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     }
 
     @Override
-    public void setPermissionManager(final PermissionService permissions) {
+    public void setPermissionService(final PermissionService permissions) {
         this.permissions = permissions;
-    }
-
-    @Override
-    public MUUIDAuthenticator getMUUIDAuthenticator() {
-        return this.authenticator;
-    }
-
-    @Override
-    public void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator) {
-        this.authenticator = authenticator;
     }
 }

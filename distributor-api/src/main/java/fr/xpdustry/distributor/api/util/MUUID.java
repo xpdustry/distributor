@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.secutiry;
+package fr.xpdustry.distributor.api.util;
 
-import fr.xpdustry.distributor.api.util.Magik;
 import java.util.Objects;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
@@ -34,12 +33,6 @@ public final class MUUID {
     private final String usid;
 
     private MUUID(final String uuid, final String usid) {
-        if (!Magik.isUuid(Objects.requireNonNull(uuid, "uuid"))) {
-            throw new IllegalArgumentException(uuid + " is not a valid uuid.");
-        }
-        if (!Magik.isUsid(Objects.requireNonNull(usid, "usid"))) {
-            throw new IllegalArgumentException(uuid + " is not a valid usid.");
-        }
         this.uuid = uuid;
         this.usid = usid;
     }
