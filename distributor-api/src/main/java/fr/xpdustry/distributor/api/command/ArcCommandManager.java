@@ -36,7 +36,7 @@ import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.command.specifier.AllTeams;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.api.plugin.PluginAware;
-import fr.xpdustry.distributor.api.secutiry.MUUID;
+import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Magik;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;

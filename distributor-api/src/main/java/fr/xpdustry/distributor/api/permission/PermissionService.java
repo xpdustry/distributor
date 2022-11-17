@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-import fr.xpdustry.distributor.api.secutiry.MUUID;
+import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 
 public interface PermissionService {

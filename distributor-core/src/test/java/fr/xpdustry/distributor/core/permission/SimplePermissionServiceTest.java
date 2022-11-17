@@ -18,20 +18,16 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.Distributor;
-import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.permission.GroupPermission;
 import fr.xpdustry.distributor.api.permission.PlayerPermission;
-import fr.xpdustry.distributor.api.secutiry.MUUID;
+import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -49,13 +45,6 @@ public final class SimplePermissionServiceTest {
     private Path tempDir;
 
     private SimplePermissionService manager;
-
-    @BeforeAll
-    static void setupAll() {
-        final var distributor = Mockito.mock(Distributor.class);
-        Mockito.when(distributor.getMUUIDAuthenticator()).thenReturn(muuid -> true);
-        DistributorProvider.set(distributor);
-    }
 
     @BeforeEach
     void setup() {

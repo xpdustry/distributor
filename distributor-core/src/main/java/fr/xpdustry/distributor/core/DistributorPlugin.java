@@ -28,13 +28,14 @@ import fr.xpdustry.distributor.api.localization.LocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
-import fr.xpdustry.distributor.api.secutiry.MUUIDAuthenticator;
+import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommand;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommand;
 import fr.xpdustry.distributor.core.config.ProxyTypedConfig;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
 import fr.xpdustry.distributor.core.permission.SimplePermissionService;
+import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,8 +67,8 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
     private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
 
+    private @MonotonicNonNull PluginScheduler scheduler = null;
     private @MonotonicNonNull PermissionService permissions = null;
-    private MUUIDAuthenticator authenticator = muuid -> true;
 
     {
         final var registry = LocalizationSourceRegistry.create();
@@ -117,7 +118,9 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
             }
         }
 
+        this.scheduler = new SimplePluginScheduler(config.getSchedulerWorkers());
         this.permissions = new SimplePermissionService(this.getDirectory().resolve("permissions"));
+
         DistributorProvider.set(this);
     }
 
@@ -167,22 +170,17 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     }
 
     @Override
+    public PluginScheduler getPluginScheduler() {
+        return this.scheduler;
+    }
+
+    @Override
     public PermissionService getPermissionService() {
         return this.permissions;
     }
 
     @Override
-    public void setPermissionManager(final PermissionService permissions) {
+    public void setPermissionService(final PermissionService permissions) {
         this.permissions = permissions;
-    }
-
-    @Override
-    public MUUIDAuthenticator getMUUIDAuthenticator() {
-        return this.authenticator;
-    }
-
-    @Override
-    public void setMUUIDAuthenticator(final MUUIDAuthenticator authenticator) {
-        this.authenticator = authenticator;
     }
 }
