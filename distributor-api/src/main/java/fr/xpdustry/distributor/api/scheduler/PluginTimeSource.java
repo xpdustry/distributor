@@ -20,6 +20,7 @@ package fr.xpdustry.distributor.api.scheduler;
 
 import arc.util.Time;
 
+@FunctionalInterface
 public interface PluginTimeSource {
 
     static PluginTimeSource arc() {

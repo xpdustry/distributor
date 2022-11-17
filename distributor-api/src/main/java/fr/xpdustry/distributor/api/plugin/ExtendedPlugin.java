@@ -35,18 +35,8 @@ import org.slf4j.LoggerFactory;
 public abstract class ExtendedPlugin extends Plugin {
 
     private final PluginDescriptor descriptor = PluginDescriptor.from(this);
-    private final Path directory =
-            Vars.modDirectory.child(this.getDescriptor().getName()).file().toPath();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginListener> listeners = new ArrayList<>();
-
-    {
-        try {
-            Files.createDirectories(this.directory);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void onInit() {}
 
@@ -60,8 +50,8 @@ public abstract class ExtendedPlugin extends Plugin {
 
     public void onExit() {}
 
-    public final Path getDirectory() {
-        return this.directory;
+    public Path getDirectory() {
+        return Vars.modDirectory.child(this.getDescriptor().getName()).file().toPath();
     }
 
     public final PluginDescriptor getDescriptor() {
@@ -72,30 +62,55 @@ public abstract class ExtendedPlugin extends Plugin {
         return this.logger;
     }
 
-    public final void addListener(final PluginListener listener) {
-        this.listeners.add(listener);
-    }
-
     @Deprecated
     @Override
-    public void registerServerCommands(final CommandHandler handler) {
+    public final void registerServerCommands(final CommandHandler handler) {
+        try {
+            Files.createDirectories(this.getDirectory());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
         this.onInit();
         for (final var listener : ExtendedPlugin.this.listeners) {
-            listener.onPluginInit(ExtendedPlugin.this);
+            listener.onPluginInit();
         }
 
         this.onServerCommandsRegistration(handler);
         for (final var listener : ExtendedPlugin.this.listeners) {
-            listener.onPluginServerCommandsRegistration(ExtendedPlugin.this, handler);
+            listener.onPluginServerCommandsRegistration(handler);
         }
+    }
 
+    @Deprecated
+    @Override
+    public final void registerClientCommands(final CommandHandler handler) {
+        this.onClientCommandsRegistration(handler);
+        for (final var listener : ExtendedPlugin.this.listeners) {
+            listener.onPluginClientCommandsRegistration(handler);
+        }
+    }
+
+    @Deprecated
+    @Override
+    public final Fi getConfig() {
+        return super.getConfig();
+    }
+
+    @Deprecated
+    @Override
+    public final void loadContent() {}
+
+    @Deprecated
+    @Override
+    public final void init() {
         Core.app.addListener(new ApplicationListener() {
 
             @Override
             public void init() {
                 ExtendedPlugin.this.onLoad();
                 for (final var listener : ExtendedPlugin.this.listeners) {
-                    listener.onPluginLoad(ExtendedPlugin.this);
+                    listener.onPluginLoad();
                 }
             }
 
@@ -103,7 +118,7 @@ public abstract class ExtendedPlugin extends Plugin {
             public void update() {
                 ExtendedPlugin.this.onUpdate();
                 for (final var listener : ExtendedPlugin.this.listeners) {
-                    listener.onPluginUpdate(ExtendedPlugin.this);
+                    listener.onPluginUpdate();
                 }
             }
 
@@ -111,32 +126,13 @@ public abstract class ExtendedPlugin extends Plugin {
             public void dispose() {
                 ExtendedPlugin.this.onExit();
                 for (final var listener : ExtendedPlugin.this.listeners) {
-                    listener.onPluginExit(ExtendedPlugin.this);
+                    listener.onPluginExit();
                 }
             }
         });
     }
 
-    @Deprecated
-    @Override
-    public void registerClientCommands(final CommandHandler handler) {
-        this.onClientCommandsRegistration(handler);
-        for (final var listener : ExtendedPlugin.this.listeners) {
-            listener.onPluginClientCommandsRegistration(ExtendedPlugin.this, handler);
-        }
+    protected void addListener(final PluginListener listener) {
+        this.listeners.add(listener);
     }
-
-    @Deprecated
-    @Override
-    public Fi getConfig() {
-        return super.getConfig();
-    }
-
-    @Deprecated
-    @Override
-    public void loadContent() {}
-
-    @Deprecated
-    @Override
-    public void init() {}
 }

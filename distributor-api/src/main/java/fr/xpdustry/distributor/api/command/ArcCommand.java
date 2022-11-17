@@ -19,7 +19,6 @@
 package fr.xpdustry.distributor.api.command;
 
 import arc.util.CommandHandler;
-import arc.util.Log;
 import cloud.commandframework.captions.Caption;
 import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.exceptions.ArgumentParseException;
@@ -111,20 +110,27 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                             t,
                             (s, e) -> this.sendException(sender, e.errorCaption(), e.captionVariables()));
                 } else if (throwable instanceof CommandExecutionException t) {
-                    final var temp = throwable;
-                    this.manager.handleException(sender, CommandExecutionException.class, t, (s, e) -> {
-                        this.sendException(
-                                sender,
-                                ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
-                                CaptionVariable.of("message", this.getErrorMessage(e)));
-                        Log.err(temp);
-                    });
+                    this.manager.handleException(
+                            sender,
+                            CommandExecutionException.class,
+                            t,
+                            (s, e) -> this.sendException(
+                                    sender,
+                                    ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
+                                    CaptionVariable.of("message", this.getErrorMessage(e))));
+                    this.manager
+                            .getPlugin()
+                            .getLogger()
+                            .error("An error occurred while executing a command.", throwable);
                 } else {
                     this.sendException(
                             sender,
                             ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
                             CaptionVariable.of("message", this.getErrorMessage(throwable)));
-                    Log.err(throwable);
+                    this.manager
+                            .getPlugin()
+                            .getLogger()
+                            .error("An unexpected error occurred while executing a command.", throwable);
                 }
             });
         }

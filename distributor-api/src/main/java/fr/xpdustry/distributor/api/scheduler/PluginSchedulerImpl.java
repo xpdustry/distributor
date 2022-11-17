@@ -18,10 +18,7 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import arc.util.Time;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
-import fr.xpdustry.distributor.api.plugin.PluginListener;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -43,9 +40,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import mindustry.mod.Plugin;
 
-final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
+final class PluginSchedulerImpl implements PluginScheduler {
 
     private final Queue<Task<?>> tasks = new PriorityBlockingQueue<>(16, Comparator.comparing(Task::getNextRun));
     private final ExtendedPlugin plugin;
@@ -55,9 +51,9 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
 
     PluginSchedulerImpl(
             final ExtendedPlugin plugin,
-            final int parallelism,
             final PluginTimeSource source,
-            final Executor syncExecutor) {
+            final Executor syncExecutor,
+            final int parallelism) {
         this.plugin = plugin;
         this.syncExecutor = syncExecutor;
         this.pool = new ForkJoinPool(
@@ -66,6 +62,10 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
                 new PluginSchedulerUncaughtExceptionHandler(),
                 false);
         this.source = source;
+    }
+
+    PluginSchedulerImpl(final ExtendedPlugin plugin, final PluginTimeSource source, final Executor syncExecutor) {
+        this(plugin, source, syncExecutor, Math.max(4, Runtime.getRuntime().availableProcessors()));
     }
 
     @Override
@@ -79,17 +79,12 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
     }
 
     @Override
-    public Executor getSyncExecutor() {
-        return this.syncExecutor;
+    public PluginTimeSource getTimeSource() {
+        return this.source;
     }
 
     @Override
-    public Executor getAsyncExecutor() {
-        return this.pool;
-    }
-
-    @Override
-    public void onPluginUpdate(final ExtendedPlugin plugin) {
+    public void onPluginUpdate() {
         while (!this.tasks.isEmpty()) {
             final var task = this.tasks.peek();
             if (task.isCancelled()) {
@@ -105,7 +100,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
     }
 
     @Override
-    public void onPluginExit(final ExtendedPlugin plugin) {
+    public void onPluginExit() {
         this.plugin.getLogger().info("Shutdown scheduler.");
         this.pool.shutdown();
         try {
@@ -125,8 +120,13 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
                 });
             }
         } catch (final InterruptedException e) {
-            this.plugin.getLogger().warn("The plugin scheduler shutdown have been interrupted.", e);
+            this.plugin.getLogger().error("The plugin scheduler shutdown have been interrupted.", e);
         }
+    }
+
+    @Override
+    public ExtendedPlugin getPlugin() {
+        return this.plugin;
     }
 
     String getBaseWorkerName() {
@@ -134,21 +134,6 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
     }
 
     /* Scheduler specific internal classes */
-
-    private final class PluginSchedulerUncaughtExceptionHandler implements UncaughtExceptionHandler {
-
-        @Override
-        public void uncaughtException(final Thread thread, final Throwable throwable) {
-            PluginSchedulerImpl.this
-                    .plugin
-                    .getLogger()
-                    .atError()
-                    .setMessage("An error occurred in thread {} of the scheduler")
-                    .setCause(throwable)
-                    .addArgument(thread.getName())
-                    .log();
-        }
-    }
 
     private final class PluginSchedulerWorkerThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
 
@@ -160,6 +145,21 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
             thread.setDaemon(true);
             thread.setName(PluginSchedulerImpl.this.getBaseWorkerName() + COUNT.getAndIncrement());
             return thread;
+        }
+    }
+
+    private final class PluginSchedulerUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+        @Override
+        public void uncaughtException(final Thread thread, final Throwable throwable) {
+            PluginSchedulerImpl.this
+                    .plugin
+                    .getLogger()
+                    .atError()
+                    .setMessage("An error occurred in thread {} of the plugin scheduler.")
+                    .addArgument(Thread.currentThread().getName())
+                    .setCause(throwable)
+                    .log();
         }
     }
 
@@ -185,7 +185,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
         @Override
         public void run() {
             if (PluginSchedulerImpl.this.pool.isShutdown()
-                    && (this.period == 0 || this.nextRun - Time.globalTime <= 0)) {
+                    && (this.period == 0 || this.nextRun - PluginSchedulerImpl.this.source.getCurrentMillis() <= 0)) {
                 this.cancel(false);
             } else if (this.period == 0) {
                 super.run();
@@ -204,6 +204,11 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
             return this.nextRun;
         }
 
+        @Override
+        public ExtendedPlugin getPlugin() {
+            return PluginSchedulerImpl.this.plugin;
+        }
+
         private void schedule(final long period) {
             if (period >= 0) {
                 this.nextRun = PluginSchedulerImpl.this.source.getCurrentMillis() + period;
@@ -212,11 +217,6 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
                 this.nextRun += -period;
                 PluginSchedulerImpl.this.tasks.add(this);
             }
-        }
-
-        @Override
-        public Plugin getPlugin() {
-            return PluginSchedulerImpl.this.plugin;
         }
     }
 
@@ -227,14 +227,14 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
         private long repeatPeriod = 0;
 
         @Override
-        public PluginFutureBuilder asyncExecution() {
-            this.async = true;
+        public PluginFutureBuilder sync() {
+            this.async = false;
             return this;
         }
 
         @Override
-        public PluginFutureBuilder syncExecution() {
-            this.async = false;
+        public PluginFutureBuilder async() {
+            this.async = true;
             return this;
         }
 
@@ -258,8 +258,12 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
 
         @Override
         public PluginFuture<Void> execute(final Runnable runnable) {
-            final var future =
-                    new SimplePluginFuture<Void>(Executors.callable(runnable, null), this.async, this.repeatPeriod);
+            return this.execute(Executors.callable(runnable, null));
+        }
+
+        @Override
+        public <V> PluginFuture<V> execute(final Callable<V> callable) {
+            final var future = new SimplePluginFuture<V>(callable, this.async, this.repeatPeriod);
             future.schedule(this.initialDelay);
             return future;
         }
@@ -269,8 +273,8 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
 
     private final class SimpleStagedPluginFuture<V> implements Task<V> {
 
-        private final CompletableFuture<V> completable = new CompletableFuture<>();
         private final Iterator<RecipeStep<?, ?>> steps;
+        private final CompletableFuture<V> completable = new CompletableFuture<>();
         private Object current;
 
         private SimpleStagedPluginFuture(final SimplePluginFutureRecipe<V> recipe) {
@@ -310,7 +314,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
         }
 
         @Override
-        public Plugin getPlugin() {
+        public ExtendedPlugin getPlugin() {
             return PluginSchedulerImpl.this.plugin;
         }
 
@@ -318,18 +322,24 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
         @Override
         public void run() {
             if (this.completable.isDone()) {
-                throw new IllegalStateException("This isn't supposed to happen.");
-            } else if (this.steps.hasNext()) {
+                return;
+            }
+            if (this.steps.hasNext()) {
                 final RecipeStep step = this.steps.next();
-                new SimplePluginFuture<Void>(
-                                () -> {
-                                    SimpleStagedPluginFuture.this.current = step.apply(this.current);
-                                    SimpleStagedPluginFuture.this.run();
-                                    return null;
-                                },
-                                step.async,
-                                0)
-                        .schedule(0);
+                final var future = new SimplePluginFuture<Void>(
+                        () -> {
+                            try {
+                                SimpleStagedPluginFuture.this.current = step.apply(this.current);
+                                SimpleStagedPluginFuture.this.run();
+                            } catch (final Exception e) {
+                                SimpleStagedPluginFuture.this.completable.completeExceptionally(e);
+                                throw e;
+                            }
+                            return null;
+                        },
+                        step.async,
+                        0);
+                future.schedule(0);
             } else {
                 this.completable.complete((V) this.current);
             }
@@ -395,7 +405,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
         }
     }
 
-    private abstract static sealed class RecipeStep<T, R> implements Function<T, R> {
+    private abstract static class RecipeStep<T, R> implements Function<T, R> {
 
         public final boolean async;
 

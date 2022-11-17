@@ -18,35 +18,25 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import arc.files.Fi;
 import fr.xpdustry.distributor.api.TestPlugin;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import mindustry.Vars;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-public final class PluginSchedulerTest {
+public final class PluginSchedulerImplTest {
 
     private TestPlugin plugin;
     private PluginSchedulerImpl scheduler;
     private Thread updater;
 
-    @BeforeAll
-    static void setup(@TempDir final Path tempDir) {
-        Vars.modDirectory = new Fi(tempDir.toFile());
-    }
-
     @SuppressWarnings("BusyWait")
     @BeforeEach
     void before() {
         this.plugin = new TestPlugin();
-        this.scheduler = new PluginSchedulerImpl(this.plugin, 4, PluginTimeSource.standard(), Runnable::run);
+        this.scheduler = new PluginSchedulerImpl(plugin, PluginTimeSource.standard(), Runnable::run);
         this.updater = new Thread(() -> {
             while (true) {
                 try {
@@ -54,9 +44,9 @@ public final class PluginSchedulerTest {
                 } catch (final InterruptedException ignored) {
                     break;
                 }
-                this.scheduler.onPluginUpdate(this.plugin);
+                this.scheduler.onPluginUpdate();
             }
-            this.scheduler.onPluginExit(this.plugin);
+            this.scheduler.onPluginExit();
         });
         this.updater.start();
     }
@@ -69,10 +59,7 @@ public final class PluginSchedulerTest {
     @Test
     void test_simple_sync_schedule() {
         final var future = new CompletableFuture<Thread>();
-        Assertions.assertThat(this.scheduler
-                        .schedule()
-                        .syncExecution()
-                        .execute(() -> future.complete(Thread.currentThread())))
+        Assertions.assertThat(this.scheduler.schedule().sync().execute(() -> future.complete(Thread.currentThread())))
                 .succeedsWithin(Duration.ofSeconds(1));
         Assertions.assertThat(future).isCompletedWithValueMatching(thread -> !thread.getName()
                 .startsWith(this.scheduler.getBaseWorkerName()));
@@ -81,10 +68,7 @@ public final class PluginSchedulerTest {
     @Test
     void test_simple_async_schedule() {
         final var future = new CompletableFuture<Thread>();
-        Assertions.assertThat(this.scheduler
-                        .schedule()
-                        .asyncExecution()
-                        .execute(() -> future.complete(Thread.currentThread())))
+        Assertions.assertThat(this.scheduler.schedule().async().execute(() -> future.complete(Thread.currentThread())))
                 .succeedsWithin(Duration.ofSeconds(1));
         Assertions.assertThat(future).isCompletedWithValueMatching(thread -> thread.getName()
                 .startsWith(this.scheduler.getBaseWorkerName()));

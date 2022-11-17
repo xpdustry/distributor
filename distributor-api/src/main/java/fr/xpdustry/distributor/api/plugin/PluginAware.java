@@ -18,9 +18,7 @@
  */
 package fr.xpdustry.distributor.api.plugin;
 
-import mindustry.mod.Plugin;
-
 public interface PluginAware {
 
-    Plugin getPlugin();
+    ExtendedPlugin getPlugin();
 }

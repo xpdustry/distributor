@@ -20,24 +20,22 @@ package fr.xpdustry.distributor.api.scheduler;
 
 import arc.Core;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
-import java.util.concurrent.Executor;
+import fr.xpdustry.distributor.api.plugin.PluginAware;
+import fr.xpdustry.distributor.api.plugin.PluginListener;
 
-public interface PluginScheduler {
-
-    static PluginScheduler create(final ExtendedPlugin plugin, final int parallelism) {
-        return new PluginSchedulerImpl(plugin, parallelism, PluginTimeSource.arc(), Core.app::post);
-    }
+public interface PluginScheduler extends PluginAware, PluginListener {
 
     static PluginScheduler create(final ExtendedPlugin plugin) {
-        return new PluginSchedulerImpl(
-                plugin, Runtime.getRuntime().availableProcessors(), PluginTimeSource.arc(), Core.app::post);
+        return new PluginSchedulerImpl(plugin, PluginTimeSource.arc(), Core.app::post);
+    }
+
+    static PluginScheduler create(final ExtendedPlugin plugin, final int parallelism) {
+        return new PluginSchedulerImpl(plugin, PluginTimeSource.arc(), Core.app::post, parallelism);
     }
 
     PluginFutureBuilder schedule();
 
     <V> PluginFutureRecipe<V> recipe(final V value);
 
-    Executor getSyncExecutor();
-
-    Executor getAsyncExecutor();
+    PluginTimeSource getTimeSource();
 }

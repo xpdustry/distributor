@@ -18,13 +18,14 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public interface PluginFutureBuilder {
 
-    PluginFutureBuilder asyncExecution();
+    PluginFutureBuilder sync();
 
-    PluginFutureBuilder syncExecution();
+    PluginFutureBuilder async();
 
     PluginFutureBuilder initialDelay(final long delay, final TimeUnit unit);
 
@@ -33,4 +34,6 @@ public interface PluginFutureBuilder {
     PluginFutureBuilder repeatRate(final long period, final TimeUnit unit);
 
     PluginFuture<Void> execute(final Runnable runnable);
+
+    <V> PluginFuture<V> execute(final Callable<V> callable);
 }

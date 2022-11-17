@@ -22,15 +22,15 @@ import arc.util.CommandHandler;
 
 public interface PluginListener {
 
-    default void onPluginInit(final ExtendedPlugin plugin) {}
+    default void onPluginInit() {}
 
-    default void onPluginServerCommandsRegistration(final ExtendedPlugin plugin, final CommandHandler handler) {}
+    default void onPluginServerCommandsRegistration(final CommandHandler handler) {}
 
-    default void onPluginClientCommandsRegistration(final ExtendedPlugin plugin, final CommandHandler handler) {}
+    default void onPluginClientCommandsRegistration(final CommandHandler handler) {}
 
-    default void onPluginLoad(final ExtendedPlugin plugin) {}
+    default void onPluginLoad() {}
 
-    default void onPluginUpdate(final ExtendedPlugin plugin) {}
+    default void onPluginUpdate() {}
 
-    default void onPluginExit(final ExtendedPlugin plugin) {}
+    default void onPluginExit() {}
 }

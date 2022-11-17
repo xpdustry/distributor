@@ -19,7 +19,6 @@
 package fr.xpdustry.distributor.api.command;
 
 import arc.util.CommandHandler;
-import arc.util.Log;
 import cloud.commandframework.CloudCapability;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.annotations.AnnotationParser;
@@ -42,7 +41,6 @@ import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.function.Function;
 import mindustry.gen.Player;
-import mindustry.mod.Plugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
@@ -58,7 +56,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     public static final CommandMeta.Key<String> PLUGIN =
             CommandMeta.Key.of(String.class, "xpdustry-distributor-core:plugin");
 
-    private final Plugin plugin;
+    private final ExtendedPlugin plugin;
     private final Function<CommandSender, C> commandSenderMapper;
     private final Function<C, CommandSender> backwardsCommandSenderMapper;
 
@@ -74,7 +72,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      *                                     type to {@link CommandSender}
      */
     public ArcCommandManager(
-            final Plugin plugin,
+            final ExtendedPlugin plugin,
             final Function<CommandSender, C> commandSenderMapper,
             final Function<C, CommandSender> backwardsCommandSenderMapper) {
         super(
@@ -101,11 +99,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
             try {
                 return MessageFormat.format(format, arguments);
             } catch (final IllegalArgumentException e) {
-                if (this.plugin instanceof ExtendedPlugin extended) {
-                    extended.getLogger().error("Failed to format {}.", format, e);
-                } else {
-                    Log.err("Failed to format " + format + ".", e);
-                }
+                this.plugin.getLogger().error("Failed to format {}.", format, e);
                 return "???" + format + "???";
             }
         });
@@ -128,11 +122,11 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
                                 params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE)));
     }
 
-    public static ArcCommandManager<CommandSender> standard(final Plugin plugin) {
+    public static ArcCommandManager<CommandSender> standard(final ExtendedPlugin plugin) {
         return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
     }
 
-    public static ArcCommandManager<Player> player(final Plugin plugin) {
+    public static ArcCommandManager<Player> player(final ExtendedPlugin plugin) {
         return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player);
     }
 
@@ -195,7 +189,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     }
 
     @Override
-    public final Plugin getPlugin() {
+    public final ExtendedPlugin getPlugin() {
         return this.plugin;
     }
 }
