@@ -66,14 +66,12 @@ public @interface CommandMethod {
      *
      * @return Command syntax
      */
-    @NonNull
-    String value();
+    @NonNull String value();
 
     /**
      * The required sender
      *
      * @return Required sender
      */
-    @NonNull
-    Class<?> requiredSender() default Object.class;
+    @NonNull Class<?> requiredSender() default Object.class;
 }

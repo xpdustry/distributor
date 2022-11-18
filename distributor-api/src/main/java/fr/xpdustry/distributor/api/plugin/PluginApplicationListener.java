@@ -20,6 +20,9 @@ package fr.xpdustry.distributor.api.plugin;
 
 import arc.ApplicationListener;
 
+/**
+ * An {@link ApplicationListener} that will call the plugin's lifecycle methods.
+ */
 public class PluginApplicationListener implements ApplicationListener, PluginAware {
 
     private final ExtendedPlugin plugin;
@@ -45,7 +48,7 @@ public class PluginApplicationListener implements ApplicationListener, PluginAwa
     }
 
     @Override
-    public final ExtendedPlugin getPlugin() {
+    public ExtendedPlugin getPlugin() {
         return this.plugin;
     }
 }

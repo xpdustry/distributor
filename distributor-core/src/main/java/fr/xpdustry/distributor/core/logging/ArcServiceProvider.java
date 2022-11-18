@@ -28,14 +28,11 @@ import org.slf4j.spi.SLF4JServiceProvider;
 
 public final class ArcServiceProvider implements SLF4JServiceProvider {
 
-    @MonotonicNonNull
-    private ILoggerFactory loggerFactory = null;
+    @MonotonicNonNull private ILoggerFactory loggerFactory = null;
 
-    @MonotonicNonNull
-    private IMarkerFactory markerFactory = null;
+    @MonotonicNonNull private IMarkerFactory markerFactory = null;
 
-    @MonotonicNonNull
-    private MDCAdapter mdcAdapter = null;
+    @MonotonicNonNull private MDCAdapter mdcAdapter = null;
 
     @Override
     public ILoggerFactory getLoggerFactory() {

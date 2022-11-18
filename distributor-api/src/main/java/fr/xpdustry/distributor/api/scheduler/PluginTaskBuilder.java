@@ -23,6 +23,14 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A helper object for building and scheduling a {@link PluginTask}.
+ *
+ * <pre> {@code
+ *      final PluginScheduler scheduler = ...;
+ *      // Warn the players the server is close in 5 minutes.
+ *      Groups.player.each(p -> p.sendMessage("The server will restart in 5 minutes."));
+ *      // Now schedule the closing task.
+ *      scheduler.schedule().sync().delay(5, TimeUnit.MINUTES).execute(() -> Core.app.exit());
+ * } </pre>
  */
 public interface PluginTaskBuilder {
 
@@ -47,7 +55,7 @@ public interface PluginTaskBuilder {
      * @param unit  the time unit of the delay.
      * @return this builder.
      */
-    PluginTaskBuilder initialDelay(final long delay, final TimeUnit unit);
+    PluginTaskBuilder delay(final long delay, final TimeUnit unit);
 
     /**
      * Run the task periodically with a fixed interval.

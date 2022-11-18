@@ -18,15 +18,30 @@
  */
 package fr.xpdustry.distributor.api.event;
 
+/**
+ * A simple class for registering event listeners in an object-oriented way.
+ */
 public interface EventBus {
 
+    /**
+     * Returns an {@code EventBus} instance bound to {@link arc.Events arc's event bus}.
+     */
     static EventBus mindustry() {
         return ArcEventBus.INSTANCE;
     }
 
+    /**
+     * Posts an event to the event bus.
+     */
     void post(final Object event);
 
+    /**
+     * Registers an event listener.
+     */
     void register(final EventBusListener listener);
 
+    /**
+     * Unregisters an event listener.
+     */
     void unregister(final EventBusListener listener);
 }

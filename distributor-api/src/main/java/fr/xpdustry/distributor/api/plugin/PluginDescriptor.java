@@ -26,6 +26,9 @@ import java.util.Objects;
 import mindustry.mod.Mods;
 import mindustry.mod.Plugin;
 
+/**
+ * Contains relevant information about a plugin.
+ */
 public final class PluginDescriptor {
 
     private final String name;
@@ -51,14 +54,32 @@ public final class PluginDescriptor {
                 Objects.requireNonNull(meta.dependencies).list());
     }
 
+    /**
+     * Creates a new {@link PluginDescriptor} from a {@link Mods.ModMeta}.
+     *
+     * @param meta the {@link Mods.ModMeta} to create the {@link PluginDescriptor} from
+     * @return the created {@link PluginDescriptor}
+     */
     public static PluginDescriptor from(final Mods.ModMeta meta) {
         return new PluginDescriptor(meta);
     }
 
+    /**
+     * Returns the descriptor of the given plugin.
+     *
+     * @param plugin the plugin to get the descriptor from
+     * @return the descriptor of the given plugin
+     */
     public static PluginDescriptor from(final Plugin plugin) {
         return from(plugin.getClass());
     }
 
+    /**
+     * Returns the descriptor of the given plugin class.
+     *
+     * @param clazz the plugin class to get the descriptor from
+     * @return the descriptor of the given plugin class
+     */
     public static PluginDescriptor from(final Class<? extends Plugin> clazz) {
         var resource = clazz.getClassLoader().getResourceAsStream("plugin.json");
         if (resource == null) {
@@ -76,43 +97,66 @@ public final class PluginDescriptor {
         }
     }
 
+    /**
+     * Returns the name of the plugin.
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Returns the display name of the plugin.
+     */
     public String getDisplayName() {
         return this.displayName;
     }
 
+    /**
+     * Returns the author of the plugin.
+     */
     public String getAuthor() {
         return this.author;
     }
 
+    /**
+     * Returns the description of the plugin.
+     */
     public String getDescription() {
         return this.description;
     }
 
+    /**
+     * Returns the version of the plugin.
+     */
     public String getVersion() {
         return this.version;
     }
 
+    /**
+     * Returns the main class of the plugin.
+     */
     public String getMain() {
         return this.main;
     }
 
+    /**
+     * Returns the minimum game version required by the plugin.
+     */
     public int getMinGameVersion() {
         return this.minGameVersion;
     }
 
+    /**
+     * Returns the GitHub repository of the plugin. Empty if not specified.
+     */
     public String getRepository() {
         return this.repository;
     }
 
+    /**
+     * Returns the dependencies of the plugin.
+     */
     public List<String> getDependencies() {
         return this.dependencies;
-    }
-
-    public boolean hasRepository() {
-        return !this.repository.isEmpty();
     }
 }

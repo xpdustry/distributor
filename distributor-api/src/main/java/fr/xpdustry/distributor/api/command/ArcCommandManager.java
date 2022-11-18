@@ -36,7 +36,6 @@ import fr.xpdustry.distributor.api.command.specifier.AllTeams;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.api.plugin.PluginAware;
 import fr.xpdustry.distributor.api.util.MUUID;
-import fr.xpdustry.distributor.api.util.Magik;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.function.Function;
@@ -44,14 +43,31 @@ import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
- * Command manager implementation for Mindustry.
+ * Command manager implementation for Mindustry. Read the <a href="https://github.com/Incendo/cloud/blob/master/docs/README.adoc">cloud documentation</a> for more information.
+ *
+ * <pre> {@code
+ *      public final class MyPlugin extends ExtendedPlugin {
+ *          private final ArcCommandManager<CommandSender> manager = ArcCommandManager.standard(this);
+ *          @Override
+ *          public void onClientCommandsRegistration(final CommandHandler handler) {
+ *              manager.initialize(handler);
+ *              manager.command(manager.commandBuilder("echo")
+ *                  .meta(CommandMeta.DESCRIPTION, "Print something")
+ *                  .argument(StringArgument.of("message"))
+ *                  .handler(context -> {
+ *                      final String message = context.get("message");
+ *                      context.getSender().sendMessage(message);
+ *                  }));
+ *          }
+ *      }
+ * } </pre>
  *
  * @param <C> the command sender type
  */
 public class ArcCommandManager<C> extends CommandManager<C> implements PluginAware {
 
     /**
-     * The owning plugin name of the command.
+     * The owning plugin of the command.
      */
     public static final CommandMeta.Key<String> PLUGIN =
             CommandMeta.Key.of(String.class, "xpdustry-distributor-core:plugin");
@@ -122,10 +138,18 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
                                 params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE)));
     }
 
+    /**
+     * Creates a simple {@link ArcCommandManager} with {@link CommandSender} as the command sender type.
+     */
     public static ArcCommandManager<CommandSender> standard(final ExtendedPlugin plugin) {
         return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
     }
 
+    /**
+     * Creates a simple {@link ArcCommandManager} with {@link Player} as the command sender type.
+     * <br>
+     * <strong>Warning:</strong> this will crash the server if it used with the console command handler.
+     */
     public static ArcCommandManager<Player> player(final ExtendedPlugin plugin) {
         return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player);
     }
@@ -184,7 +208,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     @Override
     public CommandMeta createDefaultCommandMeta() {
         return CommandMeta.simple()
-                .with(PLUGIN, Magik.getDescriptor(this.plugin).getName())
+                .with(PLUGIN, this.plugin.getDescriptor().getName())
                 .build();
     }
 

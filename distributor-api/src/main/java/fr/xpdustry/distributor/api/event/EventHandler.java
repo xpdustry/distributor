@@ -26,12 +26,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as an event handler.
+ * Marks a method as an event handler, meaning it will be called by an {@link EventBus} when an event is posted.
+ * <br>
+ * The annotated method must have exactly one parameter, which is the event class.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 
+    /**
+     * The priority of the event handler.
+     * <br>
+     * The default value is {@link Priority#NORMAL}.
+     */
     Priority priority() default Priority.NORMAL;
 }

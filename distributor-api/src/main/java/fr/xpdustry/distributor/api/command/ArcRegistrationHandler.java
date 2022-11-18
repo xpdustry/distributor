@@ -29,9 +29,9 @@ import java.lang.reflect.Field;
 
 /**
  * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
- * by registering cloud commands as native arc commands.
+ * by registering cloud commands as arc commands.
  */
-public final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
+final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
 
     private static final Field COMMAND_MAP_ACCESSOR;
 

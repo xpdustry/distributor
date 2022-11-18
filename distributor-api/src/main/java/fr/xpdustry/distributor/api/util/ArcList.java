@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * A {@link List} view of a {@link Seq}.
+ * A wrapper {@link List} for a {@link Seq}.
  *
  * @param <E> the element type
  */

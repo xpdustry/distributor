@@ -154,7 +154,7 @@ public abstract class ExtendedPlugin extends Plugin {
     }
 
     /**
-     * Creates the application listener that will call the plugin lifecycle methods.
+     * Returns a new {@link PluginApplicationListener} instance.
      */
     protected PluginApplicationListener createPluginApplicationListener() {
         return new PluginApplicationListener(this);

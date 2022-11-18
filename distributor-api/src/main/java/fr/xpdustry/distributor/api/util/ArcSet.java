@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * A {@link Set} view of a {@link ObjectSet}.
+ * A wrapper {@link Set} for an {@link ObjectSet}.
  *
  * @param <E> the element type
  */

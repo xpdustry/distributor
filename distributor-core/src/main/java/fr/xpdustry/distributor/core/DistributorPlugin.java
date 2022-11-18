@@ -23,9 +23,9 @@ import fr.xpdustry.distributor.api.Distributor;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
-import fr.xpdustry.distributor.api.localization.DelegatingLocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
+import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
@@ -57,7 +57,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         Thread.currentThread().setContextClassLoader(temp);
     }
 
-    private final DelegatingLocalizationSource source = DelegatingLocalizationSource.create();
+    private final MultiLocalizationSource source = MultiLocalizationSource.create();
     private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
     private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
 
@@ -132,7 +132,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     }
 
     @Override
-    public DelegatingLocalizationSource getGlobalLocalizationSource() {
+    public MultiLocalizationSource getGlobalLocalizationSource() {
         return this.source;
     }
 

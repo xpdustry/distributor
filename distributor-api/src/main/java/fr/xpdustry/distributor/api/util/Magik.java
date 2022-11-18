@@ -31,6 +31,9 @@ import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import mindustry.mod.Plugin;
 
+/**
+ * A collection of random utilities. Methods can be removed without prior notice.
+ */
 public final class Magik {
 
     private Magik() {}

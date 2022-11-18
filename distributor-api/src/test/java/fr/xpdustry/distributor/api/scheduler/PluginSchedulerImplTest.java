@@ -91,7 +91,7 @@ public final class PluginSchedulerImplTest {
         assertThat(this.scheduler
                         .schedule()
                         .sync()
-                        .initialDelay(3L, TimeUnit.SECONDS)
+                        .delay(3L, TimeUnit.SECONDS)
                         .execute(() -> future.complete(this.source.getCurrentMillis())))
                 .succeedsWithin(Duration.ofSeconds(3L).plus(PRECISION));
         final var end = future.join();

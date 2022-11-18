@@ -24,6 +24,18 @@ import java.util.function.Function;
 /**
  * A {@code PluginTaskRecipe} is a helper class for creating staged {@link PluginTask}s.
  * It will basically execute each step (asynchronously or not) in separate tasks, then returning the result.
+ *
+ * <pre> {@code
+ *      final PluginScheduler scheduler = ...;
+ *      final CommandHandler handler = ...;
+ *      handler.<Player>register("rank", "Get your pvp rank.", (args, player) -> scheduler.recipe(player)
+ *          .thenRun(() -> player.sendMessage("Getting your rank..."))
+ *          .thenApplyAsync(player -> getRankFromDatabase(player))
+ *          .thenAccept(rank -> player.sendMessage("Your rank is " + rank))
+ *          .execute());
+ * } </pre>
+ *
+ * @param <V> the type of the result.
  */
 public interface PluginTaskRecipe<V> {
 

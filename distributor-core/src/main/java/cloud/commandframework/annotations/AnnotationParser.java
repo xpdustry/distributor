@@ -810,8 +810,7 @@ public final class AnnotationParser<C> {
         return builtArgument;
     }
 
-    @NonNull
-    Map<
+    @NonNull Map<
                     @NonNull Class<@NonNull ? extends Annotation>,
                     @NonNull Function<@NonNull ? extends Annotation, @NonNull ParserParameters>>
             getAnnotationMappers() {

@@ -30,6 +30,12 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A wrapper {@link Map} for an {@link ObjectMap}.
+ *
+ * @param <K> the type of the keys
+ * @param <V> the type of the values
+ */
 public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
 
     @Serial

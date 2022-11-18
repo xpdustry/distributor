@@ -315,7 +315,7 @@ final class PluginSchedulerImpl implements PluginScheduler {
         }
 
         @Override
-        public PluginTaskBuilder initialDelay(final long delay, final TimeUnit unit) {
+        public PluginTaskBuilder delay(final long delay, final TimeUnit unit) {
             this.initialDelay = TimeUnit.MILLISECONDS.convert(delay, unit);
             return this;
         }

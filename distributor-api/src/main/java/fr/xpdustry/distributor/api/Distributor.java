@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.api;
 
-import fr.xpdustry.distributor.api.localization.DelegatingLocalizationSource;
+import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 
 /**
@@ -26,8 +26,14 @@ import fr.xpdustry.distributor.api.permission.PermissionService;
  */
 public interface Distributor {
 
-    DelegatingLocalizationSource getGlobalLocalizationSource();
+    /**
+     * Returns the global localization source instance.
+     */
+    MultiLocalizationSource getGlobalLocalizationSource();
 
+    /**
+     * Returns the permission service.
+     */
     PermissionService getPermissionService();
 
     void setPermissionService(final PermissionService permissions);

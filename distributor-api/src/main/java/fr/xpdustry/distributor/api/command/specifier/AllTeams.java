@@ -23,6 +23,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation used to specify that a {@link mindustry.game.Team} command argument can represent all the teams instead of the 6 base
+ * teams.
+ *
+ * @see fr.xpdustry.distributor.api.command.argument.TeamArgument.TeamMode#ALL
+ */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AllTeams {}

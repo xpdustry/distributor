@@ -18,11 +18,22 @@
  */
 package fr.xpdustry.distributor.api.localization;
 
-public interface DelegatingLocalizationSource extends LocalizationSource {
+/**
+ * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
+ */
+public interface MultiLocalizationSource extends LocalizationSource {
 
-    static DelegatingLocalizationSource create() {
-        return new DelegatingLocalizationSourceImpl();
+    /**
+     * Creates a new {@code MultiLocalizationSource} instance.
+     */
+    static MultiLocalizationSource create() {
+        return new MultiLocalizationSourceImpl();
     }
 
+    /**
+     * Adds a localization source to the list of sources.
+     *
+     * @param source the source to add
+     */
     void addLocalizationSource(final LocalizationSource source);
 }

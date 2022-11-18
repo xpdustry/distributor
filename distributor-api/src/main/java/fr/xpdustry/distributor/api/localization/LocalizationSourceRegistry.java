@@ -31,30 +31,88 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
 
+/**
+ * A mutable localization source that can register localized strings.
+ */
 public interface LocalizationSourceRegistry extends LocalizationSource {
 
+    /**
+     * Returns a new {@code LocalizationSourceRegistry} instance.
+     */
     static LocalizationSourceRegistry create() {
         return new LocalizationSourceRegistryImpl();
     }
 
+    /**
+     * Registers a map of localized strings.
+     *
+     * <pre> {@code
+     *      final var strings = new HashMap<String, MessageFormat>();
+     *      strings.put("example.hello", new MessageFormat("Hello {0}!"));
+     *      strings.put("example.goodbye", new MessageFormat("Goodbye {0}!"));
+     *      registry.registerAll(Locale.ENGLISH, strings);
+     * } </pre>
+     *
+     * @param locale  the locale to register the strings to
+     * @param formats the map of localized strings
+     */
     default void registerAll(final Locale locale, final Map<String, MessageFormat> formats) {
         this.registerAll(locale, formats.keySet(), formats::get);
     }
 
+    /**
+     * Registers a resource bundle of localized strings.
+     *
+     * @param locale the locale to register the strings to
+     * @param bundle the resource bundle to use
+     */
     default void registerAll(final Locale locale, final ResourceBundle bundle) {
         this.registerAll(locale, bundle.keySet(), key -> new MessageFormat(bundle.getString(key), locale));
     }
 
+    /**
+     * Registers a resource bundle of localized strings via the classpath.
+     *
+     * <pre> {@code
+     *      final Plugin plugin = ...;
+     *      registry.registerAll(Locale.ENGLISH, "bundle", plugin.getClass().getClassLoader());
+     *      registry.registerAll(Locale.FRENCH, "bundle", plugin.getClass().getClassLoader());
+     * } </pre>
+     *
+     * @param locale   the locale to register the strings to
+     * @param baseName the base name of the resource bundle
+     * @param loader   the class loader to use
+     */
     default void registerAll(final Locale locale, final String baseName, final ClassLoader loader) {
         this.registerAll(locale, ResourceBundle.getBundle(baseName, locale, loader));
     }
 
+    /**
+     * Registers a resource bundle of localized strings via a file system.
+     *
+     * <pre> {@code
+     *      final var english = Paths.get("bundle_en.properties");
+     *      registry.registerAll(Locale.ENGLISH, path);
+     *      final var english = Paths.get("bundle_fr.properties");
+     *      registry.registerAll(Locale.FRENCH, path);
+     * } </pre>
+     *
+     * @param locale the locale to register the strings to
+     * @param path   the path to the bundle file
+     */
     default void registerAll(final Locale locale, final Path path) throws IOException {
         try (final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             this.registerAll(locale, new PropertyResourceBundle(reader));
         }
     }
 
+    /**
+     * Registers a set of localized strings by using a mapping function to obtain each string.
+     *
+     * @param locale   the locale to register the strings to
+     * @param keys     the set of keys to register
+     * @param function the mapping function
+     */
     default void registerAll(
             final Locale locale, final Set<String> keys, final Function<String, MessageFormat> function) {
         for (final var key : keys) {
@@ -66,7 +124,19 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
         }
     }
 
+    /**
+     * Registers a localized string.
+     *
+     * @param key    the key of the string
+     * @param locale the locale to register the string to
+     * @param format the localized string
+     */
     void register(final String key, final Locale locale, final MessageFormat format);
 
+    /**
+     * Unregisters a localized string.
+     *
+     * @param key the key of the string
+     */
     void unregister(final String key);
 }

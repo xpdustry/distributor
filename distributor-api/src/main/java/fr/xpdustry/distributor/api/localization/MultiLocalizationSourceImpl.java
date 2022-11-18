@@ -24,7 +24,7 @@ import java.util.Deque;
 import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class DelegatingLocalizationSourceImpl implements DelegatingLocalizationSource {
+final class MultiLocalizationSourceImpl implements MultiLocalizationSource {
 
     private final Deque<LocalizationSource> sources = new ArrayDeque<>();
 

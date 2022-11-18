@@ -22,12 +22,25 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A helper class for adding localization support to your plugin.
+ */
 public interface LocalizationSource {
 
+    /**
+     * Returns a {@code LocalizationSource} for the router language :^).
+     */
     static LocalizationSource router() {
         return RouterLocalizationSource.INSTANCE;
     }
 
-    @Nullable
-    MessageFormat localize(final String key, final Locale locale);
+    /**
+     * Returns the localized string for the given key.
+     * <p>
+     * TODO Example
+     *
+     * @param key the key of the string to localize
+     * @return the localized string contained in a {@link MessageFormat}, or {@code null} if no string was found.
+     */
+    @Nullable MessageFormat localize(final String key, final Locale locale);
 }
