@@ -51,11 +51,11 @@ tasks.withType<JavaCompile> {
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
         disable(
-                "MissingSummary",
-                "BadImport",
-                "FutureReturnValueIgnored",
-                "InlineMeSuggester",
-                "EmptyCatch"
+            "MissingSummary",
+            "BadImport",
+            "FutureReturnValueIgnored",
+            "InlineMeSuggester",
+            "EmptyCatch"
         )
         if (!name.contains("test", true)) {
             check("NullAway", CheckSeverity.ERROR)

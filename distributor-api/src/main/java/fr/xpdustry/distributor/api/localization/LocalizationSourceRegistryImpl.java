@@ -48,11 +48,7 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
 
     private static final class Localization {
 
-        private final Map<Locale, MessageFormat> formats;
-
-        private Localization() {
-            this.formats = new ConcurrentHashMap<>();
-        }
+        private final Map<Locale, MessageFormat> formats = new ConcurrentHashMap<>();
 
         private boolean register(final Locale locale, final MessageFormat format) {
             return this.formats.putIfAbsent(locale, format) == null;

@@ -69,13 +69,23 @@ final class PluginSchedulerImpl implements PluginScheduler {
     }
 
     @Override
-    public PluginFutureBuilder schedule() {
-        return new SimplePluginFutureBuilder();
+    public PluginTaskBuilder schedule() {
+        return new SimplePluginTaskBuilder();
     }
 
     @Override
-    public <V> PluginFutureRecipe<V> recipe(final V value) {
-        return new SimplePluginFutureRecipe<>(value, new ArrayList<>());
+    public <V> PluginTaskRecipe<V> recipe(final V value) {
+        return new SimplePluginTaskRecipe<>(value, new ArrayList<>());
+    }
+
+    @Override
+    public Executor getAsyncExecutor() {
+        return this.pool;
+    }
+
+    @Override
+    public Executor getSyncExecutor() {
+        return this.syncExecutor;
     }
 
     @Override
@@ -135,6 +145,71 @@ final class PluginSchedulerImpl implements PluginScheduler {
 
     /* Scheduler specific internal classes */
 
+    private interface Task<V> extends PluginTask<V>, Runnable {
+
+        long getNextRun();
+    }
+
+    private abstract static class RecipeStep<T, R> implements Function<T, R> {
+
+        public final boolean async;
+
+        private RecipeStep(final boolean async) {
+            this.async = async;
+        }
+    }
+
+    private static final class ConsumerRecipeStep<T> extends RecipeStep<T, T> {
+
+        private final Consumer<T> consumer;
+
+        private ConsumerRecipeStep(final Consumer<T> consumer, final boolean async) {
+            super(async);
+            this.consumer = consumer;
+        }
+
+        @Override
+        public T apply(final T object) {
+            this.consumer.accept(object);
+            return object;
+        }
+    }
+
+    /* Basic plugin future */
+
+    private static final class FunctionRecipeStep<T, R> extends RecipeStep<T, R> {
+
+        private final Function<T, R> function;
+
+        private FunctionRecipeStep(final Function<T, R> function, final boolean async) {
+            super(async);
+            this.function = function;
+        }
+
+        @Override
+        public R apply(final T object) {
+            return this.function.apply(object);
+        }
+    }
+
+    private static final class RunnableRecipeStep<T> extends RecipeStep<T, T> {
+
+        private final Runnable runnable;
+
+        private RunnableRecipeStep(final Runnable runnable, final boolean async) {
+            super(async);
+            this.runnable = runnable;
+        }
+
+        @Override
+        public T apply(final T object) {
+            this.runnable.run();
+            return object;
+        }
+    }
+
+    /* Recipe black magik */
+
     private final class PluginSchedulerWorkerThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
 
         private static final AtomicInteger COUNT = new AtomicInteger(0);
@@ -163,20 +238,13 @@ final class PluginSchedulerImpl implements PluginScheduler {
         }
     }
 
-    private interface Task<V> extends PluginFuture<V>, Runnable {
-
-        long getNextRun();
-    }
-
-    /* Basic plugin future */
-
-    private final class SimplePluginFuture<V> extends FutureTask<V> implements Task<V> {
+    private final class SimplePluginTask<V> extends FutureTask<V> implements Task<V> {
 
         private final boolean async;
         private final long period;
         private long nextRun;
 
-        private SimplePluginFuture(final Callable<V> callable, final boolean async, final long period) {
+        private SimplePluginTask(final Callable<V> callable, final boolean async, final long period) {
             super(callable);
             this.async = async;
             this.period = period;
@@ -185,7 +253,7 @@ final class PluginSchedulerImpl implements PluginScheduler {
         @Override
         public void run() {
             if (PluginSchedulerImpl.this.pool.isShutdown()
-                    && (this.period == 0 || this.nextRun - PluginSchedulerImpl.this.source.getCurrentMillis() <= 0)) {
+                    && (this.period == 0 || this.nextRun - PluginSchedulerImpl.this.source.getCurrentMillis() > 0)) {
                 this.cancel(false);
             } else if (this.period == 0) {
                 super.run();
@@ -220,64 +288,62 @@ final class PluginSchedulerImpl implements PluginScheduler {
         }
     }
 
-    private final class SimplePluginFutureBuilder implements PluginFutureBuilder {
+    private final class SimplePluginTaskBuilder implements PluginTaskBuilder {
 
         private boolean async = false;
         private long initialDelay = 0;
         private long repeatPeriod = 0;
 
         @Override
-        public PluginFutureBuilder sync() {
-            this.async = false;
-            return this;
-        }
-
-        @Override
-        public PluginFutureBuilder async() {
+        public PluginTaskBuilder async() {
             this.async = true;
             return this;
         }
 
         @Override
-        public PluginFutureBuilder initialDelay(final long delay, final TimeUnit unit) {
+        public PluginTaskBuilder sync() {
+            this.async = false;
+            return this;
+        }
+
+        @Override
+        public PluginTaskBuilder initialDelay(final long delay, final TimeUnit unit) {
             this.initialDelay = TimeUnit.MILLISECONDS.convert(delay, unit);
             return this;
         }
 
         @Override
-        public PluginFutureBuilder repeatInterval(final long interval, final TimeUnit unit) {
+        public PluginTaskBuilder repeatInterval(final long interval, final TimeUnit unit) {
             this.repeatPeriod = TimeUnit.MILLISECONDS.convert(interval, unit);
             return this;
         }
 
         @Override
-        public PluginFutureBuilder repeatRate(final long period, final TimeUnit unit) {
+        public PluginTaskBuilder repeatPeriod(final long period, final TimeUnit unit) {
             this.repeatPeriod = -TimeUnit.MILLISECONDS.convert(period, unit);
             return this;
         }
 
         @Override
-        public PluginFuture<Void> execute(final Runnable runnable) {
+        public PluginTask<Void> execute(final Runnable runnable) {
             return this.execute(Executors.callable(runnable, null));
         }
 
         @Override
-        public <V> PluginFuture<V> execute(final Callable<V> callable) {
-            final var future = new SimplePluginFuture<V>(callable, this.async, this.repeatPeriod);
+        public <V> PluginTask<V> execute(final Callable<V> callable) {
+            final var future = new SimplePluginTask<V>(callable, this.async, this.repeatPeriod);
             future.schedule(this.initialDelay);
             return future;
         }
     }
 
-    /* Recipe black magik */
-
-    private final class SimpleStagedPluginFuture<V> implements Task<V> {
+    private final class SimplePluginRecipeTask<V> implements Task<V> {
 
         private final Iterator<RecipeStep<?, ?>> steps;
-        private final CompletableFuture<V> completable = new CompletableFuture<>();
+        private final CompletableFuture<V> completion = new CompletableFuture<>();
         private Object current;
 
-        private SimpleStagedPluginFuture(final SimplePluginFutureRecipe<V> recipe) {
+        private SimplePluginRecipeTask(final SimplePluginTaskRecipe<V> recipe) {
             this.steps = new ArrayList<>(recipe.steps).iterator();
             this.current = recipe.initialObject;
         }
@@ -289,28 +355,28 @@ final class PluginSchedulerImpl implements PluginScheduler {
 
         @Override
         public boolean cancel(final boolean mayInterruptIfRunning) {
-            return this.completable.cancel(mayInterruptIfRunning);
+            return this.completion.cancel(mayInterruptIfRunning);
         }
 
         @Override
         public boolean isCancelled() {
-            return this.completable.isCancelled();
+            return this.completion.isCancelled();
         }
 
         @Override
         public boolean isDone() {
-            return this.completable.isDone();
+            return this.completion.isDone();
         }
 
         @Override
         public V get() throws InterruptedException, ExecutionException {
-            return this.completable.get();
+            return this.completion.get();
         }
 
         @Override
         public V get(final long timeout, final TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
-            return this.completable.get(timeout, unit);
+            return this.completion.get(timeout, unit);
         }
 
         @Override
@@ -321,18 +387,18 @@ final class PluginSchedulerImpl implements PluginScheduler {
         @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
         public void run() {
-            if (this.completable.isDone()) {
+            if (this.completion.isDone()) {
                 return;
             }
             if (this.steps.hasNext()) {
                 final RecipeStep step = this.steps.next();
-                final var future = new SimplePluginFuture<Void>(
+                final var future = new SimplePluginTask<Void>(
                         () -> {
                             try {
-                                SimpleStagedPluginFuture.this.current = step.apply(this.current);
-                                SimpleStagedPluginFuture.this.run();
+                                SimplePluginRecipeTask.this.current = step.apply(this.current);
+                                SimplePluginRecipeTask.this.run();
                             } catch (final Exception e) {
-                                SimpleStagedPluginFuture.this.completable.completeExceptionally(e);
+                                SimplePluginRecipeTask.this.completion.completeExceptionally(e);
                                 throw e;
                             }
                             return null;
@@ -341,7 +407,7 @@ final class PluginSchedulerImpl implements PluginScheduler {
                         0);
                 future.schedule(0);
             } else {
-                this.completable.complete((V) this.current);
+                this.completion.complete((V) this.current);
             }
         }
 
@@ -351,113 +417,57 @@ final class PluginSchedulerImpl implements PluginScheduler {
         }
     }
 
-    private final class SimplePluginFutureRecipe<V> implements PluginFutureRecipe<V> {
+    private final class SimplePluginTaskRecipe<V> implements PluginTaskRecipe<V> {
 
         private final Object initialObject;
         private final List<RecipeStep<?, ?>> steps;
 
-        private SimplePluginFutureRecipe(final Object initialObject, final List<RecipeStep<?, ?>> steps) {
+        private SimplePluginTaskRecipe(final Object initialObject, final List<RecipeStep<?, ?>> steps) {
             this.initialObject = initialObject;
             this.steps = steps;
         }
 
         @Override
-        public PluginFutureRecipe<V> thenAccept(final Consumer<V> consumer) {
+        public PluginTaskRecipe<V> thenAccept(final Consumer<V> consumer) {
             this.steps.add(new ConsumerRecipeStep<>(consumer, false));
-            return new SimplePluginFutureRecipe<>(this.initialObject, this.steps);
+            return new SimplePluginTaskRecipe<>(this.initialObject, this.steps);
         }
 
         @Override
-        public <R> PluginFutureRecipe<R> thenApply(final Function<V, R> function) {
+        public <R> PluginTaskRecipe<R> thenApply(final Function<V, R> function) {
             this.steps.add(new FunctionRecipeStep<>(function, false));
-            return new SimplePluginFutureRecipe<>(this.initialObject, this.steps);
+            return new SimplePluginTaskRecipe<>(this.initialObject, this.steps);
         }
 
         @Override
-        public PluginFutureRecipe<V> thenRun(final Runnable runnable) {
+        public PluginTaskRecipe<V> thenRun(final Runnable runnable) {
             this.steps.add(new RunnableRecipeStep<>(runnable, false));
-            return new SimplePluginFutureRecipe<>(this.initialObject, this.steps);
+            return new SimplePluginTaskRecipe<>(this.initialObject, this.steps);
         }
 
         @Override
-        public PluginFutureRecipe<V> thenAcceptAsync(final Consumer<V> consumer) {
+        public PluginTaskRecipe<V> thenAcceptAsync(final Consumer<V> consumer) {
             this.steps.add(new ConsumerRecipeStep<>(consumer, true));
-            return new SimplePluginFutureRecipe<>(this.initialObject, this.steps);
+            return new SimplePluginTaskRecipe<>(this.initialObject, this.steps);
         }
 
         @Override
-        public <R> PluginFutureRecipe<R> thenApplyAsync(final Function<V, R> function) {
+        public <R> PluginTaskRecipe<R> thenApplyAsync(final Function<V, R> function) {
             this.steps.add(new FunctionRecipeStep<>(function, true));
-            return new SimplePluginFutureRecipe<>(this.initialObject, this.steps);
+            return new SimplePluginTaskRecipe<>(this.initialObject, this.steps);
         }
 
         @Override
-        public PluginFutureRecipe<V> thenRunAsync(final Runnable runnable) {
+        public PluginTaskRecipe<V> thenRunAsync(final Runnable runnable) {
             this.steps.add(new RunnableRecipeStep<>(runnable, true));
-            return new SimplePluginFutureRecipe<>(this.initialObject, this.steps);
+            return new SimplePluginTaskRecipe<>(this.initialObject, this.steps);
         }
 
         @Override
-        public PluginFuture<V> execute() {
-            final var future = new SimpleStagedPluginFuture<>(this);
+        public PluginTask<V> execute() {
+            final var future = new SimplePluginRecipeTask<>(this);
             PluginSchedulerImpl.this.tasks.add(future);
             return future;
-        }
-    }
-
-    private abstract static class RecipeStep<T, R> implements Function<T, R> {
-
-        public final boolean async;
-
-        private RecipeStep(final boolean async) {
-            this.async = async;
-        }
-    }
-
-    private static final class ConsumerRecipeStep<T> extends RecipeStep<T, T> {
-
-        private final Consumer<T> consumer;
-
-        private ConsumerRecipeStep(final Consumer<T> consumer, final boolean async) {
-            super(async);
-            this.consumer = consumer;
-        }
-
-        @Override
-        public T apply(final T object) {
-            this.consumer.accept(object);
-            return object;
-        }
-    }
-
-    private static final class FunctionRecipeStep<T, R> extends RecipeStep<T, R> {
-
-        private final Function<T, R> function;
-
-        private FunctionRecipeStep(final Function<T, R> function, final boolean async) {
-            super(async);
-            this.function = function;
-        }
-
-        @Override
-        public R apply(final T object) {
-            return this.function.apply(object);
-        }
-    }
-
-    private static final class RunnableRecipeStep<T> extends RecipeStep<T, T> {
-
-        private final Runnable runnable;
-
-        private RunnableRecipeStep(final Runnable runnable, final boolean async) {
-            super(async);
-            this.runnable = runnable;
-        }
-
-        @Override
-        public T apply(final T object) {
-            this.runnable.run();
-            return object;
         }
     }
 }

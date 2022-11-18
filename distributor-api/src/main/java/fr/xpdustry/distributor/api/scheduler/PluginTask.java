@@ -19,9 +19,17 @@
 package fr.xpdustry.distributor.api.scheduler;
 
 import fr.xpdustry.distributor.api.plugin.PluginAware;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
 
-public interface PluginFuture<V> extends Future<V>, PluginAware {
+/**
+ * A {@code PluginTask} is a future used by a {@link PluginScheduler}.
+ *
+ * @param <V> the type of the value returned by this task.
+ */
+public interface PluginTask<V> extends Future<V>, PluginAware {
 
+    /**
+     * Returns whether this future is executed asynchronously.
+     */
     boolean isAsync();
 }

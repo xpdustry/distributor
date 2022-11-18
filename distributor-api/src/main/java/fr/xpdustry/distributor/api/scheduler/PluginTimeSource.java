@@ -20,16 +20,28 @@ package fr.xpdustry.distributor.api.scheduler;
 
 import arc.util.Time;
 
+/**
+ * A {@code PluginTimeSource} provides the current time in milliseconds.
+ */
 @FunctionalInterface
 public interface PluginTimeSource {
 
+    /**
+     * Returns a {@code PluginTimeSource} using {@link Time#globalTime} to provide the current time.
+     */
     static PluginTimeSource arc() {
         return () -> (long) (Time.globalTime * 16);
     }
 
+    /**
+     * Returns a {@code PluginTimeSource} using {@link System#currentTimeMillis()} to provide the current time.
+     */
     static PluginTimeSource standard() {
         return System::currentTimeMillis;
     }
 
+    /**
+     * Returns the current time in milliseconds.
+     */
     long getCurrentMillis();
 }

@@ -20,17 +20,42 @@ package fr.xpdustry.distributor.api.plugin;
 
 import arc.util.CommandHandler;
 
+/**
+ * Interface for listening to the lifecycle events of a plugin. A better alternative to {@link arc.ApplicationListener}.
+ */
 public interface PluginListener {
 
+    /**
+     * Called after {@link ExtendedPlugin#onInit()}.
+     */
     default void onPluginInit() {}
 
+    /**
+     * Called after {@link ExtendedPlugin#onServerCommandsRegistration(CommandHandler)}.
+     *
+     * @param handler the server command handler
+     */
     default void onPluginServerCommandsRegistration(final CommandHandler handler) {}
 
+    /**
+     * Called after {@link ExtendedPlugin#onClientCommandsRegistration(CommandHandler)}.
+     *
+     * @param handler the client command handler
+     */
     default void onPluginClientCommandsRegistration(final CommandHandler handler) {}
 
+    /**
+     * Called after {@link ExtendedPlugin#onLoad()}.
+     */
     default void onPluginLoad() {}
 
+    /**
+     * Called after {@link ExtendedPlugin#onUpdate()}.
+     */
     default void onPluginUpdate() {}
 
+    /**
+     * Called after {@link ExtendedPlugin#onExit()}.
+     */
     default void onPluginExit() {}
 }

@@ -21,19 +21,23 @@ package fr.xpdustry.distributor.api.scheduler;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public interface PluginFutureRecipe<V> {
+/**
+ * A {@code PluginTaskRecipe} is a helper class for creating staged {@link PluginTask}s.
+ * It will basically execute each step (asynchronously or not) in separate tasks, then returning the result.
+ */
+public interface PluginTaskRecipe<V> {
 
-    PluginFutureRecipe<V> thenAccept(final Consumer<V> consumer);
+    PluginTaskRecipe<V> thenAccept(final Consumer<V> consumer);
 
-    <R> PluginFutureRecipe<R> thenApply(final Function<V, R> function);
+    <R> PluginTaskRecipe<R> thenApply(final Function<V, R> function);
 
-    PluginFutureRecipe<V> thenRun(final Runnable runnable);
+    PluginTaskRecipe<V> thenRun(final Runnable runnable);
 
-    PluginFutureRecipe<V> thenAcceptAsync(final Consumer<V> consumer);
+    PluginTaskRecipe<V> thenAcceptAsync(final Consumer<V> consumer);
 
-    <R> PluginFutureRecipe<R> thenApplyAsync(final Function<V, R> function);
+    <R> PluginTaskRecipe<R> thenApplyAsync(final Function<V, R> function);
 
-    PluginFutureRecipe<V> thenRunAsync(final Runnable runnable);
+    PluginTaskRecipe<V> thenRunAsync(final Runnable runnable);
 
-    PluginFuture<V> execute();
+    PluginTask<V> execute();
 }

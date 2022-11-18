@@ -18,7 +18,13 @@
  */
 package fr.xpdustry.distributor.api.plugin;
 
+/**
+ * Marks an object as belonging to a plugin.
+ */
 public interface PluginAware {
 
+    /**
+     * Returns the owning plugin.
+     */
     ExtendedPlugin getPlugin();
 }

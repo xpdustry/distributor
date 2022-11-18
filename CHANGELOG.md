@@ -17,7 +17,8 @@ Second release candidate for ya :)
 
 ### Chores
 
-- Changed the code format of the project to [palantir java format](https://github.com/palantir/palantir-java-format) for it's readability.
+- Changed the code format of the project to [palantir java format](https://github.com/palantir/palantir-java-format) for
+  it's readability.
 
 ## v3.0.0-rc1 - 2022-10-22
 

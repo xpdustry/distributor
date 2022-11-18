@@ -33,5 +33,5 @@ This plugin is compatible with v137+.
 - I want to thank Incendo and their amazing work on [Cloud](https://github.com/Incendo/cloud), the command library of my
   dreams.
 
-- The localization system is based on the translation system of 
+- The localization system is based on the translation system of
   [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).

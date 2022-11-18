@@ -18,25 +18,32 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
 import fr.xpdustry.distributor.api.TestPlugin;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import org.assertj.core.api.Assertions;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public final class PluginSchedulerImplTest {
 
-    private TestPlugin plugin;
+    private static final Duration PRECISION = Duration.ofMillis(100L);
+
+    private PluginTimeSource source;
     private PluginSchedulerImpl scheduler;
     private Thread updater;
 
     @SuppressWarnings("BusyWait")
     @BeforeEach
     void before() {
-        this.plugin = new TestPlugin();
-        this.scheduler = new PluginSchedulerImpl(plugin, PluginTimeSource.standard(), Runnable::run);
+        this.source = PluginTimeSource.standard();
+        this.scheduler = new PluginSchedulerImpl(new TestPlugin(), this.source, Runnable::run);
         this.updater = new Thread(() -> {
             while (true) {
                 try {
@@ -59,18 +66,82 @@ public final class PluginSchedulerImplTest {
     @Test
     void test_simple_sync_schedule() {
         final var future = new CompletableFuture<Thread>();
-        Assertions.assertThat(this.scheduler.schedule().sync().execute(() -> future.complete(Thread.currentThread())))
-                .succeedsWithin(Duration.ofSeconds(1));
-        Assertions.assertThat(future).isCompletedWithValueMatching(thread -> !thread.getName()
+        assertThat(this.scheduler.schedule().sync().execute(() -> future.complete(Thread.currentThread())))
+                .succeedsWithin(PRECISION);
+        assertThat(future).isCompletedWithValueMatching(thread -> !thread.getName()
                 .startsWith(this.scheduler.getBaseWorkerName()));
     }
 
     @Test
     void test_simple_async_schedule() {
         final var future = new CompletableFuture<Thread>();
-        Assertions.assertThat(this.scheduler.schedule().async().execute(() -> future.complete(Thread.currentThread())))
-                .succeedsWithin(Duration.ofSeconds(1));
-        Assertions.assertThat(future).isCompletedWithValueMatching(thread -> thread.getName()
+        assertThat(this.scheduler.schedule().async().execute(() -> future.complete(Thread.currentThread())))
+                .succeedsWithin(PRECISION);
+        assertThat(future).isCompletedWithValueMatching(thread -> thread.getName()
                 .startsWith(this.scheduler.getBaseWorkerName()));
+    }
+
+    @Test
+    void test_initial_delay() {
+        final var future = new CompletableFuture<Long>();
+        final var begin = this.source.getCurrentMillis();
+        assertThat(this.scheduler
+                        .schedule()
+                        .sync()
+                        .initialDelay(3L, TimeUnit.SECONDS)
+                        .execute(() -> future.complete(this.source.getCurrentMillis())))
+                .succeedsWithin(Duration.ofSeconds(3L).plus(PRECISION));
+        final var end = future.join();
+        assertThat(Duration.ofMillis(end - begin)).isCloseTo(Duration.ofSeconds(3L), PRECISION);
+    }
+
+    @Test
+    void test_repeat_interval() {
+        final var counter = new CountDownLatch(3);
+        final var longs = new ArrayList<Long>();
+        final var future = this.scheduler
+                .schedule()
+                .sync()
+                .repeatInterval(1L, TimeUnit.SECONDS)
+                .execute(() -> {
+                    longs.add(this.source.getCurrentMillis());
+                    Thread.sleep(500L);
+                    counter.countDown();
+                    return null;
+                });
+
+        // Execute the task 3 times
+        assertTimeoutPreemptively(Duration.ofSeconds(5L), () -> {
+            counter.await();
+            future.cancel(false);
+        });
+
+        assertThat(Duration.ofMillis(longs.get(1) - longs.get(0))).isCloseTo(Duration.ofMillis(1500L), PRECISION);
+        assertThat(Duration.ofMillis(longs.get(2) - longs.get(1))).isCloseTo(Duration.ofMillis(1500L), PRECISION);
+    }
+
+    @Test
+    void test_repeat_period() {
+        final var counter = new CountDownLatch(3);
+        final var longs = new ArrayList<Long>();
+        final var future = this.scheduler
+                .schedule()
+                .sync()
+                .repeatPeriod(1L, TimeUnit.SECONDS)
+                .execute(() -> {
+                    longs.add(this.source.getCurrentMillis());
+                    Thread.sleep(500L);
+                    counter.countDown();
+                    return null;
+                });
+
+        // Execute the task 3 times
+        assertTimeoutPreemptively(Duration.ofSeconds(5L), () -> {
+            counter.await();
+            future.cancel(false);
+        });
+
+        assertThat(Duration.ofMillis(longs.get(1) - longs.get(0))).isCloseTo(Duration.ofSeconds(1L), PRECISION);
+        assertThat(Duration.ofMillis(longs.get(2) - longs.get(1))).isCloseTo(Duration.ofSeconds(1L), PRECISION);
     }
 }
