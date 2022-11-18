@@ -27,6 +27,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry {
 
     private final Map<String, Localization> entries = new ConcurrentHashMap<>();
+    private final Locale defaultLocale;
+
+    LocalizationSourceRegistryImpl(final Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
+    }
 
     @Override
     public @Nullable MessageFormat localize(final String key, final Locale locale) {
@@ -37,7 +42,7 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
     public void register(final String key, final Locale locale, final MessageFormat format) {
         if (!this.entries.computeIfAbsent(key, k -> new Localization()).register(locale, format)) {
             throw new IllegalArgumentException(
-                    String.format("A localization is already present: %s for %s.", locale, key));
+                    String.format("A localization is already present: %s for %s.", key, locale));
         }
     }
 
@@ -46,7 +51,22 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
         this.entries.remove(key);
     }
 
-    private static final class Localization {
+    @Override
+    public boolean registered(final String key) {
+        return this.entries.containsKey(key);
+    }
+
+    @Override
+    public boolean registered(final String key, final Locale locale) {
+        return this.entries.containsKey(key) && this.entries.get(key).formats.containsKey(locale);
+    }
+
+    @Override
+    public Locale getDefaultLocale() {
+        return this.defaultLocale;
+    }
+
+    private final class Localization {
 
         private final Map<Locale, MessageFormat> formats = new ConcurrentHashMap<>();
 
@@ -57,10 +77,16 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
         private @Nullable MessageFormat localize(final Locale locale) {
             var format = this.formats.get(locale);
             if (format == null) {
-                format = this.formats.get(new Locale(locale.getLanguage())); // try without country
-                if (format == null) {
-                    format = this.formats.get(Locale.getDefault()); // try local default locale
-                }
+                // try without the country
+                format = this.formats.get(new Locale(locale.getLanguage()));
+            }
+            if (format == null) {
+                // try with default locale of this registry
+                format = this.formats.get(LocalizationSourceRegistryImpl.this.defaultLocale);
+            }
+            if (format == null) {
+                // try local default locale of this JVM
+                format = this.formats.get(Locale.getDefault());
             }
             return format;
         }

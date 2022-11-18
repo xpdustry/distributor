@@ -37,10 +37,13 @@ import java.util.function.Function;
 public interface LocalizationSourceRegistry extends LocalizationSource {
 
     /**
-     * Returns a new {@code LocalizationSourceRegistry} instance.
+     * Creates a new {@code LocalizationSourceRegistry} instance.
+     *
+     * @param defaultLocale the default locale of the localization source
+     * @return a new {@code LocalizationSourceRegistry} instance
      */
-    static LocalizationSourceRegistry create() {
-        return new LocalizationSourceRegistryImpl();
+    static LocalizationSourceRegistry create(final Locale defaultLocale) {
+        return new LocalizationSourceRegistryImpl(defaultLocale);
     }
 
     /**
@@ -55,6 +58,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      *
      * @param locale  the locale to register the strings to
      * @param formats the map of localized strings
+     * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final Map<String, MessageFormat> formats) {
         this.registerAll(locale, formats.keySet(), formats::get);
@@ -65,6 +69,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      *
      * @param locale the locale to register the strings to
      * @param bundle the resource bundle to use
+     * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final ResourceBundle bundle) {
         this.registerAll(locale, bundle.keySet(), key -> new MessageFormat(bundle.getString(key), locale));
@@ -82,6 +87,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param locale   the locale to register the strings to
      * @param baseName the base name of the resource bundle
      * @param loader   the class loader to use
+     * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final String baseName, final ClassLoader loader) {
         this.registerAll(locale, ResourceBundle.getBundle(baseName, locale, loader));
@@ -99,6 +105,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      *
      * @param locale the locale to register the strings to
      * @param path   the path to the bundle file
+     * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final Path path) throws IOException {
         try (final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
@@ -112,15 +119,12 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param locale   the locale to register the strings to
      * @param keys     the set of keys to register
      * @param function the mapping function
+     * @throws IllegalArgumentException if the key is already registered
      */
     default void registerAll(
             final Locale locale, final Set<String> keys, final Function<String, MessageFormat> function) {
         for (final var key : keys) {
-            try {
-                this.register(key, locale, function.apply(key));
-            } catch (final IllegalArgumentException e) {
-                throw new RuntimeException("Failed to obtain the MessageFormat for key " + key, e);
-            }
+            this.register(key, locale, function.apply(key));
         }
     }
 
@@ -130,8 +134,26 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param key    the key of the string
      * @param locale the locale to register the string to
      * @param format the localized string
+     * @throws IllegalArgumentException if the key is already registered
      */
     void register(final String key, final Locale locale, final MessageFormat format);
+
+    /**
+     * Checks if a key is already registered, for any locale.
+     *
+     * @param key the key to check
+     * @return {@code true} if the key is already registered, {@code false} otherwise
+     */
+    boolean registered(final String key);
+
+    /**
+     * Checks if a key is already registered for a specific locale.
+     *
+     * @param key    the key to check
+     * @param locale the locale to check
+     * @return {@code true} if the key is already registered for the specific locale, {@code false} otherwise
+     */
+    boolean registered(final String key, final Locale locale);
 
     /**
      * Unregisters a localized string.
@@ -139,4 +161,9 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param key the key of the string
      */
     void unregister(final String key);
+
+    /**
+     * Returns the default locale of this source.
+     */
+    Locale getDefaultLocale();
 }

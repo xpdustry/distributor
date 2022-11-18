@@ -24,8 +24,7 @@ import mindustry.net.Administration;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * TODO More complete description
- * Mindustry identity format.
+ * The mindustry identity format. A combination of a UUID and a USID.
  */
 public final class MUUID {
 
@@ -37,22 +36,47 @@ public final class MUUID {
         this.usid = usid;
     }
 
+    /**
+     * Creates a new MUUID from a UUID and USID.
+     *
+     * @param uuid the UUID
+     * @param usid the USID
+     * @return the MUUID
+     */
     public static MUUID of(final String uuid, final String usid) {
         return new MUUID(uuid, usid);
     }
 
+    /**
+     * Creates a new MUUID from a {@link Player}.
+     *
+     * @param player the player
+     * @return the MUUID
+     */
     public static MUUID of(final Player player) {
         return new MUUID(player.uuid(), player.usid());
     }
 
+    /**
+     * Creates a new MUUID from a {@link Administration.PlayerInfo}.
+     *
+     * @param info the player info
+     * @return the MUUID
+     */
     public static MUUID of(final Administration.PlayerInfo info) {
         return new MUUID(info.id, info.adminUsid);
     }
 
+    /**
+     * Returns the UUID.
+     */
     public String getUuid() {
         return this.uuid;
     }
 
+    /**
+     * Returns the USID.
+     */
     public String getUsid() {
         return this.usid;
     }

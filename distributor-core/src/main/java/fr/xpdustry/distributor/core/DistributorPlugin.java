@@ -50,8 +50,10 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
         if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
             throw new RuntimeException(String.format(
-                    "The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).\n"
-                            + "Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.",
+                    """
+                    The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).
+                    Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.
+                    """,
                     LoggerFactory.getILoggerFactory().getClass().getName()));
         }
         Thread.currentThread().setContextClassLoader(temp);
@@ -64,7 +66,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     private @MonotonicNonNull PermissionService permissions = null;
 
     {
-        final var registry = LocalizationSourceRegistry.create();
+        final var registry = LocalizationSourceRegistry.create(Locale.ENGLISH);
         registry.registerAll(Locale.ENGLISH, "bundles/bundle", this.getClass().getClassLoader());
         registry.registerAll(Locale.FRENCH, "bundles/bundle", this.getClass().getClassLoader());
 

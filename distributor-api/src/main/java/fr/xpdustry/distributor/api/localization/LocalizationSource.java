@@ -35,9 +35,17 @@ public interface LocalizationSource {
     }
 
     /**
-     * Returns the localized string for the given key.
-     * <p>
-     * TODO Example
+     * Returns the localized string for the given key or {@code null} if absent.
+     *
+     * <pre> {@code
+     *     // Send a localized message to every player
+     *      final LocalizationSource source = ...;
+     *      Groups.player.each(player -> {
+     *          final var locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
+     *          final var message = source.localize("example.key", locale);
+     *          player.sendMessage(message == null ? "???example.key???" : message);
+     *      }
+     * } </pre>
      *
      * @param key the key of the string to localize
      * @return the localized string contained in a {@link MessageFormat}, or {@code null} if no string was found.
