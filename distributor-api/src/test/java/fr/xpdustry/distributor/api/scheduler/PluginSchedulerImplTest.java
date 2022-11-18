@@ -21,6 +21,8 @@ package fr.xpdustry.distributor.api.scheduler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
+import arc.Core;
+import arc.mock.MockApplication;
 import fr.xpdustry.distributor.api.TestPlugin;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -42,16 +44,17 @@ public final class PluginSchedulerImplTest {
     @SuppressWarnings("BusyWait")
     @BeforeEach
     void before() {
+        Core.app = new MockApplication();
         this.source = PluginTimeSource.standard();
         this.scheduler = new PluginSchedulerImpl(new TestPlugin(), this.source, Runnable::run);
         this.updater = new Thread(() -> {
             while (true) {
                 try {
                     Thread.sleep(1000L / 60);
-                } catch (final InterruptedException ignored) {
+                } catch (final InterruptedException e) {
                     break;
                 }
-                this.scheduler.onPluginUpdate();
+                this.scheduler.update();
             }
             this.scheduler.onPluginExit();
         });

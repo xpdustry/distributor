@@ -50,11 +50,6 @@ public interface PluginListener {
     default void onPluginLoad() {}
 
     /**
-     * Called after {@link ExtendedPlugin#onUpdate()}.
-     */
-    default void onPluginUpdate() {}
-
-    /**
      * Called after {@link ExtendedPlugin#onExit()}.
      */
     default void onPluginExit() {}

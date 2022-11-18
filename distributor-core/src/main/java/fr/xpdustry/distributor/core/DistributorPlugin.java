@@ -37,12 +37,8 @@ import fr.xpdustry.distributor.core.permission.SimplePermissionService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Locale;
-import java.util.Properties;
-import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
 
@@ -91,30 +87,6 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
             this.getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
         }
 
-        // Load Distributor config
-        final var file = this.getDirectory().resolve("config.properties");
-        final DistributorConfig config;
-        if (Files.exists(file)) {
-            final var properties = new Properties();
-            try (final var reader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-                properties.load(reader);
-                this.getLogger().info("Loaded distributor config.");
-            } catch (final IOException e) {
-                this.getLogger().error("Failed to load distributor config file.", e);
-            }
-            config = ConfigFactory.create(DistributorConfig.class, properties);
-        } else {
-            config = ConfigFactory.create(DistributorConfig.class);
-            try (final var writer = new OutputStreamWriter(Files.newOutputStream(file), StandardCharsets.UTF_8)) {
-                final var properties = new Properties();
-                config.fill(properties);
-                properties.store(writer, null);
-                this.getLogger().info("Created distributor config.");
-            } catch (final IOException e) {
-                this.getLogger().error("Failed to create distributor config file.", e);
-            }
-        }
-
         this.permissions = new SimplePermissionService(this.getDirectory().resolve("permissions"));
         DistributorProvider.set(this);
     }
@@ -125,14 +97,14 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         this.onSharedCommandsRegistration(this.serverCommands);
 
         new ProxyTypedConfig<>(
-                "permission-primary-group",
-                "The primary group assinged to all players.",
+                "distributor:permission-primary-group",
+                "The primary group assigned to all players.",
                 "default",
                 () -> this.getPermissionService().getPrimaryGroup(),
                 value -> this.getPermissionService().setPrimaryGroup(value));
 
         new ProxyTypedConfig<>(
-                "permission-verify-admin",
+                "distributor:permission-verify-admin",
                 "Whether permission check should be skipped on admins.",
                 true,
                 () -> this.getPermissionService().getVerifyAdmin(),

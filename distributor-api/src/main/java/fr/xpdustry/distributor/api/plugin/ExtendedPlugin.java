@@ -46,8 +46,6 @@ public abstract class ExtendedPlugin extends Plugin {
 
     public void onLoad() {}
 
-    public void onUpdate() {}
-
     public void onExit() {}
 
     public Path getDirectory() {
@@ -115,14 +113,6 @@ public abstract class ExtendedPlugin extends Plugin {
             }
 
             @Override
-            public void update() {
-                ExtendedPlugin.this.onUpdate();
-                for (final var listener : ExtendedPlugin.this.listeners) {
-                    listener.onPluginUpdate();
-                }
-            }
-
-            @Override
             public void dispose() {
                 ExtendedPlugin.this.onExit();
                 for (final var listener : ExtendedPlugin.this.listeners) {
@@ -134,5 +124,9 @@ public abstract class ExtendedPlugin extends Plugin {
 
     protected void addListener(final PluginListener listener) {
         this.listeners.add(listener);
+    }
+
+    protected void removeListener(final PluginListener listener) {
+        this.listeners.remove(listener);
     }
 }

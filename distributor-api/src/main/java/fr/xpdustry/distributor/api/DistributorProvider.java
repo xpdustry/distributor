@@ -20,6 +20,9 @@ package fr.xpdustry.distributor.api;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Provides a {@link Distributor} instance.
+ */
 public final class DistributorProvider {
 
     private static @Nullable Distributor instance = null;

@@ -21,6 +21,9 @@ package fr.xpdustry.distributor.api;
 import fr.xpdustry.distributor.api.localization.DelegatingLocalizationSource;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 
+/**
+ * The main entry point of the Distributor API.
+ */
 public interface Distributor {
 
     DelegatingLocalizationSource getGlobalLocalizationSource();
