@@ -26,8 +26,8 @@ final class RouterLocalizationSource implements LocalizationSource {
 
     static final RouterLocalizationSource INSTANCE = new RouterLocalizationSource();
 
-    private static final Locale ROUTER_LOCALE = new Locale("router");
-    private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router");
+    static final Locale ROUTER_LOCALE = new Locale("router");
+    private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router", ROUTER_LOCALE);
 
     private RouterLocalizationSource() {}
 

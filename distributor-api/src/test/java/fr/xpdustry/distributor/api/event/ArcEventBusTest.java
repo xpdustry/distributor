@@ -27,7 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ArcEventBusTest {
+public final class ArcEventBusTest {
 
     private ArcEventBus bus;
 

@@ -147,4 +147,81 @@ public final class PluginSchedulerImplTest {
         assertThat(Duration.ofMillis(longs.get(1) - longs.get(0))).isCloseTo(Duration.ofSeconds(1L), PRECISION);
         assertThat(Duration.ofMillis(longs.get(2) - longs.get(1))).isCloseTo(Duration.ofSeconds(1L), PRECISION);
     }
+
+    @Test
+    void test_recipe() {
+        final var steps = new ArrayList<TestRecipeStep<String>>();
+        final var task = this.scheduler
+                .recipe("initial")
+                .thenAccept(value -> steps.add(new TestRecipeStep<>(value + " accept")))
+                .thenApply(value -> {
+                    final var newValue = value + " apply";
+                    steps.add(new TestRecipeStep<>(newValue));
+                    return newValue;
+                })
+                .thenRun(() -> steps.add(new TestRecipeStep<>("run")))
+                .thenAcceptAsync(value -> steps.add(new TestRecipeStep<>(value + " accept async")))
+                .thenApplyAsync(value -> {
+                    final var newValue = value + " apply async";
+                    steps.add(new TestRecipeStep<>(newValue));
+                    return newValue;
+                })
+                .thenRunAsync(() -> steps.add(new TestRecipeStep<>("run async")))
+                .execute();
+
+        assertThat(task).succeedsWithin(Duration.ofSeconds(1L)).isEqualTo("initial apply apply async");
+        assertThat(steps).size().isEqualTo(6);
+
+        assertThat(steps.get(0))
+                .matches(TestRecipeStep::isSyncThread)
+                .extracting(TestRecipeStep::getValue)
+                .isEqualTo("initial accept");
+
+        assertThat(steps.get(1))
+                .matches(TestRecipeStep::isSyncThread)
+                .extracting(TestRecipeStep::getValue)
+                .isEqualTo("initial apply");
+
+        assertThat(steps.get(2))
+                .matches(TestRecipeStep::isSyncThread)
+                .extracting(TestRecipeStep::getValue)
+                .isEqualTo("run");
+
+        assertThat(steps.get(3))
+                .matches(TestRecipeStep::isAsyncThread)
+                .extracting(TestRecipeStep::getValue)
+                .isEqualTo("initial apply accept async");
+
+        assertThat(steps.get(4))
+                .matches(TestRecipeStep::isAsyncThread)
+                .extracting(TestRecipeStep::getValue)
+                .isEqualTo("initial apply apply async");
+
+        assertThat(steps.get(5))
+                .matches(TestRecipeStep::isAsyncThread)
+                .extracting(TestRecipeStep::getValue)
+                .isEqualTo("run async");
+    }
+
+    private final class TestRecipeStep<V> {
+
+        private final V value;
+        private final String thread = Thread.currentThread().getName();
+
+        private TestRecipeStep(final V value) {
+            this.value = value;
+        }
+
+        public V getValue() {
+            return this.value;
+        }
+
+        public boolean isAsyncThread() {
+            return this.thread.startsWith(PluginSchedulerImplTest.this.scheduler.getBaseWorkerName());
+        }
+
+        public boolean isSyncThread() {
+            return !this.isAsyncThread();
+        }
+    }
 }

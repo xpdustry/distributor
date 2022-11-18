@@ -51,8 +51,8 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      *
      * <pre> {@code
      *      final var strings = new HashMap<String, MessageFormat>();
-     *      strings.put("example.hello", new MessageFormat("Hello {0}!"));
-     *      strings.put("example.goodbye", new MessageFormat("Goodbye {0}!"));
+     *      strings.put("example.hello", new MessageFormat("Hello {0}!", Locale.ENGLISH));
+     *      strings.put("example.goodbye", new MessageFormat("Goodbye {0}!", Locale.ENGLISH));
      *      registry.registerAll(Locale.ENGLISH, strings);
      * } </pre>
      *

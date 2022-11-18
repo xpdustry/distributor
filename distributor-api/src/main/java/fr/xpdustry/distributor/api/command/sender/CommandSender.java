@@ -29,6 +29,9 @@ public interface CommandSender {
 
     /**
      * Wraps a player into a command sender.
+     *
+     * @param player the player to wrap
+     * @return the player command sender
      */
     static CommandSender player(final Player player) {
         return new PlayerCommandSender(player);
@@ -57,7 +60,8 @@ public interface CommandSender {
      * @param args the arguments to format the message with
      */
     default void sendLocalizedMessage(final String key, final Object... args) {
-        final var format = DistributorProvider.get().getGlobalLocalizationSource().localize(key, this.getLocale());
+        final var format =
+                DistributorProvider.get().getGlobalLocalizationSource().localize(key, this.getLocale());
         this.sendMessage(format == null ? "???" + key + " ???" : format.format(args));
     }
 
@@ -77,7 +81,8 @@ public interface CommandSender {
      * @param args the arguments to format the warning with
      */
     default void sendLocalizedWarning(final String key, final Object... args) {
-        final var format = DistributorProvider.get().getGlobalLocalizationSource().localize(key, this.getLocale());
+        final var format =
+                DistributorProvider.get().getGlobalLocalizationSource().localize(key, this.getLocale());
         this.sendWarning(format == null ? "???" + key + " ???" : format.format(args));
     }
 
