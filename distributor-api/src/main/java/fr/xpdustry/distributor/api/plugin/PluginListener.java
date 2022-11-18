@@ -45,6 +45,13 @@ public interface PluginListener {
     default void onPluginClientCommandsRegistration(final CommandHandler handler) {}
 
     /**
+     * Called after {@link ExtendedPlugin#onServerCommandsRegistration(CommandHandler)} and {@link ExtendedPlugin#onClientCommandsRegistration(CommandHandler)}.
+     *
+     * @param handler the command handler
+     */
+    default void onPluginSharedCommandsRegistration(final CommandHandler handler) {}
+
+    /**
      * Called after {@link ExtendedPlugin#onLoad()}.
      */
     default void onPluginLoad() {}
