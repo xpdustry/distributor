@@ -64,14 +64,14 @@ public abstract class AbstractPermissibleManager<P extends Permissible> implemen
     }
 
     @Override
-    public void save(final P entity) {
-        this.permissibles.put(this.extractId(entity), entity);
+    public void save(final P permissible) {
+        this.permissibles.put(this.extractId(permissible), permissible);
         this.save();
     }
 
     @Override
-    public void saveAll(final Iterable<P> entities) {
-        entities.forEach(this::save);
+    public void saveAll(final Iterable<P> permissibles) {
+        permissibles.forEach(this::save);
         this.save();
     }
 
@@ -91,8 +91,8 @@ public abstract class AbstractPermissibleManager<P extends Permissible> implemen
     }
 
     @Override
-    public boolean exists(final P entity) {
-        return this.existsById(this.extractId(entity));
+    public boolean exists(final P permissible) {
+        return this.existsById(this.extractId(permissible));
     }
 
     @Override
@@ -108,14 +108,14 @@ public abstract class AbstractPermissibleManager<P extends Permissible> implemen
     }
 
     @Override
-    public void delete(final P entity) {
-        this.deleteById(this.extractId(entity));
+    public void delete(final P permissible) {
+        this.deleteById(this.extractId(permissible));
     }
 
     @Override
-    public void deleteAll(final Iterable<P> entities) {
+    public void deleteAll(final Iterable<P> permissibles) {
         var changed = false;
-        for (final var entity : entities) {
+        for (final var entity : permissibles) {
             changed |= this.permissibles.remove(this.extractId(entity)) != null;
         }
         if (changed) {

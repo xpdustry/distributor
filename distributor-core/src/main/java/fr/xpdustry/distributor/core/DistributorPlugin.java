@@ -120,6 +120,8 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     }
 
     private void onSharedCommandsRegistration(final ArcCommandManager<CommandSender> manager) {
+        // TODO Find a better solution than using 2 annotations parsers
+
         {
             final var parser = manager.createAnnotationParser(CommandSender.class);
             parser.stringProcessor(input -> input.replace("permissible", "player"));
@@ -141,10 +143,5 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public PermissionService getPermissionService() {
         return this.permissions;
-    }
-
-    @Override
-    public void setPermissionService(final PermissionService permissions) {
-        this.permissions = permissions;
     }
 }

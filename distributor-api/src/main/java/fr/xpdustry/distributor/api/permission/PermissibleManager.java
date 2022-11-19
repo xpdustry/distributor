@@ -20,35 +20,95 @@ package fr.xpdustry.distributor.api.permission;
 
 import java.util.Optional;
 
+/**
+ * A manager for a specific type of permissible.
+ *
+ * @param <P> the type of permissible
+ */
 public interface PermissibleManager<P extends Permissible> {
 
-    void save(final P entity);
+    /**
+     * Saves the given permissible.
+     *
+     * @param permissible the permissible to save
+     */
+    void save(final P permissible);
 
-    default void saveAll(final Iterable<P> entities) {
-        entities.forEach(this::save);
+    /**
+     * Saves the given permissibles in bulk.
+     *
+     * @param permissibles the permissibles to save
+     */
+    default void saveAll(final Iterable<P> permissibles) {
+        permissibles.forEach(this::save);
     }
 
+    /**
+     * Returns the permissible with the given id. If not found, a new permissible is created.
+     *
+     * @param id the id of the permissible
+     * @return the permissible or a new one
+     */
     P findOrCreateById(final String id);
-
+    /**
+     * Returns the permissible with the given id. If not found, an empty optional is returned.
+     *
+     * @param id the id of the permissible
+     * @return the permissible or an empty optional
+     */
     Optional<P> findById(final String id);
-
+    /**
+     * Returns all the permissibles.
+     */
     Iterable<P> findAll();
+    /**
+     * Checks if the permissible exists in the database.
+     *
+     * @param permissible the permissible to check
+     * @return {@code true} if the permissible exists, {@code false} otherwise
+     */
+    boolean exists(final P permissible);
 
-    boolean exists(final P entity);
-
+    /**
+     * Checks if the permissible exists in the database by id.
+     *
+     * @param id the id of the permissible
+     * @return {@code true} if the permissible exists, {@code false} otherwise
+     */
     default boolean existsById(final String id) {
         return this.findById(id).isPresent();
     }
 
+    /**
+     * Returns the number of permissibles.
+     */
     long count();
 
+    /**
+     * Deletes the given permissible by id if it exists.
+     *
+     * @param id the id of the permissible to delete
+     */
     void deleteById(final String id);
 
-    void delete(final P entity);
+    /**
+     * Deletes the given permissible.
+     *
+     * @param permissible the permissible to delete
+     */
+    void delete(final P permissible);
 
-    default void deleteAll(final Iterable<P> entities) {
-        entities.forEach(this::delete);
-    }
-
+    /**
+     * Deletes all the permissibles.
+     */
     void deleteAll();
+
+    /**
+     * Deletes all the given permissibles in bulk.
+     *
+     * @param permissibles the permissibles to delete
+     */
+    default void deleteAll(final Iterable<P> permissibles) {
+        permissibles.forEach(this::delete);
+    }
 }

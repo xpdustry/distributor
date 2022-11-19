@@ -37,8 +37,6 @@ public @interface EventHandler {
 
     /**
      * The priority of the event handler.
-     * <br>
-     * The default value is {@link Priority#NORMAL}.
      */
     Priority priority() default Priority.NORMAL;
 }

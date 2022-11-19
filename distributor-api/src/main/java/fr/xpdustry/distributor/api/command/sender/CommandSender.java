@@ -56,7 +56,7 @@ public interface CommandSender {
      * <br>
      * <strong>Note:</strong> if the string is not found, the key will be sent instead. Such as {@code ???key???}.
      *
-     * @param key the key of the message to send
+     * @param key  the key of the message to send
      * @param args the arguments to format the message with
      */
     default void sendLocalizedMessage(final String key, final Object... args) {
@@ -77,7 +77,7 @@ public interface CommandSender {
      * <br>
      * <strong>Note:</strong> if the key is not found, the key will be sent instead. Such as {@code ???key???}.
      *
-     * @param key the key of the warning to send
+     * @param key  the key of the warning to send
      * @param args the arguments to format the warning with
      */
     default void sendLocalizedWarning(final String key, final Object... args) {

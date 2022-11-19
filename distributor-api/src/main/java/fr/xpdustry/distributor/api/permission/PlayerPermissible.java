@@ -18,7 +18,13 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
+/**
+ * A permissible representing a specific player.
+ */
 public interface PlayerPermissible extends Permissible {
 
+    /**
+     * Returns the UUID of this player.
+     */
     String getUuid();
 }

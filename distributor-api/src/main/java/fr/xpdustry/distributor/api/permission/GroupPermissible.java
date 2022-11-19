@@ -18,9 +18,22 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
+/**
+ * A permissible representing a group, for easily managing set of permissions with players or other groups.
+ */
 public interface GroupPermissible extends Permissible {
 
+    /**
+     * Returns the weight of this group.
+     * <p>
+     * <strong>Note:</strong> the higher the weight, the higher the priority.
+     */
     int getWeight();
 
+    /**
+     * Sets the weight of this group.
+     * <p>
+     * <strong>Note:</strong> the higher the weight, the higher the priority.
+     */
     void setWeight(int weight);
 }
