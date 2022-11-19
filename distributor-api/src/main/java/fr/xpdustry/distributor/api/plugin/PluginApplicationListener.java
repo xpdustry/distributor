@@ -33,9 +33,9 @@ public class PluginApplicationListener implements ApplicationListener, PluginAwa
 
     @Override
     public void init() {
-        this.plugin.onInit();
+        this.plugin.onLoad();
         for (final var listener : this.plugin.getListeners()) {
-            listener.onPluginInit();
+            listener.onPluginLoad();
         }
     }
 
