@@ -64,14 +64,6 @@ public abstract class ExtendedPlugin extends Plugin {
     public void onClientCommandsRegistration(final CommandHandler handler) {}
 
     /**
-     * Called after each command registration method (server and client).
-     * Register your shared commands here.
-     *
-     * @param handler the command handler
-     */
-    public void onSharedCommandsRegistration(final CommandHandler handler) {}
-
-    /**
      * Called after {@link mindustry.game.EventType.ServerLoadEvent}.
      * Load your plugin here (connection to database, calling mindustry API, etc.).
      */
@@ -119,10 +111,8 @@ public abstract class ExtendedPlugin extends Plugin {
         }
 
         this.onServerCommandsRegistration(handler);
-        this.onSharedCommandsRegistration(handler);
         for (final var listener : ExtendedPlugin.this.listeners) {
             listener.onPluginServerCommandsRegistration(handler);
-            listener.onPluginSharedCommandsRegistration(handler);
         }
     }
 
@@ -130,10 +120,8 @@ public abstract class ExtendedPlugin extends Plugin {
     @Override
     public final void registerClientCommands(final CommandHandler handler) {
         this.onClientCommandsRegistration(handler);
-        this.onSharedCommandsRegistration(handler);
         for (final var listener : ExtendedPlugin.this.listeners) {
             listener.onPluginClientCommandsRegistration(handler);
-            listener.onPluginSharedCommandsRegistration(handler);
         }
     }
 
