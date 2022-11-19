@@ -18,8 +18,8 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.manager.Manager;
-import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.permission.Permissible;
+import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.util.Magik;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.nio.file.Path;
@@ -33,9 +33,9 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-public abstract class AbstractPermissibleManager<E extends PermissionHolder> implements Manager<E, String> {
+public abstract class AbstractPermissibleManager<P extends Permissible> implements PermissibleManager<P> {
 
-    private final Map<String, E> permissibles = new HashMap<>();
+    private final Map<String, P> permissibles = new HashMap<>();
     private final YamlConfigurationLoader loader;
 
     protected AbstractPermissibleManager(final Path path) {
@@ -64,34 +64,34 @@ public abstract class AbstractPermissibleManager<E extends PermissionHolder> imp
     }
 
     @Override
-    public void save(final E entity) {
+    public void save(final P entity) {
         this.permissibles.put(this.extractId(entity), entity);
         this.save();
     }
 
     @Override
-    public void saveAll(final Iterable<E> entities) {
+    public void saveAll(final Iterable<P> entities) {
         entities.forEach(this::save);
         this.save();
     }
 
     @Override
-    public E findOrCreateById(final String id) {
+    public P findOrCreateById(final String id) {
         return this.permissibles.containsKey(id) ? this.permissibles.get(id) : this.createPermissible(id);
     }
 
     @Override
-    public Optional<E> findById(final String id) {
+    public Optional<P> findById(final String id) {
         return Optional.ofNullable(this.permissibles.get(id));
     }
 
     @Override
-    public Iterable<E> findAll() {
+    public Iterable<P> findAll() {
         return List.copyOf(this.permissibles.values());
     }
 
     @Override
-    public boolean exists(final E entity) {
+    public boolean exists(final P entity) {
         return this.existsById(this.extractId(entity));
     }
 
@@ -108,12 +108,12 @@ public abstract class AbstractPermissibleManager<E extends PermissionHolder> imp
     }
 
     @Override
-    public void delete(final E entity) {
+    public void delete(final P entity) {
         this.deleteById(this.extractId(entity));
     }
 
     @Override
-    public void deleteAll(final Iterable<E> entities) {
+    public void deleteAll(final Iterable<P> entities) {
         var changed = false;
         for (final var entity : entities) {
             changed |= this.permissibles.remove(this.extractId(entity)) != null;
@@ -129,7 +129,7 @@ public abstract class AbstractPermissibleManager<E extends PermissionHolder> imp
         this.save();
     }
 
-    void loadPermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
+    void loadPermissibleData(final P permissible, final ConfigurationNode node) throws ConfigurateException {
         for (final var parent : node.node("parents").getList(String.class, Collections.emptyList())) {
             permissible.addParent(parent);
         }
@@ -139,7 +139,7 @@ public abstract class AbstractPermissibleManager<E extends PermissionHolder> imp
         }
     }
 
-    void savePermissibleData(final E permissible, final ConfigurationNode node) throws ConfigurateException {
+    void savePermissibleData(final P permissible, final ConfigurationNode node) throws ConfigurateException {
         for (final var parent : permissible.getParentGroups()) {
             node.node("parents").appendListNode().set(parent);
         }
@@ -161,7 +161,7 @@ public abstract class AbstractPermissibleManager<E extends PermissionHolder> imp
         }
     }
 
-    protected abstract String extractId(final E permissible);
+    protected abstract String extractId(final P permissible);
 
-    protected abstract E createPermissible(final String id);
+    protected abstract P createPermissible(final String id);
 }

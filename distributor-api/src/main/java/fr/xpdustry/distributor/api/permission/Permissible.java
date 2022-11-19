@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public interface PermissionHolder {
+public interface Permissible {
 
     String PERMISSION_REGEX = "^(\\*|[a-z\\d\\-]+)(\\.(\\*|[a-z\\d\\-]+))*$";
     Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);

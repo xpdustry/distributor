@@ -30,8 +30,8 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
-import fr.xpdustry.distributor.api.manager.Manager;
-import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.permission.Permissible;
+import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.io.Serial;
@@ -41,7 +41,7 @@ import java.util.TreeMap;
 
 @CommandMethod("permission permissible")
 @CommandDescription("Permission management commands.")
-public abstract class PermissibleCommand<P extends PermissionHolder> {
+public abstract class PermissibleCommand<P extends Permissible> {
 
     private final String category;
     private final PermissionService permissions;
@@ -78,7 +78,7 @@ public abstract class PermissibleCommand<P extends PermissionHolder> {
     public void setPermissiblePermission(
             final CommandSender sender,
             final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
-            final @Argument("permission") @Regex(PermissionHolder.PERMISSION_REGEX) String permission,
+            final @Argument("permission") @Regex(Permissible.PERMISSION_REGEX) String permission,
             final @Argument("state") boolean state) {
         this.setPermissiblePermission(sender, permissible, permission, Tristate.of(state));
     }
@@ -88,7 +88,7 @@ public abstract class PermissibleCommand<P extends PermissionHolder> {
     public void setPermissiblePermission(
             final CommandSender sender,
             final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
-            final @Argument("permission") @Regex(PermissionHolder.PERMISSION_REGEX) String permission) {
+            final @Argument("permission") @Regex(Permissible.PERMISSION_REGEX) String permission) {
         this.setPermissiblePermission(sender, permissible, permission, Tristate.UNDEFINED);
     }
 
@@ -209,5 +209,5 @@ public abstract class PermissibleCommand<P extends PermissionHolder> {
 
     protected abstract Optional<P> findPermissible(final String input);
 
-    protected abstract Manager<P, String> getManager();
+    protected abstract PermissibleManager<P> getManager();
 }

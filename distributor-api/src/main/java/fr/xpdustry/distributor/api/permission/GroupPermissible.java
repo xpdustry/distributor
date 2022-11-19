@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-public interface GroupPermission extends PermissionHolder {
+public interface GroupPermissible extends Permissible {
 
     int getWeight();
 

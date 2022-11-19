@@ -16,39 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.manager;
+package fr.xpdustry.distributor.core.permission;
 
-import java.util.Optional;
+import fr.xpdustry.distributor.api.permission.PlayerPermissible;
+import mindustry.Vars;
 
-public interface Manager<E, I> {
+public final class SimplePlayerPermissible extends AbstractPermissible implements PlayerPermissible {
 
-    default void saveAll(final Iterable<E> entities) {
-        entities.forEach(this::save);
+    private final String uuid;
+
+    public SimplePlayerPermissible(final String uuid) {
+        this.uuid = uuid;
     }
 
-    default boolean existsById(final I id) {
-        return this.findById(id).isPresent();
+    @Override
+    public String getName() {
+        if (Vars.netServer != null) {
+            final var info = Vars.netServer.admins.getInfoOptional(this.uuid);
+            return info == null ? "unknown" : info.lastName;
+        }
+        return "unknown";
     }
 
-    default void deleteAll(final Iterable<E> entities) {
-        entities.forEach(this::delete);
+    @Override
+    public String getUuid() {
+        return this.uuid;
     }
-
-    void save(final E entity);
-
-    E findOrCreateById(final I id);
-
-    Optional<E> findById(final I id);
-
-    Iterable<E> findAll();
-
-    boolean exists(final E entity);
-
-    long count();
-
-    void deleteById(final I id);
-
-    void delete(final E entity);
-
-    void deleteAll();
 }

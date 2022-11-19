@@ -18,7 +18,37 @@
  */
 package fr.xpdustry.distributor.api.permission;
 
-public interface PlayerPermission extends PermissionHolder {
+import java.util.Optional;
 
-    String getUuid();
+public interface PermissibleManager<P extends Permissible> {
+
+    void save(final P entity);
+
+    default void saveAll(final Iterable<P> entities) {
+        entities.forEach(this::save);
+    }
+
+    P findOrCreateById(final String id);
+
+    Optional<P> findById(final String id);
+
+    Iterable<P> findAll();
+
+    boolean exists(final P entity);
+
+    default boolean existsById(final String id) {
+        return this.findById(id).isPresent();
+    }
+
+    long count();
+
+    void deleteById(final String id);
+
+    void delete(final P entity);
+
+    default void deleteAll(final Iterable<P> entities) {
+        entities.forEach(this::delete);
+    }
+
+    void deleteAll();
 }

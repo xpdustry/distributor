@@ -18,20 +18,20 @@
  */
 package fr.xpdustry.distributor.core.commands;
 
-import fr.xpdustry.distributor.api.manager.Manager;
+import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
-import fr.xpdustry.distributor.api.permission.PlayerPermission;
+import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.Magik;
 import java.util.Optional;
 
-public final class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermission> {
+public final class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermissible> {
 
     public PlayerPermissibleCommand(final PermissionService service) {
         super(service, "player");
     }
 
     @Override
-    protected Optional<PlayerPermission> findPermissible(final String input) {
+    protected Optional<PlayerPermissible> findPermissible(final String input) {
         final var players = Magik.findPlayers(input);
         if (players.isEmpty() && Magik.isUuid(input)) {
             return Optional.of(this.getManager().findOrCreateById(input));
@@ -43,7 +43,7 @@ public final class PlayerPermissibleCommand extends PermissibleCommand<PlayerPer
     }
 
     @Override
-    protected Manager<PlayerPermission, String> getManager() {
+    protected PermissibleManager<PlayerPermissible> getManager() {
         return this.getPermissionManager().getPlayerPermissionManager();
     }
 }

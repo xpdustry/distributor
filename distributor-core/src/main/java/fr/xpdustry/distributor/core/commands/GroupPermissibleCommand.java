@@ -23,13 +23,13 @@ import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
 import cloud.commandframework.annotations.specifier.Range;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
-import fr.xpdustry.distributor.api.manager.Manager;
-import fr.xpdustry.distributor.api.permission.GroupPermission;
+import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import java.util.Locale;
 import java.util.Optional;
 
-public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermission> {
+public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermissible> {
 
     public GroupPermissibleCommand(final PermissionService service) {
         super(service, "group");
@@ -39,7 +39,7 @@ public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermi
     @CommandMethod("<group> weight info")
     public void getGroupPermissibleWeight(
             final CommandSender sender,
-            final @Argument(value = "group", parserName = "group-parser") GroupPermission permissible) {
+            final @Argument(value = "group", parserName = "group-parser") GroupPermissible permissible) {
         sender.sendMessage("The group " + permissible.getName() + " has a weight of " + permissible.getWeight());
     }
 
@@ -47,7 +47,7 @@ public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermi
     @CommandMethod("<group> weight <weight>")
     public void setGroupPermissibleWeight(
             final CommandSender sender,
-            final @Argument(value = "group", parserName = "group-parser") GroupPermission permissible,
+            final @Argument(value = "group", parserName = "group-parser") GroupPermissible permissible,
             final @Argument("weight") @Range(min = "0") int weight) {
         if (permissible.getWeight() == weight) {
             sender.sendMessage(permissible.getName() + " already have a weight of " + weight);
@@ -71,12 +71,12 @@ public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermi
     }
 
     @Override
-    protected Optional<GroupPermission> findPermissible(final String input) {
+    protected Optional<GroupPermissible> findPermissible(final String input) {
         return this.getManager().findById(input.toLowerCase(Locale.ROOT));
     }
 
     @Override
-    protected Manager<GroupPermission, String> getManager() {
+    protected PermissibleManager<GroupPermissible> getManager() {
         return this.getPermissionManager().getGroupPermissionManager();
     }
 }

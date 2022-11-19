@@ -35,6 +35,4 @@ public interface Distributor {
      * Returns the permission service.
      */
     PermissionService getPermissionService();
-
-    void setPermissionService(final PermissionService permissions);
 }

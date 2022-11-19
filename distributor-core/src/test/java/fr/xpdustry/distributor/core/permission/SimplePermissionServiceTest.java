@@ -18,8 +18,8 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.GroupPermission;
-import fr.xpdustry.distributor.api.permission.PlayerPermission;
+import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.nio.file.Path;
@@ -135,14 +135,14 @@ public final class SimplePermissionServiceTest {
         Assertions.assertTrue(this.manager.getPermission(PLAYER, PERMISSION2).asBoolean());
     }
 
-    private void setupPlayer(final Consumer<PlayerPermission> setup) {
+    private void setupPlayer(final Consumer<PlayerPermissible> setup) {
         final var players = this.manager.getPlayerPermissionManager();
         final var player = players.findOrCreateById(PLAYER.getUuid());
         setup.accept(player);
         players.save(player);
     }
 
-    private void setupGroup(final String name, final Consumer<GroupPermission> setup) {
+    private void setupGroup(final String name, final Consumer<GroupPermissible> setup) {
         final var groups = this.manager.getGroupPermissionManager();
         final var group = groups.findOrCreateById(name);
         setup.accept(group);

@@ -16,26 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.api.permission;
 
-import fr.xpdustry.distributor.api.permission.PlayerPermission;
-import fr.xpdustry.distributor.api.permission.PlayerPermissionManager;
-import java.nio.file.Path;
+public interface PlayerPermissible extends Permissible {
 
-public final class SimplePlayerPermissionManager extends AbstractPermissibleManager<PlayerPermission>
-        implements PlayerPermissionManager {
-
-    public SimplePlayerPermissionManager(final Path path) {
-        super(path);
-    }
-
-    @Override
-    protected PlayerPermission createPermissible(final String id) {
-        return new SimplePlayerPermission(id);
-    }
-
-    @Override
-    protected String extractId(final PlayerPermission permissible) {
-        return permissible.getUuid();
-    }
+    String getUuid();
 }

@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.permission.Permissible;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AbstractPermissionHolder implements PermissionHolder {
+public abstract class AbstractPermissible implements Permissible {
 
     private final Set<String> parents = new HashSet<>();
     private final PermissionTree tree = new PermissionTree();

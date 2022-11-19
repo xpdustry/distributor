@@ -18,11 +18,11 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.GroupPermission;
-import fr.xpdustry.distributor.api.permission.GroupPermissionManager;
-import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.permission.Permissible;
+import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
-import fr.xpdustry.distributor.api.permission.PlayerPermissionManager;
+import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.nio.file.Path;
@@ -39,12 +39,12 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 public final class SimplePermissionService implements PermissionService {
 
-    private static final Comparator<GroupPermission> GROUP_COMPARATOR =
-            Comparator.comparing(GroupPermission::getWeight).reversed();
+    private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
+            Comparator.comparing(GroupPermissible::getWeight).reversed();
 
-    private final PlayerPermissionManager players;
-    private final GroupPermissionManager groups;
     private final YamlConfigurationLoader loader;
+    private final SimplePlayerPermissibleManager players;
+    private final SimpleGroupPermissibleManager groups;
 
     private String primaryGroup;
     private boolean verifyAdmin;
@@ -56,8 +56,8 @@ public final class SimplePermissionService implements PermissionService {
                 .nodeStyle(NodeStyle.BLOCK)
                 .build();
 
-        this.players = new SimplePlayerPermissionManager(directory.resolve("players.yaml"));
-        this.groups = new SimpleGroupPermissionManager(directory.resolve("groups.yaml"));
+        this.players = new SimplePlayerPermissibleManager(directory.resolve("players.yaml"));
+        this.groups = new SimpleGroupPermissibleManager(directory.resolve("groups.yaml"));
 
         try {
             final var root = this.loader.load();
@@ -80,7 +80,7 @@ public final class SimplePermissionService implements PermissionService {
         final var perm = permission.toLowerCase(Locale.ROOT);
         var state = Tristate.UNDEFINED;
         final var visited = new HashSet<String>();
-        final Queue<PermissionHolder> queue = new ArrayDeque<>();
+        final Queue<Permissible> queue = new ArrayDeque<>();
         final var player = this.players.findById(muuid.getUuid());
         final var primary = this.groups.findById(this.primaryGroup);
 
@@ -138,12 +138,12 @@ public final class SimplePermissionService implements PermissionService {
     }
 
     @Override
-    public PlayerPermissionManager getPlayerPermissionManager() {
+    public PermissibleManager<PlayerPermissible> getPlayerPermissionManager() {
         return this.players;
     }
 
     @Override
-    public GroupPermissionManager getGroupPermissionManager() {
+    public PermissibleManager<GroupPermissible> getGroupPermissionManager() {
         return this.groups;
     }
 

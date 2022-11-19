@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.PermissionHolder;
+import fr.xpdustry.distributor.api.permission.Permissible;
 import fr.xpdustry.distributor.api.util.Tristate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public final class PermissionTree {
     }
 
     public Tristate getPermission(final String permission) {
-        if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
         }
         var state = Tristate.UNDEFINED;
@@ -60,7 +60,7 @@ public final class PermissionTree {
     }
 
     public void setPermission(final String permission, final Tristate state) {
-        if (!PermissionHolder.PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!Permissible.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
         }
         final var parts = permission.split("\\.", -1);

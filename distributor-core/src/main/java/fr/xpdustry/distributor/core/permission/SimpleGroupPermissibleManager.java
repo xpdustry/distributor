@@ -18,40 +18,38 @@
  */
 package fr.xpdustry.distributor.core.permission;
 
-import fr.xpdustry.distributor.api.permission.GroupPermission;
-import fr.xpdustry.distributor.api.permission.GroupPermissionManager;
+import fr.xpdustry.distributor.api.permission.GroupPermissible;
 import java.nio.file.Path;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 
-public final class SimpleGroupPermissionManager extends AbstractPermissibleManager<GroupPermission>
-        implements GroupPermissionManager {
+public final class SimpleGroupPermissibleManager extends AbstractPermissibleManager<GroupPermissible> {
 
-    public SimpleGroupPermissionManager(final Path path) {
+    public SimpleGroupPermissibleManager(final Path path) {
         super(path);
     }
 
     @Override
-    void loadPermissibleData(final GroupPermission permissible, final ConfigurationNode node)
+    void loadPermissibleData(final GroupPermissible permissible, final ConfigurationNode node)
             throws ConfigurateException {
         permissible.setWeight(node.node("weight").getInt());
         super.loadPermissibleData(permissible, node);
     }
 
     @Override
-    void savePermissibleData(final GroupPermission permissible, final ConfigurationNode node)
+    void savePermissibleData(final GroupPermissible permissible, final ConfigurationNode node)
             throws ConfigurateException {
         node.node("weight").set(permissible.getWeight());
         super.savePermissibleData(permissible, node);
     }
 
     @Override
-    protected GroupPermission createPermissible(final String id) {
-        return new SimpleGroupPermission(id);
+    protected GroupPermissible createPermissible(final String id) {
+        return new SimpleGroupPermissible(id);
     }
 
     @Override
-    protected String extractId(final GroupPermission permissible) {
+    protected String extractId(final GroupPermissible permissible) {
         return permissible.getName();
     }
 }
