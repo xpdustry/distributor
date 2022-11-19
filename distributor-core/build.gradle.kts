@@ -9,10 +9,6 @@ dependencies {
     implementation("org.spongepowered:configurate-yaml:4.1.2")
     implementation("org.aeonbits.owner:owner-java8:1.0.12")
 
-    // Temporary compile time artifacts until PRs are merged
-    implementation("org.apiguardian:apiguardian-api:1.1.2")
-    implementation("org.checkerframework:checker-qual:3.26.0")
-
     annotationProcessor("cloud.commandframework:cloud-annotations:${Versions.cloud}")
 }
 

@@ -22,12 +22,6 @@ import mindustry.net.Administration;
 
 public interface TypedConfig<T> {
 
-    enum ValueType {
-        INTEGER,
-        BOOLEAN,
-        STRING
-    }
-
     String getKey();
 
     String getDescription();
@@ -41,4 +35,10 @@ public interface TypedConfig<T> {
     ValueType getValueType();
 
     Administration.Config getConfig();
+
+    enum ValueType {
+        INTEGER,
+        BOOLEAN,
+        STRING
+    }
 }

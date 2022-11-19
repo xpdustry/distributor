@@ -9,6 +9,9 @@ fun DependencyHandler.cloudCommandFramework(module: String) {
 }
 
 dependencies {
+    val apiGuardian = "1.1.2"
+    compileOnlyApi("org.apiguardian:apiguardian-api:$apiGuardian")
+
     val slf4j = "2.0.3"
     api("org.slf4j:slf4j-api:$slf4j")
 
