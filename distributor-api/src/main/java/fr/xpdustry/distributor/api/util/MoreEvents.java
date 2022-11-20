@@ -63,11 +63,11 @@ public final class MoreEvents {
     /**
      * Subscribe to an event.
      *
-     * @param event the event class to subscribe to
+     * @param event    the event class to subscribe to
      * @param priority the priority of the listener
      * @param listener the listener to subscribe
+     * @param <E>      the type of the event
      * @return the subscription of the subscribed listener
-     * @param <E> the type of the event
      */
     public static <E> Subscription subscribe(
             final Class<E> event, final Priority priority, final Consumer<E> listener) {
@@ -77,10 +77,10 @@ public final class MoreEvents {
     /**
      * Subscribe to an event.
      *
-     * @param event the event class to subscribe to
+     * @param event    the event class to subscribe to
      * @param listener the listener to subscribe
+     * @param <E>      the type of the event
      * @return the subscription of the subscribed listener
-     * @param <E> the type of the event
      */
     public static <E> Subscription subscribe(final Class<E> event, final Consumer<E> listener) {
         return MoreEvents.subscribe(event, Priority.NORMAL, listener);
@@ -89,11 +89,11 @@ public final class MoreEvents {
     /**
      * Subscribe to an event.
      *
-     * @param event the event enum to subscribe to
+     * @param event    the event enum to subscribe to
      * @param priority the priority of the listener
      * @param listener the listener to subscribe
+     * @param <E>      the type of the enum event
      * @return the subscription of the subscribed listener
-     * @param <E> the type of the enum event
      */
     public static <E extends Enum<E>> Subscription subscribe(
             final E event, final Priority priority, final Runnable listener) {
@@ -103,10 +103,10 @@ public final class MoreEvents {
     /**
      * Subscribe to an event.
      *
-     * @param event the event enum to subscribe to
+     * @param event    the event enum to subscribe to
      * @param listener the listener to subscribe
+     * @param <E>      the type of the enum event
      * @return the subscription of the subscribed listener
-     * @param <E> the type of the enum event
      */
     public static <E extends Enum<E>> Subscription subscribe(final E event, final Runnable listener) {
         return MoreEvents.subscribe(event, Priority.NORMAL, listener);

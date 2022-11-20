@@ -126,11 +126,13 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
     public enum TeamMode {
         /**
          * Only the 6 base teams can be used.
+         *
          * @see Team#baseTeams
          */
         BASE,
         /**
          * All 256 teams can be used.
+         *
          * @see Team#all
          */
         ALL

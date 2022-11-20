@@ -140,7 +140,7 @@ public final class MoreEventsTest {
 
         @Override
         public void accept(final E event) {
-            if (hasBeenTriggered()) {
+            if (this.hasBeenTriggered()) {
                 throw new IllegalStateException("The subscriber has been triggered twice.");
             }
             this.triggerTime = System.nanoTime();
@@ -151,7 +151,7 @@ public final class MoreEventsTest {
         }
 
         private void reset() {
-            if (!hasBeenTriggered()) {
+            if (!this.hasBeenTriggered()) {
                 throw new IllegalStateException("Tried to reset while not triggered.");
             }
             this.triggerTime = -1;
@@ -164,7 +164,7 @@ public final class MoreEventsTest {
 
         @Override
         public void run() {
-            if (hasBeenTriggered()) {
+            if (this.hasBeenTriggered()) {
                 throw new IllegalStateException("The subscriber has been triggered twice.");
             }
             this.triggerTime = System.nanoTime();
@@ -175,7 +175,7 @@ public final class MoreEventsTest {
         }
 
         private void reset() {
-            if (!hasBeenTriggered()) {
+            if (!this.hasBeenTriggered()) {
                 throw new IllegalStateException("Tried to reset while not triggered.");
             }
             this.triggerTime = -1;
