@@ -18,6 +18,7 @@
  */
 package fr.xpdustry.distributor.api.plugin;
 
+import arc.ApplicationListener;
 import arc.Core;
 import arc.files.Fi;
 import arc.util.CommandHandler;
@@ -70,6 +71,11 @@ public abstract class ExtendedPlugin extends Plugin {
     public void onLoad() {}
 
     /**
+     * Called every tick while the server is running.
+     */
+    public void onUpdate() {}
+
+    /**
      * Called when the server is closing.
      * Unload your plugin here (closing the database connection, saving files, etc.).
      */
@@ -114,6 +120,33 @@ public abstract class ExtendedPlugin extends Plugin {
         for (final var listener : ExtendedPlugin.this.listeners) {
             listener.onPluginServerCommandsRegistration(handler);
         }
+
+        Core.app.addListener(new ApplicationListener() {
+
+            @Override
+            public void init() {
+                ExtendedPlugin.this.onLoad();
+                for (final var listener : ExtendedPlugin.this.getListeners()) {
+                    listener.onPluginLoad();
+                }
+            }
+
+            @Override
+            public void update() {
+                ExtendedPlugin.this.onUpdate();
+                for (final var listener : ExtendedPlugin.this.getListeners()) {
+                    listener.onPluginUpdate();
+                }
+            }
+
+            @Override
+            public void dispose() {
+                ExtendedPlugin.this.onExit();
+                for (final var listener : ExtendedPlugin.this.getListeners()) {
+                    listener.onPluginExit();
+                }
+            }
+        });
     }
 
     @Deprecated
@@ -127,9 +160,7 @@ public abstract class ExtendedPlugin extends Plugin {
 
     @Deprecated
     @Override
-    public Fi getConfig() {
-        return new Fi(this.getDirectory().resolve("config.json").toFile());
-    }
+    public void init() {}
 
     @Deprecated
     @Override
@@ -137,15 +168,8 @@ public abstract class ExtendedPlugin extends Plugin {
 
     @Deprecated
     @Override
-    public void init() {
-        Core.app.addListener(this.createPluginApplicationListener());
-    }
-
-    /**
-     * Returns a new {@link PluginApplicationListener} instance.
-     */
-    protected PluginApplicationListener createPluginApplicationListener() {
-        return new PluginApplicationListener(this);
+    public Fi getConfig() {
+        return new Fi(this.getDirectory().resolve("config.json").toFile());
     }
 
     /**

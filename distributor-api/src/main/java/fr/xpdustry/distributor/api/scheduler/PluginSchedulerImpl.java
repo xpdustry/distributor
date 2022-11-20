@@ -18,8 +18,6 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import arc.ApplicationListener;
-import arc.Core;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,20 +55,13 @@ final class PluginSchedulerImpl implements PluginScheduler {
             final Executor syncExecutor,
             final int parallelism) {
         this.plugin = plugin;
-        this.syncExecutor = syncExecutor;
         this.pool = new ForkJoinPool(
                 parallelism,
                 new PluginSchedulerWorkerThreadFactory(),
                 new PluginSchedulerUncaughtExceptionHandler(),
                 false);
+        this.syncExecutor = syncExecutor;
         this.source = source;
-        Core.app.addListener(new ApplicationListener() {
-
-            @Override
-            public void update() {
-                PluginSchedulerImpl.this.update();
-            }
-        });
     }
 
     PluginSchedulerImpl(final ExtendedPlugin plugin, final PluginTimeSource source, final Executor syncExecutor) {
@@ -103,6 +94,22 @@ final class PluginSchedulerImpl implements PluginScheduler {
     }
 
     @Override
+    public void onPluginUpdate() {
+        while (!this.tasks.isEmpty()) {
+            final var task = this.tasks.peek();
+            if (task.isCancelled()) {
+                this.tasks.remove();
+            } else if (task.getNextRun() < this.source.getCurrentMillis()) {
+                this.tasks.remove();
+                final Executor executor = task.isAsync() ? this.pool : this.syncExecutor;
+                executor.execute(task);
+            } else {
+                break;
+            }
+        }
+    }
+
+    @Override
     public void onPluginExit() {
         this.plugin.getLogger().info("Shutdown scheduler.");
         this.pool.shutdown();
@@ -130,21 +137,6 @@ final class PluginSchedulerImpl implements PluginScheduler {
     @Override
     public ExtendedPlugin getPlugin() {
         return this.plugin;
-    }
-
-    void update() {
-        while (!this.tasks.isEmpty()) {
-            final var task = this.tasks.peek();
-            if (task.isCancelled()) {
-                this.tasks.remove();
-            } else if (task.getNextRun() < this.source.getCurrentMillis()) {
-                this.tasks.remove();
-                final Executor executor = task.isAsync() ? this.pool : this.syncExecutor;
-                executor.execute(task);
-            } else {
-                break;
-            }
-        }
     }
 
     String getBaseWorkerName() {

@@ -54,7 +54,7 @@ public final class PluginSchedulerImplTest {
                 } catch (final InterruptedException e) {
                     break;
                 }
-                this.scheduler.update();
+                this.scheduler.onPluginUpdate();
             }
             this.scheduler.onPluginExit();
         });
