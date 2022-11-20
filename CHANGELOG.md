@@ -20,7 +20,7 @@ Second release candidate for ya :)
 - Changed the code format of the project to [palantir java format](https://github.com/palantir/palantir-java-format) for
   it's readability.
 
-## v3.0.0-rc1 - 2022-10-22
+## v3.0.0-rc.1 - 2022-10-22
 
 Distributor 3 is now feature complete and now enters the testing phase...
 
