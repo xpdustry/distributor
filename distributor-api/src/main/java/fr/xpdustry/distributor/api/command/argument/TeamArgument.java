@@ -120,8 +120,19 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         return new TeamArgument.Builder<C>(name).withTeamMode(TeamMode.ALL).build();
     }
 
+    /**
+     * The parsing mode for a {@link TeamArgument}.
+     */
     public enum TeamMode {
+        /**
+         * Only the 6 base teams can be used.
+         * @see Team#baseTeams
+         */
         BASE,
+        /**
+         * All 256 teams can be used.
+         * @see Team#all
+         */
         ALL
     }
 
@@ -138,6 +149,12 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
             super(Team.class, name);
         }
 
+        /**
+         * Sets the parsing mode for the {@link TeamArgument}.
+         *
+         * @param teamMode the parsing mode
+         * @return this builder
+         */
         public Builder<C> withTeamMode(final TeamMode teamMode) {
             this.teamMode = teamMode;
             return this;
