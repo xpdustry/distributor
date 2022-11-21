@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.core;
 
 import arc.util.CommandHandler;
+import cloud.commandframework.arguments.standard.StringArgument;
 import fr.xpdustry.distributor.api.Distributor;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
@@ -120,7 +121,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     }
 
     private void onSharedCommandsRegistration(final ArcCommandManager<CommandSender> manager) {
-        // TODO Find a better solution than using 2 annotations parsers
+        // TODO This is ugly, transition to a functional permission command system
 
         {
             final var parser = manager.createAnnotationParser(CommandSender.class);
@@ -132,6 +133,20 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
             final var parser = manager.createAnnotationParser(CommandSender.class);
             parser.stringProcessor(input -> input.replace("permissible", "group"));
             parser.parse(new GroupPermissibleCommand(this.permissions));
+
+            manager.command(manager.commandBuilder("permission")
+                    .literal("create-group")
+                    .argument(StringArgument.of("group"))
+                    .handler(ctx -> {
+                        final var groups = this.permissions.getGroupPermissionManager();
+                        final String group = ctx.get("group");
+                        if (groups.existsById(group)) {
+                            ctx.getSender().sendLocalizedWarning("permission.group.create.already", group);
+                        } else {
+                            groups.save(groups.findOrCreateById(group));
+                            ctx.getSender().sendLocalizedMessage("permission.group.create.success", group);
+                        }
+                    }));
         }
     }
 

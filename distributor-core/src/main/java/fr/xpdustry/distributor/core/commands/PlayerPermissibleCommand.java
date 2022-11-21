@@ -27,7 +27,7 @@ import java.util.Optional;
 public final class PlayerPermissibleCommand extends PermissibleCommand<PlayerPermissible> {
 
     public PlayerPermissibleCommand(final PermissionService service) {
-        super(service, "player");
+        super(service);
     }
 
     @Override

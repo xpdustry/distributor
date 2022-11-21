@@ -43,11 +43,9 @@ import java.util.TreeMap;
 @CommandDescription("Permission management commands.")
 public abstract class PermissibleCommand<P extends Permissible> {
 
-    private final String category;
     private final PermissionService permissions;
 
-    public PermissibleCommand(final PermissionService permissions, final String category) {
-        this.category = category;
+    public PermissibleCommand(final PermissionService permissions) {
         this.permissions = permissions;
     }
 
@@ -58,7 +56,7 @@ public abstract class PermissibleCommand<P extends Permissible> {
             final @Argument(value = "permissible", parserName = "permissible-parser") P permissible) {
         final var permissions = new TreeMap<>(permissible.getPermissions());
         if (permissions.isEmpty()) {
-            sender.sendMessage(permissible.getName() + " have no set permissions.");
+            sender.sendLocalizedMessage("permission.permissible.permission.list.none", permissible.getName());
         } else {
             final var builder = new StringBuilder();
             final var iterator = permissions.entrySet().iterator();
@@ -95,12 +93,13 @@ public abstract class PermissibleCommand<P extends Permissible> {
     public void setPermissiblePermission(
             final CommandSender sender, final P permissible, final String permission, final Tristate state) {
         if (permissible.getPermission(permission) == state) {
-            sender.sendWarning("The permission is already set to the given state.");
+            sender.sendLocalizedWarning(
+                    "permission.permissible.permission.set.already", permission, permissible.getName(), state);
         } else {
             permissible.setPermission(permission, state);
             this.getManager().save(permissible);
-            sender.sendMessage(
-                    "The permission " + permission + " of " + permissible.getName() + " has been set to " + state);
+            sender.sendLocalizedMessage(
+                    "permission.permissible.permission.set.success", permission, permissible.getName(), state);
         }
     }
 
@@ -110,7 +109,7 @@ public abstract class PermissibleCommand<P extends Permissible> {
             final CommandSender sender,
             final @Argument(value = "permissible", parserName = "permissible-parser") P permissible) {
         if (permissible.getParentGroups().isEmpty()) {
-            sender.sendMessage("The player " + permissible.getName() + " has no parent groups.");
+            sender.sendLocalizedMessage("permission.permissible.parent.list.none", permissible.getName());
         } else {
             final var builder = new StringBuilder();
             final var groups = permissible.getParentGroups();
@@ -131,11 +130,11 @@ public abstract class PermissibleCommand<P extends Permissible> {
             final @Argument(value = "permissible", parserName = "permissible-parser") P permissible,
             final @Argument("parent") String parent) {
         if (permissible.getParentGroups().contains(parent)) {
-            sender.sendWarning("The " + this.category + " is already in the group " + parent);
+            sender.sendLocalizedWarning("permission.permissible.parent.add.already", permissible.getName(), parent);
         } else {
             permissible.addParent(parent);
             this.getManager().save(permissible);
-            sender.sendMessage("The " + this.category + " has been added to the group " + parent);
+            sender.sendLocalizedMessage("permission.permissible.parent.add.success", permissible.getName(), parent);
         }
     }
 
@@ -148,9 +147,9 @@ public abstract class PermissibleCommand<P extends Permissible> {
         if (permissible.getParentGroups().contains(parent)) {
             permissible.removeParent(parent);
             this.getManager().save(permissible);
-            sender.sendMessage("The " + this.category + " has been removed from the group " + parent);
+            sender.sendLocalizedMessage("permission.permissible.parent.remove.success", permissible.getName(), parent);
         } else {
-            sender.sendWarning("The " + this.category + " is not in the group " + parent);
+            sender.sendLocalizedWarning("permission.permissible.parent.remove.already", permissible.getName(), parent);
         }
     }
 
@@ -160,10 +159,10 @@ public abstract class PermissibleCommand<P extends Permissible> {
             final CommandSender sender,
             final @Argument(value = "permissible", parserName = "permissible-parser") P permissible) {
         if (this.getManager().exists(permissible)) {
-            sender.sendMessage("No permission data is attached to this " + this.category + ".");
-        } else {
             this.getManager().delete(permissible);
-            sender.sendMessage("All permission data of " + permissible.getName() + " have been deleted.");
+            sender.sendLocalizedMessage("permission.permissible.delete.success", permissible.getName());
+        } else {
+            sender.sendLocalizedWarning("permission.permissible.delete.already", permissible.getName());
         }
     }
 

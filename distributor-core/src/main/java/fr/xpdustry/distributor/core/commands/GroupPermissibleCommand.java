@@ -32,7 +32,7 @@ import java.util.Optional;
 public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermissible> {
 
     public GroupPermissibleCommand(final PermissionService service) {
-        super(service, "group");
+        super(service);
     }
 
     @CommandPermission("distributor.permission.group.weight.info")
@@ -40,7 +40,7 @@ public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermi
     public void getGroupPermissibleWeight(
             final CommandSender sender,
             final @Argument(value = "group", parserName = "group-parser") GroupPermissible permissible) {
-        sender.sendMessage("The group " + permissible.getName() + " has a weight of " + permissible.getWeight());
+        sender.sendLocalizedMessage("permission.group.weight.get", permissible.getName(), permissible.getWeight());
     }
 
     @CommandPermission("distributor.permission.group.weight.edit")
@@ -50,23 +50,11 @@ public final class GroupPermissibleCommand extends PermissibleCommand<GroupPermi
             final @Argument(value = "group", parserName = "group-parser") GroupPermissible permissible,
             final @Argument("weight") @Range(min = "0") int weight) {
         if (permissible.getWeight() == weight) {
-            sender.sendMessage(permissible.getName() + " already have a weight of " + weight);
+            sender.sendLocalizedMessage("permission.group.weight.set.already", permissible.getName(), weight);
         } else {
             permissible.setWeight(weight);
             this.getManager().save(permissible);
-            sender.sendMessage("The weight of " + permissible.getName() + " has been set to " + weight);
-        }
-    }
-
-    // FIXME For some reason, putting this method as the first produce a class cast exception...
-    @CommandPermission("distributor.permission.group.create")
-    @CommandMethod("<group> create")
-    public void createGroupPermissible(final CommandSender sender, final @Argument(value = "group") String group) {
-        if (this.getManager().existsById(group)) {
-            sender.sendMessage("The group " + group + " already exists.");
-        } else {
-            this.getManager().save(this.getManager().findOrCreateById(group));
-            sender.sendMessage("The group " + group + " have been created.");
+            sender.sendLocalizedMessage("permission.group.weight.set.success", permissible.getName(), weight);
         }
     }
 
