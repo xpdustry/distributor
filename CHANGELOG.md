@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v3.0.0-rc.3 - 2022-11-21
+
+**Final release candidate.**
+
+I made several breaking changes that aims to fix the design issues I encountered during testing in the Xpdustry servers and the feedback of some fellow plugin developers (thanks @Prosta4okua).
+
+### :warning: Breaking changes :warning:
+
+- Replaced the annotation based event API (`EventBus`) with a functional API (`MoreEvents`). Reasoning is that mindustry event bus only support very basic functions, that does not justify the use of a wrapper class.
+- Simplified the permission API by removing redundant.
+- Removed `fr.xpdustry.distributor.api.manager` package.
+- Removed `MUUIDAuthenticator` (Why using a dedicated class for authenticating MUUIDs while you can create an unauthenticated permission group with the permission API).
+- `PluginScheduler` has been overhauled to be more intuitive. It's not a plugin owned object with a fluent API, with builders to schedule tasks like `PluginTaskBuilder` and `PluginTaskRecipe`. More in the javadocs.
+- Forced the use of `ExtendedPlugin` in the Distributor API.
+- `LocalizationSourceRegistry` now requires a default locale.
+
+### Features
+
+- You can now send localized messages to CommandSender without using the global translator (`CommandSender#sendLocalizedMessage`, `CommandSender#sendLocalizedWarning`).
+- `ExtendedPlugin` has now listeners with `ExtendedPlugin#addListener`, a much better API compared to using a `ApplicationListener`.
+- Added recipes to the scheduler API with `PluginScheduler#recipe`. (Split your plugin tasks between async and sync steps very easily).
+- Added localization support for the permission commands.
+
+### Changes
+
+- Improved localization API.
+- Some stuff I may have forgotten...
+
+### Chores
+
+- Finished the overall javadoc of Distributor.
+
+### Bugfixes
+
+- Fixed a bug where content wasn't always localized if the language of the JVM wasn't english.
+
 ## v3.0.0-rc.2 - 2022-11-01
 
 Second release candidate for ya :)
@@ -18,7 +54,7 @@ Second release candidate for ya :)
 ### Chores
 
 - Changed the code format of the project to [palantir java format](https://github.com/palantir/palantir-java-format) for
-  it's readability.
+- it's readability.
 
 ## v3.0.0-rc.1 - 2022-10-22
 
