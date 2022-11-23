@@ -39,6 +39,7 @@ import fr.xpdustry.distributor.api.util.MUUID;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.function.Function;
+import mindustry.game.Team;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
@@ -127,13 +128,11 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
                                 ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamMode.ALL));
 
         this.parserRegistry()
-                .registerParserSupplier(
-                        TypeToken.get(PlayerArgument.PlayerParser.class),
-                        params -> new PlayerArgument.PlayerParser<>());
+                .registerParserSupplier(TypeToken.get(Player.class), params -> new PlayerArgument.PlayerParser<>());
 
         this.parserRegistry()
                 .registerParserSupplier(
-                        TypeToken.get(TeamArgument.TeamParser.class),
+                        TypeToken.get(Team.class),
                         params -> new TeamArgument.TeamParser<>(
                                 params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE)));
     }
