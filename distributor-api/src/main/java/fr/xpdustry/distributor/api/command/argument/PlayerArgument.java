@@ -178,7 +178,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         /**
          * Returns the input string.
          */
-        public String getInput() {
+        public final String getInput() {
             return this.input;
         }
     }

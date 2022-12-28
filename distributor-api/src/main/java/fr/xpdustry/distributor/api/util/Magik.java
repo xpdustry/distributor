@@ -42,10 +42,19 @@ public final class Magik {
         return plugin instanceof ExtendedPlugin extended ? extended.getDescriptor() : PluginDescriptor.from(plugin);
     }
 
-    public static List<Player> findPlayers(final String name) {
-        final var input = stripAndLower(name);
+    public static List<Player> findPlayers(final String query) {
+        if (query.startsWith("#")) {
+            final var id = Strings.parseInt(query.substring(1), -1);
+            final var result = StreamSupport.stream(Groups.player.spliterator(), false)
+                    .filter(p -> p.id() == id)
+                    .toList();
+            if (!result.isEmpty()) {
+                return result;
+            }
+        }
+        final var name = stripAndLower(query);
         return StreamSupport.stream(Groups.player.spliterator(), false)
-                .filter(p -> stripAndLower(p.name()).contains(input))
+                .filter(p -> stripAndLower(p.name()).contains(name))
                 .toList();
     }
 
