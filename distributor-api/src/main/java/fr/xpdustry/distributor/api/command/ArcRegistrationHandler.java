@@ -62,7 +62,11 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
     @Override
     public boolean registerCommand(final Command<?> command) {
         final var root = (StaticArgument<?>) command.getArguments().get(0);
-        final var description = command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, "");
+        var description =
+                command.getComponents().get(0).getArgumentDescription().getDescription();
+        if (description.isEmpty()) {
+            description = command.getCommandMeta().getOrDefault(CommandMeta.DESCRIPTION, "");
+        }
 
         if (this.manager.getSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS)) {
             root.getAliases().forEach(this.handler::removeCommand);
