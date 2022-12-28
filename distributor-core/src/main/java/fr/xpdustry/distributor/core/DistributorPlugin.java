@@ -19,7 +19,6 @@
 package fr.xpdustry.distributor.core;
 
 import arc.util.CommandHandler;
-import cloud.commandframework.arguments.standard.StringArgument;
 import fr.xpdustry.distributor.api.Distributor;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
@@ -30,8 +29,8 @@ import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
-import fr.xpdustry.distributor.core.commands.GroupPermissibleCommand;
-import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommand;
+import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
+import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
 import fr.xpdustry.distributor.core.config.ProxyTypedConfig;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
 import fr.xpdustry.distributor.core.permission.SimplePermissionService;
@@ -92,12 +91,14 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
 
         this.permissions = new SimplePermissionService(this.getDirectory().resolve("permissions"));
         DistributorProvider.set(this);
+
+        this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
+        this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
     }
 
     @Override
     public void onServerCommandsRegistration(final CommandHandler handler) {
         this.serverCommands.initialize(handler);
-        this.onSharedCommandsRegistration(this.serverCommands);
 
         new ProxyTypedConfig<>(
                 "distributor:permission-primary-group",
@@ -117,37 +118,6 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public void onClientCommandsRegistration(final CommandHandler handler) {
         this.clientCommands.initialize(handler);
-        this.onSharedCommandsRegistration(this.clientCommands);
-    }
-
-    private void onSharedCommandsRegistration(final ArcCommandManager<CommandSender> manager) {
-        // TODO This is ugly, transition to a functional permission command system
-
-        {
-            final var parser = manager.createAnnotationParser(CommandSender.class);
-            parser.stringProcessor(input -> input.replace("permissible", "player"));
-            parser.parse(new PlayerPermissibleCommand(this.permissions));
-        }
-
-        {
-            final var parser = manager.createAnnotationParser(CommandSender.class);
-            parser.stringProcessor(input -> input.replace("permissible", "group"));
-            parser.parse(new GroupPermissibleCommand(this.permissions));
-
-            manager.command(manager.commandBuilder("permission")
-                    .literal("create-group")
-                    .argument(StringArgument.of("group"))
-                    .handler(ctx -> {
-                        final var groups = this.permissions.getGroupPermissionManager();
-                        final String group = ctx.get("group");
-                        if (groups.existsById(group)) {
-                            ctx.getSender().sendLocalizedWarning("permission.group.create.already", group);
-                        } else {
-                            groups.save(groups.findOrCreateById(group));
-                            ctx.getSender().sendLocalizedMessage("permission.group.create.success", group);
-                        }
-                    }));
-        }
     }
 
     @Override
@@ -158,5 +128,13 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public PermissionService getPermissionService() {
         return this.permissions;
+    }
+
+    public ArcCommandManager<CommandSender> getServerCommandManager() {
+        return this.serverCommands;
+    }
+
+    public ArcCommandManager<CommandSender> getClientCommandManager() {
+        return this.clientCommands;
     }
 }
