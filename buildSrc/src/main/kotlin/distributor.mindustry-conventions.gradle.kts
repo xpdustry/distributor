@@ -1,7 +1,5 @@
-import fr.xpdustry.toxopid.ModPlatform
-import fr.xpdustry.toxopid.util.ModMetadata
-import fr.xpdustry.toxopid.util.anukenJitpack
-import fr.xpdustry.toxopid.util.mindustryDependencies
+import fr.xpdustry.toxopid.dsl.anukenJitpack
+import fr.xpdustry.toxopid.dsl.mindustryDependencies
 
 plugins {
     id("net.kyori.indra")
@@ -9,11 +7,11 @@ plugins {
     id("fr.xpdustry.toxopid")
 }
 
-val metadata = ModMetadata.fromJson(rootProject.file("plugin.json"))
+val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("plugin.json"))
 
 toxopid {
     compileVersion.set("v" + metadata.minGameVersion)
-    platforms.add(ModPlatform.HEADLESS)
+    platforms.add(fr.xpdustry.toxopid.spec.ModPlatform.HEADLESS)
 }
 
 repositories {

@@ -11,7 +11,7 @@ dependencies {
     annotationProcessor("cloud.commandframework:cloud-annotations:${Versions.cloud}")
 }
 
-val metadata = fr.xpdustry.toxopid.util.ModMetadata.fromJson(rootProject.file("plugin.json"))
+val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("plugin.json"))
 metadata.version = rootProject.version.toString()
 metadata.description = rootProject.description.toString()
 metadata.name = "xpdustry-distributor-core"
