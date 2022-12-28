@@ -69,8 +69,13 @@ final class PluginSchedulerImpl implements PluginScheduler {
     }
 
     @Override
-    public PluginTaskBuilder schedule() {
-        return new SimplePluginTaskBuilder();
+    public PluginTaskBuilder scheduleAsync() {
+        return new SimplePluginTaskBuilder(true);
+    }
+
+    @Override
+    public PluginTaskBuilder scheduleSync() {
+        return new SimplePluginTaskBuilder(false);
     }
 
     @Override
@@ -290,20 +295,12 @@ final class PluginSchedulerImpl implements PluginScheduler {
 
     private final class SimplePluginTaskBuilder implements PluginTaskBuilder {
 
-        private boolean async = false;
+        private final boolean async;
         private long initialDelay = 0;
         private long repeatPeriod = 0;
 
-        @Override
-        public PluginTaskBuilder async() {
-            this.async = true;
-            return this;
-        }
-
-        @Override
-        public PluginTaskBuilder sync() {
-            this.async = false;
-            return this;
+        private SimplePluginTaskBuilder(final boolean async) {
+            this.async = async;
         }
 
         @Override

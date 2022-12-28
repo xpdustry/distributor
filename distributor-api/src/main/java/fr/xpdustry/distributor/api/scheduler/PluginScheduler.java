@@ -51,9 +51,14 @@ public interface PluginScheduler extends PluginAware, PluginListener {
     }
 
     /**
-     * Returns a new {@link PluginTaskBuilder} instance.
+     * Returns a new {@link PluginTaskBuilder} instance scheduling an asynchronous task.
      */
-    PluginTaskBuilder schedule();
+    PluginTaskBuilder scheduleAsync();
+
+    /**
+     * Returns a new {@link PluginTaskBuilder} instance scheduling a synchronous task.
+     */
+    PluginTaskBuilder scheduleSync();
 
     /**
      * Returns a new {@link PluginTaskRecipe} instance.

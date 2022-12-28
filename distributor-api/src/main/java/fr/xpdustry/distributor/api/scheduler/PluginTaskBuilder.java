@@ -29,24 +29,10 @@ import java.util.concurrent.TimeUnit;
  *      // Warn the players the server is close in 5 minutes.
  *      Groups.player.each(p -> p.sendMessage("The server will restart in 5 minutes."));
  *      // Now schedule the closing task.
- *      scheduler.schedule().sync().delay(5, TimeUnit.MINUTES).execute(() -> Core.app.exit());
+ *      scheduler.scheduleSync().delay(5, TimeUnit.MINUTES).execute(() -> Core.app.exit());
  * } </pre>
  */
 public interface PluginTaskBuilder {
-
-    /**
-     * Run the task asynchronously.
-     *
-     * @return this builder.
-     */
-    PluginTaskBuilder async();
-
-    /**
-     * Run the task synchronously.
-     *
-     * @return this builder.
-     */
-    PluginTaskBuilder sync();
 
     /**
      * Run the task after a delay.

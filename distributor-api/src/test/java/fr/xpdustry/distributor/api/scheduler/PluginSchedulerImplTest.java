@@ -69,7 +69,7 @@ public final class PluginSchedulerImplTest {
     @Test
     void test_simple_sync_schedule() {
         final var future = new CompletableFuture<Thread>();
-        assertThat(this.scheduler.schedule().sync().execute(() -> future.complete(Thread.currentThread())))
+        assertThat(this.scheduler.scheduleSync().execute(() -> future.complete(Thread.currentThread())))
                 .succeedsWithin(PRECISION);
         assertThat(future).isCompletedWithValueMatching(thread -> !thread.getName()
                 .startsWith(this.scheduler.getBaseWorkerName()));
@@ -78,7 +78,7 @@ public final class PluginSchedulerImplTest {
     @Test
     void test_simple_async_schedule() {
         final var future = new CompletableFuture<Thread>();
-        assertThat(this.scheduler.schedule().async().execute(() -> future.complete(Thread.currentThread())))
+        assertThat(this.scheduler.scheduleAsync().execute(() -> future.complete(Thread.currentThread())))
                 .succeedsWithin(PRECISION);
         assertThat(future).isCompletedWithValueMatching(thread -> thread.getName()
                 .startsWith(this.scheduler.getBaseWorkerName()));
@@ -89,8 +89,7 @@ public final class PluginSchedulerImplTest {
         final var future = new CompletableFuture<Long>();
         final var begin = this.source.getCurrentMillis();
         assertThat(this.scheduler
-                        .schedule()
-                        .sync()
+                        .scheduleSync()
                         .delay(3L, TimeUnit.SECONDS)
                         .execute(() -> future.complete(this.source.getCurrentMillis())))
                 .succeedsWithin(Duration.ofSeconds(3L).plus(PRECISION));
@@ -103,8 +102,7 @@ public final class PluginSchedulerImplTest {
         final var counter = new CountDownLatch(3);
         final var longs = new ArrayList<Long>();
         final var future = this.scheduler
-                .schedule()
-                .sync()
+                .scheduleSync()
                 .repeatInterval(1L, TimeUnit.SECONDS)
                 .execute(() -> {
                     longs.add(this.source.getCurrentMillis());
@@ -128,8 +126,7 @@ public final class PluginSchedulerImplTest {
         final var counter = new CountDownLatch(3);
         final var longs = new ArrayList<Long>();
         final var future = this.scheduler
-                .schedule()
-                .sync()
+                .scheduleSync()
                 .repeatPeriod(1L, TimeUnit.SECONDS)
                 .execute(() -> {
                     longs.add(this.source.getCurrentMillis());
