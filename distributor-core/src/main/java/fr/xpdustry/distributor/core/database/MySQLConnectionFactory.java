@@ -25,6 +25,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 // This code is provided to you by LuckPerms, under the MIT license.
@@ -81,6 +82,9 @@ public final class MySQLConnectionFactory extends HikariConnectionFactory {
     @Override
     protected Map<String, String> getExtraProperties() {
         final var properties = super.getExtraProperties();
+
+        // https://github.com/brettwooldridge/HikariCP/wiki/Rapid-Recovery
+        properties.putIfAbsent("socketTimeout", String.valueOf(TimeUnit.SECONDS.toMillis(30)));
 
         // https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration
         properties.putIfAbsent("cachePrepStmts", "true");

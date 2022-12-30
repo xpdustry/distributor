@@ -47,6 +47,14 @@ public interface DistributorConfiguration extends Accessible {
     @Config.DefaultValue("")
     String getDatabasePassword();
 
+    @Config.Key("distributor.database.pool.min")
+    @Config.DefaultValue("1")
+    int getDatabaseMinPoolSize();
+
+    @Config.Key("distributor.database.pool.max")
+    @Config.DefaultValue("4")
+    int getDatabaseMaxPoolSize();
+
     enum DatabaseType {
         SQLITE,
         MYSQL

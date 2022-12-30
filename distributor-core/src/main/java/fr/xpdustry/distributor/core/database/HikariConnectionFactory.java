@@ -65,6 +65,9 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
                 this.configuration.getDatabaseUsername(),
                 this.configuration.getDatabasePassword());
 
+        config.setPoolName("distributor-pool");
+        config.setMinimumIdle(this.configuration.getDatabaseMinPoolSize());
+        config.setMaximumPoolSize(this.configuration.getDatabaseMaxPoolSize());
         this.getExtraProperties().forEach(config::addDataSourceProperty);
         // No need to initialize the pool now, the database is always initialized after this method is called.
         config.setInitializationFailTimeout(-1);
