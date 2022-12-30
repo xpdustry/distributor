@@ -42,6 +42,7 @@ public final class GroupPermissibleCommands extends PermissibleCommands<GroupPer
                 registry.commandBuilder("permission", ArgumentDescription.of("Permission management commands."));
 
         registry.command(root.literal("create-group")
+                .permission("distributor.permission.create-group")
                 .argument(StringArgument.of("group"))
                 .handler(ctx -> {
                     final String group = ctx.get("group");

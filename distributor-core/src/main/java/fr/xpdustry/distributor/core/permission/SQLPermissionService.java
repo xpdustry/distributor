@@ -23,7 +23,6 @@ import fr.xpdustry.distributor.api.permission.Permissible;
 import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
-import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
@@ -41,7 +40,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Queue;
 import mindustry.Vars;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 public final class SQLPermissionService implements PermissionService {
 
