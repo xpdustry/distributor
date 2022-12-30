@@ -137,7 +137,6 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
 
         // Register permission utilities
         this.permissions = new SQLPermissionService(this.connectionFactory);
-        this.addListener(this.permissions);
         this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
         this.addListener(new PermissionServiceCommands(this));

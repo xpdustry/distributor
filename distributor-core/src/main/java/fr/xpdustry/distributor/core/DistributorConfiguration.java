@@ -22,11 +22,12 @@ import org.aeonbits.owner.Accessible;
 import org.aeonbits.owner.Config;
 
 public interface DistributorConfiguration extends Accessible {
+
     @Config.Key("distributor.database.type")
     @Config.DefaultValue("SQLITE")
     DatabaseType getDatabaseType();
 
-    @Config.Key("distributor.database.url")
+    @Config.Key("distributor.database.address")
     @Config.DefaultValue("")
     String getDatabaseAddress();
 

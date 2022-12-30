@@ -43,22 +43,19 @@ import java.util.Queue;
 import mindustry.Vars;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
-public final class SQLPermissionService implements PermissionService, PluginListener {
+public final class SQLPermissionService implements PermissionService {
 
     private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
             Comparator.comparing(GroupPermissible::getWeight).reversed();
 
     private final ConnectionFactory connectionFactory;
-    private @MonotonicNonNull SQLPlayerPermissibleManager players;
-    private @MonotonicNonNull SQLGroupPermissibleManager groups;
-    private @MonotonicNonNull SQLPermissibleOptionManager options;
+    private final SQLPlayerPermissibleManager players;
+    private final SQLGroupPermissibleManager groups;
+    private final SQLPermissibleOptionManager options;
 
     public SQLPermissionService(final ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
-    }
 
-    @Override
-    public void onPluginLoad() {
         this.connectionFactory.withConsumer(con -> {
             try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql");
                     final var statements = con.createStatement()) {

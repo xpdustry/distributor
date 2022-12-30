@@ -11,7 +11,6 @@ dependencies {
     implementation("com.mysql:mysql-connector-j:8.0.31")
     // MySQL driver has a vulnerability, so explicitly exclude it
     implementation("com.google.protobuf:protobuf-java:3.21.12")
-    testImplementation("org.mockito:mockito-core:4.11.0")
     testImplementation("org.xerial:sqlite-jdbc:3.40.0.0")
 }
 

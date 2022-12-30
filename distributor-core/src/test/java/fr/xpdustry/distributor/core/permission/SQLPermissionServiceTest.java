@@ -22,7 +22,6 @@ import fr.xpdustry.distributor.api.permission.GroupPermissible;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
-import fr.xpdustry.distributor.core.DistributorConfiguration;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 public final class SQLPermissionServiceTest {
 
@@ -49,13 +47,12 @@ public final class SQLPermissionServiceTest {
 
     @BeforeEach
     void setup() {
-        final var config = Mockito.mock(DistributorConfiguration.class);
-        Mockito.when(config.getDatabasePrefix()).thenReturn("test_");
+        final var config = TestDistributorConfiguration.create();
+        config.setDatabasePrefix("test_");
         this.factory = new SQLiteConnectionFactory(
                 config, this.dbDir.resolve("test.db"), () -> this.getClass().getClassLoader());
         this.factory.start();
         this.manager = new SQLPermissionService(this.factory);
-        this.manager.onPluginLoad();
         this.manager.setVerifyAdmin(false);
     }
 
