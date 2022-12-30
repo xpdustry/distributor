@@ -16,24 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.database;
 
-import fr.xpdustry.distributor.api.permission.PlayerPermissible;
-import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-public final class SimplePlayerPermissibleManager extends AbstractPermissibleManager<PlayerPermissible> {
+@FunctionalInterface
+public interface ConnectionFunction<V> {
 
-    public SimplePlayerPermissibleManager(final Path path) {
-        super(path);
-    }
-
-    @Override
-    protected PlayerPermissible createPermissible(final String id) {
-        return new SimplePlayerPermissible(id);
-    }
-
-    @Override
-    protected String extractId(final PlayerPermissible permissible) {
-        return permissible.getUuid();
-    }
+    V apply(final Connection connection) throws SQLException;
 }

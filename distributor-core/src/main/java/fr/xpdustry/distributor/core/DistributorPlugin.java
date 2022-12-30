@@ -30,19 +30,30 @@ import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
+import fr.xpdustry.distributor.core.commands.PermissionServiceCommands;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
-import fr.xpdustry.distributor.core.config.ProxyTypedConfig;
+import fr.xpdustry.distributor.core.database.ConnectionFactory;
+import fr.xpdustry.distributor.core.database.MySQLConnectionFactory;
+import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
+import fr.xpdustry.distributor.core.dependency.Dependency;
+import fr.xpdustry.distributor.core.dependency.DependencyManager;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
-import fr.xpdustry.distributor.core.permission.SimplePermissionService;
+import fr.xpdustry.distributor.core.permission.SQLPermissionService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Locale;
+import java.util.Properties;
+import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
 
 public final class DistributorPlugin extends ExtendedPlugin implements Distributor {
+
+    public static final Dependency SQLITE_DRIVER =
+            new Dependency("org.xerial", "sqlite-jdbc", "3.40.0.0", "46G5CXh7M7s34E8lLzfkq0ekieHB1FqAmgmCw3lEXBA=");
 
     static {
         // Class loader trickery to use the ModClassLoader instead of the root
@@ -63,16 +74,10 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
     private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
 
-    private @MonotonicNonNull PermissionService permissions = null;
-
-    {
-        final var registry = LocalizationSourceRegistry.create(Locale.ENGLISH);
-        registry.registerAll(Locale.ENGLISH, "bundles/bundle", this.getClass().getClassLoader());
-        registry.registerAll(Locale.FRENCH, "bundles/bundle", this.getClass().getClassLoader());
-
-        this.source.addLocalizationSource(registry);
-        this.source.addLocalizationSource(LocalizationSource.router());
-    }
+    private @MonotonicNonNull SQLPermissionService permissions = null;
+    private @MonotonicNonNull DistributorConfiguration configuration = null;
+    private @MonotonicNonNull DependencyManager dependencyManager = null;
+    private @MonotonicNonNull ConnectionFactory connectionFactory = null;
 
     @Override
     public void onInit() {
@@ -89,35 +94,74 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
             this.getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
         }
 
-        this.permissions = new SimplePermissionService(this.getDirectory().resolve("permissions"));
-        DistributorProvider.set(this);
+        // Setup configuration
+        final var file = this.getDirectory().resolve("config.properties");
+        if (Files.exists(file)) {
+            final var properties = new Properties();
+            try (final var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+                properties.load(reader);
+            } catch (final IOException e) {
+                throw new RuntimeException("Invalid config.", e);
+            }
+            this.configuration = ConfigFactory.create(DistributorConfiguration.class, properties);
+        } else {
+            this.configuration = ConfigFactory.create(DistributorConfiguration.class);
+            try (final var writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+                final var properties = new Properties();
+                this.configuration.fill(properties);
+                properties.store(writer, null);
+            } catch (final IOException e) {
+                throw new RuntimeException("Can't create default config for Javelin.", e);
+            }
+        }
 
+        // Create dependency manager
+        this.dependencyManager = new DependencyManager(this.getDirectory().resolve("libs"));
+        this.dependencyManager.addMavenCentral();
+
+        // Create connection factory
+        this.connectionFactory = switch (this.configuration.getDatabaseType()) {
+            case SQLITE -> new SQLiteConnectionFactory(
+                    this.configuration,
+                    this.getDirectory().resolve("permission.sqlite"),
+                    () -> this.dependencyManager.createClassLoaderFor(SQLITE_DRIVER));
+            case MYSQL -> new MySQLConnectionFactory(this.configuration);};
+        this.connectionFactory.start();
+
+        // Register bundles
+        final var registry = LocalizationSourceRegistry.create(Locale.ENGLISH);
+        registry.registerAll(Locale.ENGLISH, "bundles/bundle", this.getClass().getClassLoader());
+        registry.registerAll(Locale.FRENCH, "bundles/bundle", this.getClass().getClassLoader());
+        this.source.addLocalizationSource(registry);
+        this.source.addLocalizationSource(LocalizationSource.router());
+
+        // Register permission utilities
+        this.permissions = new SQLPermissionService(this.connectionFactory);
+        this.addListener(this.permissions);
         this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
+        this.addListener(new PermissionServiceCommands(this));
+
+        DistributorProvider.set(this);
     }
 
     @Override
     public void onServerCommandsRegistration(final CommandHandler handler) {
         this.serverCommands.initialize(handler);
-
-        new ProxyTypedConfig<>(
-                "distributor:permission-primary-group",
-                "The primary group assigned to all players.",
-                "default",
-                () -> this.getPermissionService().getPrimaryGroup(),
-                value -> this.getPermissionService().setPrimaryGroup(value));
-
-        new ProxyTypedConfig<>(
-                "distributor:permission-verify-admin",
-                "Whether permission check should be skipped on admins.",
-                true,
-                () -> this.getPermissionService().getVerifyAdmin(),
-                value -> this.getPermissionService().setVerifyAdmin(value));
     }
 
     @Override
     public void onClientCommandsRegistration(final CommandHandler handler) {
         this.clientCommands.initialize(handler);
+    }
+
+    @Override
+    public void onExit() {
+        try {
+            this.connectionFactory.close();
+        } catch (final Exception e) {
+            this.getLogger().error("An error occurred while closing the connection factory.", e);
+        }
     }
 
     @Override
@@ -136,5 +180,17 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
 
     public ArcCommandManager<CommandSender> getClientCommandManager() {
         return this.clientCommands;
+    }
+
+    public DistributorConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    public DependencyManager getDependencyManager() {
+        return this.dependencyManager;
+    }
+
+    public ConnectionFactory getConnectionFactory() {
+        return this.connectionFactory;
     }
 }

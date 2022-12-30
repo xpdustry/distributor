@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class AbstractPermissible implements Permissible {
 
@@ -70,5 +71,27 @@ public abstract class AbstractPermissible implements Permissible {
     @Override
     public void setPermissions(final Map<String, Boolean> permissions) {
         permissions.forEach((permission, state) -> this.setPermission(permission, Tristate.of(state)));
+    }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof final AbstractPermissible that)) {
+            return false;
+        }
+
+        if (!this.parents.equals(that.parents)) {
+            return false;
+        }
+        return this.tree.equals(that.tree);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.parents.hashCode();
+        result = 31 * result + this.tree.hashCode();
+        return result;
     }
 }

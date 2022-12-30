@@ -99,4 +99,25 @@ public final class PermissionTree {
         }
         return Collections.unmodifiableMap(permissions);
     }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PermissionTree that)) {
+            return false;
+        }
+        if (!this.children.equals(that.children)) {
+            return false;
+        }
+        return this.value == that.value;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.children.hashCode();
+        result = 31 * result + this.value.hashCode();
+        return result;
+    }
 }

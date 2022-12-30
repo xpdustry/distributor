@@ -6,9 +6,13 @@ plugins {
 
 dependencies {
     implementation(project(":distributor-api"))
-    implementation("org.spongepowered:configurate-yaml:4.1.2")
     implementation("org.aeonbits.owner:owner-java8:1.0.12")
-    annotationProcessor("cloud.commandframework:cloud-annotations:${Versions.cloud}")
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("com.mysql:mysql-connector-j:8.0.31")
+    // MySQL driver has a vulnerability, so explicitly exclude it
+    implementation("com.google.protobuf:protobuf-java:3.21.12")
+    testImplementation("org.mockito:mockito-core:4.11.0")
+    testImplementation("org.xerial:sqlite-jdbc:3.40.0.0")
 }
 
 val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("plugin.json"))
@@ -32,12 +36,14 @@ tasks.shadowJar {
         exclude(dependency("cloud.commandframework:cloud-.*:.*"))
         exclude(dependency("org.slf4j:slf4j-api:.*"))
         exclude(dependency("io.leangen.geantyref:geantyref:.*"))
+        exclude(dependency("com.mysql:mysql-connector-j:.*"))
     }
 
-    val shadowPackage = "fr.xpdustry.distributor.core.internal.shadow"
-    relocate("org.spongepowered.configurate", "$shadowPackage.configurate")
+    val shadowPackage = "fr.xpdustry.distributor.core.shadow"
     relocate("org.aeonbits.owner", "$shadowPackage.owner")
-    relocate("org.yaml.snakeyaml", "$shadowPackage.snakeyaml")
+    relocate("com.mysql", "$shadowPackage.mysql")
+    relocate("com.zaxxer.hikari", "$shadowPackage.hikari")
+    relocate("com.google.protobuf", "$shadowPackage.protobuf")
 
     from(rootProject.file("LICENSE.md")) {
         into("META-INF")

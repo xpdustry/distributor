@@ -22,16 +22,18 @@ import fr.xpdustry.distributor.api.permission.GroupPermissible;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
+import fr.xpdustry.distributor.core.DistributorConfiguration;
+import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
 import java.nio.file.Path;
 import java.util.function.Consumer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import org.mockito.Mockito;
 
-public final class SimplePermissionServiceTest {
+public final class SQLPermissionServiceTest {
 
     private static final MUUID PLAYER = MUUID.of("AAAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
 
@@ -41,19 +43,29 @@ public final class SimplePermissionServiceTest {
     private static final String PERMISSION1 = "fr.xpdustry.test.a";
     private static final String PERMISSION2 = "fr.xpdustry.test.b";
 
-    @TempDir
-    private Path tempDir;
-
-    private SimplePermissionService manager;
+    private SQLiteConnectionFactory factory;
+    private @TempDir Path dbDir;
+    private SQLPermissionService manager;
 
     @BeforeEach
     void setup() {
-        this.manager = new SimplePermissionService(this.tempDir);
+        final var config = Mockito.mock(DistributorConfiguration.class);
+        Mockito.when(config.getDatabasePrefix()).thenReturn("test_");
+        this.factory = new SQLiteConnectionFactory(
+                config, this.dbDir.resolve("test.db"), () -> this.getClass().getClassLoader());
+        this.factory.start();
+        this.manager = new SQLPermissionService(this.factory);
+        this.manager.onPluginLoad();
         this.manager.setVerifyAdmin(false);
     }
 
+    @AfterEach
+    void tearDown() throws Exception {
+        this.factory.close();
+    }
+
     @Test
-    void test_player_save() throws ConfigurateException {
+    void test_player_save() {
         final var players = this.manager.getPlayerPermissionManager();
         final var player = players.findOrCreateById(PLAYER.getUuid());
 
@@ -64,18 +76,14 @@ public final class SimplePermissionServiceTest {
         players.save(player);
         Assertions.assertEquals(1, players.count());
 
-        final var root = YamlConfigurationLoader.builder()
-                .path(this.tempDir.resolve("players.yaml"))
-                .build()
-                .load();
-        Assertions.assertTrue(
-                root.node(PLAYER.getUuid(), "permissions", PERMISSION1).getBoolean());
-        Assertions.assertFalse(
-                root.node(PLAYER.getUuid(), "permissions", PERMISSION2).getBoolean());
+        final var queried = players.findById(PLAYER.getUuid()).orElseThrow();
+        Assertions.assertEquals(queried, player);
+        Assertions.assertEquals(Tristate.TRUE, queried.getPermission(PERMISSION1));
+        Assertions.assertEquals(Tristate.FALSE, queried.getPermission(PERMISSION2));
     }
 
     @Test
-    void test_group_save() throws ConfigurateException {
+    void test_group_save() {
         final var groups = this.manager.getGroupPermissionManager();
         final var group = groups.findOrCreateById(GROUP1);
 
@@ -87,13 +95,10 @@ public final class SimplePermissionServiceTest {
         groups.save(group);
         Assertions.assertEquals(1, groups.count());
 
-        final var root = YamlConfigurationLoader.builder()
-                .path(this.tempDir.resolve("groups.yaml"))
-                .build()
-                .load();
-        Assertions.assertTrue(root.node(GROUP1, "permissions", PERMISSION1).getBoolean());
-        Assertions.assertFalse(root.node(GROUP1, "permissions", PERMISSION2).getBoolean());
-        Assertions.assertEquals(6, root.node(GROUP1, "weight").getInt());
+        final var queried = groups.findById(GROUP1).orElseThrow();
+        Assertions.assertEquals(queried, group);
+        Assertions.assertEquals(Tristate.TRUE, queried.getPermission(PERMISSION1));
+        Assertions.assertEquals(Tristate.FALSE, queried.getPermission(PERMISSION2));
     }
 
     @Test

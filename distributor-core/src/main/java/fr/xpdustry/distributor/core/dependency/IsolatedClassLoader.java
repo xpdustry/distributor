@@ -16,29 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.config;
+package fr.xpdustry.distributor.core.dependency;
 
-import mindustry.net.Administration;
+import java.net.URL;
+import java.net.URLClassLoader;
 
-public interface TypedConfig<T> {
+// Simpler IsolatedClassLoader from https://github.com/Byteflux/libby, under the MIT license.
+public final class IsolatedClassLoader extends URLClassLoader {
 
-    String getKey();
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
 
-    String getDescription();
-
-    T getValue();
-
-    void setValue(T value);
-
-    T getDefaultValue();
-
-    ValueType getValueType();
-
-    Administration.Config getConfig();
-
-    enum ValueType {
-        INTEGER,
-        BOOLEAN,
-        STRING
+    public IsolatedClassLoader(final URL... urls) {
+        super(urls, ClassLoader.getSystemClassLoader().getParent());
     }
 }

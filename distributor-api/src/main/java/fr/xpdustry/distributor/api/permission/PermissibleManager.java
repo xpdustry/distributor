@@ -50,6 +50,7 @@ public interface PermissibleManager<P extends Permissible> {
      * @return the permissible or a new one
      */
     P findOrCreateById(final String id);
+
     /**
      * Returns the permissible with the given id. If not found, an empty optional is returned.
      *
@@ -57,10 +58,12 @@ public interface PermissibleManager<P extends Permissible> {
      * @return the permissible or an empty optional
      */
     Optional<P> findById(final String id);
+
     /**
      * Returns all the permissibles.
      */
     Iterable<P> findAll();
+
     /**
      * Checks if the permissible exists in the database.
      *

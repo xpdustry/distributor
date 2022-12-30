@@ -20,6 +20,7 @@ package fr.xpdustry.distributor.core.permission;
 
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import mindustry.Vars;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class SimplePlayerPermissible extends AbstractPermissible implements PlayerPermissible {
 
@@ -41,5 +42,29 @@ public final class SimplePlayerPermissible extends AbstractPermissible implement
     @Override
     public String getUuid() {
         return this.uuid;
+    }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final SimplePlayerPermissible that = (SimplePlayerPermissible) o;
+
+        return this.uuid.equals(that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + this.uuid.hashCode();
+        return result;
     }
 }

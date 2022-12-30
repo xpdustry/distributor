@@ -23,54 +23,66 @@ import fr.xpdustry.distributor.api.permission.Permissible;
 import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
+import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
-import java.nio.file.Path;
+import fr.xpdustry.distributor.core.database.ConnectionFactory;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Queue;
 import mindustry.Vars;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.yaml.NodeStyle;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
-public final class SimplePermissionService implements PermissionService {
+public final class SQLPermissionService implements PermissionService, PluginListener {
 
     private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
             Comparator.comparing(GroupPermissible::getWeight).reversed();
 
-    private final YamlConfigurationLoader loader;
-    private final SimplePlayerPermissibleManager players;
-    private final SimpleGroupPermissibleManager groups;
+    private final ConnectionFactory connectionFactory;
+    private @MonotonicNonNull SQLPlayerPermissibleManager players;
+    private @MonotonicNonNull SQLGroupPermissibleManager groups;
+    private @MonotonicNonNull SQLPermissibleOptionManager options;
 
-    private String primaryGroup;
-    private boolean verifyAdmin;
+    public SQLPermissionService(final ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
-    public SimplePermissionService(final Path directory) {
-        this.loader = YamlConfigurationLoader.builder()
-                .indent(2)
-                .path(directory.resolve("settings.yaml"))
-                .nodeStyle(NodeStyle.BLOCK)
-                .build();
+    @Override
+    public void onPluginLoad() {
+        this.connectionFactory.withConsumer(con -> {
+            try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql");
+                    final var statements = con.createStatement()) {
+                if (input == null) {
+                    throw new IllegalStateException("Missing schema file.");
+                }
+                for (final var statement : this.readStatements(input)) {
+                    statements.addBatch(
+                            this.connectionFactory.getStatementProcessor().apply(statement));
+                }
+                statements.executeBatch();
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        this.players = new SimplePlayerPermissibleManager(directory.resolve("players.yaml"));
-        this.groups = new SimpleGroupPermissibleManager(directory.resolve("groups.yaml"));
-
-        try {
-            final var root = this.loader.load();
-            this.primaryGroup = root.node("primary-group").getString("default");
-            this.verifyAdmin = root.node("verify-admin").getBoolean(true);
-        } catch (final ConfigurateException e) {
-            throw new RuntimeException("Unable to load the permissions.", e);
-        }
+        this.players = new SQLPlayerPermissibleManager(this.connectionFactory);
+        this.groups = new SQLGroupPermissibleManager(this.connectionFactory);
+        this.options = new SQLPermissibleOptionManager(this.connectionFactory);
     }
 
     @Override
     public Tristate getPermission(final MUUID muuid, final String permission) {
-        if (this.verifyAdmin) {
+        if (this.getVerifyAdmin()) {
             final var info = Vars.netServer.admins.getInfoOptional(muuid.getUuid());
             if (info != null && info.admin) {
                 return Tristate.TRUE;
@@ -82,7 +94,7 @@ public final class SimplePermissionService implements PermissionService {
         final var visited = new HashSet<String>();
         final Queue<Permissible> queue = new ArrayDeque<>();
         final var player = this.players.findById(muuid.getUuid());
-        final var primary = this.groups.findById(this.primaryGroup);
+        final var primary = this.groups.findById(this.getPrimaryGroup());
 
         if (player.isPresent()) {
             queue.add(player.get());
@@ -107,7 +119,7 @@ public final class SimplePermissionService implements PermissionService {
                     .sorted(GROUP_COMPARATOR)
                     .forEach(queue::add);
 
-            if (queue.isEmpty() && !visited.add(this.primaryGroup) && primary.isPresent()) {
+            if (queue.isEmpty() && !visited.add(this.getPrimaryGroup()) && primary.isPresent()) {
                 queue.add(primary.get());
             }
         }
@@ -117,24 +129,22 @@ public final class SimplePermissionService implements PermissionService {
 
     @Override
     public String getPrimaryGroup() {
-        return this.primaryGroup;
+        return this.options.get("primary-group", String.class).orElse("default");
     }
 
     @Override
     public void setPrimaryGroup(final String group) {
-        this.primaryGroup = group;
-        this.save();
+        this.options.set("primary-group", group);
     }
 
     @Override
     public boolean getVerifyAdmin() {
-        return this.verifyAdmin;
+        return this.options.get("verify-admin", Boolean.class).orElse(true);
     }
 
     @Override
     public void setVerifyAdmin(final boolean verify) {
-        this.verifyAdmin = verify;
-        this.save();
+        this.options.set("verify-admin", verify);
     }
 
     @Override
@@ -147,14 +157,34 @@ public final class SimplePermissionService implements PermissionService {
         return this.groups;
     }
 
-    private void save() {
-        try {
-            final var root = this.loader.createNode();
-            root.node("primary-group").set(this.primaryGroup);
-            root.node("verify-admin").set(this.verifyAdmin);
-            this.loader.save(root);
-        } catch (final ConfigurateException e) {
-            throw new RuntimeException("Failed to save the permission manager settings.", e);
+    private List<String> readStatements(final InputStream stream) throws IOException {
+        final List<String> statements = new ArrayList<>();
+
+        try (final var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            var builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("--") || line.startsWith("#")) {
+                    continue;
+                }
+
+                builder.append(line);
+
+                // check for end of declaration
+                if (line.endsWith(";")) {
+                    builder.deleteCharAt(builder.length() - 1);
+
+                    final String result = builder.toString().trim();
+                    if (!result.isEmpty()) {
+                        statements.add(result);
+                    }
+
+                    // reset
+                    builder = new StringBuilder();
+                }
+            }
         }
+
+        return statements;
     }
 }

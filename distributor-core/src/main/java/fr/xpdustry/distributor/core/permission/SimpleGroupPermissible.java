@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.core.permission;
 
 import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class SimpleGroupPermissible extends AbstractPermissible implements GroupPermissible {
 
@@ -42,5 +43,33 @@ public final class SimpleGroupPermissible extends AbstractPermissible implements
     @Override
     public void setWeight(final int weight) {
         this.weight = weight;
+    }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final SimpleGroupPermissible that = (SimpleGroupPermissible) o;
+
+        if (this.weight != that.weight) {
+            return false;
+        }
+        return this.name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + this.name.hashCode();
+        result = 31 * result + this.weight;
+        return result;
     }
 }

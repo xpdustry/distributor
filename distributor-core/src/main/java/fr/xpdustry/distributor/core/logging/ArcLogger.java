@@ -43,7 +43,7 @@ public final class ArcLogger extends AbstractLogger {
                 this.name =
                         PluginDescriptor.from((Class<? extends Plugin>) caller).getDisplayName();
             } else {
-                this.name = caller.getSimpleName();
+                this.name = caller.getName();
             }
         } catch (final ClassNotFoundException ignored) {
             this.name = name;
