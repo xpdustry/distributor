@@ -104,7 +104,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         }
 
         /**
-         * Builds a new {@link PlayerArgument}.
+         * Construct a new {@link PlayerArgument}.
          *
          * @return the constructed player argument
          */
@@ -158,6 +158,9 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         }
     }
 
+    /**
+     * An exception thrown when a parsing error occurs while searching for a player.
+     */
     public static class PlayerParseException extends ParserException {
 
         @Serial
@@ -185,6 +188,9 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         }
     }
 
+    /**
+     * An exception thrown when too many players are found for the given input.
+     */
     public static final class TooManyPlayersFoundException extends PlayerParseException {
 
         @Serial
@@ -201,6 +207,9 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
         }
     }
 
+    /**
+     * An exception thrown when no player was found for the given input.
+     */
     public static final class PlayerNotFoundException extends PlayerParseException {
 
         @Serial

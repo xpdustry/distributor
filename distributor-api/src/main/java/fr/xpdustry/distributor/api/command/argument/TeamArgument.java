@@ -163,7 +163,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         }
 
         /**
-         * Builds a new {@link TeamArgument}.
+         * Construct a new {@link TeamArgument}.
          *
          * @return the constructed team argument
          */
