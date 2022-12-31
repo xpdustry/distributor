@@ -20,7 +20,7 @@ package fr.xpdustry.distributor.core.commands;
 
 import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
-import fr.xpdustry.distributor.api.util.Magik;
+import fr.xpdustry.distributor.api.util.PlayerLookup;
 import java.util.Optional;
 
 public final class PlayerPermissibleParser<C> extends PermissibleParser<C, PlayerPermissible> {
@@ -33,10 +33,11 @@ public final class PlayerPermissibleParser<C> extends PermissibleParser<C, Playe
 
     @Override
     protected Optional<PlayerPermissible> findPermissible(final String name) {
-        final var players = Magik.findPlayers(name);
-        if (players.isEmpty() && Magik.isUuid(name)) {
+        if (PlayerLookup.isUuid(name)) {
             return Optional.of(this.manager.findOrCreateById(name));
-        } else if (players.size() == 1) {
+        }
+        final var players = PlayerLookup.findPlayers(name);
+        if (players.size() == 1) {
             return Optional.of(this.manager.findOrCreateById(players.get(0).uuid()));
         } else {
             return Optional.empty();

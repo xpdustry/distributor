@@ -19,30 +19,25 @@
 package fr.xpdustry.distributor.api.util;
 
 import arc.util.Strings;
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
-import fr.xpdustry.distributor.api.plugin.PluginDescriptor;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.StreamSupport;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
-import mindustry.mod.Plugin;
 
 /**
- * A collection of random utilities. Methods can be removed without prior notice.
+ * A collection of random utilities for searching players.
  */
-public final class Magik {
+public final class PlayerLookup {
 
-    private Magik() {}
-
-    public static PluginDescriptor getDescriptor(final Plugin plugin) {
-        return plugin instanceof ExtendedPlugin extended ? extended.getDescriptor() : PluginDescriptor.from(plugin);
-    }
+    private PlayerLookup() {}
 
     public static List<Player> findPlayers(final String query) {
+        return findPlayers(query, false);
+    }
+
+    public static List<Player> findPlayers(final String query, final boolean uuid) {
         if (query.startsWith("#")) {
             final var id = Strings.parseInt(query.substring(1), -1);
             final var result = StreamSupport.stream(Groups.player.spliterator(), false)
@@ -51,6 +46,11 @@ public final class Magik {
             if (!result.isEmpty()) {
                 return result;
             }
+        }
+        if (uuid && isUuid(query)) {
+            return StreamSupport.stream(Groups.player.spliterator(), false)
+                    .filter(p -> p.uuid().equals(query))
+                    .toList();
         }
         final var name = stripAndLower(query);
         return StreamSupport.stream(Groups.player.spliterator(), false)
@@ -73,15 +73,6 @@ public final class Magik {
             return bytes.length == 8;
         } catch (final IllegalArgumentException e) {
             return false;
-        }
-    }
-
-    public static Optional<String> getFileExtension(final Path path) {
-        final var name = path.getFileName().toString();
-        if (name.contains(".")) {
-            return Optional.of(name.substring(name.lastIndexOf(".") + 1));
-        } else {
-            return Optional.empty();
         }
     }
 
