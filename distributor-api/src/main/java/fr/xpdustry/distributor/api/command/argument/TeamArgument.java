@@ -217,7 +217,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
         @Override
         public List<String> suggestions(final CommandContext<C> ctx, final String input) {
             final var name = input.toLowerCase(Locale.ROOT);
-            return this.getTeamIndex().keySet().stream()
+            return BASE_TEAMS.keySet().stream()
                     .filter(t -> t.startsWith(name))
                     .sorted()
                     .toList();
