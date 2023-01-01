@@ -20,7 +20,7 @@ package fr.xpdustry.distributor.api.command.argument;
 
 import mindustry.gen.Player;
 
-public class PlayerArgumentTest extends AbstractPlayerLookupArgumentTest<PlayerArgument<Object>, Player> {
+public final class PlayerArgumentTest extends AbstractPlayerLookupArgumentTest<PlayerArgument<Object>, Player> {
 
     @Override
     protected PlayerArgument<Object> createArgument() {

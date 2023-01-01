@@ -46,8 +46,7 @@ public final class PlayerInfoArgumentTest
     @Test
     void test_find_by_created_info() {
         final var argument = this.createArgument();
-        final var result =
-                argument.getParser().parse(this.getCommandContext(), this.createArgumentQueue(CREATED_UUID));
+        final var result = argument.getParser().parse(this.getCommandContext(), this.createArgumentQueue(CREATED_UUID));
         assertThat(result.getParsedValue()).isPresent().get().extracting("id").isEqualTo(CREATED_UUID);
     }
 

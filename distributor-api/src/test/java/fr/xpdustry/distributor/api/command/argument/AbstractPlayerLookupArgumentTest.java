@@ -63,8 +63,7 @@ public abstract class AbstractPlayerLookupArgumentTest<A extends CommandArgument
     @Test
     void test_find_by_name_colored() {
         final var argument = this.createArgument();
-        final var result =
-                argument.getParser().parse(this.getCommandContext(), this.createArgumentQueue("[blue]bob"));
+        final var result = argument.getParser().parse(this.getCommandContext(), this.createArgumentQueue("[blue]bob"));
         assertThat(result.getParsedValue()).isPresent().get().isEqualTo(this.mapPlayer(this.player2));
     }
 
@@ -89,8 +88,7 @@ public abstract class AbstractPlayerLookupArgumentTest<A extends CommandArgument
     @Test
     void test_fail_no_player_found() {
         final var argument = this.createArgument();
-        final var result =
-                argument.getParser().parse(this.getCommandContext(), this.createArgumentQueue("unknown"));
+        final var result = argument.getParser().parse(this.getCommandContext(), this.createArgumentQueue("unknown"));
         assertThat(result.getFailure()).isPresent().get().isInstanceOf(PlayerArgument.PlayerNotFoundException.class);
     }
 
