@@ -45,7 +45,7 @@ public interface PluginScheduler {
      * Returns a new {@link PluginTaskRecipe} instance.
      *
      * @param plugin the plugin to schedule the task for.
-     * @param value the initial value.
+     * @param value  the initial value.
      * @return a new {@link PluginTaskRecipe} instance.
      */
     <V> PluginTaskRecipe<V> recipe(final ExtendedPlugin plugin, final V value);

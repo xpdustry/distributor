@@ -18,10 +18,6 @@
  */
 package fr.xpdustry.distributor.core.scheduler;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-
 import arc.Core;
 import arc.mock.MockApplication;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
@@ -35,6 +31,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public final class SimplePluginSchedulerTest {
 

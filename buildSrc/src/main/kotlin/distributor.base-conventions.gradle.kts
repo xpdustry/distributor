@@ -45,6 +45,17 @@ spotless {
     java {
         palantirJavaFormat()
         formatAnnotations()
+        importOrderFile(rootProject.file(".spotless/distributor.importorder"))
+        custom("noWildcardImports") {
+            if (it.contains("*;\n")) {
+                throw Error("No wildcard imports allowed")
+            }
+            it
+        }
+        bumpThisNumberIfACustomStepChanges(1)
+    }
+    kotlinGradle {
+        ktlint()
     }
 }
 

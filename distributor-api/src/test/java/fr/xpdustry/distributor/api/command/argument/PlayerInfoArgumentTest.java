@@ -18,8 +18,6 @@
  */
 package fr.xpdustry.distributor.api.command.argument;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import arc.Core;
 import arc.mock.MockSettings;
 import mindustry.Vars;
@@ -30,6 +28,8 @@ import mindustry.net.Net;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class PlayerInfoArgumentTest
         extends AbstractPlayerLookupArgumentTest<PlayerInfoArgument<Object>, PlayerInfo> {

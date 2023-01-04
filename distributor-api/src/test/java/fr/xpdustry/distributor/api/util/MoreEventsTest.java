@@ -18,12 +18,12 @@
  */
 package fr.xpdustry.distributor.api.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import arc.Events;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class MoreEventsTest {
 

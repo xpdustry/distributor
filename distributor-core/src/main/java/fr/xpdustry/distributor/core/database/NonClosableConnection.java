@@ -38,6 +38,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 // This code is provided to you by LuckPerms, under the MIT license.
+
 /**
  * A wrapper around a {@link Connection} which blocks usage of the default {@link #close()} method.
  */

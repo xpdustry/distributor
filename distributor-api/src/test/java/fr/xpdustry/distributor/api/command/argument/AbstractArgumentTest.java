@@ -18,8 +18,6 @@
  */
 package fr.xpdustry.distributor.api.command.argument;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
@@ -29,6 +27,8 @@ import java.util.Queue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractArgumentTest<A extends CommandArgument<Object, ?>> {
 

@@ -38,9 +38,8 @@ import org.slf4j.Logger;
 
 public final class SimplePluginScheduler implements PluginScheduler, PluginListener {
 
-    private static final Logger logger = org.slf4j.LoggerFactory.getLogger("PluginScheduler");
-
     static final String DISTRIBUTOR_WORKER_BASE_NAME = "distributor-worker-";
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger("PluginScheduler");
 
     private final Queue<ScheduledPluginTask<?>> tasks =
             new PriorityBlockingQueue<>(16, Comparator.comparing(ScheduledPluginTask::getNextExecutionTime));

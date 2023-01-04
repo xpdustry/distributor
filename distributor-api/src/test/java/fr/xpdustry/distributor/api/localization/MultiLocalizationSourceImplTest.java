@@ -18,12 +18,12 @@
  */
 package fr.xpdustry.distributor.api.localization;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.MessageFormat;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class MultiLocalizationSourceImplTest {
 

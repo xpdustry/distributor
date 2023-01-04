@@ -81,11 +81,6 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
         }
     }
 
-    protected abstract int getDefaultPort();
-
-    protected abstract void configure(
-            final HikariConfig hikari, String host, int port, String database, String username, String password);
-
     protected Map<String, String> getExtraProperties() {
         return new HashMap<>();
     }
@@ -94,4 +89,9 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
     public Function<String, String> getStatementProcessor() {
         return statement -> statement.replace("{prefix}", this.configuration.getDatabasePrefix());
     }
+
+    protected abstract int getDefaultPort();
+
+    protected abstract void configure(
+            final HikariConfig hikari, String host, int port, String database, String username, String password);
 }

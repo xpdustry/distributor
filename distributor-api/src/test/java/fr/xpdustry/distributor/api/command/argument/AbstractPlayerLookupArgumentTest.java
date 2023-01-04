@@ -18,8 +18,6 @@
  */
 package fr.xpdustry.distributor.api.command.argument;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cloud.commandframework.arguments.CommandArgument;
 import fr.xpdustry.distributor.api.TestPlayer;
 import mindustry.gen.Groups;
@@ -27,6 +25,8 @@ import mindustry.gen.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractPlayerLookupArgumentTest<A extends CommandArgument<Object, R>, R>
         extends AbstractArgumentTest<A> {

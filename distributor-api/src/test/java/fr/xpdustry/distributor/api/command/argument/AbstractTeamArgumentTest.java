@@ -18,8 +18,6 @@
  */
 package fr.xpdustry.distributor.api.command.argument;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.stream.Stream;
 import mindustry.game.Team;
@@ -29,6 +27,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractTeamArgumentTest extends AbstractArgumentTest<TeamArgument<Object>> {
 

@@ -192,10 +192,6 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
         }
     }
 
-    protected abstract String getPermissibleCategory();
-
-    protected abstract Class<P> getPermissibleClass();
-
     @SuppressWarnings("SameParameterValue")
     protected final CommandArgument<CommandSender, String> createPermissionArgument(final String name) {
         return StringArgument.<CommandSender>single(name)
@@ -223,4 +219,8 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
     protected final String prefixPermission(final String permission) {
         return "distributor.permission." + this.getPermissibleCategory() + "." + permission;
     }
+
+    protected abstract String getPermissibleCategory();
+
+    protected abstract Class<P> getPermissibleClass();
 }
