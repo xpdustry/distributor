@@ -20,6 +20,7 @@ package fr.xpdustry.distributor.core;
 
 import arc.Core;
 import arc.util.CommandHandler;
+import arc.util.Log;
 import fr.xpdustry.distributor.api.Distributor;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
@@ -64,12 +65,11 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         final var temp = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
         if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
-            throw new RuntimeException(String.format(
+            Log.err(
                     """
-                    The slf4j Logger factory isn't provided by Distributor (got %s instead of ArcLoggerFactory).
-                    Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is shaded.
-                    """,
-                    LoggerFactory.getILoggerFactory().getClass().getName()));
+                    The slf4j Logger factory isn't provided by Distributor (got @ instead of ArcLoggerFactory).
+                    Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is relocated correctly.""",
+                    LoggerFactory.getILoggerFactory().getClass().getName());
         }
         Thread.currentThread().setContextClassLoader(temp);
     }
