@@ -16,8 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api;
+package fr.xpdustry.distributor.core.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.scheduler.PluginTask;
 
-public final class TestPlugin extends ExtendedPlugin {}
+public interface ScheduledPluginTask<V> extends PluginTask<V>, Runnable {
+
+    long getNextExecutionTime();
+}

@@ -18,8 +18,9 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A helper object for building and scheduling a {@link PluginTask}.
@@ -41,41 +42,60 @@ public interface PluginTaskBuilder {
      * @param unit  the time unit of the delay.
      * @return this builder.
      */
-    PluginTaskBuilder delay(final long delay, final TimeUnit unit);
+    default PluginTaskBuilder delay(final long delay, final TimeUnit unit) {
+        return this.delay((long) (TimeUnit.MILLISECONDS.convert(delay, unit) * (60F / 1000F)));
+    }
+
+    /**
+     * Run the task after a delay in ticks.
+     *
+     * @param delay the delay.
+     * @return this builder.
+     */
+    PluginTaskBuilder delay(final long delay);
 
     /**
      * Run the task periodically with a fixed interval.
-     * Stops the execution if an exception is thrown.
+     * Stops the periodic execution if an exception is thrown.
      *
      * @param interval the interval between the end of the last execution and the start of the next.
      * @param unit     the time unit of the interval.
      * @return this builder.
      */
-    PluginTaskBuilder repeatInterval(final long interval, final TimeUnit unit);
+    default PluginTaskBuilder repeat(final long interval, final TimeUnit unit) {
+        return this.repeat((long) (TimeUnit.MILLISECONDS.convert(interval, unit) * (60F / 1000F)));
+    }
 
     /**
-     * Run the task periodically with a fixed period.
-     * Stops the execution if an exception is thrown.
+     * Run the task periodically with a fixed interval in ticks.
+     * Stops the periodic execution if an exception is thrown.
      *
-     * @param period the period between successive executions.
-     * @param unit   the time unit of the delay.
+     * @param interval the interval between the end of the last execution and the start of the next.
      * @return this builder.
      */
-    PluginTaskBuilder repeatPeriod(final long period, final TimeUnit unit);
+    PluginTaskBuilder repeat(final long interval);
 
     /**
-     * Build and schedule the task with the given runnable.
+     * Build and schedule the task with the given task.
      *
-     * @param runnable the runnable to run.
-     * @return the future.
+     * @param runnable the task to run.
+     * @return a new plugin task.
      */
     PluginTask<Void> execute(final Runnable runnable);
 
     /**
-     * Build and schedule the task with the given callable.
+     * Build and schedule the task with the given task.
      *
-     * @param callable the callable to call.
-     * @return the future.
+     * @param consumer the task to run, with a cancellable object to stop the task if it's periodic.
+     * @return a new plugin task.
      */
-    <V> PluginTask<V> execute(final Callable<V> callable);
+    PluginTask<Void> execute(final Consumer<Cancellable> consumer);
+
+    /**
+     * Build and schedule the task with the given task.
+     *
+     * @param supplier the task to run, with an output value. Won't output any result value if the task is periodic.
+     * @return a new plugin task.
+     */
+    <V> PluginTask<V> execute(final Supplier<V> supplier);
 }

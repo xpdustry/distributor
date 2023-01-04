@@ -16,29 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api;
-
-import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
-import fr.xpdustry.distributor.api.permission.PermissionService;
-import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+package fr.xpdustry.distributor.api.scheduler;
 
 /**
- * The main entry point of the Distributor API.
+ * A {@code Cancellable} is used to cancel a task.
  */
-public interface Distributor {
+public interface Cancellable {
 
     /**
-     * Returns the global localization source instance.
+     * Cancels the task bound to this {@code Cancellable}.
      */
-    MultiLocalizationSource getGlobalLocalizationSource();
-
-    /**
-     * Returns the plugin scheduler.
-     */
-    PluginScheduler getPluginScheduler();
-
-    /**
-     * Returns the permission service.
-     */
-    PermissionService getPermissionService();
+    void cancel();
 }

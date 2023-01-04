@@ -40,8 +40,8 @@ tasks.shadowJar {
 
     val shadowPackage = "fr.xpdustry.distributor.core.shadow"
     relocate("org.aeonbits.owner", "$shadowPackage.owner")
-    relocate("com.mysql", "$shadowPackage.mysql")
     relocate("com.zaxxer.hikari", "$shadowPackage.hikari")
+    relocate("com.mysql", "$shadowPackage.mysql")
     relocate("com.google.protobuf", "$shadowPackage.protobuf")
 
     from(rootProject.file("LICENSE.md")) {

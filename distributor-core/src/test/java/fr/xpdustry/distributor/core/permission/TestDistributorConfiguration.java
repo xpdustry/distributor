@@ -28,6 +28,10 @@ public interface TestDistributorConfiguration extends DistributorConfiguration, 
         return ConfigFactory.create(TestDistributorConfiguration.class);
     }
 
+    default void setSchedulerWorkers(final int workers) {
+        this.setProperty("distributor.scheduler.workers", String.valueOf(workers));
+    }
+
     default void setDatabaseType(final DatabaseType type) {
         this.setProperty("distributor.database.type", type.name());
     }

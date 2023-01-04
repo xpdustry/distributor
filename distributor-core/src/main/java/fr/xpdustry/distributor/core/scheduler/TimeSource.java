@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.scheduler;
+package fr.xpdustry.distributor.core.scheduler;
 
 import arc.util.Time;
 
@@ -24,24 +24,21 @@ import arc.util.Time;
  * A {@code PluginTimeSource} provides the current time in milliseconds.
  */
 @FunctionalInterface
-public interface PluginTimeSource {
+public interface TimeSource {
 
     /**
      * Returns a {@code PluginTimeSource} using {@link Time#globalTime} to provide the current time.
      */
-    static PluginTimeSource arc() {
-        return () -> (long) (Time.globalTime * 16);
+    static TimeSource arc() {
+        return () -> (long) Time.globalTime;
     }
 
     /**
      * Returns a {@code PluginTimeSource} using {@link System#currentTimeMillis()} to provide the current time.
      */
-    static PluginTimeSource standard() {
-        return System::currentTimeMillis;
+    static TimeSource standard() {
+        return () -> System.currentTimeMillis() / 16L;
     }
 
-    /**
-     * Returns the current time in milliseconds.
-     */
-    long getCurrentMillis();
+    long getCurrentTicks();
 }

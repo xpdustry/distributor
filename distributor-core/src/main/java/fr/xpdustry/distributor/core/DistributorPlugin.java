@@ -18,6 +18,7 @@
  */
 package fr.xpdustry.distributor.core;
 
+import arc.Core;
 import arc.util.CommandHandler;
 import fr.xpdustry.distributor.api.Distributor;
 import fr.xpdustry.distributor.api.DistributorProvider;
@@ -28,6 +29,7 @@ import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PermissionServiceCommands;
@@ -39,6 +41,8 @@ import fr.xpdustry.distributor.core.dependency.Dependency;
 import fr.xpdustry.distributor.core.dependency.DependencyManager;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
 import fr.xpdustry.distributor.core.permission.SQLPermissionService;
+import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
+import fr.xpdustry.distributor.core.scheduler.TimeSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -75,6 +79,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
 
     private @MonotonicNonNull SQLPermissionService permissions = null;
+    private @MonotonicNonNull SimplePluginScheduler scheduler = null;
     private @MonotonicNonNull DistributorConfiguration configuration = null;
     private @MonotonicNonNull DependencyManager dependencyManager = null;
     private @MonotonicNonNull ConnectionFactory connectionFactory = null;
@@ -141,6 +146,12 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
         this.addListener(new PermissionServiceCommands(this));
 
+        // Start scheduler
+        final var parallelism = this.configuration.getSchedulerWorkers() < 1
+                ? Math.max(4, Runtime.getRuntime().availableProcessors())
+                : this.configuration.getSchedulerWorkers();
+        this.addListener(this.scheduler = new SimplePluginScheduler(TimeSource.arc(), Core.app::post, parallelism));
+
         DistributorProvider.set(this);
     }
 
@@ -166,6 +177,11 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public MultiLocalizationSource getGlobalLocalizationSource() {
         return this.source;
+    }
+
+    @Override
+    public PluginScheduler getPluginScheduler() {
+        return this.scheduler;
     }
 
     @Override

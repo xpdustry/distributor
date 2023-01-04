@@ -18,68 +18,35 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import arc.Core;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
-import fr.xpdustry.distributor.api.plugin.PluginAware;
-import fr.xpdustry.distributor.api.plugin.PluginListener;
-import java.util.concurrent.Executor;
 
 /**
  * A {@code PluginScheduler} is used to schedule tasks for a plugin. A better alternative to {@link arc.util.Timer}.
  */
-public interface PluginScheduler extends PluginAware, PluginListener {
-
-    /**
-     * Creates a new {@code PluginScheduler} instance.
-     *
-     * @param plugin the plugin to which this scheduler belongs
-     * @return a new {@code PluginScheduler} instance
-     */
-    static PluginScheduler create(final ExtendedPlugin plugin) {
-        return new PluginSchedulerImpl(plugin, PluginTimeSource.arc(), Core.app::post);
-    }
-
-    /**
-     * Creates a new {@code PluginScheduler} instance.
-     *
-     * @param plugin      the plugin to which this scheduler is attached
-     * @param parallelism the number of workers in the pool
-     * @return a new {@code PluginScheduler} instance
-     */
-    static PluginScheduler create(final ExtendedPlugin plugin, final int parallelism) {
-        return new PluginSchedulerImpl(plugin, PluginTimeSource.arc(), Core.app::post, parallelism);
-    }
-
-    /**
-     * Returns a new {@link PluginTaskBuilder} instance scheduling an asynchronous task.
-     */
-    PluginTaskBuilder scheduleAsync();
+public interface PluginScheduler {
 
     /**
      * Returns a new {@link PluginTaskBuilder} instance scheduling a synchronous task.
+     *
+     * @param plugin the plugin to schedule the task for.
+     * @return a new {@link PluginTaskBuilder} instance.
      */
-    PluginTaskBuilder scheduleSync();
+    PluginTaskBuilder scheduleSync(final ExtendedPlugin plugin);
+
+    /**
+     * Returns a new {@link PluginTaskBuilder} instance scheduling an asynchronous task.
+     *
+     * @param plugin the plugin to schedule the task for.
+     * @return a new {@link PluginTaskBuilder} instance.
+     */
+    PluginTaskBuilder scheduleAsync(final ExtendedPlugin plugin);
 
     /**
      * Returns a new {@link PluginTaskRecipe} instance.
      *
+     * @param plugin the plugin to schedule the task for.
      * @param value the initial value.
-     * @return a {@link PluginTaskRecipe} instance.
+     * @return a new {@link PluginTaskRecipe} instance.
      */
-    <V> PluginTaskRecipe<V> recipe(final V value);
-
-    /**
-     * Returns the asynchronous executor used by this scheduler.
-     */
-    Executor getAsyncExecutor();
-
-    /**
-     * Returns the synchronous executor used by this scheduler.
-     */
-    Executor getSyncExecutor();
-
-    /**
-     * Returns the time source used by this scheduler.
-     */
-    PluginTimeSource getTimeSource();
+    <V> PluginTaskRecipe<V> recipe(final ExtendedPlugin plugin, final V value);
 }

@@ -16,37 +16,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.scheduler;
+package fr.xpdustry.distributor.core.scheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import arc.Core;
 import arc.mock.MockApplication;
-import fr.xpdustry.distributor.api.TestPlugin;
+import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-public final class PluginSchedulerImplTest {
+public final class SimplePluginSchedulerTest {
 
-    private static final Duration PRECISION = Duration.ofMillis(100L);
+    // Precision of 0.2 seconds
+    private static final Duration PRECISION = Duration.ofMillis(200);
+    private static final long PRECISION_TICKS = 12L;
 
-    private PluginTimeSource source;
-    private PluginSchedulerImpl scheduler;
+    private ExtendedPlugin plugin;
+    private TimeSource source;
+    private SimplePluginScheduler scheduler;
     private Thread updater;
 
     @SuppressWarnings("BusyWait")
     @BeforeEach
     void before() {
         Core.app = new MockApplication();
-        this.source = PluginTimeSource.standard();
-        this.scheduler = new PluginSchedulerImpl(new TestPlugin(), this.source, Runnable::run);
+        this.plugin = Mockito.mock(ExtendedPlugin.class);
+        this.source = TimeSource.standard();
+        this.scheduler = new SimplePluginScheduler(this.source, Runnable::run, 4);
         this.updater = new Thread(() -> {
             while (true) {
                 try {
@@ -69,87 +76,85 @@ public final class PluginSchedulerImplTest {
     @Test
     void test_simple_sync_schedule() {
         final var future = new CompletableFuture<Thread>();
-        assertThat(this.scheduler.scheduleSync().execute(() -> future.complete(Thread.currentThread())))
+        assertThat(this.scheduler.scheduleSync(this.plugin).execute(() -> future.complete(Thread.currentThread())))
                 .succeedsWithin(PRECISION);
         assertThat(future).isCompletedWithValueMatching(thread -> !thread.getName()
-                .startsWith(this.scheduler.getBaseWorkerName()));
+                .startsWith(SimplePluginScheduler.DISTRIBUTOR_WORKER_BASE_NAME));
     }
 
     @Test
     void test_simple_async_schedule() {
         final var future = new CompletableFuture<Thread>();
-        assertThat(this.scheduler.scheduleAsync().execute(() -> future.complete(Thread.currentThread())))
+        assertThat(this.scheduler.scheduleAsync(this.plugin).execute(() -> future.complete(Thread.currentThread())))
                 .succeedsWithin(PRECISION);
         assertThat(future).isCompletedWithValueMatching(thread -> thread.getName()
-                .startsWith(this.scheduler.getBaseWorkerName()));
+                .startsWith(SimplePluginScheduler.DISTRIBUTOR_WORKER_BASE_NAME));
     }
 
     @Test
-    void test_initial_delay() {
+    void test_delay() {
         final var future = new CompletableFuture<Long>();
-        final var begin = this.source.getCurrentMillis();
+        final var begin = this.source.getCurrentTicks();
         assertThat(this.scheduler
-                        .scheduleSync()
-                        .delay(3L, TimeUnit.SECONDS)
-                        .execute(() -> future.complete(this.source.getCurrentMillis())))
-                .succeedsWithin(Duration.ofSeconds(3L).plus(PRECISION));
+                        .scheduleSync(this.plugin)
+                        .delay(1L, TimeUnit.SECONDS)
+                        .execute(() -> future.complete(this.source.getCurrentTicks())))
+                .succeedsWithin(Duration.ofSeconds(1L).plus(PRECISION));
         final var end = future.join();
-        assertThat(Duration.ofMillis(end - begin)).isCloseTo(Duration.ofSeconds(3L), PRECISION);
+        assertThat(end - begin).isCloseTo(60L, within(PRECISION_TICKS));
     }
 
     @Test
-    void test_repeat_interval() {
+    void test_interval() {
         final var counter = new CountDownLatch(3);
         final var longs = new ArrayList<Long>();
         final var future = this.scheduler
-                .scheduleSync()
-                .repeatInterval(1L, TimeUnit.SECONDS)
+                .scheduleSync(this.plugin)
+                .repeat(500L, TimeUnit.MILLISECONDS)
                 .execute(() -> {
-                    longs.add(this.source.getCurrentMillis());
-                    Thread.sleep(500L);
+                    longs.add(this.source.getCurrentTicks());
+                    try {
+                        Thread.sleep(500L);
+                    } catch (final InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     counter.countDown();
-                    return null;
                 });
 
-        // Execute the task 3 times
-        assertTimeoutPreemptively(Duration.ofSeconds(5L), () -> {
+        // The task should execute 3 times, every second
+        assertTimeoutPreemptively(Duration.ofSeconds(4L), () -> {
             counter.await();
             future.cancel(false);
         });
 
-        assertThat(Duration.ofMillis(longs.get(1) - longs.get(0))).isCloseTo(Duration.ofMillis(1500L), PRECISION);
-        assertThat(Duration.ofMillis(longs.get(2) - longs.get(1))).isCloseTo(Duration.ofMillis(1500L), PRECISION);
+        assertThat(longs.get(1) - longs.get(0)).isCloseTo(60L, within(PRECISION_TICKS));
+        assertThat(longs.get(2) - longs.get(1)).isCloseTo(60L, within(PRECISION_TICKS));
     }
 
     @Test
-    void test_repeat_period() {
-        final var counter = new CountDownLatch(3);
-        final var longs = new ArrayList<Long>();
-        final var future = this.scheduler
-                .scheduleSync()
-                .repeatPeriod(1L, TimeUnit.SECONDS)
-                .execute(() -> {
-                    longs.add(this.source.getCurrentMillis());
-                    Thread.sleep(500L);
-                    counter.countDown();
-                    return null;
-                });
-
-        // Execute the task 3 times
-        assertTimeoutPreemptively(Duration.ofSeconds(5L), () -> {
-            counter.await();
-            future.cancel(false);
-        });
-
-        assertThat(Duration.ofMillis(longs.get(1) - longs.get(0))).isCloseTo(Duration.ofSeconds(1L), PRECISION);
-        assertThat(Duration.ofMillis(longs.get(2) - longs.get(1))).isCloseTo(Duration.ofSeconds(1L), PRECISION);
+    void test_cancelling() {
+        final var future = new CompletableFuture<Long>();
+        final var counter = new AtomicInteger(3);
+        final var begin = this.source.getCurrentTicks();
+        assertThat(this.scheduler
+                        .scheduleSync(this.plugin)
+                        .repeat(500L, TimeUnit.MILLISECONDS)
+                        .execute(cancellable -> {
+                            if (counter.decrementAndGet() == 0) {
+                                cancellable.cancel();
+                                future.complete(this.source.getCurrentTicks());
+                            }
+                        }))
+                .failsWithin(Duration.ofSeconds(1L).plus(PRECISION));
+        final var end = future.join();
+        assertThat(end - begin).isCloseTo(60L, within(PRECISION_TICKS));
     }
 
     @Test
     void test_recipe() {
         final var steps = new ArrayList<TestRecipeStep<String>>();
         final var task = this.scheduler
-                .recipe("initial")
+                .recipe(this.plugin, "initial")
                 .thenAccept(value -> steps.add(new TestRecipeStep<>(value + " accept")))
                 .thenApply(value -> {
                     final var newValue = value + " apply";
@@ -200,7 +205,7 @@ public final class PluginSchedulerImplTest {
                 .isEqualTo("run async");
     }
 
-    private final class TestRecipeStep<V> {
+    private static final class TestRecipeStep<V> {
 
         private final V value;
         private final String thread = Thread.currentThread().getName();
@@ -214,7 +219,7 @@ public final class PluginSchedulerImplTest {
         }
 
         public boolean isAsyncThread() {
-            return this.thread.startsWith(PluginSchedulerImplTest.this.scheduler.getBaseWorkerName());
+            return this.thread.startsWith(SimplePluginScheduler.DISTRIBUTOR_WORKER_BASE_NAME);
         }
 
         public boolean isSyncThread() {

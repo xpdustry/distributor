@@ -23,6 +23,10 @@ import org.aeonbits.owner.Config;
 
 public interface DistributorConfiguration extends Accessible {
 
+    @Config.Key("distributor.scheduler.workers")
+    @Config.DefaultValue("-1")
+    int getSchedulerWorkers();
+
     @Config.Key("distributor.database.type")
     @Config.DefaultValue("SQLITE")
     DatabaseType getDatabaseType();
