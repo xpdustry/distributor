@@ -46,4 +46,7 @@ public interface ConnectionFactory extends AutoCloseable {
     Function<String, String> getStatementProcessor();
 
     void start();
+
+    @Override
+    void close() throws SQLException;
 }

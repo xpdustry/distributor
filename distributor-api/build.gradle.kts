@@ -4,8 +4,9 @@ plugins {
     id("distributor.mindustry-conventions")
 }
 
+val cloud = "1.8.0"
 fun DependencyHandler.cloudCommandFramework(module: String) {
-    api("cloud.commandframework:cloud-$module:${Versions.cloud}")
+    api("cloud.commandframework:cloud-$module:$cloud")
 }
 
 dependencies {
