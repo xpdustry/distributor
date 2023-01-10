@@ -1,37 +1,27 @@
 # Distributor
 
-[![Xpdustry latest](https://maven.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor-core?color=00FFFF&name=Distributor&prefix=v)](https://github.com/Xpdustry/Distributor/releases)
-[![Build](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml)
-[![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
+[![Xpdustry latest](https://maven.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor-core?color=00ced1&name=Distributor&prefix=v)](https://github.com/Xpdustry/Distributor/releases)
+[![Javadoc](https://img.shields.io/badge/Javadoc-latest-00ced1)](https://maven.xpdustry.fr/javadoc/releases/fr/xpdustry/distributor-api/latest/)
+[![Downloads](https://img.shields.io/github/downloads/Xpdustry/Distributor/total?color=00ced1)](https://github.com/Xpdustry/Distributor/releases)
+[![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-00ced1)](https://github.com/Anuken/Mindustry/releases)
 
-## Description
+Distributor is a framework for writing advanced Mindustry plugins in a safe and efficient way, it features :
 
-**Distributor** is a plugin framework which provides a powerful command system,
-better Mindustry API bindings and other nice features, making plugin development time much faster.
-You can find the documentation [here](https://github.com/Xpdustry/Distributor/wiki), the official plugin jars in the
-[releases](https://github.com/Xpdustry/Distributor/releases) and the snapshot jars in
-the [commit workflows](https://github.com/Xpdustry/Distributor/actions/workflows/build.yml).
+- A powerful command system provided by [Cloud](https://github.com/Incendo/cloud).
+- A very complete minecraft-like permission system (cloud commands can also use this system).
+- A scheduler API for managing sync and async background tasks.
+- A nice localization API inspired from [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
+- **Much more...**
+
+## Links
+
+- [JavaDoc](https://maven.xpdustry.fr/javadoc/releases/fr/xpdustry/distributor-api/latest/)
+- [Wiki](https://github.com/Xpdustry/Distributor/wiki)
+- [Discord](https://discord.xpdustry.fr)
 
 ## Building
 
-- `./gradlew jar` for a simple jar that contains only the plugin code.
-
-- `./gradlew shadowJar` for a fatJar that contains the plugin and its dependencies (use this for your server).
-
-## Testing
-
-- `./gradlew :distributor-core:runMindustryClient`: Run the plugin in a Mindustry client (desktop).
-
-- `./gradlew :distributor-core:runMindustryServer`: Run the plugin in a Mindustry server (headless).
-
-## Running
-
-This plugin is compatible with v137+.
-
-## Credits
-
-- I want to thank Incendo and their amazing work on [Cloud](https://github.com/Incendo/cloud), the command library of my
-  dreams.
-
-- The localization system is based on the translation system of
-  [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
+- `./gradlew build` to build the project, with tests included.
+- `./gradlew :distributor-core:shadowJar` to only compile the plugin (it will be located at `distributor-core/build/libs/Distributor.jar`).
+- `./gradlew test` to run the unit tests.
+- `./gradlew :distributor-core:runMindustryServer` to run the plugin in a local Mindustry server.

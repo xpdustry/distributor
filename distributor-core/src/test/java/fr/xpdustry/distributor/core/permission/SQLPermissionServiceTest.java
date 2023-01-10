@@ -50,7 +50,7 @@ public final class SQLPermissionServiceTest {
         final var config = TestDistributorConfiguration.create();
         config.setDatabasePrefix("test_");
         this.factory = new SQLiteConnectionFactory(
-                config, this.dbDir.resolve("test.db"), () -> this.getClass().getClassLoader());
+                config, this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
         this.factory.start();
         this.manager = new SQLPermissionService(this.factory);
         this.manager.setVerifyAdmin(false);

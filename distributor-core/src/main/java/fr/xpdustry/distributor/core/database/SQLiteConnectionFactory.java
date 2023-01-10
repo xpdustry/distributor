@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 // This code is provided to you by LuckPerms, under the MIT license.
@@ -33,17 +32,15 @@ public final class SQLiteConnectionFactory implements ConnectionFactory {
 
     private final DistributorConfiguration configuration;
     private final Path path;
-    private final Supplier<ClassLoader> classLoaderSupplier;
+    private final ClassLoader classLoader;
     private @MonotonicNonNull Constructor<?> constructor;
     private @MonotonicNonNull NonClosableConnection connection;
 
     public SQLiteConnectionFactory(
-            final DistributorConfiguration configuration,
-            final Path path,
-            final Supplier<ClassLoader> classLoaderSupplier) {
+            final DistributorConfiguration configuration, final Path path, final ClassLoader classLoader) {
         this.configuration = configuration;
         this.path = path;
-        this.classLoaderSupplier = classLoaderSupplier;
+        this.classLoader = classLoader;
     }
 
     @Override
@@ -58,9 +55,8 @@ public final class SQLiteConnectionFactory implements ConnectionFactory {
 
     @Override
     public void start() {
-        final var classLoader = this.classLoaderSupplier.get();
         try {
-            final Class<?> connectionClass = classLoader.loadClass("org.sqlite.jdbc4.JDBC4Connection");
+            final Class<?> connectionClass = this.classLoader.loadClass("org.sqlite.jdbc4.JDBC4Connection");
             this.constructor = connectionClass.getConstructor(String.class, String.class, Properties.class);
         } catch (final ReflectiveOperationException e) {
             throw new RuntimeException(e);

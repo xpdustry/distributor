@@ -17,11 +17,12 @@ dependencies {
 val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("plugin.json"))
 metadata.version = rootProject.version.toString()
 metadata.description = rootProject.description.toString()
-metadata.name = "xpdustry-distributor-core"
+metadata.name = "distributor-core"
 metadata.displayName = "Distributor"
 metadata.main = "fr.xpdustry.distributor.core.DistributorPlugin"
 
 tasks.shadowJar {
+    archiveFileName.set("Distributor.jar")
     archiveClassifier.set("plugin")
 
     doFirst {

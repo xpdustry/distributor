@@ -94,7 +94,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         try (final var reader = new BufferedReader(new InputStreamReader(banner, StandardCharsets.UTF_8))) {
             reader.lines().forEach(line -> LoggerFactory.getLogger("ROOT").info("> {}", line));
             this.getLogger()
-                    .info("> Loaded Distributor core v{}", this.getDescriptor().getVersion());
+                    .info("> Loaded Distributor v{}", this.getDescriptor().getVersion());
         } catch (final IOException e) {
             this.getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
         }
@@ -129,7 +129,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
             case SQLITE -> new SQLiteConnectionFactory(
                     this.configuration,
                     this.getDirectory().resolve("permission.sqlite"),
-                    () -> this.dependencyManager.createClassLoaderFor(SQLITE_DRIVER));
+                    this.dependencyManager.createClassLoaderFor(SQLITE_DRIVER));
             case MYSQL -> new MySQLConnectionFactory(this.configuration);};
         this.connectionFactory.start();
 
