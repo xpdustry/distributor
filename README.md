@@ -1,6 +1,6 @@
 # Distributor
 
-[![Xpdustry latest](https://maven.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor-core?color=00ced1&name=Distributor&prefix=v)](https://github.com/Xpdustry/Distributor/releases)
+[![Xpdustry latest](https://maven.xpdustry.fr/api/badge/latest/releases/fr/xpdustry/distributor-core?color=00ced1&name=Distributor&prefix=v)](https://maven.xpdustry.fr/#/releases/fr/xpdustry/distributor-api)
 [![Javadoc](https://img.shields.io/badge/Javadoc-latest-00ced1)](https://maven.xpdustry.fr/javadoc/releases/fr/xpdustry/distributor-api/latest/)
 [![Downloads](https://img.shields.io/github/downloads/Xpdustry/Distributor/total?color=00ced1)](https://github.com/Xpdustry/Distributor/releases)
 [![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-00ced1)](https://github.com/Anuken/Mindustry/releases)
