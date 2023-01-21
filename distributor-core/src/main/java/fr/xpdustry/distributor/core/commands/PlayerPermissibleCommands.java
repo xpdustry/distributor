@@ -21,6 +21,7 @@ package fr.xpdustry.distributor.core.commands;
 import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.commands.parser.PlayerPermissibleParser;
 
 public final class PlayerPermissibleCommands extends PermissibleCommands<PlayerPermissible> {
 

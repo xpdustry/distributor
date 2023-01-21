@@ -23,12 +23,16 @@ import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.arguments.standard.BooleanArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.meta.CommandMeta;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
+import fr.xpdustry.distributor.api.command.argument.PlayerArgument;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.plugin.PluginListener;
+import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.core.DistributorPlugin;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import mindustry.gen.Player;
 
 public final class PermissionServiceCommands implements PluginListener {
 
@@ -49,11 +53,11 @@ public final class PermissionServiceCommands implements PluginListener {
     }
 
     public void onSharedCommandRegistration(final ArcCommandManager<CommandSender> manager) {
-        final var root = manager.commandBuilder("permission")
+        final var options = manager.commandBuilder("permission")
                 .literal("options", ArgumentDescription.of("Options related to the permission service"));
 
-        manager.command(root.literal(
-                        "verify-admin", ArgumentDescription.of("Whether permission check should be skipped on admins."))
+        manager.command(options.literal("verify-admin")
+                .meta(CommandMeta.DESCRIPTION, "Whether permission check should be skipped on admins.")
                 .argument(BooleanArgument.optional("value"))
                 .handler(ctx -> this.onOptionCommand(
                         ctx,
@@ -61,13 +65,52 @@ public final class PermissionServiceCommands implements PluginListener {
                         () -> this.distributor.getPermissionService().getVerifyAdmin(),
                         value -> this.distributor.getPermissionService().setVerifyAdmin(value))));
 
-        manager.command(root.literal("primary-group", ArgumentDescription.of("The default group of all players."))
+        manager.command(options.literal("primary-group")
+                .meta(CommandMeta.DESCRIPTION, "The default group of all players.")
                 .argument(StringArgument.optional("value"))
                 .handler(ctx -> this.onOptionCommand(
                         ctx,
                         "primary-group",
                         () -> this.distributor.getPermissionService().getPrimaryGroup(),
                         value -> this.distributor.getPermissionService().setPrimaryGroup(value))));
+
+        // TODO Localize
+        final var identity = manager.commandBuilder("identity", ArgumentDescription.of("Manage player identities."));
+
+        manager.command(identity.literal("validate", ArgumentDescription.of("Validate a player."))
+                .argument(PlayerArgument.of("player"))
+                .handler(ctx -> {
+                    final var muuid = MUUID.of(ctx.<Player>get("player"));
+                    this.distributor
+                            .getPermissionService()
+                            .getIdentityValidator()
+                            .validate(muuid);
+                    ctx.getSender().sendMessage("Player validated.");
+                }));
+
+        manager.command(identity.literal("invalidate", ArgumentDescription.of("Invalidate a player."))
+                .argument(PlayerArgument.of("player"))
+                .handler(ctx -> {
+                    final var muuid = MUUID.of(ctx.<Player>get("player"));
+                    this.distributor
+                            .getPermissionService()
+                            .getIdentityValidator()
+                            .invalidate(muuid);
+                    ctx.getSender().sendMessage("Player invalidated.");
+                }));
+
+        manager.command(identity.literal("validity", ArgumentDescription.of("Check if a player is valid."))
+                .argument(PlayerArgument.of("player"))
+                .handler(ctx -> {
+                    final var muuid = MUUID.of(ctx.<Player>get("player"));
+                    final var verb = this.distributor
+                                    .getPermissionService()
+                                    .getIdentityValidator()
+                                    .isValid(muuid)
+                            ? "is"
+                            : "is not";
+                    ctx.getSender().sendMessage("Player " + verb + " valid.");
+                }));
     }
 
     private <V> void onOptionCommand(

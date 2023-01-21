@@ -24,6 +24,7 @@ import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.arguments.preprocessor.RegexPreprocessor;
 import cloud.commandframework.arguments.standard.BooleanArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.meta.CommandMeta;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.permission.Permissible;
@@ -31,6 +32,7 @@ import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.commands.parser.PermissibleParser;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -64,16 +66,17 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
                         "permission", ArgumentDescription.of("Permission management commands."))
                 .literal(this.getPermissibleCategory())
                 .argument(
-                        this.createPermissibleArgument(this.getPermissibleCategory()),
-                        this.formatDescription("The %s name."));
+                        this.newPermissibleArgument(this.getPermissibleCategory()),
+                        ArgumentDescription.of(this.formatDescription("The %s name.")));
 
         registry.command(root.literal("info", this.formatDescription("Get information about a %s."))
                 .permission(this.prefixPermission("permission.info"))
                 .handler(ctx -> this.getPermissibleInfo(ctx.getSender(), ctx.get(this.getPermissibleCategory()))));
 
-        registry.command(root.literal("set", this.formatDescription("Set a permission for a %s."))
+        registry.command(root.literal("set")
+                .meta(CommandMeta.DESCRIPTION, this.formatDescription("Set a permission for a %s."))
                 .permission(this.prefixPermission("permission.set"))
-                .argument(this.createPermissionArgument("permission"), ArgumentDescription.of("The permission to set."))
+                .argument(this.newPermissionArgument("permission"), ArgumentDescription.of("The permission to set."))
                 .argument(BooleanArgument.of("value"), ArgumentDescription.of("The permission value."))
                 .handler(ctx -> this.setPermissiblePermission(
                         ctx.getSender(),
@@ -81,35 +84,39 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
                         ctx.get("permission"),
                         Tristate.of(ctx.get("value")))));
 
-        registry.command(root.literal("unset", this.formatDescription("Unset a permission for a %s."))
+        registry.command(root.literal("unset")
+                .meta(CommandMeta.DESCRIPTION, this.formatDescription("Unset a permission for a %s."))
                 .permission(this.prefixPermission("permission.unset"))
-                .argument(
-                        this.createPermissionArgument("permission"), ArgumentDescription.of("The permission to unset."))
+                .argument(this.newPermissionArgument("permission"), ArgumentDescription.of("The permission to unset."))
                 .handler(ctx -> this.setPermissiblePermission(
                         ctx.getSender(),
                         ctx.get(this.getPermissibleCategory()),
                         ctx.get("permission"),
                         Tristate.UNDEFINED)));
 
-        registry.command(root.literal("delete", this.formatDescription("Delete permission data of a %s."))
+        registry.command(root.literal("delete")
+                .meta(CommandMeta.DESCRIPTION, this.formatDescription("Delete permission data of a %s."))
                 .permission(this.prefixPermission("permission.delete"))
                 .handler(ctx ->
                         this.deletePermissiblePermissions(ctx.getSender(), ctx.get(this.getPermissibleCategory()))));
 
         final var parents = root.literal("parent", this.formatDescription("Subcommands for %s parent groups."));
 
-        registry.command(parents.literal("info", this.formatDescription("Get information about a %s's parent groups."))
+        registry.command(parents.literal("info")
+                .meta(CommandMeta.DESCRIPTION, this.formatDescription("Get information about a %s's parent groups."))
                 .permission(this.prefixPermission("parent.info"))
                 .handler(ctx ->
                         this.getPermissibleParentsInfo(ctx.getSender(), ctx.get(this.getPermissibleCategory()))));
 
-        registry.command(parents.literal("add", this.formatDescription("Add a parent group to a %s."))
+        registry.command(parents.literal("add")
+                .meta(CommandMeta.DESCRIPTION, this.formatDescription("Add a parent group to a %s."))
                 .permission(this.prefixPermission("parent.add"))
                 .argument(StringArgument.of("parent"), ArgumentDescription.of("The parent group to add."))
                 .handler(ctx -> this.addPermissibleParent(
                         ctx.getSender(), ctx.get(this.getPermissibleCategory()), ctx.get("parent"))));
 
-        registry.command(parents.literal("remove", this.formatDescription("Remove a parent group from a %s."))
+        registry.command(parents.literal("remove")
+                .meta(CommandMeta.DESCRIPTION, this.formatDescription("Remove a parent group from a %s."))
                 .permission(this.prefixPermission("parent.remove"))
                 .argument(StringArgument.of("parent"), ArgumentDescription.of("The parent group to remove."))
                 .handler(ctx -> this.removePermissibleParent(
@@ -193,12 +200,12 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
     }
 
     @SuppressWarnings("SameParameterValue")
-    protected final CommandArgument<CommandSender, String> createPermissionArgument(final String name) {
+    protected final CommandArgument<CommandSender, String> newPermissionArgument(final String name) {
         return StringArgument.<CommandSender>single(name)
                 .addPreprocessor(RegexPreprocessor.of(Permissible.PERMISSION_REGEX));
     }
 
-    protected final CommandArgument<CommandSender, P> createPermissibleArgument(final String name) {
+    protected final CommandArgument<CommandSender, P> newPermissibleArgument(final String name) {
         return CommandArgument.<CommandSender, P>ofType(this.getPermissibleClass(), name)
                 .withParser(this.parser)
                 .build();
@@ -212,8 +219,8 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
         return this.parser;
     }
 
-    protected final ArgumentDescription formatDescription(final String description) {
-        return ArgumentDescription.of(description.formatted(this.getPermissibleCategory()));
+    protected final String formatDescription(final String description) {
+        return description.formatted(this.getPermissibleCategory());
     }
 
     protected final String prefixPermission(final String permission) {

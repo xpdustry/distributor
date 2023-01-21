@@ -21,11 +21,13 @@ package fr.xpdustry.distributor.core.commands;
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.meta.CommandMeta;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.permission.GroupPermissible;
 import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.commands.parser.GroupPermissibleParser;
 
 public final class GroupPermissibleCommands extends PermissibleCommands<GroupPermissible> {
 
@@ -42,6 +44,7 @@ public final class GroupPermissibleCommands extends PermissibleCommands<GroupPer
                 registry.commandBuilder("permission", ArgumentDescription.of("Permission management commands."));
 
         registry.command(root.literal("create-group")
+                .meta(CommandMeta.DESCRIPTION, "Creates a new group.")
                 .permission("distributor.permission.create-group")
                 .argument(StringArgument.of("group"))
                 .handler(ctx -> {
@@ -60,15 +63,17 @@ public final class GroupPermissibleCommands extends PermissibleCommands<GroupPer
                         registry.argumentBuilder(this.getPermissibleClass(), this.getPermissibleCategory())
                                 .withParser(this.getParser())
                                 .build(),
-                        ArgumentDescription.of("The %s name.".formatted(this.getPermissibleCategory())))
-                .literal("weight");
+                        ArgumentDescription.of("The group name."))
+                .literal("weight", ArgumentDescription.of("Weight management commands."));
 
         registry.command(weight.literal("get")
+                .meta(CommandMeta.DESCRIPTION, "Gets the weight of a group.")
                 .permission(this.prefixPermission("weight.get"))
                 .handler(ctx ->
                         this.getGroupPermissibleWeight(ctx.getSender(), ctx.get(this.getPermissibleCategory()))));
 
         registry.command(weight.literal("set")
+                .meta(CommandMeta.DESCRIPTION, "Sets the weight of a group.")
                 .permission(this.prefixPermission("weight.set"))
                 .argument(
                         IntegerArgument.<CommandSender>builder("weight")
