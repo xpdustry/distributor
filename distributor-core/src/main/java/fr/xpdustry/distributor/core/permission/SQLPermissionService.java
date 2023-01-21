@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.core.permission;
 
 import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.permission.IdentityValidator;
 import fr.xpdustry.distributor.api.permission.Permissible;
 import fr.xpdustry.distributor.api.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.permission.PermissionService;
@@ -26,16 +27,10 @@ import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Queue;
@@ -46,37 +41,33 @@ public final class SQLPermissionService implements PermissionService {
     private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
             Comparator.comparing(GroupPermissible::getWeight).reversed();
 
-    private final ConnectionFactory connectionFactory;
     private final SQLPlayerPermissibleManager players;
     private final SQLGroupPermissibleManager groups;
     private final SQLPermissibleOptionManager options;
+    private final IdentityValidator validator;
 
-    public SQLPermissionService(final ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-
-        this.connectionFactory.withConsumer(con -> {
-            try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql");
-                    final var statements = con.createStatement()) {
-                if (input == null) {
-                    throw new IllegalStateException("Missing schema file.");
-                }
-                for (final var statement : this.readStatements(input)) {
-                    statements.addBatch(
-                            this.connectionFactory.getStatementProcessor().apply(statement));
-                }
-                statements.executeBatch();
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
+    public SQLPermissionService(final ConnectionFactory connectionFactory, final IdentityValidator validator) {
+        try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql")) {
+            if (input == null) {
+                throw new IllegalStateException("Missing schema file.");
             }
-        });
+            connectionFactory.executeScript(input);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        this.players = new SQLPlayerPermissibleManager(this.connectionFactory);
-        this.groups = new SQLGroupPermissibleManager(this.connectionFactory);
-        this.options = new SQLPermissibleOptionManager(this.connectionFactory);
+        this.players = new SQLPlayerPermissibleManager(connectionFactory);
+        this.groups = new SQLGroupPermissibleManager(connectionFactory);
+        this.options = new SQLPermissibleOptionManager(connectionFactory);
+        this.validator = validator;
     }
 
     @Override
     public Tristate getPermission(final MUUID muuid, final String permission) {
+        if (!this.validator.isValid(muuid)) {
+            return Tristate.FALSE;
+        }
+
         if (this.getVerifyAdmin()) {
             final var info = Vars.netServer.admins.getInfoOptional(muuid.getUuid());
             if (info != null && info.admin) {
@@ -152,34 +143,8 @@ public final class SQLPermissionService implements PermissionService {
         return this.groups;
     }
 
-    private List<String> readStatements(final InputStream stream) throws IOException {
-        final List<String> statements = new ArrayList<>();
-
-        try (final var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            var builder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("--") || line.startsWith("#")) {
-                    continue;
-                }
-
-                builder.append(line);
-
-                // check for end of declaration
-                if (line.endsWith(";")) {
-                    builder.deleteCharAt(builder.length() - 1);
-
-                    final String result = builder.toString().trim();
-                    if (!result.isEmpty()) {
-                        statements.add(result);
-                    }
-
-                    // reset
-                    builder = new StringBuilder();
-                }
-            }
-        }
-
-        return statements;
+    @Override
+    public IdentityValidator getIdentityValidator() {
+        return this.validator;
     }
 }

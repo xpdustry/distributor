@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.core.database;
 
-import fr.xpdustry.distributor.core.DistributorConfiguration;
+import fr.xpdustry.distributor.core.dependency.Dependency;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -30,25 +30,26 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 // This code is provided to you by LuckPerms, under the MIT license.
 public final class SQLiteConnectionFactory implements ConnectionFactory {
 
-    private final DistributorConfiguration configuration;
+    public static final Dependency SQLITE_DRIVER =
+            new Dependency("org.xerial", "sqlite-jdbc", "3.40.0.0", "46G5CXh7M7s34E8lLzfkq0ekieHB1FqAmgmCw3lEXBA=");
+
+    private final String prefix;
     private final Path path;
     private final ClassLoader classLoader;
     private @MonotonicNonNull Constructor<?> constructor;
     private @MonotonicNonNull NonClosableConnection connection;
 
-    public SQLiteConnectionFactory(
-            final DistributorConfiguration configuration, final Path path, final ClassLoader classLoader) {
-        this.configuration = configuration;
+    public SQLiteConnectionFactory(final String prefix, final Path path, final ClassLoader classLoader) {
+        this.prefix = prefix;
         this.path = path;
         this.classLoader = classLoader;
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        NonClosableConnection connection = this.connection;
+        var connection = this.connection;
         if (connection == null || connection.isClosed()) {
-            connection = new NonClosableConnection(this.createConnection());
-            this.connection = connection;
+            this.connection = connection = new NonClosableConnection(this.createConnection());
         }
         return connection;
     }
@@ -56,7 +57,7 @@ public final class SQLiteConnectionFactory implements ConnectionFactory {
     @Override
     public void start() {
         try {
-            final Class<?> connectionClass = this.classLoader.loadClass("org.sqlite.jdbc4.JDBC4Connection");
+            final var connectionClass = this.classLoader.loadClass("org.sqlite.jdbc4.JDBC4Connection");
             this.constructor = connectionClass.getConstructor(String.class, String.class, Properties.class);
         } catch (final ReflectiveOperationException e) {
             throw new RuntimeException(e);
@@ -84,8 +85,6 @@ public final class SQLiteConnectionFactory implements ConnectionFactory {
 
     @Override
     public Function<String, String> getStatementProcessor() {
-        return statement -> statement
-                .replace("{prefix}", this.configuration.getDatabasePrefix())
-                .replace('\'', '`');
+        return statement -> statement.replace("{prefix}", this.prefix).replace('\'', '`');
     }
 }

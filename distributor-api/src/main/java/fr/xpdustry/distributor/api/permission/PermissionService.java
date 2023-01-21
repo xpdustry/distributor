@@ -63,4 +63,9 @@ public interface PermissionService {
      * Returns the permissible manager for groups.
      */
     PermissibleManager<GroupPermissible> getGroupPermissionManager();
+
+    /**
+     * Returns the identity validator.
+     */
+    IdentityValidator getIdentityValidator();
 }

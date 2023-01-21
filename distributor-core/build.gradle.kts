@@ -10,7 +10,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.mysql:mysql-connector-j:8.0.31")
     // MySQL driver has a vulnerability, so explicitly exclude it
-    implementation("com.google.protobuf:protobuf-java:3.21.12")
+    runtimeOnly("com.google.protobuf:protobuf-java:3.21.12")
     testImplementation("org.xerial:sqlite-jdbc:3.40.0.0")
 }
 

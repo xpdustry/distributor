@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.core.permission;
 
 import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.permission.IdentityValidator;
 import fr.xpdustry.distributor.api.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
 public final class SQLPermissionServiceTest {
 
@@ -47,12 +49,12 @@ public final class SQLPermissionServiceTest {
 
     @BeforeEach
     void setup() {
-        final var config = TestDistributorConfiguration.create();
-        config.setDatabasePrefix("test_");
         this.factory = new SQLiteConnectionFactory(
-                config, this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
+                "test_", this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
         this.factory.start();
-        this.manager = new SQLPermissionService(this.factory);
+        final var validator = Mockito.mock(IdentityValidator.class);
+        Mockito.when(validator.isValid(PLAYER)).thenReturn(true);
+        this.manager = new SQLPermissionService(this.factory, validator);
         this.manager.setVerifyAdmin(false);
     }
 

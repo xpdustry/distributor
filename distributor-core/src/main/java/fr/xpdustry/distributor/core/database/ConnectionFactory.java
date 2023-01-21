@@ -18,8 +18,16 @@
  */
 package fr.xpdustry.distributor.core.database;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 // This code is provided to you by LuckPerms, under the MIT license.
@@ -49,4 +57,51 @@ public interface ConnectionFactory extends AutoCloseable {
 
     @Override
     void close() throws SQLException;
+
+    default void executeScript(final InputStream stream) {
+        try (final var con = this.getConnection();
+                final var statements = con.createStatement()) {
+            for (final var statement : this.readStatements(stream)) {
+                statements.addBatch(this.getStatementProcessor().apply(statement));
+            }
+            statements.executeBatch();
+        } catch (final SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    default void executeScript(final String script) {
+        this.executeScript(new ByteArrayInputStream(script.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private List<String> readStatements(final InputStream stream) throws IOException {
+        final List<String> statements = new ArrayList<>();
+
+        try (final var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            var builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("--") || line.startsWith("#")) {
+                    continue;
+                }
+
+                builder.append(line);
+
+                // check for end of declaration
+                if (line.endsWith(";")) {
+                    builder.deleteCharAt(builder.length() - 1);
+
+                    final String result = builder.toString().trim();
+                    if (!result.isEmpty()) {
+                        statements.add(result);
+                    }
+
+                    // reset
+                    builder = new StringBuilder();
+                }
+            }
+        }
+
+        return statements;
+    }
 }

@@ -18,6 +18,7 @@
  */
 package fr.xpdustry.distributor.core;
 
+import arc.ApplicationListener;
 import arc.Core;
 import arc.util.CommandHandler;
 import arc.util.Log;
@@ -28,9 +29,12 @@ import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.localization.LocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
+import fr.xpdustry.distributor.api.permission.IdentityValidator;
 import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+import fr.xpdustry.distributor.api.util.MUUID;
+import fr.xpdustry.distributor.api.util.MoreEvents;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PermissionServiceCommands;
@@ -38,9 +42,9 @@ import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import fr.xpdustry.distributor.core.database.MySQLConnectionFactory;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
-import fr.xpdustry.distributor.core.dependency.Dependency;
 import fr.xpdustry.distributor.core.dependency.DependencyManager;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
+import fr.xpdustry.distributor.core.permission.SQLIdentityValidator;
 import fr.xpdustry.distributor.core.permission.SQLPermissionService;
 import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
 import fr.xpdustry.distributor.core.scheduler.TimeSource;
@@ -49,16 +53,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
+import mindustry.game.EventType;
 import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
 
 public final class DistributorPlugin extends ExtendedPlugin implements Distributor {
-
-    public static final Dependency SQLITE_DRIVER =
-            new Dependency("org.xerial", "sqlite-jdbc", "3.40.0.0", "46G5CXh7M7s34E8lLzfkq0ekieHB1FqAmgmCw3lEXBA=");
 
     static {
         // Class loader trickery to use the ModClassLoader instead of the root
@@ -77,13 +81,15 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     private final MultiLocalizationSource source = MultiLocalizationSource.create();
     private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
     private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
+    private final Map<String, ConnectionFactory> connections = new HashMap<>();
 
     private @MonotonicNonNull SQLPermissionService permissions = null;
     private @MonotonicNonNull SimplePluginScheduler scheduler = null;
     private @MonotonicNonNull DistributorConfiguration configuration = null;
     private @MonotonicNonNull DependencyManager dependencyManager = null;
-    private @MonotonicNonNull ConnectionFactory connectionFactory = null;
+    private @MonotonicNonNull IdentityValidator identityValidator = null;
 
+    @SuppressWarnings({"MissingCasesInEnumSwitch", "resource"})
     @Override
     public void onInit() {
         // Display the cool ass banner
@@ -99,7 +105,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
             this.getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
         }
 
-        // Setup configuration
+        // Load configuration
         final var file = this.getDirectory().resolve("config.properties");
         if (Files.exists(file)) {
             final var properties = new Properties();
@@ -124,14 +130,22 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         this.dependencyManager = new DependencyManager(this.getDirectory().resolve("libs"));
         this.dependencyManager.addMavenCentral();
 
-        // Create connection factory
-        this.connectionFactory = switch (this.configuration.getDatabaseType()) {
-            case SQLITE -> new SQLiteConnectionFactory(
-                    this.configuration,
-                    this.getDirectory().resolve("permission.sqlite"),
-                    this.dependencyManager.createClassLoaderFor(SQLITE_DRIVER));
-            case MYSQL -> new MySQLConnectionFactory(this.configuration);};
-        this.connectionFactory.start();
+        // Create main connection factories
+        final var mainConnectionFactory =
+                switch (this.configuration.getDatabaseType()) {
+                    case MYSQL -> new MySQLConnectionFactory(this.configuration);
+                    case SQLITE -> new SQLiteConnectionFactory(
+                            this.configuration.getDatabasePrefix(),
+                            this.getDirectory().resolve("permissions.sqlite"),
+                            this.dependencyManager.createClassLoaderFor(SQLiteConnectionFactory.SQLITE_DRIVER));
+                };
+        this.addConnection("main", mainConnectionFactory);
+
+        final var validatorConnectionFactory = new SQLiteConnectionFactory(
+                "",
+                this.getDirectory().resolve("validations.sqlite"),
+                this.dependencyManager.createClassLoaderFor(SQLiteConnectionFactory.SQLITE_DRIVER));
+        this.addConnection("validator", validatorConnectionFactory);
 
         // Register bundles
         final var registry = LocalizationSourceRegistry.create(Locale.ENGLISH);
@@ -141,10 +155,28 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         this.source.addLocalizationSource(LocalizationSource.router());
 
         // Register permission utilities
-        this.permissions = new SQLPermissionService(this.connectionFactory);
+        this.permissions = new SQLPermissionService(
+                mainConnectionFactory, this.identityValidator = new SQLIdentityValidator(validatorConnectionFactory));
         this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
         this.addListener(new PermissionServiceCommands(this));
+
+        // Add listeners to validate players
+        switch (this.configuration.getIdentityValidationPolicy()) {
+            case VALIDATE_UNKNOWN -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, event -> {
+                if (!this.identityValidator.contains(event.player.uuid())) {
+                    this.identityValidator.validate(MUUID.of(event.player));
+                    return;
+                }
+                if (!this.identityValidator.isValid(MUUID.of(event.player))) {
+                    event.player.sendMessage(
+                            "[red]Warning, your identity couldn't be validated, please contact an administrator.");
+                }
+            });
+            case VALIDATE_ALL -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, event -> {
+                this.identityValidator.validate(MUUID.of(event.player));
+            });
+        }
 
         // Start scheduler
         final var parallelism = this.configuration.getSchedulerWorkers() < 1
@@ -166,15 +198,6 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     }
 
     @Override
-    public void onExit() {
-        try {
-            this.connectionFactory.close();
-        } catch (final Exception e) {
-            this.getLogger().error("An error occurred while closing the connection factory.", e);
-        }
-    }
-
-    @Override
     public MultiLocalizationSource getGlobalLocalizationSource() {
         return this.source;
     }
@@ -187,6 +210,26 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public PermissionService getPermissionService() {
         return this.permissions;
+    }
+
+    @Override
+    public void onExit() {
+        // Using application listener to not cause undefined behaviours in dependant plugins
+        Core.app.addListener(new ApplicationListener() {
+            @Override
+            public void dispose() {
+                for (final var connection : DistributorPlugin.this.connections.entrySet()) {
+                    try {
+                        DistributorPlugin.this.getLogger().debug("closing connection {}", connection.getKey());
+                        connection.getValue().close();
+                    } catch (final Exception e) {
+                        DistributorPlugin.this
+                                .getLogger()
+                                .error("An error occurred while closing connection {}", connection.getKey(), e);
+                    }
+                }
+            }
+        });
     }
 
     public ArcCommandManager<CommandSender> getServerCommandManager() {
@@ -205,7 +248,11 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         return this.dependencyManager;
     }
 
-    public ConnectionFactory getConnectionFactory() {
-        return this.connectionFactory;
+    private void addConnection(final String name, final ConnectionFactory connection) {
+        if (this.connections.put(name, connection) != null) {
+            throw new RuntimeException("Resource " + name + " already exists.");
+        }
+        this.getLogger().debug("starting connection {}", name);
+        connection.start();
     }
 }

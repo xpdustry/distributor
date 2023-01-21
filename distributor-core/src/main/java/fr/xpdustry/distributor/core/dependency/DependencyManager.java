@@ -26,7 +26,6 @@ import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -182,7 +181,7 @@ public final class DependencyManager {
     private byte @Nullable [] downloadDependency(final String url) {
         try {
             logger.info("Downloading dependency from " + url);
-            final URLConnection connection = new URL(url).openConnection();
+            final var connection = new URL(url).openConnection();
 
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
