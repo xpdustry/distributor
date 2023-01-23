@@ -65,12 +65,6 @@ public abstract class ExtendedPlugin extends Plugin {
     public void onClientCommandsRegistration(final CommandHandler handler) {}
 
     /**
-     * Called after {@link mindustry.game.EventType.ServerLoadEvent}.
-     * Load your plugin here (connection to database, calling mindustry API, etc.).
-     */
-    public void onLoad() {}
-
-    /**
      * Called every tick while the server is running.
      */
     public void onUpdate() {}
@@ -122,14 +116,6 @@ public abstract class ExtendedPlugin extends Plugin {
         }
 
         Core.app.addListener(new ApplicationListener() {
-
-            @Override
-            public void init() {
-                ExtendedPlugin.this.onLoad();
-                for (final var listener : ExtendedPlugin.this.getListeners()) {
-                    listener.onPluginLoad();
-                }
-            }
 
             @Override
             public void update() {
