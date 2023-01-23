@@ -16,33 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.security.permission;
 
-import fr.xpdustry.distributor.api.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
+import mindustry.Vars;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public final class SimpleGroupPermissible extends AbstractPermissible implements GroupPermissible {
+public final class SimplePlayerPermissible extends AbstractPermissible implements PlayerPermissible {
 
-    private final String name;
-    private int weight = 0;
+    private final String uuid;
 
-    public SimpleGroupPermissible(final String name) {
-        this.name = name;
+    public SimplePlayerPermissible(final String uuid) {
+        this.uuid = uuid;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        if (Vars.netServer != null) {
+            final var info = Vars.netServer.admins.getInfoOptional(this.uuid);
+            return info == null ? "unknown" : info.lastName;
+        }
+        return "unknown";
     }
 
     @Override
-    public int getWeight() {
-        return this.weight;
-    }
-
-    @Override
-    public void setWeight(final int weight) {
-        this.weight = weight;
+    public String getUuid() {
+        return this.uuid;
     }
 
     @Override
@@ -57,19 +56,15 @@ public final class SimpleGroupPermissible extends AbstractPermissible implements
             return false;
         }
 
-        final SimpleGroupPermissible that = (SimpleGroupPermissible) o;
+        final SimplePlayerPermissible that = (SimplePlayerPermissible) o;
 
-        if (this.weight != that.weight) {
-            return false;
-        }
-        return this.name.equals(that.name);
+        return this.uuid.equals(that.uuid);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + this.name.hashCode();
-        result = 31 * result + this.weight;
+        result = 31 * result + this.uuid.hashCode();
         return result;
     }
 }

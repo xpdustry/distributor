@@ -24,8 +24,8 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.meta.CommandMeta;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
-import fr.xpdustry.distributor.api.permission.GroupPermissible;
-import fr.xpdustry.distributor.api.permission.PermissibleManager;
+import fr.xpdustry.distributor.api.security.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
 import fr.xpdustry.distributor.core.DistributorPlugin;
 import fr.xpdustry.distributor.core.commands.parser.GroupPermissibleParser;
 

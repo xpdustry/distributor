@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.permission;
+package fr.xpdustry.distributor.api.security.permission;
 
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
@@ -33,6 +33,16 @@ public interface PermissionService {
      * @return the state of the permission for the player.
      */
     Tristate getPermission(final MUUID muuid, final String permission);
+
+    /**
+     * Returns the permissible manager for players.
+     */
+    PermissibleManager<PlayerPermissible> getPlayerPermissionManager();
+
+    /**
+     * Returns the permissible manager for groups.
+     */
+    PermissibleManager<GroupPermissible> getGroupPermissionManager();
 
     /**
      * Returns the primary group of all players.
@@ -53,19 +63,4 @@ public interface PermissionService {
      * Sets whether permission checking is skipped for a player if it's an admin.
      */
     void setVerifyAdmin(final boolean verify);
-
-    /**
-     * Returns the permissible manager for players.
-     */
-    PermissibleManager<PlayerPermissible> getPlayerPermissionManager();
-
-    /**
-     * Returns the permissible manager for groups.
-     */
-    PermissibleManager<GroupPermissible> getGroupPermissionManager();
-
-    /**
-     * Returns the identity validator.
-     */
-    IdentityValidator getIdentityValidator();
 }

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.security;
 
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public final class SQLIdentityValidatorTest {
+public final class SQLPlayerValidatorTest {
 
     private static final MUUID PLAYER_1A = MUUID.of("1AAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
     private static final MUUID PLAYER_1B = MUUID.of("1AAAAAAAAAAAAAAAAAAAAA==", "BAAAAAAAAAA=");
@@ -37,14 +37,14 @@ public final class SQLIdentityValidatorTest {
 
     private SQLiteConnectionFactory factory;
     private @TempDir Path dbDir;
-    private SQLIdentityValidator validator;
+    private SQLPlayerValidator validator;
 
     @BeforeEach
     void setup() {
         this.factory = new SQLiteConnectionFactory(
                 "test_", this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
         this.factory.start();
-        this.validator = new SQLIdentityValidator(this.factory);
+        this.validator = new SQLPlayerValidator(this.factory);
     }
 
     @AfterEach

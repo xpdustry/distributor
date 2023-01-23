@@ -18,8 +18,8 @@
  */
 package fr.xpdustry.distributor.core.commands.parser;
 
-import fr.xpdustry.distributor.api.permission.GroupPermissible;
-import fr.xpdustry.distributor.api.permission.PermissibleManager;
+import fr.xpdustry.distributor.api.security.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
 import java.util.Locale;
 import java.util.Optional;
 

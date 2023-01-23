@@ -59,16 +59,16 @@ public interface DistributorConfiguration extends Accessible {
     @Config.DefaultValue("4")
     int getDatabaseMaxPoolSize();
 
-    @Config.Key("distributor.permission.identity-validation")
+    @Config.Key("distributor.security.validation.policy")
     @Config.DefaultValue("VALIDATE_UNKNOWN")
-    IdentityValidationPolicy getIdentityValidationPolicy();
+    PlayerValidationPolicy getIdentityValidationPolicy();
 
     enum DatabaseType {
         SQLITE,
         MYSQL
     }
 
-    enum IdentityValidationPolicy {
+    enum PlayerValidationPolicy {
         VALIDATE_UNKNOWN,
         VALIDATE_ALL,
         VALIDATE_NONE

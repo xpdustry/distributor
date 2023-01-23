@@ -19,8 +19,9 @@
 package fr.xpdustry.distributor.api;
 
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
-import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+import fr.xpdustry.distributor.api.security.PlayerValidator;
+import fr.xpdustry.distributor.api.security.permission.PermissionService;
 
 /**
  * The main entry point of the Distributor API.
@@ -36,6 +37,11 @@ public interface Distributor {
      * Returns the plugin scheduler.
      */
     PluginScheduler getPluginScheduler();
+
+    /**
+     * Returns the player validator.
+     */
+    PlayerValidator getPlayerValidator();
 
     /**
      * Returns the permission service.

@@ -16,15 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.permission;
+package fr.xpdustry.distributor.api.security.permission;
 
 /**
- * A permissible representing a specific player.
+ * A permissible representing a group, for easily managing set of permissions with players or other groups.
  */
-public interface PlayerPermissible extends Permissible {
+public interface GroupPermissible extends Permissible {
 
     /**
-     * Returns the UUID of this player.
+     * Returns the weight of this group.
+     * <p>
+     * <strong>Note:</strong> the higher the weight, the higher the priority.
      */
-    String getUuid();
+    int getWeight();
+
+    /**
+     * Sets the weight of this group.
+     * <p>
+     * <strong>Note:</strong> the higher the weight, the higher the priority.
+     */
+    void setWeight(int weight);
 }

@@ -27,8 +27,10 @@ import java.util.function.Function;
  *
  * <pre> {@code
  *      final PluginScheduler scheduler = ...;
+ *      final ExtendedPlugin plugin = ...;
  *      final CommandHandler handler = ...;
- *      handler.<Player>register("rank", "Get your pvp rank.", (args, player) -> scheduler.recipe(player)
+ *      handler.<Player>register("rank", "Get your pvp rank.", (args, player) -> scheduler
+ *          .recipe(plugin, player)
  *          .thenRun(() -> player.sendMessage("Getting your rank..."))
  *          .thenApplyAsync(player -> getRankFromDatabase(player))
  *          .thenAccept(rank -> player.sendMessage("Your rank is " + rank))

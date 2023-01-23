@@ -27,10 +27,11 @@ import java.util.function.Supplier;
  *
  * <pre> {@code
  *      final PluginScheduler scheduler = ...;
+ *      final ExtendedPlugin plugin = ...;
  *      // Warn the players the server is close in 5 minutes.
  *      Groups.player.each(p -> p.sendMessage("The server will restart in 5 minutes."));
  *      // Now schedule the closing task.
- *      scheduler.scheduleSync().delay(5, TimeUnit.MINUTES).execute(() -> Core.app.exit());
+ *      scheduler.scheduleSync(plugin).delay(5, TimeUnit.MINUTES).execute(() -> Core.app.exit());
  * } </pre>
  */
 public interface PluginTaskBuilder {

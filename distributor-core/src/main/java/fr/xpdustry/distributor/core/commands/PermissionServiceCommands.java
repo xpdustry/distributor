@@ -81,10 +81,7 @@ public final class PermissionServiceCommands implements PluginListener {
                 .argument(PlayerArgument.of("player"))
                 .handler(ctx -> {
                     final var muuid = MUUID.of(ctx.<Player>get("player"));
-                    this.distributor
-                            .getPermissionService()
-                            .getIdentityValidator()
-                            .validate(muuid);
+                    this.distributor.getPlayerValidator().validate(muuid);
                     ctx.getSender().sendMessage("Player validated.");
                 }));
 
@@ -92,10 +89,7 @@ public final class PermissionServiceCommands implements PluginListener {
                 .argument(PlayerArgument.of("player"))
                 .handler(ctx -> {
                     final var muuid = MUUID.of(ctx.<Player>get("player"));
-                    this.distributor
-                            .getPermissionService()
-                            .getIdentityValidator()
-                            .invalidate(muuid);
+                    this.distributor.getPlayerValidator().invalidate(muuid);
                     ctx.getSender().sendMessage("Player invalidated.");
                 }));
 
@@ -103,12 +97,7 @@ public final class PermissionServiceCommands implements PluginListener {
                 .argument(PlayerArgument.of("player"))
                 .handler(ctx -> {
                     final var muuid = MUUID.of(ctx.<Player>get("player"));
-                    final var verb = this.distributor
-                                    .getPermissionService()
-                                    .getIdentityValidator()
-                                    .isValid(muuid)
-                            ? "is"
-                            : "is not";
+                    final var verb = this.distributor.getPlayerValidator().isValid(muuid) ? "is" : "is not";
                     ctx.getSender().sendMessage("Player " + verb + " valid.");
                 }));
     }

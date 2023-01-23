@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.security.permission;
 
-import fr.xpdustry.distributor.api.permission.GroupPermissible;
-import fr.xpdustry.distributor.api.permission.IdentityValidator;
-import fr.xpdustry.distributor.api.permission.Permissible;
-import fr.xpdustry.distributor.api.permission.PermissibleManager;
-import fr.xpdustry.distributor.api.permission.PermissionService;
-import fr.xpdustry.distributor.api.permission.PlayerPermissible;
+import fr.xpdustry.distributor.api.security.PlayerValidator;
+import fr.xpdustry.distributor.api.security.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.security.permission.Permissible;
+import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
+import fr.xpdustry.distributor.api.security.permission.PermissionService;
+import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
@@ -44,9 +44,9 @@ public final class SQLPermissionService implements PermissionService {
     private final SQLPlayerPermissibleManager players;
     private final SQLGroupPermissibleManager groups;
     private final SQLPermissibleOptionManager options;
-    private final IdentityValidator validator;
+    private final PlayerValidator validator;
 
-    public SQLPermissionService(final ConnectionFactory connectionFactory, final IdentityValidator validator) {
+    public SQLPermissionService(final ConnectionFactory connectionFactory, final PlayerValidator validator) {
         try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql")) {
             if (input == null) {
                 throw new IllegalStateException("Missing schema file.");
@@ -141,10 +141,5 @@ public final class SQLPermissionService implements PermissionService {
     @Override
     public PermissibleManager<GroupPermissible> getGroupPermissionManager() {
         return this.groups;
-    }
-
-    @Override
-    public IdentityValidator getIdentityValidator() {
-        return this.validator;
     }
 }

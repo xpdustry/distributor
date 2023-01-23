@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.permission;
+package fr.xpdustry.distributor.api.security;
 
 import fr.xpdustry.distributor.api.util.MUUID;
 
 /**
  * A service to check player identities based on usids since uuids are very easy to steal.
  */
-public interface IdentityValidator {
+public interface PlayerValidator {
 
     /**
      * Checks whether a player muuid is valid.

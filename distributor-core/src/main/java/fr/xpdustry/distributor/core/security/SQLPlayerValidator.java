@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.security;
 
-import fr.xpdustry.distributor.api.permission.IdentityValidator;
+import fr.xpdustry.distributor.api.security.PlayerValidator;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import java.sql.Connection;
@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class SQLIdentityValidator implements IdentityValidator {
+public final class SQLPlayerValidator implements PlayerValidator {
 
     private final ConnectionFactory factory;
 
-    public SQLIdentityValidator(final ConnectionFactory factory) {
+    public SQLPlayerValidator(final ConnectionFactory factory) {
         this.factory = factory;
         this.factory.executeScript(
                 """

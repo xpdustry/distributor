@@ -25,7 +25,7 @@ import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import cloud.commandframework.exceptions.parsing.ParserException;
-import fr.xpdustry.distributor.api.permission.Permissible;
+import fr.xpdustry.distributor.api.security.permission.Permissible;
 import java.io.Serial;
 import java.util.Optional;
 import java.util.Queue;

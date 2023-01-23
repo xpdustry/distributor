@@ -29,10 +29,10 @@ import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.localization.LocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
-import fr.xpdustry.distributor.api.permission.IdentityValidator;
-import fr.xpdustry.distributor.api.permission.PermissionService;
 import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
+import fr.xpdustry.distributor.api.security.PlayerValidator;
+import fr.xpdustry.distributor.api.security.permission.PermissionService;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.MoreEvents;
 import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
@@ -44,10 +44,10 @@ import fr.xpdustry.distributor.core.database.MySQLConnectionFactory;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
 import fr.xpdustry.distributor.core.dependency.DependencyManager;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
-import fr.xpdustry.distributor.core.permission.SQLIdentityValidator;
-import fr.xpdustry.distributor.core.permission.SQLPermissionService;
 import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
 import fr.xpdustry.distributor.core.scheduler.TimeSource;
+import fr.xpdustry.distributor.core.security.SQLPlayerValidator;
+import fr.xpdustry.distributor.core.security.permission.SQLPermissionService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -87,7 +87,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     private @MonotonicNonNull SimplePluginScheduler scheduler = null;
     private @MonotonicNonNull DistributorConfiguration configuration = null;
     private @MonotonicNonNull DependencyManager dependencyManager = null;
-    private @MonotonicNonNull IdentityValidator identityValidator = null;
+    private @MonotonicNonNull PlayerValidator playerValidator = null;
 
     @SuppressWarnings({"MissingCasesInEnumSwitch", "resource"})
     @Override
@@ -154,29 +154,29 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         this.source.addLocalizationSource(registry);
         this.source.addLocalizationSource(LocalizationSource.router());
 
-        // Register permission utilities
-        this.permissions = new SQLPermissionService(
-                mainConnectionFactory, this.identityValidator = new SQLIdentityValidator(validatorConnectionFactory));
-        this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
-        this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
-        this.addListener(new PermissionServiceCommands(this));
-
         // Add listeners to validate players
+        this.playerValidator = new SQLPlayerValidator(validatorConnectionFactory);
         switch (this.configuration.getIdentityValidationPolicy()) {
             case VALIDATE_UNKNOWN -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, event -> {
-                if (!this.identityValidator.contains(event.player.uuid())) {
-                    this.identityValidator.validate(MUUID.of(event.player));
+                if (!this.playerValidator.contains(event.player.uuid())) {
+                    this.playerValidator.validate(MUUID.of(event.player));
                     return;
                 }
-                if (!this.identityValidator.isValid(MUUID.of(event.player))) {
+                if (!this.playerValidator.isValid(MUUID.of(event.player))) {
                     event.player.sendMessage(
                             "[red]Warning, your identity couldn't be validated, please contact an administrator.");
                 }
             });
             case VALIDATE_ALL -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, event -> {
-                this.identityValidator.validate(MUUID.of(event.player));
+                this.playerValidator.validate(MUUID.of(event.player));
             });
         }
+
+        // Register permission utilities
+        this.permissions = new SQLPermissionService(mainConnectionFactory, this.playerValidator);
+        this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
+        this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
+        this.addListener(new PermissionServiceCommands(this));
 
         // Start scheduler
         final var parallelism = this.configuration.getSchedulerWorkers() < 1
@@ -205,6 +205,11 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
     @Override
     public PluginScheduler getPluginScheduler() {
         return this.scheduler;
+    }
+
+    @Override
+    public PlayerValidator getPlayerValidator() {
+        return this.playerValidator;
     }
 
     @Override

@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.security.permission;
 
-import fr.xpdustry.distributor.api.permission.GroupPermissible;
-import fr.xpdustry.distributor.api.permission.IdentityValidator;
-import fr.xpdustry.distributor.api.permission.PlayerPermissible;
+import fr.xpdustry.distributor.api.security.PlayerValidator;
+import fr.xpdustry.distributor.api.security.permission.GroupPermissible;
+import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
@@ -52,7 +52,7 @@ public final class SQLPermissionServiceTest {
         this.factory = new SQLiteConnectionFactory(
                 "test_", this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
         this.factory.start();
-        final var validator = Mockito.mock(IdentityValidator.class);
+        final var validator = Mockito.mock(PlayerValidator.class);
         Mockito.when(validator.isValid(PLAYER)).thenReturn(true);
         this.manager = new SQLPermissionService(this.factory, validator);
         this.manager.setVerifyAdmin(false);

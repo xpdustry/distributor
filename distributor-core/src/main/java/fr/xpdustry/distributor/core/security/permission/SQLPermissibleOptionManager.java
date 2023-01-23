@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.permission;
+package fr.xpdustry.distributor.core.security.permission;
 
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import java.sql.Connection;
