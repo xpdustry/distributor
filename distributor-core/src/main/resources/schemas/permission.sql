@@ -21,13 +21,6 @@ CREATE TABLE IF NOT EXISTS '{prefix}group' (
 CREATE TABLE IF NOT EXISTS '{prefix}group_permission' (
      'group_name'   VARCHAR(32)     NOT NULL,
      'permission'   VARCHAR(64)     NOT NULL,
-     'value'        BOOLEAN NOT NULL,
+     'value'        BOOLEAN         NOT NULL,
      FOREIGN KEY ('group_name') REFERENCES '{prefix}group' ('name')
-);
-
-CREATE TABLE IF NOT EXISTS '{prefix}permission_option' (
-    'key'           VARCHAR(32)     NOT NULL,
-    'value'         VARCHAR(64)     NOT NULL,
-    'type'          TINYINT         NOT NULL,
-    PRIMARY KEY ('key')
 );

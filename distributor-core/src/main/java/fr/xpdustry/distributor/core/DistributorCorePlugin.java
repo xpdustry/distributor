@@ -173,7 +173,7 @@ public final class DistributorCorePlugin extends ExtendedPlugin implements Distr
         }
 
         // Register permission utilities
-        this.permissions = new SQLPermissionService(mainConnectionFactory, this.playerValidator);
+        this.permissions = new SQLPermissionService(this.configuration, mainConnectionFactory, this.playerValidator);
         this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
         this.addListener(new PermissionServiceCommands(this));

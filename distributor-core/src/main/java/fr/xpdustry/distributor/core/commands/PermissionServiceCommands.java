@@ -20,18 +20,12 @@ package fr.xpdustry.distributor.core.commands;
 
 import arc.util.CommandHandler;
 import cloud.commandframework.ArgumentDescription;
-import cloud.commandframework.arguments.standard.BooleanArgument;
-import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.meta.CommandMeta;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.argument.PlayerArgument;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.core.DistributorCorePlugin;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import mindustry.gen.Player;
 
 public final class PermissionServiceCommands implements PluginListener {
@@ -53,27 +47,6 @@ public final class PermissionServiceCommands implements PluginListener {
     }
 
     public void onSharedCommandRegistration(final ArcCommandManager<CommandSender> manager) {
-        final var options = manager.commandBuilder("permission")
-                .literal("options", ArgumentDescription.of("Options related to the permission service"));
-
-        manager.command(options.literal("verify-admin")
-                .meta(CommandMeta.DESCRIPTION, "Whether permission check should be skipped on admins.")
-                .argument(BooleanArgument.optional("value"))
-                .handler(ctx -> this.onOptionCommand(
-                        ctx,
-                        "verify-admin",
-                        () -> this.distributor.getPermissionService().getVerifyAdmin(),
-                        value -> this.distributor.getPermissionService().setVerifyAdmin(value))));
-
-        manager.command(options.literal("primary-group")
-                .meta(CommandMeta.DESCRIPTION, "The default group of all players.")
-                .argument(StringArgument.optional("value"))
-                .handler(ctx -> this.onOptionCommand(
-                        ctx,
-                        "primary-group",
-                        () -> this.distributor.getPermissionService().getPrimaryGroup(),
-                        value -> this.distributor.getPermissionService().setPrimaryGroup(value))));
-
         // TODO Localize
         final var identity = manager.commandBuilder("identity", ArgumentDescription.of("Manage player identities."));
 
@@ -100,22 +73,5 @@ public final class PermissionServiceCommands implements PluginListener {
                     final var verb = this.distributor.getPlayerValidator().isValid(muuid) ? "is" : "is not";
                     ctx.getSender().sendMessage("Player " + verb + " valid.");
                 }));
-    }
-
-    private <V> void onOptionCommand(
-            final CommandContext<CommandSender> ctx,
-            final String key,
-            final Supplier<V> getter,
-            final Consumer<V> setter) {
-        if (ctx.contains("value")) {
-            if (getter.get().equals(ctx.get("value"))) {
-                ctx.getSender().sendLocalizedMessage("permission.options.set.already", key, ctx.get("value"));
-            } else {
-                setter.accept(ctx.get("value"));
-                ctx.getSender().sendLocalizedMessage("permission.options.set.success", key, ctx.get("value"));
-            }
-        } else {
-            ctx.getSender().sendLocalizedMessage("permission.options.get", key, getter.get());
-        }
     }
 }

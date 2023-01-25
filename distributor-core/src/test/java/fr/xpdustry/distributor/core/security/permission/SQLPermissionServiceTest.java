@@ -23,6 +23,7 @@ import fr.xpdustry.distributor.api.security.permission.GroupPermissible;
 import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
+import fr.xpdustry.distributor.core.DistributorConfiguration;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -37,6 +38,7 @@ public final class SQLPermissionServiceTest {
 
     private static final MUUID PLAYER = MUUID.of("AAAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
 
+    private static final String DEFAULT_GROUP = "default";
     private static final String GROUP1 = "group1";
     private static final String GROUP2 = "group2";
 
@@ -49,13 +51,18 @@ public final class SQLPermissionServiceTest {
 
     @BeforeEach
     void setup() {
+        final var config = Mockito.mock(DistributorConfiguration.class);
+        Mockito.when(config.getPermissionPrimaryGroup()).thenReturn(DEFAULT_GROUP);
+        Mockito.when(config.isAdminStatusIgnored()).thenReturn(true);
+
+        final var validator = Mockito.mock(PlayerValidator.class);
+        Mockito.when(validator.isValid(PLAYER)).thenReturn(true);
+
         this.factory = new SQLiteConnectionFactory(
                 "test_", this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
         this.factory.start();
-        final var validator = Mockito.mock(PlayerValidator.class);
-        Mockito.when(validator.isValid(PLAYER)).thenReturn(true);
-        this.manager = new SQLPermissionService(this.factory, validator);
-        this.manager.setVerifyAdmin(false);
+
+        this.manager = new SQLPermissionService(config, this.factory, validator);
     }
 
     @AfterEach
@@ -135,7 +142,7 @@ public final class SQLPermissionServiceTest {
 
     @Test
     void test_default_group() {
-        this.setupGroup(this.manager.getPrimaryGroup(), group -> group.setPermission(PERMISSION2, Tristate.TRUE));
+        this.setupGroup(DEFAULT_GROUP, group -> group.setPermission(PERMISSION2, Tristate.TRUE));
         Assertions.assertTrue(this.manager.getPermission(PLAYER, PERMISSION2).asBoolean());
     }
 

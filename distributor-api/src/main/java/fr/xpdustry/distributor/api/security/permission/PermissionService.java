@@ -43,24 +43,4 @@ public interface PermissionService {
      * Returns the permissible manager for groups.
      */
     PermissibleManager<GroupPermissible> getGroupPermissionManager();
-
-    /**
-     * Returns the primary group of all players.
-     */
-    String getPrimaryGroup();
-
-    /**
-     * Sets the primary group of all players.
-     */
-    void setPrimaryGroup(final String group);
-
-    /**
-     * Returns whether permission checking is skipped for a player if it's an admin.
-     */
-    boolean getVerifyAdmin();
-
-    /**
-     * Sets whether permission checking is skipped for a player if it's an admin.
-     */
-    void setVerifyAdmin(final boolean verify);
 }

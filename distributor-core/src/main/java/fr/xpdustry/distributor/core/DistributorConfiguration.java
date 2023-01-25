@@ -63,6 +63,14 @@ public interface DistributorConfiguration extends Accessible {
     @Config.DefaultValue("VALIDATE_UNKNOWN")
     PlayerValidationPolicy getIdentityValidationPolicy();
 
+    @Config.Key("distributor.security.permission.primary-group")
+    @Config.DefaultValue("default")
+    String getPermissionPrimaryGroup();
+
+    @Config.Key("distributor.security.permission.ignore-admin-status")
+    @Config.DefaultValue("false")
+    boolean isAdminStatusIgnored();
+
     enum DatabaseType {
         SQLITE,
         MYSQL

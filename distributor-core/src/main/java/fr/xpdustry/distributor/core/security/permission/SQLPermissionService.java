@@ -26,6 +26,7 @@ import fr.xpdustry.distributor.api.security.permission.PermissionService;
 import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
+import fr.xpdustry.distributor.core.DistributorConfiguration;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -41,12 +42,15 @@ public final class SQLPermissionService implements PermissionService {
     private static final Comparator<GroupPermissible> GROUP_COMPARATOR =
             Comparator.comparing(GroupPermissible::getWeight).reversed();
 
+    private final DistributorConfiguration configuration;
+    private final PlayerValidator validator;
     private final SQLPlayerPermissibleManager players;
     private final SQLGroupPermissibleManager groups;
-    private final SQLPermissibleOptionManager options;
-    private final PlayerValidator validator;
 
-    public SQLPermissionService(final ConnectionFactory connectionFactory, final PlayerValidator validator) {
+    public SQLPermissionService(
+            final DistributorConfiguration configuration,
+            final ConnectionFactory connectionFactory,
+            final PlayerValidator validator) {
         try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql")) {
             if (input == null) {
                 throw new IllegalStateException("Missing schema file.");
@@ -56,10 +60,10 @@ public final class SQLPermissionService implements PermissionService {
             throw new RuntimeException(e);
         }
 
+        this.configuration = configuration;
+        this.validator = validator;
         this.players = new SQLPlayerPermissibleManager(connectionFactory);
         this.groups = new SQLGroupPermissibleManager(connectionFactory);
-        this.options = new SQLPermissibleOptionManager(connectionFactory);
-        this.validator = validator;
     }
 
     @Override
@@ -68,11 +72,9 @@ public final class SQLPermissionService implements PermissionService {
             return Tristate.FALSE;
         }
 
-        if (this.getVerifyAdmin()) {
-            final var info = Vars.netServer.admins.getInfoOptional(muuid.getUuid());
-            if (info != null && info.admin) {
-                return Tristate.TRUE;
-            }
+        if (!this.configuration.isAdminStatusIgnored()
+                && Vars.netServer.admins.isAdmin(muuid.getUuid(), muuid.getUsid())) {
+            return Tristate.TRUE;
         }
 
         final var perm = permission.toLowerCase(Locale.ROOT);
@@ -80,7 +82,7 @@ public final class SQLPermissionService implements PermissionService {
         final var visited = new HashSet<String>();
         final Queue<Permissible> queue = new ArrayDeque<>();
         final var player = this.players.findById(muuid.getUuid());
-        final var primary = this.groups.findById(this.getPrimaryGroup());
+        final var primary = this.groups.findById(this.configuration.getPermissionPrimaryGroup());
 
         if (player.isPresent()) {
             queue.add(player.get());
@@ -105,32 +107,14 @@ public final class SQLPermissionService implements PermissionService {
                     .sorted(GROUP_COMPARATOR)
                     .forEach(queue::add);
 
-            if (queue.isEmpty() && !visited.add(this.getPrimaryGroup()) && primary.isPresent()) {
+            if (queue.isEmpty()
+                    && !visited.add(this.configuration.getPermissionPrimaryGroup())
+                    && primary.isPresent()) {
                 queue.add(primary.get());
             }
         }
 
         return state;
-    }
-
-    @Override
-    public String getPrimaryGroup() {
-        return this.options.get("primary-group", String.class).orElse("default");
-    }
-
-    @Override
-    public void setPrimaryGroup(final String group) {
-        this.options.set("primary-group", group);
-    }
-
-    @Override
-    public boolean getVerifyAdmin() {
-        return this.options.get("verify-admin", Boolean.class).orElse(true);
-    }
-
-    @Override
-    public void setVerifyAdmin(final boolean verify) {
-        this.options.set("verify-admin", verify);
     }
 
     @Override
