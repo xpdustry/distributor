@@ -10,10 +10,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven("https://repo.xpdustry.fr/releases") {
-        name = "xpdustry-repository-releases"
-        mavenContent { releasesOnly() }
-    }
 }
 
 dependencies {

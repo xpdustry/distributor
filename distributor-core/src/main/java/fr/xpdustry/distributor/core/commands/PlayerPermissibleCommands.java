@@ -20,13 +20,13 @@ package fr.xpdustry.distributor.core.commands;
 
 import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
-import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.DistributorCorePlugin;
 import fr.xpdustry.distributor.core.commands.parser.PlayerPermissibleParser;
 
 public final class PlayerPermissibleCommands extends PermissibleCommands<PlayerPermissible> {
 
     public PlayerPermissibleCommands(
-            final DistributorPlugin distributor, final PermissibleManager<PlayerPermissible> manager) {
+            final DistributorCorePlugin distributor, final PermissibleManager<PlayerPermissible> manager) {
         super(distributor, manager, PlayerPermissibleParser::new);
     }
 

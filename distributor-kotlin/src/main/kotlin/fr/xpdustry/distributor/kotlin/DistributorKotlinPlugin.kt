@@ -16,17 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.core.commands;
+package fr.xpdustry.distributor.kotlin
 
-import fr.xpdustry.distributor.api.command.ArcCommandManager;
-import fr.xpdustry.distributor.api.command.sender.CommandSender;
-import fr.xpdustry.distributor.core.DistributorCorePlugin;
-import java.util.function.Function;
+import fr.xpdustry.distributor.api.plugin.ExtendedPlugin
 
-public final class DistributorCommandManager extends ArcCommandManager<CommandSender> {
-
-    public DistributorCommandManager(final DistributorCorePlugin plugin) {
-        super(plugin, Function.identity(), Function.identity());
-        this.setSetting(ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
+public class DistributorKotlinPlugin : ExtendedPlugin() {
+    override fun onInit() {
+        logger.info("Distributor kotlin extensions loaded")
     }
 }

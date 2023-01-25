@@ -26,13 +26,13 @@ import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.security.permission.GroupPermissible;
 import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
-import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.DistributorCorePlugin;
 import fr.xpdustry.distributor.core.commands.parser.GroupPermissibleParser;
 
 public final class GroupPermissibleCommands extends PermissibleCommands<GroupPermissible> {
 
     public GroupPermissibleCommands(
-            final DistributorPlugin distributor, final PermissibleManager<GroupPermissible> manager) {
+            final DistributorCorePlugin distributor, final PermissibleManager<GroupPermissible> manager) {
         super(distributor, manager, GroupPermissibleParser::new);
     }
 

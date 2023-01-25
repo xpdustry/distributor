@@ -4,11 +4,6 @@ plugins {
     id("distributor.mindustry-conventions")
 }
 
-val cloud = "1.8.0"
-fun DependencyHandler.cloudCommandFramework(module: String) {
-    api("cloud.commandframework:cloud-$module:$cloud")
-}
-
 dependencies {
     val apiGuardian = "1.1.2"
     compileOnlyApi("org.apiguardian:apiguardian-api:$apiGuardian")
@@ -20,8 +15,8 @@ dependencies {
     val geantyref = "1.3.13"
     api("io.leangen.geantyref:geantyref:$geantyref")
 
-    cloudCommandFramework("core")
-    cloudCommandFramework("annotations")
-    cloudCommandFramework("tasks")
-    cloudCommandFramework("services")
+    api(cloudCommandFramework("core"))
+    api(cloudCommandFramework("annotations"))
+    api(cloudCommandFramework("tasks"))
+    api(cloudCommandFramework("services"))
 }

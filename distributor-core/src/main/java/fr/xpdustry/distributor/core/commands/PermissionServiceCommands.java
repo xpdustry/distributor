@@ -29,16 +29,16 @@ import fr.xpdustry.distributor.api.command.argument.PlayerArgument;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.util.MUUID;
-import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.DistributorCorePlugin;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import mindustry.gen.Player;
 
 public final class PermissionServiceCommands implements PluginListener {
 
-    private final DistributorPlugin distributor;
+    private final DistributorCorePlugin distributor;
 
-    public PermissionServiceCommands(final DistributorPlugin distributor) {
+    public PermissionServiceCommands(final DistributorCorePlugin distributor) {
         this.distributor = distributor;
     }
 

@@ -26,3 +26,15 @@ dependencies {
 tasks.runMindustryClient {
     mods.setFrom()
 }
+
+tasks.register("getArtifactPath") {
+    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("plugin")
+    from(rootProject.file("LICENSE.md")) {
+        into("META-INF")
+    }
+    mergeServiceFiles()
+}

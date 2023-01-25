@@ -62,12 +62,12 @@ import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
 
-public final class DistributorPlugin extends ExtendedPlugin implements Distributor {
+public final class DistributorCorePlugin extends ExtendedPlugin implements Distributor {
 
     static {
         // Class loader trickery to use the ModClassLoader instead of the root
         final var temp = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(DistributorPlugin.class.getClassLoader());
+        Thread.currentThread().setContextClassLoader(DistributorCorePlugin.class.getClassLoader());
         if (!(LoggerFactory.getILoggerFactory() instanceof ArcLoggerFactory)) {
             Log.err(
                     """
@@ -100,7 +100,7 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         try (final var reader = new BufferedReader(new InputStreamReader(banner, StandardCharsets.UTF_8))) {
             reader.lines().forEach(line -> LoggerFactory.getLogger("ROOT").info("> {}", line));
             this.getLogger()
-                    .info("> Loaded Distributor v{}", this.getDescriptor().getVersion());
+                    .info("> Loaded Distributor {}", "v" + this.getDescriptor().getVersion());
         } catch (final IOException e) {
             this.getLogger().error("An error occurred while displaying distributor banner, very unexpected...", e);
         }
@@ -223,12 +223,12 @@ public final class DistributorPlugin extends ExtendedPlugin implements Distribut
         Core.app.addListener(new ApplicationListener() {
             @Override
             public void dispose() {
-                for (final var connection : DistributorPlugin.this.connections.entrySet()) {
+                for (final var connection : DistributorCorePlugin.this.connections.entrySet()) {
                     try {
-                        DistributorPlugin.this.getLogger().debug("closing connection {}", connection.getKey());
+                        DistributorCorePlugin.this.getLogger().debug("closing connection {}", connection.getKey());
                         connection.getValue().close();
                     } catch (final Exception e) {
-                        DistributorPlugin.this
+                        DistributorCorePlugin.this
                                 .getLogger()
                                 .error("An error occurred while closing connection {}", connection.getKey(), e);
                     }

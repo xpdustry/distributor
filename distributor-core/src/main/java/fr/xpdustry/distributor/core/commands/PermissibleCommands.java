@@ -31,19 +31,19 @@ import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.security.permission.Permissible;
 import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.util.Tristate;
-import fr.xpdustry.distributor.core.DistributorPlugin;
+import fr.xpdustry.distributor.core.DistributorCorePlugin;
 import fr.xpdustry.distributor.core.commands.parser.PermissibleParser;
 import java.util.TreeMap;
 import java.util.function.Function;
 
 public abstract class PermissibleCommands<P extends Permissible> implements PluginListener {
 
-    private final DistributorPlugin distributor;
+    private final DistributorCorePlugin distributor;
     private final PermissibleManager<P> manager;
     private final PermissibleParser<CommandSender, P> parser;
 
     public PermissibleCommands(
-            final DistributorPlugin distributor,
+            final DistributorCorePlugin distributor,
             final PermissibleManager<P> manager,
             final Function<PermissibleManager<P>, PermissibleParser<CommandSender, P>> parserFactory) {
         this.distributor = distributor;

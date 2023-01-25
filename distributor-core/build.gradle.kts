@@ -5,12 +5,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":distributor-api"))
-    implementation("org.aeonbits.owner:owner-java8:1.0.12")
-    implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("com.mysql:mysql-connector-j:8.0.31")
-    // MySQL driver has a vulnerability, so explicitly exclude it
-    runtimeOnly("com.google.protobuf:protobuf-java:3.21.12")
+    api(project(":distributor-api"))
+    api("org.aeonbits.owner:owner-java8:1.0.12")
+    api("com.zaxxer:HikariCP:5.0.1")
+    api("com.mysql:mysql-connector-j:8.0.32")
     testImplementation("org.xerial:sqlite-jdbc:3.40.0.0")
 }
 
@@ -18,12 +16,11 @@ val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("p
 metadata.version = rootProject.version.toString()
 metadata.description = rootProject.description.toString()
 metadata.name = "distributor-core"
-metadata.displayName = "Distributor"
-metadata.main = "fr.xpdustry.distributor.core.DistributorPlugin"
+metadata.displayName = "DistributorCore"
+metadata.main = "fr.xpdustry.distributor.core.DistributorCorePlugin"
 
 tasks.shadowJar {
-    archiveFileName.set("Distributor.jar")
-    archiveClassifier.set("plugin")
+    archiveFileName.set("DistributorCore.jar")
 
     doFirst {
         val temp = temporaryDir.resolve("plugin.json")
@@ -44,16 +41,4 @@ tasks.shadowJar {
     relocate("com.zaxxer.hikari", "$shadowPackage.hikari")
     relocate("com.mysql", "$shadowPackage.mysql")
     relocate("com.google.protobuf", "$shadowPackage.protobuf")
-
-    from(rootProject.file("LICENSE.md")) {
-        into("META-INF")
-    }
-}
-
-tasks.register("getArtifactPath") {
-    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
-}
-
-tasks.build {
-    dependsOn(tasks.shadowJar)
 }
