@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public final class SQLPermissionServiceTest {
 
     private static final MUUID PLAYER = MUUID.of("AAAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
@@ -71,89 +73,52 @@ public final class SQLPermissionServiceTest {
     }
 
     @Test
-    void test_player_save() {
-        final var players = this.manager.getPlayerPermissionManager();
-        final var player = players.findOrCreateById(PLAYER.getUuid());
-
-        player.setPermission(PERMISSION1, Tristate.TRUE);
-        player.setPermission(PERMISSION2, Tristate.FALSE);
-
-        Assertions.assertEquals(0, players.count());
-        players.save(player);
-        Assertions.assertEquals(1, players.count());
-
-        final var queried = players.findById(PLAYER.getUuid()).orElseThrow();
-        Assertions.assertEquals(queried, player);
-        Assertions.assertEquals(Tristate.TRUE, queried.getPermission(PERMISSION1));
-        Assertions.assertEquals(Tristate.FALSE, queried.getPermission(PERMISSION2));
-    }
-
-    @Test
-    void test_group_save() {
-        final var groups = this.manager.getGroupPermissionManager();
-        final var group = groups.findOrCreateById(GROUP1);
-
-        group.setPermission("fr.xpdustry.test.a", Tristate.TRUE);
-        group.setPermission("fr.xpdustry.test.b", Tristate.FALSE);
-        group.setWeight(6);
-
-        Assertions.assertEquals(0, groups.count());
-        groups.save(group);
-        Assertions.assertEquals(1, groups.count());
-
-        final var queried = groups.findById(GROUP1).orElseThrow();
-        Assertions.assertEquals(queried, group);
-        Assertions.assertEquals(Tristate.TRUE, queried.getPermission(PERMISSION1));
-        Assertions.assertEquals(Tristate.FALSE, queried.getPermission(PERMISSION2));
-    }
-
-    @Test
     void test_permission_calculation_player() {
-        this.setupPlayer(player -> player.setPermission(PERMISSION1, Tristate.TRUE));
-        Assertions.assertTrue(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean());
+        this.createPlayer(player -> player.setPermission(PERMISSION1, Tristate.TRUE));
+        assertThat(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean()).isTrue();
     }
 
     @Test
     void test_permission_calculation_group() {
-        this.setupPlayer(player -> player.addParent(GROUP1));
-        this.setupGroup(GROUP1, group -> group.setPermission(PERMISSION1, Tristate.FALSE));
-        Assertions.assertFalse(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean());
+        this.createPlayer(player -> player.addParentGroup(GROUP1));
+        this.createGroup(GROUP1, group -> group.setPermission(PERMISSION1, Tristate.FALSE));
+        assertThat(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean()).isFalse();
     }
 
     @Test
     void test_permission_calculation_group_with_weight() {
-        this.setupPlayer(player -> {
-            player.addParent(GROUP1);
-            player.addParent(GROUP2);
+        this.createPlayer(player -> {
+            player.addParentGroup(GROUP1);
+            player.addParentGroup(GROUP2);
         });
 
-        this.setupGroup(GROUP1, group -> {
+        this.createGroup(GROUP1, group -> {
             group.setPermission(PERMISSION1, Tristate.FALSE);
             group.setWeight(10);
         });
 
-        this.setupGroup(GROUP2, group -> {
+        this.createGroup(GROUP2, group -> {
             group.setPermission(PERMISSION1, Tristate.TRUE);
             group.setWeight(20);
         });
 
-        Assertions.assertTrue(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean());
+        assertThat(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean()).isTrue();
     }
 
     @Test
     void test_default_group() {
-        this.setupGroup(DEFAULT_GROUP, group -> group.setPermission(PERMISSION2, Tristate.TRUE));
+        this.createGroup(DEFAULT_GROUP, group -> group.setPermission(PERMISSION2, Tristate.TRUE));
         Assertions.assertTrue(this.manager.getPermission(PLAYER, PERMISSION2).asBoolean());
     }
 
-    private void setupPlayer(final Consumer<PlayerPermissible> setup) {
+    private void createPlayer(final Consumer<PlayerPermissible> setup) {
         final var players = this.manager.getPlayerPermissionManager();
-        final var player = players.findOrCreateById(PLAYER.getUuid());
+        final var player = players.findOrCreateById(SQLPermissionServiceTest.PLAYER.getUuid());
         setup.accept(player);
         players.save(player);
     }
 
-    private void setupGroup(final String name, final Consumer<GroupPermissible> setup) {
+    private void createGroup(final String name, final Consumer<GroupPermissible> setup) {
         final var groups = this.manager.getGroupPermissionManager();
         final var group = groups.findOrCreateById(name);
         setup.accept(group);

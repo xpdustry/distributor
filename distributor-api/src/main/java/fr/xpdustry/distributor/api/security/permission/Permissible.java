@@ -81,6 +81,20 @@ public interface Permissible {
     void setPermission(final String permission, final Tristate state);
 
     /**
+     * Sets the state for a given permission.
+     * <ul>
+     *     <li>{@code true} to explicitly grant the permission.</li>
+     *     <li>{@code false} to explicitly deny the permission.</li>
+     * </ul>
+     *
+     * @param permission the permission string
+     * @param state      the state of the permission
+     */
+    default void setPermission(final String permission, final boolean state) {
+        this.setPermission(permission, Tristate.of(state));
+    }
+
+    /**
      * Returns the permissions of this permissible as a map.
      */
     Map<String, Boolean> getPermissions();
@@ -102,15 +116,15 @@ public interface Permissible {
      *
      * @param parents the groups to set
      */
-    void setParents(final Collection<String> parents);
+    void setParentGroups(final Collection<String> parents);
 
     /**
      * Adds a parent to this permissible.
      */
-    void addParent(final String group);
+    void addParentGroup(final String group);
 
     /**
      * Removes a parent from this permissible.
      */
-    void removeParent(final String group);
+    void removeParentGroup(final String group);
 }

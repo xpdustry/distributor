@@ -28,7 +28,6 @@ import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.DistributorConfiguration;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -51,15 +50,7 @@ public final class SQLPermissionService implements PermissionService {
             final DistributorConfiguration configuration,
             final ConnectionFactory connectionFactory,
             final PlayerValidator validator) {
-        try (final var input = this.getClass().getResourceAsStream("/schemas/permission.sql")) {
-            if (input == null) {
-                throw new IllegalStateException("Missing schema file.");
-            }
-            connectionFactory.executeScript(input);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        Permissibles.createDatabase(connectionFactory);
         this.configuration = configuration;
         this.validator = validator;
         this.players = new SQLPlayerPermissibleManager(connectionFactory);

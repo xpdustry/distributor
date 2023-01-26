@@ -174,7 +174,7 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
         if (permissible.getParentGroups().contains(parent)) {
             sender.sendLocalizedWarning("permission.permissible.parent.add.already", permissible.getName(), parent);
         } else {
-            permissible.addParent(parent);
+            permissible.addParentGroup(parent);
             this.getPermissibleManager().save(permissible);
             sender.sendLocalizedMessage("permission.permissible.parent.add.success", permissible.getName(), parent);
         }
@@ -182,7 +182,7 @@ public abstract class PermissibleCommands<P extends Permissible> implements Plug
 
     private void removePermissibleParent(final CommandSender sender, final P permissible, final String parent) {
         if (permissible.getParentGroups().contains(parent)) {
-            permissible.removeParent(parent);
+            permissible.removeParentGroup(parent);
             this.getPermissibleManager().save(permissible);
             sender.sendLocalizedMessage("permission.permissible.parent.remove.success", permissible.getName(), parent);
         } else {

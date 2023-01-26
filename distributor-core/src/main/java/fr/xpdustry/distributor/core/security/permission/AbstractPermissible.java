@@ -38,18 +38,18 @@ public abstract class AbstractPermissible implements Permissible {
     }
 
     @Override
-    public void setParents(final Collection<String> parents) {
+    public void setParentGroups(final Collection<String> parents) {
         this.parents.clear();
         this.parents.addAll(parents);
     }
 
     @Override
-    public void addParent(final String group) {
+    public void addParentGroup(final String group) {
         this.parents.add(group);
     }
 
     @Override
-    public void removeParent(final String group) {
+    public void removeParentGroup(final String group) {
         this.parents.remove(group);
     }
 
