@@ -38,7 +38,7 @@ public interface LocalizationSource {
      * Returns the localized string for the given key or {@code null} if absent.
      *
      * <pre> {@code
-     *     // Send a localized message to every player
+     *      // Send a localized message to every player
      *      final LocalizationSource source = ...;
      *      Groups.player.each(player -> {
      *          final var locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
@@ -51,4 +51,26 @@ public interface LocalizationSource {
      * @return the localized string contained in a {@link MessageFormat}, or {@code null} if no string was found.
      */
     @Nullable MessageFormat localize(final String key, final Locale locale);
+
+    /**
+     * Shorthand method to directly format a localized string, with a failover to a default value {@code ???key???}.
+     *
+     * <pre> {@code
+     *      // Send a localized message to every player
+     *      final LocalizationSource source = ...;
+     *      Groups.player.each(player -> {
+     *          final var locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
+     *          player.sendMessage(source.format("example.key", locale));
+     *      }
+     * } </pre>
+     *
+     * @param key       the key of the string to localize
+     * @param locale    the locale to use
+     * @param args      the arguments to pass to the {@link MessageFormat#format(Object)}
+     * @return the formatted string, or {@code ???key???} if no string was found.
+     */
+    default String format(final String key, final Locale locale, final Object... args) {
+        final var format = this.localize(key, locale);
+        return format == null ? "???" + key + "???" : format.format(args);
+    }
 }
