@@ -45,7 +45,7 @@ public final class GroupPermissibleCommands extends PermissibleCommands<GroupPer
 
         registry.command(root.literal("create-group")
                 .meta(CommandMeta.DESCRIPTION, "Creates a new group.")
-                .permission("distributor.permission.group.create")
+                .permission(this.prefixPermission("create"))
                 .argument(StringArgument.of("group"))
                 .handler(ctx -> {
                     final String group = ctx.get("group");
@@ -60,7 +60,7 @@ public final class GroupPermissibleCommands extends PermissibleCommands<GroupPer
 
         registry.command(root.literal("list-groups")
                 .meta(CommandMeta.DESCRIPTION, "Lists all groups.")
-                .permission("distributor.permission.group.list")
+                .permission(this.prefixPermission("list"))
                 .handler(ctx -> {
                     final var groups = this.getPermissibleManager().findAll().iterator();
                     if (!groups.hasNext()) {

@@ -36,8 +36,8 @@ import fr.xpdustry.distributor.api.security.permission.PermissionService;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.MoreEvents;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
-import fr.xpdustry.distributor.core.commands.PermissionServiceCommands;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
+import fr.xpdustry.distributor.core.commands.PlayerValidatorCommands;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import fr.xpdustry.distributor.core.database.MySQLConnectionFactory;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
@@ -175,7 +175,7 @@ public final class DistributorCorePlugin extends ExtendedPlugin implements Distr
         this.permissions = new SQLPermissionService(this.configuration, mainConnectionFactory, this.playerValidator);
         this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
-        this.addListener(new PermissionServiceCommands(this));
+        this.addListener(new PlayerValidatorCommands(this));
 
         // Start scheduler
         final var parallelism = this.configuration.getSchedulerWorkers() < 1

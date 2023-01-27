@@ -148,9 +148,7 @@ public final class SQLPlayerValidator implements PlayerValidator {
     }
 
     private void saveValidation(final Connection con, final Validation validation) throws SQLException {
-        if (this.findValidation(con, validation.muuid())
-                .map(val -> val.valid != validation.valid())
-                .orElse(false)) {
+        if (this.findValidation(con, validation.muuid()).isPresent()) {
             try (final var statement =
                     con.prepareStatement("UPDATE validated_muuid SET valid = ? WHERE uuid = ? AND usid = ?")) {
                 statement.setBoolean(1, validation.valid());
