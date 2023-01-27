@@ -32,13 +32,6 @@ public final class MUUID {
     private final String usid;
 
     private MUUID(final String uuid, final String usid) {
-        if (!PlayerLookup.isUuid(uuid)) {
-            throw new IllegalArgumentException("Invalid UUID: " + uuid);
-        }
-        if (!PlayerLookup.isUsid(usid)) {
-            throw new IllegalArgumentException("Invalid USID: " + usid);
-        }
-
         this.uuid = uuid;
         this.usid = usid;
     }
@@ -49,7 +42,6 @@ public final class MUUID {
      * @param uuid the UUID
      * @param usid the USID
      * @return the MUUID
-     * @throws IllegalArgumentException if the UUID or USID is invalid
      */
     public static MUUID of(final String uuid, final String usid) {
         return new MUUID(uuid, usid);
@@ -60,7 +52,6 @@ public final class MUUID {
      *
      * @param player the player
      * @return the MUUID
-     * @throws IllegalArgumentException if the UUID or USID is invalid
      */
     public static MUUID of(final Player player) {
         return new MUUID(player.uuid(), player.usid());
@@ -71,7 +62,6 @@ public final class MUUID {
      *
      * @param info the player info
      * @return the MUUID
-     * @throws IllegalArgumentException if the UUID or USID is invalid
      */
     public static MUUID of(final Administration.PlayerInfo info) {
         return new MUUID(info.id, info.adminUsid);
