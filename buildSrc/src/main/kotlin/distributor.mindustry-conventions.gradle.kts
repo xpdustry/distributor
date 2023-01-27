@@ -38,3 +38,7 @@ tasks.shadowJar {
     }
     mergeServiceFiles()
 }
+
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
