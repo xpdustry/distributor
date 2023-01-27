@@ -32,7 +32,7 @@ public final class SQLPlayerValidatorTest {
 
     private static final MUUID PLAYER_1A = MUUID.of("1AAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
     private static final MUUID PLAYER_1B = MUUID.of("1AAAAAAAAAAAAAAAAAAAAA==", "BAAAAAAAAAA=");
-    private static final MUUID PLAYER_2A = MUUID.of("2AAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAA=");
+    private static final MUUID PLAYER_2A = MUUID.of("2AAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
     private static final MUUID PLAYER_2B = MUUID.of("2AAAAAAAAAAAAAAAAAAAAA==", "BAAAAAAAAAA=");
 
     private SQLiteConnectionFactory factory;
