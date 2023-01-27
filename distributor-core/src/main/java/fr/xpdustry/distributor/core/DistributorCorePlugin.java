@@ -35,7 +35,6 @@ import fr.xpdustry.distributor.api.security.PlayerValidator;
 import fr.xpdustry.distributor.api.security.permission.PermissionService;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.MoreEvents;
-import fr.xpdustry.distributor.core.commands.DistributorCommandManager;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PermissionServiceCommands;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
@@ -79,8 +78,8 @@ public final class DistributorCorePlugin extends ExtendedPlugin implements Distr
     }
 
     private final MultiLocalizationSource source = MultiLocalizationSource.create();
-    private final ArcCommandManager<CommandSender> serverCommands = new DistributorCommandManager(this);
-    private final ArcCommandManager<CommandSender> clientCommands = new DistributorCommandManager(this);
+    private final ArcCommandManager<CommandSender> serverCommands = ArcCommandManager.standardAsync(this);
+    private final ArcCommandManager<CommandSender> clientCommands = ArcCommandManager.standardAsync(this);
     private final Map<String, ConnectionFactory> connections = new HashMap<>();
 
     private @MonotonicNonNull SQLPermissionService permissions = null;

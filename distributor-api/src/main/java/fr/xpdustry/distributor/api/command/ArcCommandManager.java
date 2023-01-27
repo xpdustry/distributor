@@ -24,6 +24,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.arguments.parser.ParserParameters;
 import cloud.commandframework.arguments.parser.StandardParameters;
+import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.internal.CommandRegistrationHandler;
 import cloud.commandframework.meta.CommandMeta;
@@ -90,9 +91,18 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     public ArcCommandManager(
             final ExtendedPlugin plugin,
             final Function<CommandSender, C> commandSenderMapper,
-            final Function<C, CommandSender> backwardsCommandSenderMapper) {
+            final Function<C, CommandSender> backwardsCommandSenderMapper,
+            final boolean async) {
         super(
-                CommandExecutionCoordinator.simpleCoordinator(),
+                async
+                        ? AsynchronousCommandExecutionCoordinator.<C>builder()
+                                .withAsynchronousParsing()
+                                .withExecutor(runnable -> DistributorProvider.get()
+                                        .getPluginScheduler()
+                                        .scheduleAsync(plugin)
+                                        .execute(runnable))
+                                .build()
+                        : CommandExecutionCoordinator.simpleCoordinator(),
                 CommandRegistrationHandler.nullCommandRegistrationHandler());
 
         this.plugin = plugin;
@@ -100,6 +110,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
         this.backwardsCommandSenderMapper = backwardsCommandSenderMapper;
 
         this.registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
+
         this.captionRegistry((caption, sender) -> {
             final var source = DistributorProvider.get().getGlobalLocalizationSource();
             final var locale =
@@ -107,6 +118,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
             final var format = source.localize(caption.getKey(), locale);
             return format != null ? format.toPattern() : "???" + caption.getKey() + "???";
         });
+
         this.captionVariableReplacementHandler((format, variables) -> {
             final var arguments = new Object[variables.length];
             for (int i = 0; i < variables.length; i++) {
@@ -140,7 +152,14 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      * Creates a simple {@link ArcCommandManager} with {@link CommandSender} as the command sender type.
      */
     public static ArcCommandManager<CommandSender> standard(final ExtendedPlugin plugin) {
-        return new ArcCommandManager<>(plugin, Function.identity(), Function.identity());
+        return new ArcCommandManager<>(plugin, Function.identity(), Function.identity(), false);
+    }
+
+    /**
+     * Creates a simple async {@link ArcCommandManager} with {@link CommandSender} as the command sender type.
+     */
+    public static ArcCommandManager<CommandSender> standardAsync(final ExtendedPlugin plugin) {
+        return new ArcCommandManager<>(plugin, Function.identity(), Function.identity(), true);
     }
 
     /**
@@ -149,7 +168,16 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      * <strong>Warning:</strong> this will crash the server if it used with the console command handler.
      */
     public static ArcCommandManager<Player> player(final ExtendedPlugin plugin) {
-        return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player);
+        return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player, false);
+    }
+
+    /**
+     * Creates a simple async {@link ArcCommandManager} with {@link Player} as the command sender type.
+     * <br>
+     * <strong>Warning:</strong> this will crash the server if it used with the console command handler.
+     */
+    public static ArcCommandManager<Player> playerAsync(final ExtendedPlugin plugin) {
+        return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player, true);
     }
 
     /**
