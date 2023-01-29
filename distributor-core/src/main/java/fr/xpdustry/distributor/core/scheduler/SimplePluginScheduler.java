@@ -117,8 +117,6 @@ public final class SimplePluginScheduler implements PluginScheduler, PluginListe
         return this.pool.isShutdown();
     }
 
-    /* Recipe black magik */
-
     private static final class PluginSchedulerWorkerThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
 
         private static final AtomicInteger COUNT = new AtomicInteger(0);
