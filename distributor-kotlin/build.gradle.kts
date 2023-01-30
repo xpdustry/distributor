@@ -1,3 +1,5 @@
+import fr.xpdustry.toxopid.task.GithubArtifactDownload
+
 plugins {
     kotlin("jvm") version "1.8.0"
     id("distributor.base-conventions")
@@ -16,7 +18,10 @@ repositories {
 dependencies {
     compileOnly("fr.xpdustry:kotlin-runtime:2.0.0-k.1.8.0")
     compileOnly(project(":distributor-core"))
-    api(cloudCommandFramework("kotlin-extensions"))
+    api(cloudCommandFramework("kotlin-extensions")) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
+    testImplementation(kotlin("stdlib"))
 }
 
 val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("plugin.json"))
@@ -51,10 +56,17 @@ tasks.shadowJar {
     }
 }
 
+val kotlinRuntime = tasks.register<GithubArtifactDownload>("downloadKotlinRuntime") {
+    user.set("Xpdustry")
+    repo.set("KotlinRuntimePlugin")
+    name.set("KotlinRuntimePlugin.jar")
+    version.set("v2.0.0")
+}
+
 tasks.javadocJar {
     from(tasks.dokkaHtml)
 }
 
 tasks.runMindustryServer {
-    mods.setFrom(project(":distributor-core").tasks.shadowJar, tasks.shadowJar)
+    mods.setFrom(project(":distributor-core").tasks.shadowJar, tasks.shadowJar, kotlinRuntime)
 }
