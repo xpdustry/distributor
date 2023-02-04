@@ -77,12 +77,14 @@ public interface PlayerValidator {
 
     /**
      * Removes all muuid validation statuses with the given uuid from the validator.
+     *
      * @param uuid the player's uuid.
      */
     void remove(final String uuid);
 
     /**
      * Removes muuid validation statuses from the validator.
+     *
      * @param muuid the player's muuid.
      */
     void remove(final MUUID muuid);

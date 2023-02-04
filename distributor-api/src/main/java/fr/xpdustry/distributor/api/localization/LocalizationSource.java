@@ -64,9 +64,9 @@ public interface LocalizationSource {
      *      }
      * } </pre>
      *
-     * @param key       the key of the string to localize
-     * @param locale    the locale to use
-     * @param args      the arguments to pass to the {@link MessageFormat#format(Object)}
+     * @param key    the key of the string to localize
+     * @param locale the locale to use
+     * @param args   the arguments to pass to the {@link MessageFormat#format(Object)}
      * @return the formatted string, or {@code ???key???} if no string was found.
      */
     default String format(final String key, final Locale locale, final Object... args) {
