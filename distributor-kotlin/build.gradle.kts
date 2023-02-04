@@ -20,6 +20,7 @@ dependencies {
     compileOnly(project(":distributor-core"))
     api(cloudCommandFramework("kotlin-extensions")) {
         exclude(group = "org.jetbrains.kotlin")
+        exclude(group = "cloud.commandframework", module = "cloud-core")
     }
     testImplementation(kotlin("stdlib"))
 }
