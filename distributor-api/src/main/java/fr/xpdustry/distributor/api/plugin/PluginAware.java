@@ -26,5 +26,5 @@ public interface PluginAware {
     /**
      * Returns the owning plugin.
      */
-    ExtendedPlugin getPlugin();
+    MindustryPlugin getPlugin();
 }

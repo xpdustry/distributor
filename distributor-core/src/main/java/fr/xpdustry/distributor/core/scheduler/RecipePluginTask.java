@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.core.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.scheduler.PluginTask;
 import fr.xpdustry.distributor.api.scheduler.PluginTaskRecipe;
 import java.util.ArrayList;
@@ -34,13 +34,13 @@ import java.util.function.Function;
 public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
 
     private final SimplePluginScheduler scheduler;
-    private final ExtendedPlugin plugin;
+    private final MindustryPlugin plugin;
     private final Iterable<RecipeStep<?, ?>> steps;
     private final CompletableFuture<V> completion = new CompletableFuture<>();
     private final Object initialObject;
 
     private RecipePluginTask(
-            final SimplePluginScheduler scheduler, final ExtendedPlugin plugin, final Builder<V> recipe) {
+            final SimplePluginScheduler scheduler, final MindustryPlugin plugin, final Builder<V> recipe) {
         this.scheduler = scheduler;
         this.plugin = plugin;
         this.steps = new ArrayList<>(recipe.steps);
@@ -79,7 +79,7 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
     }
 
     @Override
-    public ExtendedPlugin getPlugin() {
+    public MindustryPlugin getPlugin() {
         return this.plugin;
     }
 
@@ -175,13 +175,13 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
     public static final class Builder<V> implements PluginTaskRecipe<V> {
 
         private final SimplePluginScheduler scheduler;
-        private final ExtendedPlugin plugin;
+        private final MindustryPlugin plugin;
         private final Object initialObject;
         private final List<RecipeStep<?, ?>> steps;
 
         public Builder(
                 final SimplePluginScheduler scheduler,
-                final ExtendedPlugin plugin,
+                final MindustryPlugin plugin,
                 final Object initialObject,
                 final List<RecipeStep<?, ?>> steps) {
             this.scheduler = scheduler;

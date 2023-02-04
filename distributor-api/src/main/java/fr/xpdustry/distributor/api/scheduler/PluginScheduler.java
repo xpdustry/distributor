@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 
 /**
  * A {@code PluginScheduler} is used to schedule tasks for a plugin. A better alternative to {@link arc.util.Timer}.
@@ -31,7 +31,7 @@ public interface PluginScheduler {
      * @param plugin the plugin to schedule the task for.
      * @return a new {@link PluginTaskBuilder} instance.
      */
-    PluginTaskBuilder scheduleSync(final ExtendedPlugin plugin);
+    PluginTaskBuilder scheduleSync(final MindustryPlugin plugin);
 
     /**
      * Returns a new {@link PluginTaskBuilder} instance scheduling an asynchronous task.
@@ -39,7 +39,7 @@ public interface PluginScheduler {
      * @param plugin the plugin to schedule the task for.
      * @return a new {@link PluginTaskBuilder} instance.
      */
-    PluginTaskBuilder scheduleAsync(final ExtendedPlugin plugin);
+    PluginTaskBuilder scheduleAsync(final MindustryPlugin plugin);
 
     /**
      * Returns a new {@link PluginTaskRecipe} instance.
@@ -48,5 +48,5 @@ public interface PluginScheduler {
      * @param value  the initial value.
      * @return a new {@link PluginTaskRecipe} instance.
      */
-    <V> PluginTaskRecipe<V> recipe(final ExtendedPlugin plugin, final V value);
+    <V> PluginTaskRecipe<V> recipe(final MindustryPlugin plugin, final V value);
 }

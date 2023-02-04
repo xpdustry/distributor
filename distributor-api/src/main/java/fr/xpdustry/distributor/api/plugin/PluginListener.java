@@ -26,31 +26,31 @@ import arc.util.CommandHandler;
 public interface PluginListener {
 
     /**
-     * Called after {@link ExtendedPlugin#onInit()}.
+     * Called after {@link MindustryPlugin#onInit()}.
      */
     default void onPluginInit() {}
 
     /**
-     * Called after {@link ExtendedPlugin#onServerCommandsRegistration(CommandHandler)}.
+     * Called after {@link MindustryPlugin#onServerCommandsRegistration(CommandHandler)}.
      *
      * @param handler the server command handler
      */
     default void onPluginServerCommandsRegistration(final CommandHandler handler) {}
 
     /**
-     * Called after {@link ExtendedPlugin#onClientCommandsRegistration(CommandHandler)}.
+     * Called after {@link MindustryPlugin#onClientCommandsRegistration(CommandHandler)}.
      *
      * @param handler the client command handler
      */
     default void onPluginClientCommandsRegistration(final CommandHandler handler) {}
 
     /**
-     * Called after {@link ExtendedPlugin#onUpdate()}.
+     * Called after {@link MindustryPlugin#onUpdate()}.
      */
     default void onPluginUpdate() {}
 
     /**
-     * Called after {@link ExtendedPlugin#onExit()}.
+     * Called after {@link MindustryPlugin#onExit()}.
      */
     default void onPluginExit() {}
 }

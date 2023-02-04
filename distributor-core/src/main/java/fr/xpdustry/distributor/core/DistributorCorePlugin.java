@@ -29,7 +29,7 @@ import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.localization.LocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.api.security.PlayerValidator;
 import fr.xpdustry.distributor.api.security.permission.PermissionService;
@@ -61,7 +61,7 @@ import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
 
-public final class DistributorCorePlugin extends ExtendedPlugin implements Distributor {
+public final class DistributorCorePlugin extends AbstractMindustryPlugin implements Distributor {
 
     static {
         // Class loader trickery to use the ModClassLoader instead of the root

@@ -20,7 +20,7 @@ package fr.xpdustry.distributor.core.scheduler;
 
 import arc.Core;
 import arc.mock.MockApplication;
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -42,7 +42,7 @@ public final class SimplePluginSchedulerTest {
     private static final Duration PRECISION = Duration.ofMillis(200);
     private static final long PRECISION_TICKS = 12L;
 
-    private ExtendedPlugin plugin;
+    private MindustryPlugin plugin;
     private TimeSource source;
     private SimplePluginScheduler scheduler;
     private Thread updater;
@@ -51,7 +51,7 @@ public final class SimplePluginSchedulerTest {
     @BeforeEach
     void before() {
         Core.app = new MockApplication();
-        this.plugin = Mockito.mock(ExtendedPlugin.class);
+        this.plugin = Mockito.mock(MindustryPlugin.class);
         this.source = TimeSource.standard();
         this.scheduler = new SimplePluginScheduler(this.source, Runnable::run, 4);
         this.updater = new Thread(() -> {

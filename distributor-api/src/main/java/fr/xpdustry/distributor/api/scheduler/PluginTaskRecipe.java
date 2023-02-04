@@ -27,7 +27,7 @@ import java.util.function.Function;
  *
  * <pre> {@code
  *      final PluginScheduler scheduler = ...;
- *      final ExtendedPlugin plugin = ...;
+ *      final MindustryPlugin plugin = ...;
  *      final CommandHandler handler = ...;
  *      handler.<Player>register("rank", "Get your pvp rank.", (args, player) -> scheduler
  *          .recipe(plugin, player)

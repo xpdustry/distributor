@@ -34,7 +34,7 @@ import fr.xpdustry.distributor.api.command.argument.TeamArgument;
 import fr.xpdustry.distributor.api.command.argument.TeamArgument.TeamMode;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.command.specifier.AllTeams;
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.plugin.PluginAware;
 import fr.xpdustry.distributor.api.util.MUUID;
 import io.leangen.geantyref.TypeToken;
@@ -48,7 +48,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
  * Command manager implementation for Mindustry. Read the <a href="https://github.com/Incendo/cloud/blob/master/docs/README.adoc">cloud documentation</a> for more information.
  *
  * <pre> {@code
- *      public final class MyPlugin extends ExtendedPlugin {
+ *      public final class MyPlugin extends AbstractMindustryPlugin {
  *          private final ArcCommandManager<CommandSender> manager = ArcCommandManager.standard(this);
  *          @Override
  *          public void onClientCommandsRegistration(final CommandHandler handler) {
@@ -73,7 +73,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      */
     public static final CommandMeta.Key<String> PLUGIN = CommandMeta.Key.of(String.class, "distributor-core:plugin");
 
-    private final ExtendedPlugin plugin;
+    private final MindustryPlugin plugin;
     private final Function<CommandSender, C> commandSenderMapper;
     private final Function<C, CommandSender> backwardsCommandSenderMapper;
 
@@ -89,7 +89,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      *                                     type to {@link CommandSender}
      */
     public ArcCommandManager(
-            final ExtendedPlugin plugin,
+            final MindustryPlugin plugin,
             final Function<CommandSender, C> commandSenderMapper,
             final Function<C, CommandSender> backwardsCommandSenderMapper,
             final boolean async) {
@@ -151,14 +151,14 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     /**
      * Creates a simple {@link ArcCommandManager} with {@link CommandSender} as the command sender type.
      */
-    public static ArcCommandManager<CommandSender> standard(final ExtendedPlugin plugin) {
+    public static ArcCommandManager<CommandSender> standard(final MindustryPlugin plugin) {
         return new ArcCommandManager<>(plugin, Function.identity(), Function.identity(), false);
     }
 
     /**
      * Creates a simple async {@link ArcCommandManager} with {@link CommandSender} as the command sender type.
      */
-    public static ArcCommandManager<CommandSender> standardAsync(final ExtendedPlugin plugin) {
+    public static ArcCommandManager<CommandSender> standardAsync(final MindustryPlugin plugin) {
         return new ArcCommandManager<>(plugin, Function.identity(), Function.identity(), true);
     }
 
@@ -167,7 +167,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      * <br>
      * <strong>Warning:</strong> this will crash the server if it used with the console command handler.
      */
-    public static ArcCommandManager<Player> player(final ExtendedPlugin plugin) {
+    public static ArcCommandManager<Player> player(final MindustryPlugin plugin) {
         return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player, false);
     }
 
@@ -176,7 +176,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      * <br>
      * <strong>Warning:</strong> this will crash the server if it used with the console command handler.
      */
-    public static ArcCommandManager<Player> playerAsync(final ExtendedPlugin plugin) {
+    public static ArcCommandManager<Player> playerAsync(final MindustryPlugin plugin) {
         return new ArcCommandManager<>(plugin, CommandSender::getPlayer, CommandSender::player, true);
     }
 
@@ -239,7 +239,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
     }
 
     @Override
-    public final ExtendedPlugin getPlugin() {
+    public final MindustryPlugin getPlugin() {
         return this.plugin;
     }
 }

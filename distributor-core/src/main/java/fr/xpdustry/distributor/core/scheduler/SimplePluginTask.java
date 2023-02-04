@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.core.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.scheduler.Cancellable;
 import fr.xpdustry.distributor.api.scheduler.PluginTask;
 import fr.xpdustry.distributor.api.scheduler.PluginTaskBuilder;
@@ -31,14 +31,14 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 public final class SimplePluginTask<V> extends FutureTask<V> implements ScheduledPluginTask<V> {
 
-    private final ExtendedPlugin plugin;
+    private final MindustryPlugin plugin;
     private final boolean async;
     private final long period;
     private final SimplePluginScheduler scheduler;
     private long nextRun;
 
     private SimplePluginTask(
-            final ExtendedPlugin plugin,
+            final MindustryPlugin plugin,
             final Callable<V> callable,
             final boolean async,
             final long period,
@@ -70,7 +70,7 @@ public final class SimplePluginTask<V> extends FutureTask<V> implements Schedule
     }
 
     @Override
-    public ExtendedPlugin getPlugin() {
+    public MindustryPlugin getPlugin() {
         return this.plugin;
     }
 
@@ -92,12 +92,12 @@ public final class SimplePluginTask<V> extends FutureTask<V> implements Schedule
     public static final class Builder implements PluginTaskBuilder {
 
         private final SimplePluginScheduler scheduler;
-        private final ExtendedPlugin plugin;
+        private final MindustryPlugin plugin;
         private final boolean async;
         private long delay = 0;
         private long repeat = 0;
 
-        public Builder(final SimplePluginScheduler scheduler, final ExtendedPlugin plugin, final boolean async) {
+        public Builder(final SimplePluginScheduler scheduler, final MindustryPlugin plugin, final boolean async) {
             this.scheduler = scheduler;
             this.plugin = plugin;
             this.async = async;

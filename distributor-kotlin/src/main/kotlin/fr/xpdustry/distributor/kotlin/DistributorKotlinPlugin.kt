@@ -18,9 +18,9 @@
  */
 package fr.xpdustry.distributor.kotlin
 
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin
+import fr.xpdustry.distributor.api.plugin.AbstractMindustryPlugin
 
-public class DistributorKotlinPlugin : ExtendedPlugin() {
+public class DistributorKotlinPlugin : AbstractMindustryPlugin() {
     override fun onInit() {
         logger.info("Distributor kotlin extensions loaded")
     }

@@ -18,7 +18,7 @@
  */
 package fr.xpdustry.distributor.core.scheduler;
 
-import fr.xpdustry.distributor.api.plugin.ExtendedPlugin;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.api.scheduler.PluginTaskBuilder;
@@ -54,17 +54,17 @@ public final class SimplePluginScheduler implements PluginScheduler, PluginListe
     }
 
     @Override
-    public PluginTaskBuilder scheduleAsync(final ExtendedPlugin plugin) {
+    public PluginTaskBuilder scheduleAsync(final MindustryPlugin plugin) {
         return new SimplePluginTask.Builder(this, plugin, true);
     }
 
     @Override
-    public PluginTaskBuilder scheduleSync(final ExtendedPlugin plugin) {
+    public PluginTaskBuilder scheduleSync(final MindustryPlugin plugin) {
         return new SimplePluginTask.Builder(this, plugin, false);
     }
 
     @Override
-    public <V> PluginTaskRecipe<V> recipe(final ExtendedPlugin plugin, final V value) {
+    public <V> PluginTaskRecipe<V> recipe(final MindustryPlugin plugin, final V value) {
         return new RecipePluginTask.Builder<>(this, plugin, value, new ArrayList<>());
     }
 
