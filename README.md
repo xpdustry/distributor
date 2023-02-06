@@ -11,6 +11,7 @@ Distributor is a framework for writing advanced Mindustry plugins in a safe and 
 - A very complete minecraft-like permission system (cloud commands can also use this system).
 - A scheduler API for managing sync and async background tasks.
 - A nice localization API inspired from [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure).
+- A better plugin API without the quirks of vanilla Mindustry.
 - **Much more...**
 
 ## Links
