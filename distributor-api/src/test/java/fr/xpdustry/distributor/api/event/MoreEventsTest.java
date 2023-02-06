@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.util;
+package fr.xpdustry.distributor.api.event;
 
 import arc.Events;
+import fr.xpdustry.distributor.api.util.Priority;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.util;
+package fr.xpdustry.distributor.api.event;
 
 import arc.Events;
 import arc.func.Cons;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
+import fr.xpdustry.distributor.api.util.Priority;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
@@ -69,7 +70,7 @@ public final class MoreEvents {
      * @param <E>      the type of the event
      * @return the subscription of the subscribed listener
      */
-    public static <E> Subscription subscribe(
+    public static <E> EventSubscription subscribe(
             final Class<E> event, final Priority priority, final Consumer<E> listener) {
         return subscribe(event, new ConsumerCons<>(listener, priority));
     }
@@ -82,7 +83,7 @@ public final class MoreEvents {
      * @param <E>      the type of the event
      * @return the subscription of the subscribed listener
      */
-    public static <E> Subscription subscribe(final Class<E> event, final Consumer<E> listener) {
+    public static <E> EventSubscription subscribe(final Class<E> event, final Consumer<E> listener) {
         return MoreEvents.subscribe(event, Priority.NORMAL, listener);
     }
 
@@ -95,7 +96,7 @@ public final class MoreEvents {
      * @param <E>      the type of the enum event
      * @return the subscription of the subscribed listener
      */
-    public static <E extends Enum<E>> Subscription subscribe(
+    public static <E extends Enum<E>> EventSubscription subscribe(
             final E event, final Priority priority, final Runnable listener) {
         return subscribe(event, new ConsumerCons<>(e -> listener.run(), priority));
     }
@@ -108,7 +109,7 @@ public final class MoreEvents {
      * @param <E>      the type of the enum event
      * @return the subscription of the subscribed listener
      */
-    public static <E extends Enum<E>> Subscription subscribe(final E event, final Runnable listener) {
+    public static <E extends Enum<E>> EventSubscription subscribe(final E event, final Runnable listener) {
         return MoreEvents.subscribe(event, Priority.NORMAL, listener);
     }
 
@@ -126,7 +127,7 @@ public final class MoreEvents {
         Events.fire(event);
     }
 
-    private static <E> Subscription subscribe(final Object event, final ConsumerCons<E> subscriber) {
+    private static <E> EventSubscription subscribe(final Object event, final ConsumerCons<E> subscriber) {
         MoreEvents.events
                 .get(event, () -> new Seq<>(Cons.class))
                 .add(subscriber)
@@ -140,17 +141,6 @@ public final class MoreEvents {
                 }
             }
         };
-    }
-
-    /**
-     * A subscription to an event.
-     */
-    public interface Subscription {
-
-        /**
-         * Unsubscribes the bound subscriber from the event.
-         */
-        void unsubscribe();
     }
 
     private static final class ConsumerCons<T> implements Cons<T> {
