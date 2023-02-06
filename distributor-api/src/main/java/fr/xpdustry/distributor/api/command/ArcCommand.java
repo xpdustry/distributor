@@ -38,7 +38,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
 
     private final ArcCommandManager<C> manager;
 
-    ArcCommand(final String name, final String description, final ArcCommandManager<C> manager) {
+    public ArcCommand(final String name, final String description, final ArcCommandManager<C> manager) {
         super(name, "[args...]", description, new ArcCommandRunner<>(name, manager));
         this.manager = manager;
     }

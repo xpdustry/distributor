@@ -25,7 +25,10 @@ import cloud.commandframework.CommandManager.ManagerSettings;
 import cloud.commandframework.arguments.StaticArgument;
 import cloud.commandframework.internal.CommandRegistrationHandler;
 import cloud.commandframework.meta.CommandMeta;
+import fr.xpdustry.distributor.api.util.ArcList;
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
@@ -47,6 +50,7 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
     private final ArcCommandManager<C> manager;
     private final CommandHandler handler;
     private final ObjectMap<String, CommandHandler.Command> commands;
+    private final Set<StaticArgument<?>> registered = new HashSet<>();
 
     @SuppressWarnings("unchecked")
     ArcRegistrationHandler(final ArcCommandManager<C> manager, final CommandHandler handler) {
@@ -62,6 +66,11 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
     @Override
     public boolean registerCommand(final Command<?> command) {
         final var root = (StaticArgument<?>) command.getArguments().get(0);
+
+        if (!this.registered.add(root)) {
+            return false;
+        }
+
         var description =
                 command.getComponents().get(0).getArgumentDescription().getDescription();
         if (description.isEmpty()) {
@@ -80,6 +89,24 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
                 this.commands.put(alias, nativeCommand);
                 this.handler.getCommandList().add(nativeCommand);
                 added = true;
+            } else {
+                final var name = this.manager.getPlugin().getDescriptor().getName();
+                var result = this.commands.get(name);
+                if (result == null) {
+                    result = new FallbackCommand(this.manager.getPlugin());
+                    this.handler.removeCommand(name);
+                    this.commands.put(name, result);
+                    this.handler.getCommandList().add(result);
+                }
+                if (result instanceof FallbackCommand fallback) {
+                    fallback.addCommand(new ArcCommand<>(alias, description, this.manager));
+                    added = true;
+                } else {
+                    this.manager
+                            .getPlugin()
+                            .getLogger()
+                            .trace("Failed to register the command {} in the fallback command.", alias);
+                }
             }
         }
 
@@ -88,10 +115,22 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
 
     @Override
     public void unregisterRootCommand(final StaticArgument<?> root) {
-        root.getAliases().stream()
-                .map(this.commands::get)
-                .filter(command -> command instanceof ArcCommand<?> cloud && cloud.getManager() == this.manager)
-                .map(c -> c.text)
-                .forEach(this.handler::removeCommand);
+        this.registered.remove(root);
+        for (final var command : new ArcList<>(this.handler.getCommandList())) {
+            if (command instanceof ArcCommand<?> cloud
+                    && cloud.getManager() == this.manager
+                    && root.getAliases().contains(command.text)) {
+                this.handler.removeCommand(command.text);
+            } else if (command instanceof FallbackCommand fallback
+                    && fallback.text.equals(
+                            this.manager.getPlugin().getDescriptor().getName())) {
+                for (final var alias : root.getAliases()) {
+                    fallback.removeCommand(alias);
+                }
+                if (fallback.getCommandList().isEmpty()) {
+                    this.handler.removeCommand(fallback.text);
+                }
+            }
+        }
     }
 }
