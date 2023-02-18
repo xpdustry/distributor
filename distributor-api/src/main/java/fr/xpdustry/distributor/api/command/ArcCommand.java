@@ -37,14 +37,41 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class ArcCommand<C> extends CommandHandler.Command {
 
     private final ArcCommandManager<C> manager;
+    private final boolean alias;
+    private final boolean prefixed;
+    private final String realName;
 
-    public ArcCommand(final String name, final String description, final ArcCommandManager<C> manager) {
-        super(name, "[args...]", description, new ArcCommandRunner<>(name, manager));
+    public ArcCommand(
+            final String name,
+            final String description,
+            final ArcCommandManager<C> manager,
+            final boolean alias,
+            final boolean prefixed) {
+        super(
+                (prefixed ? manager.getPlugin().getDescriptor().getName() + ":" : "") + name,
+                "[args...]",
+                description,
+                new ArcCommandRunner<>(name, manager));
         this.manager = manager;
+        this.alias = alias;
+        this.prefixed = prefixed;
+        this.realName = name;
+    }
+
+    public String getRealName() {
+        return this.realName;
     }
 
     public ArcCommandManager<C> getManager() {
         return this.manager;
+    }
+
+    public boolean isAlias() {
+        return this.alias;
+    }
+
+    public boolean isPrefixed() {
+        return this.prefixed;
     }
 
     private static final class ArcCommandRunner<C> implements CommandHandler.CommandRunner<Player> {

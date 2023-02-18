@@ -81,36 +81,17 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
             root.getAliases().forEach(this.handler::removeCommand);
         }
 
-        var added = false;
+        // Register with the primary name
+        this.addCommand(new ArcCommand<>(
+                root.getName(), description, this.manager, false, this.commands.containsKey(root.getName())));
 
-        for (final var alias : root.getAliases()) {
+        for (final var alias : root.getAlternativeAliases()) {
             if (!this.commands.containsKey(alias)) {
-                final var nativeCommand = new ArcCommand<>(alias, description, this.manager);
-                this.commands.put(alias, nativeCommand);
-                this.handler.getCommandList().add(nativeCommand);
-                added = true;
-            } else {
-                final var name = this.manager.getPlugin().getDescriptor().getName();
-                var result = this.commands.get(name);
-                if (result == null) {
-                    result = new FallbackCommand(this.manager.getPlugin());
-                    this.handler.removeCommand(name);
-                    this.commands.put(name, result);
-                    this.handler.getCommandList().add(result);
-                }
-                if (result instanceof FallbackCommand fallback) {
-                    fallback.addCommand(new ArcCommand<>(alias, description, this.manager));
-                    added = true;
-                } else {
-                    this.manager
-                            .getPlugin()
-                            .getLogger()
-                            .trace("Failed to register the command {} in the fallback command.", alias);
-                }
+                this.addCommand(new ArcCommand<>(alias, description, this.manager, true, false));
             }
         }
 
-        return added;
+        return true;
     }
 
     @Override
@@ -119,18 +100,14 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
         for (final var command : new ArcList<>(this.handler.getCommandList())) {
             if (command instanceof ArcCommand<?> cloud
                     && cloud.getManager() == this.manager
-                    && root.getAliases().contains(command.text)) {
+                    && root.getAliases().contains(cloud.getRealName())) {
                 this.handler.removeCommand(command.text);
-            } else if (command instanceof FallbackCommand fallback
-                    && fallback.text.equals(
-                            this.manager.getPlugin().getDescriptor().getName())) {
-                for (final var alias : root.getAliases()) {
-                    fallback.removeCommand(alias);
-                }
-                if (fallback.getCommandList().isEmpty()) {
-                    this.handler.removeCommand(fallback.text);
-                }
             }
         }
+    }
+
+    private void addCommand(final ArcCommand<C> command) {
+        this.commands.put(command.text, command);
+        this.handler.getCommandList().add(command);
     }
 }
