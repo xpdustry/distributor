@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import mindustry.Vars;
 
 public final class SQLPermissionService implements PermissionService {
@@ -63,14 +64,13 @@ public final class SQLPermissionService implements PermissionService {
             return Tristate.FALSE;
         }
 
-        if (!this.configuration.isAdminStatusIgnored()
-                && Vars.netServer.admins.isAdmin(muuid.getUuid(), muuid.getUsid())) {
+        if (!this.configuration.isAdminIgnored() && Vars.netServer.admins.isAdmin(muuid.getUuid(), muuid.getUsid())) {
             return Tristate.TRUE;
         }
 
         final var perm = permission.toLowerCase(Locale.ROOT);
         var state = Tristate.UNDEFINED;
-        final var visited = new HashSet<String>();
+        final Set<String> visited = new HashSet<String>();
         final Queue<Permissible> queue = new ArrayDeque<>();
         final var player = this.players.findById(muuid.getUuid());
         final var primary = this.groups.findById(this.configuration.getPermissionPrimaryGroup());

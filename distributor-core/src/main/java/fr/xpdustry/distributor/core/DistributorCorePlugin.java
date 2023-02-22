@@ -150,6 +150,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
         final var registry = LocalizationSourceRegistry.create(Locale.ENGLISH);
         registry.registerAll(Locale.ENGLISH, "bundles/bundle", this.getClass().getClassLoader());
         registry.registerAll(Locale.FRENCH, "bundles/bundle", this.getClass().getClassLoader());
+
         this.source.addLocalizationSource(registry);
         this.source.addLocalizationSource(LocalizationSource.router());
 

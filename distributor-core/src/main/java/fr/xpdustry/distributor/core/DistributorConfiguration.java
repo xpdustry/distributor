@@ -67,9 +67,9 @@ public interface DistributorConfiguration extends Accessible {
     @Config.DefaultValue("default")
     String getPermissionPrimaryGroup();
 
-    @Config.Key("distributor.security.permission.ignore-admin-status")
+    @Config.Key("distributor.security.permission.ignore-admin")
     @Config.DefaultValue("false")
-    boolean isAdminStatusIgnored();
+    boolean isAdminIgnored();
 
     enum DatabaseType {
         SQLITE,

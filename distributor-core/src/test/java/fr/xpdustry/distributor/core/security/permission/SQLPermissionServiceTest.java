@@ -55,7 +55,7 @@ public final class SQLPermissionServiceTest {
     void setup() {
         final var config = Mockito.mock(DistributorConfiguration.class);
         Mockito.when(config.getPermissionPrimaryGroup()).thenReturn(DEFAULT_GROUP);
-        Mockito.when(config.isAdminStatusIgnored()).thenReturn(true);
+        Mockito.when(config.isAdminIgnored()).thenReturn(true);
 
         final var validator = Mockito.mock(PlayerValidator.class);
         Mockito.when(validator.isValid(PLAYER)).thenReturn(true);
