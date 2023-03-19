@@ -28,14 +28,15 @@ import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.Tristate;
 import fr.xpdustry.distributor.core.DistributorConfiguration;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import mindustry.Vars;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class SQLPermissionService implements PermissionService {
 
@@ -59,7 +60,7 @@ public final class SQLPermissionService implements PermissionService {
     }
 
     @Override
-    public Tristate getPermission(final MUUID muuid, final String permission) {
+    public Tristate getPlayerPermission(final MUUID muuid, final String permission) {
         if (!this.validator.isValid(muuid)) {
             return Tristate.FALSE;
         }
@@ -68,40 +69,76 @@ public final class SQLPermissionService implements PermissionService {
             return Tristate.TRUE;
         }
 
-        final var perm = permission.toLowerCase(Locale.ROOT);
+        return this.getPlayerPermission(muuid.getUuid(), permission);
+    }
+
+    @Override
+    public Tristate getPlayerPermission(final String uuid, final String permission) {
+        final var player = this.players.findById(uuid);
+        final var query = permission.toLowerCase(Locale.ROOT);
         var state = Tristate.UNDEFINED;
-        final Set<String> visited = new HashSet<String>();
-        final Queue<Permissible> queue = new ArrayDeque<>();
-        final var player = this.players.findById(muuid.getUuid());
-        final var primary = this.groups.findById(this.configuration.getPermissionPrimaryGroup());
+
+        if (!Permissible.PERMISSION_PATTERN.matcher(query).matches()) {
+            return Tristate.UNDEFINED;
+        }
+
+        final Permissible permissible;
+        final List<GroupPermissible> parents;
 
         if (player.isPresent()) {
-            queue.add(player.get());
-        } else if (primary.isPresent()) {
-            queue.add(primary.get());
+            permissible = player.get();
+            parents = this.getParents(player.get(), this.configuration.getPermissionPrimaryGroup());
+        } else {
+            final var primary = this.groups.findById(this.configuration.getPermissionPrimaryGroup());
+            if (primary.isPresent()) {
+                permissible = primary.get();
+                parents = this.getParents(primary.get(), null);
+            } else {
+                return state;
+            }
+        }
+
+        state = permissible.getPermission(query);
+        if (state != Tristate.UNDEFINED) {
+            return state;
+        }
+
+        for (final var parent : parents) {
+            state = parent.getPermission(query);
+            if (state != Tristate.UNDEFINED) {
+                break;
+            }
+        }
+
+        return state;
+    }
+
+    @Override
+    public Tristate getGroupPermission(final String group, final String permission) {
+        final var permissible = this.groups.findById(group);
+        final var query = permission.toLowerCase(Locale.ROOT);
+
+        if (!Permissible.PERMISSION_PATTERN.matcher(query).matches()) {
+            return Tristate.UNDEFINED;
+        }
+
+        var state = Tristate.UNDEFINED;
+
+        if (permissible.isPresent()) {
+            state = permissible.get().getPermission(query);
         } else {
             return state;
         }
 
-        while (!queue.isEmpty()) {
-            final var holder = queue.remove();
-            state = holder.getPermission(perm);
+        if (state != Tristate.UNDEFINED) {
+            return state;
+        }
+
+        final var parents = this.getParents(permissible.get(), null);
+        for (final var parent : parents) {
+            state = parent.getPermission(query);
             if (state != Tristate.UNDEFINED) {
                 break;
-            }
-
-            holder.getParentGroups().stream()
-                    .filter(visited::add)
-                    .map(this.groups::findById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .sorted(GROUP_COMPARATOR)
-                    .forEach(queue::add);
-
-            if (queue.isEmpty()
-                    && !visited.add(this.configuration.getPermissionPrimaryGroup())
-                    && primary.isPresent()) {
-                queue.add(primary.get());
             }
         }
 
@@ -116,5 +153,33 @@ public final class SQLPermissionService implements PermissionService {
     @Override
     public PermissibleManager<GroupPermissible> getGroupPermissionManager() {
         return this.groups;
+    }
+
+    private List<GroupPermissible> getParents(final Permissible permissible, final @Nullable String primary) {
+        final Set<String> visited = new HashSet<>(permissible.getParentGroups());
+        final List<GroupPermissible> parents = new ArrayList<>(permissible.getParentGroups().stream()
+                .map(this.groups::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList());
+
+        for (int i = 0; i < parents.size(); i++) {
+            final var parent = parents.get(i);
+            parent.getParentGroups().stream()
+                    .filter(visited::add)
+                    .map(this.groups::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(parents::add);
+
+            if (primary != null && parents.size() - 1 == i && !visited.add(primary)) {
+                final var primaryGroup = this.groups.findById(primary);
+                primaryGroup.ifPresent(parents::add);
+            }
+        }
+
+        parents.sort(GROUP_COMPARATOR);
+
+        return parents;
     }
 }

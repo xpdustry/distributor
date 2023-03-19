@@ -27,12 +27,38 @@ import fr.xpdustry.distributor.api.util.Tristate;
 public interface PermissionService {
 
     /**
-     * Looks up the permission of a player. Taking into account the player's groups.
+     * Looks up the permission of a player. Taking into account:
+     * <ul>
+     *     <li>the player's parent groups</li>
+     *     <li>the player's validation status</li>
+     * </ul>
      *
      * @param muuid the player's muuid.
      * @return the state of the permission for the player.
      */
-    Tristate getPermission(final MUUID muuid, final String permission);
+    Tristate getPlayerPermission(final MUUID muuid, final String permission);
+
+    /**
+     * Looks up the permission of a player. Taking into account:
+     * <ul>
+     *     <li>the player's parent groups</li>
+     * </ul>
+     *
+     * @param uuid the player's uuid.
+     * @return the state of the permission for the player.
+     */
+    Tristate getPlayerPermission(final String uuid, final String permission);
+
+    /**
+     * Looks up the permission of a group. Taking into account:
+     * <ul>
+     *     <li>the group's parent groups</li>
+     * </ul>
+     *
+     * @param group the group's name.
+     * @return the state of the permission for the group.
+     */
+    Tristate getGroupPermission(final String group, final String permission);
 
     /**
      * Returns the permissible manager for players.

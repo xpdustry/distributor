@@ -28,7 +28,6 @@ import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -75,14 +74,16 @@ public final class SQLPermissionServiceTest {
     @Test
     void test_permission_calculation_player() {
         this.createPlayer(player -> player.setPermission(PERMISSION1, Tristate.TRUE));
-        assertThat(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean()).isTrue();
+        assertThat(this.manager.getPlayerPermission(PLAYER, PERMISSION1).asBoolean())
+                .isTrue();
     }
 
     @Test
     void test_permission_calculation_group() {
         this.createPlayer(player -> player.addParentGroup(GROUP1));
         this.createGroup(GROUP1, group -> group.setPermission(PERMISSION1, Tristate.FALSE));
-        assertThat(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean()).isFalse();
+        assertThat(this.manager.getPlayerPermission(PLAYER, PERMISSION1).asBoolean())
+                .isFalse();
     }
 
     @Test
@@ -102,13 +103,15 @@ public final class SQLPermissionServiceTest {
             group.setWeight(20);
         });
 
-        assertThat(this.manager.getPermission(PLAYER, PERMISSION1).asBoolean()).isTrue();
+        assertThat(this.manager.getPlayerPermission(PLAYER, PERMISSION1).asBoolean())
+                .isTrue();
     }
 
     @Test
     void test_default_group() {
         this.createGroup(DEFAULT_GROUP, group -> group.setPermission(PERMISSION2, Tristate.TRUE));
-        Assertions.assertTrue(this.manager.getPermission(PLAYER, PERMISSION2).asBoolean());
+        assertThat(this.manager.getPlayerPermission(PLAYER, PERMISSION2).asBoolean())
+                .isTrue();
     }
 
     private void createPlayer(final Consumer<PlayerPermissible> setup) {

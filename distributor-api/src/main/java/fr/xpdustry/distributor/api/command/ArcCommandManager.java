@@ -227,7 +227,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
         }
         return DistributorProvider.get()
                 .getPermissionService()
-                .getPermission(MUUID.of(caller.getPlayer()), permission)
+                .getPlayerPermission(MUUID.of(caller.getPlayer()), permission)
                 .asBoolean();
     }
 
