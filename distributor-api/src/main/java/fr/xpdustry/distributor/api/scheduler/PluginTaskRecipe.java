@@ -31,8 +31,8 @@ import java.util.function.Function;
  *      final CommandHandler handler = ...;
  *      handler.<Player>register("rank", "Get your pvp rank.", (args, player) -> scheduler
  *          .recipe(plugin, player)
- *          .thenRun(() -> player.sendMessage("Getting your rank..."))
- *          .thenApplyAsync(player -> getRankFromDatabase(player))
+ *          .thenAccept(p -> p.sendMessage("Getting your rank..."))
+ *          .thenApplyAsync(p -> getRankFromDatabase(p))
  *          .thenAccept(rank -> player.sendMessage("Your rank is " + rank))
  *          .execute());
  * } </pre>
