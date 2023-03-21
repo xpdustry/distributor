@@ -22,6 +22,7 @@ import arc.ApplicationListener;
 import arc.Core;
 import arc.files.Fi;
 import arc.util.CommandHandler;
+import fr.xpdustry.distributor.api.event.MoreEvents;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -64,11 +65,14 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             throw new IllegalArgumentException("Listener already registered.");
         }
         this.listeners.add(listener);
+        MoreEvents.parse(this, listener);
     }
 
     @Deprecated
     @Override
     public final void registerServerCommands(final CommandHandler handler) {
+        MoreEvents.parse(this, this);
+
         try {
             Files.createDirectories(this.getDirectory());
         } catch (final IOException e) {

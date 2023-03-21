@@ -157,7 +157,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
         // Add listeners to validate players
         this.playerValidator = new SQLPlayerValidator(validatorConnectionFactory);
         switch (this.configuration.getIdentityValidationPolicy()) {
-            case VALIDATE_UNKNOWN -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, event -> {
+            case VALIDATE_UNKNOWN -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
                 if (!this.playerValidator.contains(event.player.uuid())) {
                     this.playerValidator.validate(MUUID.of(event.player));
                     return;
@@ -167,7 +167,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
                             "[red]Warning, your identity couldn't be validated, please contact an administrator.");
                 }
             });
-            case VALIDATE_ALL -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, event -> {
+            case VALIDATE_ALL -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
                 this.playerValidator.validate(MUUID.of(event.player));
             });
         }

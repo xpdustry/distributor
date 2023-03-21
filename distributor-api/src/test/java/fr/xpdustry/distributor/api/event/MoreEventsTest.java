@@ -19,14 +19,20 @@
 package fr.xpdustry.distributor.api.event;
 
 import arc.Events;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.util.Priority;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class MoreEventsTest {
+
+    @Mock
+    private MindustryPlugin plugin;
 
     @AfterEach
     void clean() {
@@ -35,28 +41,28 @@ public final class MoreEventsTest {
 
     @Test
     void test_class_subscribe() {
-        final var subscriber = new ClassEventSubscriber<TestEvent>();
-        MoreEvents.subscribe(TestEvent.class, subscriber);
-        MoreEvents.post(new TestEvent());
+        final var subscriber = new ClassEventSubscriber<TestEvent1>();
+        MoreEvents.subscribe(TestEvent1.class, this.plugin, subscriber);
+        MoreEvents.post(new TestEvent1());
         assertThat(subscriber.hasBeenTriggered()).isTrue();
     }
 
     @Test
     void test_enum_subscribe() {
         final var subscriber = new EnumEventSubscriber();
-        MoreEvents.subscribe(TestEnum.VALUE, subscriber);
+        MoreEvents.subscribe(TestEnum.VALUE, this.plugin, subscriber);
         MoreEvents.post(TestEnum.VALUE);
         assertThat(subscriber.hasBeenTriggered()).isTrue();
     }
 
     @Test
     void test_arc_event_fire() {
-        final var subscriber1 = new ClassEventSubscriber<TestEvent>();
+        final var subscriber1 = new ClassEventSubscriber<TestEvent1>();
         final var subscriber2 = new EnumEventSubscriber();
 
-        Events.on(TestEvent.class, subscriber1::accept);
+        Events.on(TestEvent1.class, subscriber1::accept);
         Events.run(TestEnum.VALUE, subscriber2);
-        Events.fire(new TestEvent());
+        Events.fire(new TestEvent1());
         Events.fire(TestEnum.VALUE);
 
         assertThat(subscriber1.hasBeenTriggered()).isTrue();
@@ -65,13 +71,13 @@ public final class MoreEventsTest {
 
     @Test
     void test_listener_unregister() {
-        final var subscriber1 = new ClassEventSubscriber<TestEvent>();
+        final var subscriber1 = new ClassEventSubscriber<TestEvent1>();
         final var subscriber2 = new EnumEventSubscriber();
 
-        final var subscription1 = MoreEvents.subscribe(TestEvent.class, subscriber1);
-        final var subscription2 = MoreEvents.subscribe(TestEnum.VALUE, subscriber2);
+        final var subscription1 = MoreEvents.subscribe(TestEvent1.class, this.plugin, subscriber1);
+        final var subscription2 = MoreEvents.subscribe(TestEnum.VALUE, this.plugin, subscriber2);
 
-        MoreEvents.post(new TestEvent());
+        MoreEvents.post(new TestEvent1());
         MoreEvents.post(TestEnum.VALUE);
         assertThat(subscriber1.hasBeenTriggered()).isTrue();
         assertThat(subscriber2.hasBeenTriggered()).isTrue();
@@ -81,7 +87,7 @@ public final class MoreEventsTest {
         subscriber1.reset();
         subscriber2.reset();
 
-        MoreEvents.post(new TestEvent());
+        MoreEvents.post(new TestEvent1());
         MoreEvents.post(TestEnum.VALUE);
         assertThat(subscriber1.hasBeenTriggered()).isFalse();
         assertThat(subscriber2.hasBeenTriggered()).isFalse();
@@ -91,15 +97,15 @@ public final class MoreEventsTest {
 
     @Test
     void test_class_event_order() {
-        final var subscriber1 = new ClassEventSubscriber<TestEvent>();
-        final var subscriber2 = new ClassEventSubscriber<TestEvent>();
-        final var subscriber3 = new ClassEventSubscriber<TestEvent>();
+        final var subscriber1 = new ClassEventSubscriber<TestEvent1>();
+        final var subscriber2 = new ClassEventSubscriber<TestEvent1>();
+        final var subscriber3 = new ClassEventSubscriber<TestEvent1>();
 
-        MoreEvents.subscribe(TestEvent.class, Priority.HIGH, subscriber1);
-        Events.on(TestEvent.class, subscriber2::accept);
-        MoreEvents.subscribe(TestEvent.class, Priority.LOW, subscriber3);
+        MoreEvents.subscribe(TestEvent1.class, Priority.HIGH, this.plugin, subscriber1);
+        Events.on(TestEvent1.class, subscriber2::accept);
+        MoreEvents.subscribe(TestEvent1.class, Priority.LOW, this.plugin, subscriber3);
 
-        MoreEvents.post(new TestEvent());
+        MoreEvents.post(new TestEvent1());
 
         assertThat(subscriber1.hasBeenTriggered()).isTrue();
         assertThat(subscriber2.hasBeenTriggered()).isTrue();
@@ -115,9 +121,9 @@ public final class MoreEventsTest {
         final var subscriber2 = new EnumEventSubscriber();
         final var subscriber3 = new EnumEventSubscriber();
 
-        MoreEvents.subscribe(TestEnum.VALUE, Priority.HIGH, subscriber1);
+        MoreEvents.subscribe(TestEnum.VALUE, Priority.HIGH, this.plugin, subscriber1);
         Events.run(TestEnum.VALUE, subscriber2);
-        MoreEvents.subscribe(TestEnum.VALUE, Priority.LOW, subscriber3);
+        MoreEvents.subscribe(TestEnum.VALUE, Priority.LOW, this.plugin, subscriber3);
 
         MoreEvents.post(TestEnum.VALUE);
 
@@ -129,11 +135,33 @@ public final class MoreEventsTest {
         assertThat(subscriber2.triggerTime).isLessThan(subscriber3.triggerTime);
     }
 
+    @Test
+    void test_annotated_subscriber() {
+        final var listener = new AnnotatedEventListener();
+
+        MoreEvents.parse(this.plugin, listener);
+
+        assertThat(listener.future1).isNotCompleted();
+        assertThat(listener.future2).isNotCompleted();
+
+        MoreEvents.post(new TestEvent1());
+
+        assertThat(listener.future1).isCompleted();
+        assertThat(listener.future2).isNotCompleted();
+
+        MoreEvents.post(new TestEvent2());
+
+        assertThat(listener.future1).isCompleted();
+        assertThat(listener.future2).isCompleted();
+    }
+
     private enum TestEnum {
         VALUE
     }
 
-    private static final class TestEvent {}
+    private static final class TestEvent1 {}
+
+    private static final class TestEvent2 {}
 
     private static final class ClassEventSubscriber<E> implements Consumer<E> {
 
@@ -180,6 +208,22 @@ public final class MoreEventsTest {
                 throw new IllegalStateException("Tried to reset while not triggered.");
             }
             this.triggerTime = -1;
+        }
+    }
+
+    private static final class AnnotatedEventListener {
+
+        private final CompletableFuture<TestEvent1> future1 = new CompletableFuture<>();
+        private final CompletableFuture<TestEvent2> future2 = new CompletableFuture<>();
+
+        @EventHandler
+        public void listenTo1(final TestEvent1 event) {
+            this.future1.complete(event);
+        }
+
+        @EventHandler
+        public void listenTo2(final TestEvent2 event) {
+            this.future2.complete(event);
         }
     }
 }
