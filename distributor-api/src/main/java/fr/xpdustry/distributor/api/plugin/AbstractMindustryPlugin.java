@@ -51,13 +51,18 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         return this.logger;
     }
 
-    @Override
-    public List<PluginListener> getListeners() {
+    /**
+     * Returns an unmodifiable list of the listeners registered to this plugin.
+     */
+    protected final List<PluginListener> getListeners() {
         return Collections.unmodifiableList(this.listeners);
     }
 
     @Override
     public void addListener(final PluginListener listener) {
+        if (this.listeners.contains(listener)) {
+            throw new IllegalArgumentException("Listener already registered.");
+        }
         this.listeners.add(listener);
     }
 
@@ -111,7 +116,12 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
 
     @Deprecated
     @Override
-    public void init() {}
+    public final void init() {
+        this.onLoad();
+        for (final var listener : AbstractMindustryPlugin.this.listeners) {
+            listener.onPluginLoad();
+        }
+    }
 
     @Deprecated
     @Override

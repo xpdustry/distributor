@@ -45,6 +45,11 @@ public interface PluginListener {
     default void onPluginClientCommandsRegistration(final CommandHandler handler) {}
 
     /**
+     * Called after {@link MindustryPlugin#onLoad()}.
+     */
+    default void onPluginLoad() {}
+
+    /**
      * Called after {@link MindustryPlugin#onUpdate()}.
      */
     default void onPluginUpdate() {}

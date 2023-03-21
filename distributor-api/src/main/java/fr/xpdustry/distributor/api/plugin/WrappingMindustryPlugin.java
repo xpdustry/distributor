@@ -20,16 +20,18 @@ package fr.xpdustry.distributor.api.plugin;
 
 import arc.util.CommandHandler;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
 import mindustry.mod.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class WrappingMindustryPlugin implements MindustryPlugin {
 
     private final Plugin plugin;
+    private final Logger logger;
 
     public WrappingMindustryPlugin(final Plugin plugin) {
         this.plugin = plugin;
+        this.logger = LoggerFactory.getLogger(plugin.getClass());
     }
 
     @Override
@@ -48,6 +50,11 @@ final class WrappingMindustryPlugin implements MindustryPlugin {
     }
 
     @Override
+    public Logger getLogger() {
+        return this.logger;
+    }
+
+    @Override
     public Path getDirectory() {
         return this.plugin.getConfig().parent().file().toPath();
     }
@@ -55,11 +62,6 @@ final class WrappingMindustryPlugin implements MindustryPlugin {
     @Override
     public PluginDescriptor getDescriptor() {
         return PluginDescriptor.from(this.plugin);
-    }
-
-    @Override
-    public List<PluginListener> getListeners() {
-        return Collections.emptyList();
     }
 
     @Override

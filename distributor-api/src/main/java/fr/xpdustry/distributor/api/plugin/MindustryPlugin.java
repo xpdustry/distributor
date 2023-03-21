@@ -20,11 +20,9 @@ package fr.xpdustry.distributor.api.plugin;
 
 import arc.util.CommandHandler;
 import java.nio.file.Path;
-import java.util.List;
 import mindustry.Vars;
 import mindustry.mod.Plugin;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A better plugin base class. With better methods, SLF4J support, plugin listeners, etc.
@@ -43,12 +41,22 @@ public interface MindustryPlugin {
 
     /**
      * Called after the plugin instance creation.
-     * Initialize your plugin here (initializing the fields, registering the listeners, etc.).
+     * Initialize your plugin here.
+     * <p>
+     * <strong>Warning: </strong> Only call other plugins in this method if they use Distributor too.
      */
     default void onInit() {}
 
     /**
      * Called after {@link #onInit()}.
+     * Register your server-side commands here.
+     *
+     * @param handler the server command handler
+     */
+    default void onServerCommandsRegistration(final CommandHandler handler) {}
+
+    /**
+     * Called after {@link #onServerCommandsRegistration(CommandHandler)}.
      * Register your client-side commands here.
      *
      * @param handler the client command handler
@@ -57,11 +65,9 @@ public interface MindustryPlugin {
 
     /**
      * Called after {@link #onClientCommandsRegistration(CommandHandler)}.
-     * Register your server-side commands here.
-     *
-     * @param handler the server command handler
+     * Hook into other plugins here since this method technically replaces {@link Plugin#init()}.
      */
-    default void onServerCommandsRegistration(final CommandHandler handler) {}
+    default void onLoad() {}
 
     /**
      * Called every tick while the server is running.
@@ -84,19 +90,12 @@ public interface MindustryPlugin {
     /**
      * Returns the logger bound to this plugin.
      */
-    default Logger getLogger() {
-        return LoggerFactory.getLogger(this.getDescriptor().getName());
-    }
+    Logger getLogger();
 
     /**
      * Returns the descriptor of this plugin.
      */
     PluginDescriptor getDescriptor();
-
-    /**
-     * Returns an unmodifiable list of the listeners registered to this plugin.
-     */
-    List<PluginListener> getListeners();
 
     /**
      * Adds a {@link PluginListener} to this plugin.
