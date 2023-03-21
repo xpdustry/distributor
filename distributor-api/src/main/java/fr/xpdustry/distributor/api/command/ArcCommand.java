@@ -28,6 +28,7 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.exceptions.NoSuchCommandException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
+import java.util.Objects;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -90,6 +91,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
             final var sender = this.manager
                     .getCommandSenderMapper()
                     .apply(player != null ? CommandSender.player(player) : CommandSender.console());
+
             final var input = new StringBuilder(this.name);
             for (final var arg : args) {
                 input.append(' ').append(arg);
@@ -100,7 +102,8 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                     return;
                 }
                 if (throwable instanceof ArgumentParseException t) {
-                    throwable = t.getCause();
+                    // NullAway doesn't understand that the cause is not null
+                    throwable = Objects.requireNonNull(t.getCause());
                 }
 
                 if (throwable instanceof InvalidSyntaxException t) {

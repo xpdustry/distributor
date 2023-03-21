@@ -14,6 +14,7 @@ dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:2.0.2")
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.11.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
+    implementation("com.github.ben-manes:gradle-versions-plugin:0.46.0")
 }
 
 java {

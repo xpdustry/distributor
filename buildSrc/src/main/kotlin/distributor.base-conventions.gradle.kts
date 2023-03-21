@@ -13,16 +13,16 @@ repositories {
 }
 
 dependencies {
-    compileOnlyApi("org.checkerframework:checker-qual:3.26.0")
+    compileOnlyApi("org.checkerframework:checker-qual:3.32.0")
 
-    val junit = "5.8.2"
+    val junit = "5.9.2"
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
-    testImplementation("org.mockito:mockito-core:4.8.1")
-    testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.mockito:mockito-core:5.2.0")
+    testImplementation("org.assertj:assertj-core:3.24.2")
 
-    annotationProcessor("com.uber.nullaway:nullaway:0.9.4")
+    annotationProcessor("com.uber.nullaway:nullaway:0.10.10")
     errorprone("com.google.errorprone:error_prone_core:2.18.0")
 }
 
