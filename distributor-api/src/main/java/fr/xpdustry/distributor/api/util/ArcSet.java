@@ -31,14 +31,14 @@ import java.util.function.Consumer;
  *
  * @param <E> the element type
  */
-public final class ArcSet<E> extends AbstractSet<E> implements Serializable {
+final class ArcSet<E> extends AbstractSet<E> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -3011659975952643135L;
 
     private final ObjectSet<E> set;
 
-    public ArcSet(final ObjectSet<E> set) {
+    ArcSet(final ObjectSet<E> set) {
         this.set = set;
     }
 

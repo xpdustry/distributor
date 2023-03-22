@@ -35,14 +35,14 @@ import java.util.function.UnaryOperator;
  *
  * @param <E> the element type
  */
-public final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAccess {
+final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAccess {
 
     @Serial
     private static final long serialVersionUID = 7102237478555006892L;
 
     private final Seq<E> seq;
 
-    public ArcList(final Seq<E> seq) {
+    ArcList(final Seq<E> seq) {
         this.seq = seq;
     }
 

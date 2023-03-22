@@ -36,7 +36,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @param <K> the type of the keys
  * @param <V> the type of the values
  */
-public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
+final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1261308433311045675L;
@@ -44,7 +44,7 @@ public final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializabl
     private final ObjectMap<K, V> map;
     private transient @Nullable EntrySet entries = null;
 
-    public ArcMap(final ObjectMap<K, V> map) {
+    ArcMap(final ObjectMap<K, V> map) {
         this.map = map;
     }
 
