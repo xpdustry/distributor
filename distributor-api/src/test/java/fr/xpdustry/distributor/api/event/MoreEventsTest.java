@@ -211,6 +211,7 @@ public final class MoreEventsTest {
         }
     }
 
+    @SuppressWarnings("unused")
     private static final class AnnotatedEventListener {
 
         private final CompletableFuture<TestEvent1> future1 = new CompletableFuture<>();
