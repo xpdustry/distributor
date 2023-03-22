@@ -18,6 +18,7 @@
  */
 package fr.xpdustry.distributor.api.util;
 
+import java.util.Base64;
 import java.util.Objects;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
@@ -32,6 +33,8 @@ public final class MUUID {
     private final String usid;
 
     private MUUID(final String uuid, final String usid) {
+        checkUuid(uuid);
+        checkUsid(usid);
         this.uuid = uuid;
         this.usid = usid;
     }
@@ -67,6 +70,36 @@ public final class MUUID {
         return new MUUID(info.id, info.adminUsid);
     }
 
+    public static boolean isUuid(final String uuid) {
+        try {
+            final var bytes = Base64.getDecoder().decode(uuid);
+            return bytes.length == 16;
+        } catch (final IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static void checkUuid(final String uuid) {
+        if (!isUuid(uuid)) {
+            throw new IllegalArgumentException(String.format("Invalid UUID: %s", uuid));
+        }
+    }
+
+    public static boolean isUsid(final String usid) {
+        try {
+            final var bytes = Base64.getDecoder().decode(usid);
+            return bytes.length == 8;
+        } catch (final IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static void checkUsid(final String usid) {
+        if (!isUsid(usid)) {
+            throw new IllegalArgumentException(String.format("Invalid USID: %s", usid));
+        }
+    }
+
     /**
      * Returns the UUID.
      */
@@ -75,10 +108,24 @@ public final class MUUID {
     }
 
     /**
+     * Returns the UUID as decoded bytes.
+     */
+    public byte[] getDecodedUuid() {
+        return Base64.getDecoder().decode(this.uuid);
+    }
+
+    /**
      * Returns the USID.
      */
     public String getUsid() {
         return this.usid;
+    }
+
+    /**
+     * Returns the USID as decoded bytes.
+     */
+    public byte[] getDecodedUsid() {
+        return Base64.getDecoder().decode(this.usid);
     }
 
     @Override

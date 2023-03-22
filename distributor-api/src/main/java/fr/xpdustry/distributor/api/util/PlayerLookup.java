@@ -19,7 +19,6 @@
 package fr.xpdustry.distributor.api.util;
 
 import arc.util.Strings;
-import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.StreamSupport;
@@ -47,7 +46,7 @@ public final class PlayerLookup {
                 return result;
             }
         }
-        if (uuid && isUuid(query)) {
+        if (uuid && MUUID.isUuid(query)) {
             return StreamSupport.stream(Groups.player.spliterator(), false)
                     .filter(p -> p.uuid().equals(query))
                     .toList();
@@ -56,24 +55,6 @@ public final class PlayerLookup {
         return StreamSupport.stream(Groups.player.spliterator(), false)
                 .filter(p -> stripAndLower(p.name()).contains(name))
                 .toList();
-    }
-
-    public static boolean isUuid(final String uuid) {
-        try {
-            final var bytes = Base64.getDecoder().decode(uuid);
-            return bytes.length == 16;
-        } catch (final IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    public static boolean isUsid(final String usid) {
-        try {
-            final var bytes = Base64.getDecoder().decode(usid);
-            return bytes.length == 8;
-        } catch (final IllegalArgumentException e) {
-            return false;
-        }
     }
 
     private static String stripAndLower(final String string) {

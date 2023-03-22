@@ -26,6 +26,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import fr.xpdustry.distributor.api.command.argument.PlayerArgument.PlayerNotFoundException;
 import fr.xpdustry.distributor.api.command.argument.PlayerArgument.TooManyPlayersFoundException;
+import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.api.util.PlayerLookup;
 import java.util.List;
 import java.util.Queue;
@@ -134,7 +135,7 @@ public final class PlayerInfoArgument<C> extends CommandArgument<C, PlayerInfo> 
                 return ArgumentParseResult.failure(new NoInputProvidedException(PlayerInfoParser.class, ctx));
             }
 
-            if (PlayerLookup.isUuid(input)) {
+            if (MUUID.isUuid(input)) {
                 return ArgumentParseResult.success(Vars.netServer.admins.getInfo(input));
             }
 
