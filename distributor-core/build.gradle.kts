@@ -9,6 +9,7 @@ dependencies {
     api("org.aeonbits.owner:owner-java8:1.0.12")
     api("com.zaxxer:HikariCP:5.0.1")
     api("com.mysql:mysql-connector-j:8.0.32")
+    api("com.password4j:password4j:1.7.0")
     testImplementation("org.xerial:sqlite-jdbc:3.40.0.0")
 }
 
@@ -41,4 +42,5 @@ tasks.shadowJar {
     relocate("com.zaxxer.hikari", "$shadowPackage.hikari")
     relocate("com.mysql", "$shadowPackage.mysql")
     relocate("com.google.protobuf", "$shadowPackage.protobuf")
+    relocate("com.password4j", "$shadowPackage.password4j")
 }

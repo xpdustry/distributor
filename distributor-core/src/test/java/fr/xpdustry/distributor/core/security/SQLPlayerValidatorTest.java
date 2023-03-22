@@ -53,6 +53,11 @@ public final class SQLPlayerValidatorTest {
     }
 
     @Test
+    void test_muuid_hash_length() {
+        assertThat(SQLPlayerValidator.hash(PLAYER_1A)).hasSize(32);
+    }
+
+    @Test
     void test_validate() {
         assertThat(this.validator.isValid(PLAYER_1A)).isFalse();
         assertThat(this.validator.contains(PLAYER_1A.getUuid())).isFalse();
