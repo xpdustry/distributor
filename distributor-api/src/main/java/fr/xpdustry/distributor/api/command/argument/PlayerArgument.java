@@ -66,7 +66,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
      * @param <C>  the command sender type
      * @return the created builder
      */
-    public static <C> Builder<C> newBuilder(final String name) {
+    public static <C> Builder<C> builder(final String name) {
         return new Builder<>(name);
     }
 
@@ -78,7 +78,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
      * @return the created builder
      */
     public static <C> PlayerArgument<C> of(final String name) {
-        return PlayerArgument.<C>newBuilder(name).asRequired().build();
+        return PlayerArgument.<C>builder(name).asRequired().build();
     }
 
     /**
@@ -89,7 +89,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
      * @return the created builder
      */
     public static <C> PlayerArgument<C> optional(final String name) {
-        return PlayerArgument.<C>newBuilder(name).asOptional().build();
+        return PlayerArgument.<C>builder(name).asOptional().build();
     }
 
     /**

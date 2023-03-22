@@ -70,7 +70,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
      * @param <C>  the command sender type
      * @return the created builder
      */
-    public static <C> TeamArgument.Builder<C> newBuilder(final String name) {
+    public static <C> TeamArgument.Builder<C> builder(final String name) {
         return new TeamArgument.Builder<>(name);
     }
 
@@ -82,7 +82,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
      * @return the created builder
      */
     public static <C> TeamArgument<C> of(final String name) {
-        return TeamArgument.<C>newBuilder(name).asRequired().build();
+        return TeamArgument.<C>builder(name).asRequired().build();
     }
 
     /**
@@ -93,7 +93,7 @@ public final class TeamArgument<C> extends CommandArgument<C, Team> {
      * @return the created builder
      */
     public static <C> TeamArgument<C> optional(final String name) {
-        return TeamArgument.<C>newBuilder(name).asOptional().build();
+        return TeamArgument.<C>builder(name).asOptional().build();
     }
 
     /**
