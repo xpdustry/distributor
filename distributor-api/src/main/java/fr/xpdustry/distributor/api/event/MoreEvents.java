@@ -57,7 +57,7 @@ import java.util.function.Consumer;
  *          }
  *      }
  *
- *      public final class Plugin extends AbstractMindustryPlugin {
+ *      public final class MyPlugin extends AbstractMindustryPlugin {
  *          @Override
  *          public void onInit() {
  *              MoreEvents.parse(this, new PlayerListener());

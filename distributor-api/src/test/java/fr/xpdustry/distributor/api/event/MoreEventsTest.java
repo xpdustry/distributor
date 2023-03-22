@@ -21,7 +21,6 @@ package fr.xpdustry.distributor.api.event;
 import arc.Events;
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.util.Priority;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -138,21 +137,29 @@ public final class MoreEventsTest {
     @Test
     void test_annotated_subscriber() {
         final var listener = new AnnotatedEventListener();
+        final var subscription = MoreEvents.parse(this.plugin, listener);
 
-        MoreEvents.parse(this.plugin, listener);
-
-        assertThat(listener.future1).isNotCompleted();
-        assertThat(listener.future2).isNotCompleted();
+        assertThat(listener.hasBeenTriggered1()).isFalse();
+        assertThat(listener.hasBeenTriggered2()).isFalse();
 
         MoreEvents.post(new TestEvent1());
 
-        assertThat(listener.future1).isCompleted();
-        assertThat(listener.future2).isNotCompleted();
+        assertThat(listener.hasBeenTriggered1()).isTrue();
+        assertThat(listener.hasBeenTriggered2()).isFalse();
 
         MoreEvents.post(new TestEvent2());
 
-        assertThat(listener.future1).isCompleted();
-        assertThat(listener.future2).isCompleted();
+        assertThat(listener.hasBeenTriggered1()).isTrue();
+        assertThat(listener.hasBeenTriggered2()).isTrue();
+
+        listener.reset();
+        subscription.unsubscribe();
+
+        MoreEvents.post(new TestEvent1());
+        MoreEvents.post(new TestEvent2());
+
+        assertThat(listener.hasBeenTriggered1()).isFalse();
+        assertThat(listener.hasBeenTriggered2()).isFalse();
     }
 
     private enum TestEnum {
@@ -214,17 +221,42 @@ public final class MoreEventsTest {
     @SuppressWarnings("unused")
     private static final class AnnotatedEventListener {
 
-        private final CompletableFuture<TestEvent1> future1 = new CompletableFuture<>();
-        private final CompletableFuture<TestEvent2> future2 = new CompletableFuture<>();
+        private long triggerTime1 = -1;
+        private long triggerTime2 = -1;
 
         @EventHandler
         public void listenTo1(final TestEvent1 event) {
-            this.future1.complete(event);
+            if (this.hasBeenTriggered1()) {
+                throw new IllegalStateException("The subscriber has been triggered twice.");
+            }
+            this.triggerTime1 = System.nanoTime();
         }
 
         @EventHandler
         public void listenTo2(final TestEvent2 event) {
-            this.future2.complete(event);
+            if (this.hasBeenTriggered2()) {
+                throw new IllegalStateException("The subscriber has been triggered twice.");
+            }
+            this.triggerTime2 = System.nanoTime();
+        }
+
+        private boolean hasBeenTriggered1() {
+            return this.triggerTime1 != -1;
+        }
+
+        private boolean hasBeenTriggered2() {
+            return this.triggerTime2 != -1;
+        }
+
+        private void reset() {
+            if (!this.hasBeenTriggered1()) {
+                throw new IllegalStateException("Tried to reset while not triggered.");
+            }
+            if (!this.hasBeenTriggered2()) {
+                throw new IllegalStateException("Tried to reset while not triggered.");
+            }
+            this.triggerTime1 = -1;
+            this.triggerTime2 = -1;
         }
     }
 }
