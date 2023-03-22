@@ -92,9 +92,17 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         Core.app.addListener(new ApplicationListener() {
 
             @Override
+            public void init() {
+                AbstractMindustryPlugin.this.onLoad();
+                for (final var listener : AbstractMindustryPlugin.this.listeners) {
+                    listener.onPluginLoad();
+                }
+            }
+
+            @Override
             public void update() {
                 AbstractMindustryPlugin.this.onUpdate();
-                for (final var listener : AbstractMindustryPlugin.this.getListeners()) {
+                for (final var listener : AbstractMindustryPlugin.this.listeners) {
                     listener.onPluginUpdate();
                 }
             }
@@ -102,7 +110,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             @Override
             public void dispose() {
                 AbstractMindustryPlugin.this.onExit();
-                for (final var listener : AbstractMindustryPlugin.this.getListeners()) {
+                for (final var listener : AbstractMindustryPlugin.this.listeners) {
                     listener.onPluginExit();
                 }
             }
@@ -120,12 +128,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
 
     @Deprecated
     @Override
-    public final void init() {
-        this.onLoad();
-        for (final var listener : AbstractMindustryPlugin.this.listeners) {
-            listener.onPluginLoad();
-        }
-    }
+    public void init() {}
 
     @Deprecated
     @Override
