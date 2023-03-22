@@ -238,7 +238,6 @@ public final class MoreEvents {
                         .addArgument(event.getClass().getSimpleName())
                         .setCause(e)
                         .log();
-                this.plugin.getLogger().error("An error occurred while handling an event.", e);
             }
         }
 
