@@ -42,13 +42,13 @@ jobs:
           echo "KOTLIN_ARTIFACT_PATH=$(./gradlew :distributor-kotlin:getArtifactPath -q)" >> $GITHUB_ENV
 
       - name: Upload Artifact to Actions (Core)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}
           path: ${{ env.CORE_ARTIFACT_PATH }}
 
       - name: Upload Artifact to Actions (Kotlin)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}
           path: ${{ env.KOTLIN_ARTIFACT_PATH }}

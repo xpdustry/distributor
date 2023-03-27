@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.function.Function;
 
 // This code is provided to you by LuckPerms, under the MIT license.
+// TODO For future versions, rename this class to DatabaseContext or something like that.
 public interface ConnectionFactory extends AutoCloseable {
 
     Connection getConnection() throws SQLException;
