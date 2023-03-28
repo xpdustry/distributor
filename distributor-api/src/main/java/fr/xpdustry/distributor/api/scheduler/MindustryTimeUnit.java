@@ -100,6 +100,9 @@ public enum MindustryTimeUnit {
         }
     }
 
+    /**
+     * Returns the Java time unit associated with this Mindustry time unit, if any.
+     */
     public Optional<TimeUnit> getJavaTimeUnit() {
         return Optional.ofNullable(this.unit);
     }

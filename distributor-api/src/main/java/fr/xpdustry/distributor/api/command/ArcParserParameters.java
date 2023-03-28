@@ -22,8 +22,15 @@ import cloud.commandframework.arguments.parser.ParserParameter;
 import fr.xpdustry.distributor.api.command.argument.TeamArgument.TeamMode;
 import io.leangen.geantyref.TypeToken;
 
+/**
+ * A collection of {@link ParserParameter} used by Distributor to resolve Mindustry types in the
+ * {@link cloud.commandframework.arguments.parser.ParserRegistry}.
+ */
 public final class ArcParserParameters {
 
+    /**
+     * Whether a {@link mindustry.game.Team} argument should include all the teams or only the base ones.
+     */
     public static final ParserParameter<TeamMode> TEAM_MODE =
             new ParserParameter<>("team_mode", TypeToken.get(TeamMode.class));
 

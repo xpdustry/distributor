@@ -36,7 +36,8 @@ import org.slf4j.LoggerFactory;
  * An abstract implementation of {@link MindustryPlugin}, without the quirks of {@link Plugin} (like the fact that
  * {@link #registerServerCommands(CommandHandler)} is called before {@link #init()}).
  * <br>
- * It also registers the plugin and its listeners in the event bus and the plugin scheduler automatically.
+ * It also registers the annotated methods of this plugin and its listeners in the event bus and the plugin scheduler
+ * automatically.
  */
 public abstract class AbstractMindustryPlugin extends Plugin implements MindustryPlugin {
 

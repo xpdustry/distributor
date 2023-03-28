@@ -20,6 +20,9 @@ package fr.xpdustry.distributor.api.util;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A ternary boolean type, used by the permission system.
+ */
 public enum Tristate {
     FALSE(false),
     TRUE(true),

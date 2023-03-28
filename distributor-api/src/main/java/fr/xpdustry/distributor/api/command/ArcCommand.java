@@ -33,7 +33,7 @@ import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * This special command handler class delegates it's call to it's command manager.
+ * This special command class delegates its call to its command manager.
  */
 public final class ArcCommand<C> extends CommandHandler.Command {
 
@@ -42,7 +42,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
     private final boolean prefixed;
     private final String realName;
 
-    public ArcCommand(
+    ArcCommand(
             final String name,
             final String description,
             final ArcCommandManager<C> manager,
@@ -59,18 +59,30 @@ public final class ArcCommand<C> extends CommandHandler.Command {
         this.realName = name;
     }
 
+    /**
+     * Returns the real name of the command, without the prefix.
+     */
     public String getRealName() {
         return this.realName;
     }
 
+    /**
+     * Returns the command manager that created this command.
+     */
     public ArcCommandManager<C> getManager() {
         return this.manager;
     }
 
+    /**
+     * Returns whether this command is an alias.
+     */
     public boolean isAlias() {
         return this.alias;
     }
 
+    /**
+     * Returns whether this command is prefixed with the plugin name.
+     */
     public boolean isPrefixed() {
         return this.prefixed;
     }

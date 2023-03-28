@@ -18,6 +18,9 @@
  */
 package fr.xpdustry.distributor.api.util;
 
+/**
+ * A utility class to represent the priority of an object.
+ */
 public enum Priority {
     HIGHEST,
     HIGH,

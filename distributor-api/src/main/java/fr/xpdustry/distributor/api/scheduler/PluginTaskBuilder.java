@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * A helper object for building and scheduling a {@link PluginTask}.
  *
  * <pre> {@code
- *      final PluginScheduler scheduler = ...;
+ *      final PluginScheduler scheduler = DistributorProvider.get().getPluginScheduler();
  *      final MindustryPlugin plugin = ...;
  *      // Warn the players the server is close in 5 minutes.
  *      Groups.player.each(p -> p.sendMessage("The server will restart in 5 minutes."));
