@@ -26,14 +26,14 @@ import mindustry.gen.Groups;
 import mindustry.gen.Player;
 
 /**
- * A collection of random utilities for searching players.
+ * A collection of random utilities for manipulating players.
  */
-public final class PlayerLookup {
+public final class Players {
 
-    private PlayerLookup() {}
+    private Players() {}
 
     /**
-     * Finds a player by its name, UUID or entity ID.
+     * Finds online players by their name or entity ID.
      *
      * @param query the query
      * @return the list player of matching players
@@ -43,7 +43,7 @@ public final class PlayerLookup {
     }
 
     /**
-     * Finds a player by its name, UUID or entity ID.
+     * Finds online players their its name, UUID or entity ID.
      *
      * @param query the query
      * @param uuid  whether the query should also search by UUID
@@ -68,6 +68,16 @@ public final class PlayerLookup {
         return StreamSupport.stream(Groups.player.spliterator(), false)
                 .filter(p -> stripAndLower(p.name()).contains(name))
                 .toList();
+    }
+
+    /**
+     * Returns the locale of a player.
+     *
+     * @param player the player
+     * @return the locale of the player
+     */
+    public static Locale getLocale(final Player player) {
+        return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
     private static String stripAndLower(final String string) {

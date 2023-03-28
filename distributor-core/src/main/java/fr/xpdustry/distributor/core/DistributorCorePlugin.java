@@ -34,6 +34,7 @@ import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.api.security.PlayerValidator;
 import fr.xpdustry.distributor.api.security.permission.PermissionService;
 import fr.xpdustry.distributor.api.util.MUUID;
+import fr.xpdustry.distributor.api.util.Players;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PlayerValidatorCommands;
@@ -175,8 +176,8 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
                             return;
                         }
                         if (!this.playerValidator.isValid(MUUID.of(event.player))) {
-                            event.player.sendMessage(
-                                    "[red]Warning, your identity couldn't be validated, please contact an administrator.");
+                            event.player.sendMessage(this.source.format(
+                                    "distributor.identity.player.failure", Players.getLocale(event.player)));
                         }
                     });
             case VALIDATE_ALL -> DistributorProvider.get()

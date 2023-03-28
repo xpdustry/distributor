@@ -21,7 +21,7 @@ package fr.xpdustry.distributor.core.commands.parser;
 import fr.xpdustry.distributor.api.security.permission.PermissibleManager;
 import fr.xpdustry.distributor.api.security.permission.PlayerPermissible;
 import fr.xpdustry.distributor.api.util.MUUID;
-import fr.xpdustry.distributor.api.util.PlayerLookup;
+import fr.xpdustry.distributor.api.util.Players;
 import java.util.Optional;
 
 public final class PlayerPermissibleParser<C> extends PermissibleParser<C, PlayerPermissible> {
@@ -37,7 +37,7 @@ public final class PlayerPermissibleParser<C> extends PermissibleParser<C, Playe
         if (MUUID.isUuid(name)) {
             return Optional.of(this.manager.findOrCreateById(name));
         }
-        final var players = PlayerLookup.findPlayers(name);
+        final var players = Players.findPlayers(name);
         if (players.size() == 1) {
             return Optional.of(this.manager.findOrCreateById(players.get(0).uuid()));
         } else {

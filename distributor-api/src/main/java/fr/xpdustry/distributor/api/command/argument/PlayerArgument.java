@@ -28,7 +28,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import fr.xpdustry.distributor.api.command.ArcCaptionKeys;
-import fr.xpdustry.distributor.api.util.PlayerLookup;
+import fr.xpdustry.distributor.api.util.Players;
 import java.io.Serial;
 import java.util.List;
 import java.util.Queue;
@@ -133,7 +133,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
                 return ArgumentParseResult.failure(new NoInputProvidedException(PlayerParser.class, ctx));
             }
 
-            final var players = PlayerLookup.findPlayers(input, true);
+            final var players = Players.findPlayers(input, true);
 
             if (players.isEmpty()) {
                 return ArgumentParseResult.failure(new PlayerNotFoundException(input, ctx));
@@ -147,7 +147,7 @@ public final class PlayerArgument<C> extends CommandArgument<C, Player> {
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
-            return PlayerLookup.findPlayers(input, true).stream()
+            return Players.findPlayers(input, true).stream()
                     .map(Player::plainName)
                     .toList();
         }
