@@ -21,6 +21,7 @@ package fr.xpdustry.distributor.api.plugin;
 import arc.ApplicationListener;
 import arc.Core;
 import arc.files.Fi;
+import arc.struct.Seq;
 import arc.util.CommandHandler;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import mindustry.Vars;
 import mindustry.mod.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,23 @@ import org.slf4j.LoggerFactory;
  * automatically.
  */
 public abstract class AbstractMindustryPlugin extends Plugin implements MindustryPlugin {
+
+    static {
+        // This little trick makes sure dependent plugins are exited before their dependencies.
+        Core.app.addListener(new ApplicationListener() {
+            @Override
+            public void dispose() {
+                Seq.with(Vars.mods.orderedMods()).reverse().forEach(mod -> {
+                    if (mod.enabled() && mod.main instanceof AbstractMindustryPlugin plugin) {
+                        plugin.onExit();
+                        for (final var listener : plugin.listeners) {
+                            listener.onPluginExit();
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     private final PluginDescriptor descriptor = PluginDescriptor.from(this);
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -110,14 +129,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
                 AbstractMindustryPlugin.this.onUpdate();
                 for (final var listener : AbstractMindustryPlugin.this.listeners) {
                     listener.onPluginUpdate();
-                }
-            }
-
-            @Override
-            public void dispose() {
-                AbstractMindustryPlugin.this.onExit();
-                for (final var listener : AbstractMindustryPlugin.this.listeners) {
-                    listener.onPluginExit();
                 }
             }
         });

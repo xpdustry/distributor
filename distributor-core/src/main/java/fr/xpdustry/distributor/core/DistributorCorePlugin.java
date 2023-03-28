@@ -18,7 +18,6 @@
  */
 package fr.xpdustry.distributor.core;
 
-import arc.ApplicationListener;
 import arc.Core;
 import arc.util.CommandHandler;
 import arc.util.Log;
@@ -230,22 +229,14 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
 
     @Override
     public void onExit() {
-        // Using application listener to not cause undefined behaviours in dependant plugins
-        Core.app.addListener(new ApplicationListener() {
-            @Override
-            public void dispose() {
-                for (final var connection : DistributorCorePlugin.this.connections.entrySet()) {
-                    try {
-                        DistributorCorePlugin.this.getLogger().debug("closing connection {}", connection.getKey());
-                        connection.getValue().close();
-                    } catch (final Exception e) {
-                        DistributorCorePlugin.this
-                                .getLogger()
-                                .error("An error occurred while closing connection {}", connection.getKey(), e);
-                    }
-                }
+        for (final var connection : DistributorCorePlugin.this.connections.entrySet()) {
+            try {
+                this.getLogger().debug("Closing SQL connection '{}'", connection.getKey());
+                connection.getValue().close();
+            } catch (final Exception e) {
+                this.getLogger().error("An error occurred while closing SQL connection '{}'", connection.getKey(), e);
             }
-        });
+        }
     }
 
     public ArcCommandManager<CommandSender> getServerCommandManager() {
@@ -266,9 +257,9 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
 
     private void addConnection(final String name, final ConnectionFactory connection) {
         if (this.connections.put(name, connection) != null) {
-            throw new RuntimeException("Resource " + name + " already exists.");
+            throw new RuntimeException("Connection '" + name + "' already exists.");
         }
-        this.getLogger().debug("starting connection {}", name);
+        this.getLogger().debug("Starting SQL connection '{}'", name);
         connection.start();
     }
 }
