@@ -22,7 +22,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Marks a method as a task handler, meaning it will be registered and called as a scheduled task in the
@@ -46,9 +45,8 @@ public @interface TaskHandler {
 
     /**
      * The time unit of the interval and initial delay.
-     * See {@link PluginScheduler} if you want to use ticks as time unit.
      */
-    TimeUnit unit() default TimeUnit.SECONDS;
+    MindustryTimeUnit unit() default MindustryTimeUnit.SECONDS;
 
     /**
      * Whether the task should be executed asynchronously.

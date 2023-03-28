@@ -18,7 +18,6 @@
  */
 package fr.xpdustry.distributor.api.scheduler;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
  *      // Warn the players the server is close in 5 minutes.
  *      Groups.player.each(p -> p.sendMessage("The server will restart in 5 minutes."));
  *      // Now schedule the closing task.
- *      scheduler.scheduleSync(plugin).delay(5, TimeUnit.MINUTES).execute(() -> Core.app.exit());
+ *      scheduler.scheduleSync(plugin).delay(5L, MindustryTimeUnit.MINUTES).execute(() -> Core.app.exit());
  * } </pre>
  */
 public interface PluginTaskBuilder {
@@ -43,17 +42,7 @@ public interface PluginTaskBuilder {
      * @param unit  the time unit of the delay.
      * @return this builder.
      */
-    default PluginTaskBuilder delay(final long delay, final TimeUnit unit) {
-        return this.delay((long) (TimeUnit.MILLISECONDS.convert(delay, unit) * (60F / 1000F)));
-    }
-
-    /**
-     * Run the task after a delay in ticks.
-     *
-     * @param delay the delay.
-     * @return this builder.
-     */
-    PluginTaskBuilder delay(final long delay);
+    PluginTaskBuilder delay(final long delay, final MindustryTimeUnit unit);
 
     /**
      * Run the task periodically with a fixed interval.
@@ -63,18 +52,7 @@ public interface PluginTaskBuilder {
      * @param unit     the time unit of the interval.
      * @return this builder.
      */
-    default PluginTaskBuilder repeat(final long interval, final TimeUnit unit) {
-        return this.repeat((long) (TimeUnit.MILLISECONDS.convert(interval, unit) * (60F / 1000F)));
-    }
-
-    /**
-     * Run the task periodically with a fixed interval in ticks.
-     * Stops the periodic execution if an exception is thrown.
-     *
-     * @param interval the interval between the end of the last execution and the start of the next.
-     * @return this builder.
-     */
-    PluginTaskBuilder repeat(final long interval);
+    PluginTaskBuilder repeat(final long interval, final MindustryTimeUnit unit);
 
     /**
      * Build and schedule the task with the given task.

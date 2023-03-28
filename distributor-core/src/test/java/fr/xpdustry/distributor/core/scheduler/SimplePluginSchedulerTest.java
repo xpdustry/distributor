@@ -22,13 +22,13 @@ import arc.Core;
 import arc.mock.MockApplication;
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.scheduler.Cancellable;
+import fr.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import fr.xpdustry.distributor.api.scheduler.TaskHandler;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,7 +101,7 @@ public final class SimplePluginSchedulerTest {
         final var begin = this.source.getCurrentTicks();
         assertThat(this.scheduler
                         .scheduleSync(this.plugin)
-                        .delay(1L, TimeUnit.SECONDS)
+                        .delay(1L, MindustryTimeUnit.SECONDS)
                         .execute(() -> future.complete(this.source.getCurrentTicks())))
                 .succeedsWithin(Duration.ofSeconds(1L).plus(PRECISION));
         final var end = future.join();
@@ -114,7 +114,7 @@ public final class SimplePluginSchedulerTest {
         final var longs = new ArrayList<Long>();
         final var future = this.scheduler
                 .scheduleSync(this.plugin)
-                .repeat(500L, TimeUnit.MILLISECONDS)
+                .repeat(500L, MindustryTimeUnit.MILLISECONDS)
                 .execute(() -> {
                     longs.add(this.source.getCurrentTicks());
                     try {
@@ -142,7 +142,7 @@ public final class SimplePluginSchedulerTest {
         final var begin = this.source.getCurrentTicks();
         assertThat(this.scheduler
                         .scheduleSync(this.plugin)
-                        .repeat(500L, TimeUnit.MILLISECONDS)
+                        .repeat(500L, MindustryTimeUnit.MILLISECONDS)
                         .execute(cancellable -> {
                             if (counter.decrementAndGet() == 0) {
                                 cancellable.cancel();
@@ -217,13 +217,14 @@ public final class SimplePluginSchedulerTest {
         final var handler = new TestTaskHandler(this.source);
         final var tasks = this.scheduler.parse(this.plugin, handler);
 
-        assertThat(tasks).size().isEqualTo(2);
+        assertThat(tasks).size().isEqualTo(3);
         assertTimeoutPreemptively(Duration.ofSeconds(1L), () -> handler.latch.await());
 
         assertThat(handler.longs1.get(1) - handler.longs1.get(0)).isCloseTo(24L, within(PRECISION_TICKS));
         assertThat(handler.longs1.get(2) - handler.longs1.get(1)).isCloseTo(24L, within(PRECISION_TICKS));
 
-        assertThat(handler.longs2).size().isEqualTo(1);
+        assertThat(handler.longs2.size()).isEqualTo(1);
+        assertThat(handler.longs3.size()).isEqualTo(1);
     }
 
     private static final class TestRecipeStep<V> {
@@ -248,10 +249,13 @@ public final class SimplePluginSchedulerTest {
         }
     }
 
+    @SuppressWarnings("UnusedMethod")
     private static final class TestTaskHandler {
 
         private final List<Long> longs1 = new ArrayList<>();
         private final List<Long> longs2 = new ArrayList<>();
+        private final List<Long> longs3 = new ArrayList<>();
+
         private final CountDownLatch latch = new CountDownLatch(1);
         private final TimeSource source;
 
@@ -259,7 +263,7 @@ public final class SimplePluginSchedulerTest {
             this.source = source;
         }
 
-        @TaskHandler(interval = 400L, unit = TimeUnit.MILLISECONDS)
+        @TaskHandler(interval = 400L, unit = MindustryTimeUnit.MILLISECONDS)
         public void someTask1() {
             this.longs1.add(this.source.getCurrentTicks());
             if (this.longs1.size() == 3) {
@@ -267,10 +271,15 @@ public final class SimplePluginSchedulerTest {
             }
         }
 
-        @TaskHandler(interval = 400L, unit = TimeUnit.MILLISECONDS)
+        @TaskHandler(interval = 400L, unit = MindustryTimeUnit.MILLISECONDS)
         public void someTask2(final Cancellable cancellable) {
             this.longs2.add(this.source.getCurrentTicks());
             cancellable.cancel();
+        }
+
+        @TaskHandler
+        public void someTask3() {
+            this.longs3.add(this.source.getCurrentTicks());
         }
     }
 }

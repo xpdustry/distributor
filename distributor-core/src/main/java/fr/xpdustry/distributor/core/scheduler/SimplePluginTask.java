@@ -20,6 +20,7 @@ package fr.xpdustry.distributor.core.scheduler;
 
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.scheduler.Cancellable;
+import fr.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import fr.xpdustry.distributor.api.scheduler.PluginTask;
 import fr.xpdustry.distributor.api.scheduler.PluginTaskBuilder;
 import java.util.concurrent.Callable;
@@ -104,14 +105,14 @@ public final class SimplePluginTask<V> extends FutureTask<V> implements Schedule
         }
 
         @Override
-        public PluginTaskBuilder delay(final long delay) {
-            this.delay = delay;
+        public PluginTaskBuilder delay(final long delay, final MindustryTimeUnit unit) {
+            this.delay = MindustryTimeUnit.TICKS.convert(delay, unit);
             return this;
         }
 
         @Override
-        public PluginTaskBuilder repeat(final long interval) {
-            this.repeat = interval;
+        public PluginTaskBuilder repeat(final long interval, final MindustryTimeUnit unit) {
+            this.repeat = MindustryTimeUnit.TICKS.convert(interval, unit);
             return this;
         }
 
