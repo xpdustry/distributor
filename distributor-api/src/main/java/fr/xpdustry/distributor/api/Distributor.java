@@ -18,6 +18,7 @@
  */
 package fr.xpdustry.distributor.api;
 
+import fr.xpdustry.distributor.api.event.EventBus;
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.api.security.PlayerValidator;
@@ -47,4 +48,9 @@ public interface Distributor {
      * Returns the permission service.
      */
     PermissionService getPermissionService();
+
+    /**
+     * Returns the event bus of this server.
+     */
+    EventBus getEventBus();
 }

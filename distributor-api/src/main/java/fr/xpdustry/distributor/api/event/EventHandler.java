@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as an event handler, meaning it will be called by {@link MoreEvents} when its corresponding event is
+ * Marks a method as an event handler, meaning it will be called by a {@link EventBus} when its corresponding event is
  * posted.
  * <br>
  * The annotated method must have exactly one parameter, which is the event class.

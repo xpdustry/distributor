@@ -26,7 +26,7 @@ import fr.xpdustry.distributor.api.Distributor;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.command.ArcCommandManager;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
-import fr.xpdustry.distributor.api.event.MoreEvents;
+import fr.xpdustry.distributor.api.event.EventBus;
 import fr.xpdustry.distributor.api.localization.LocalizationSource;
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry;
 import fr.xpdustry.distributor.api.localization.MultiLocalizationSource;
@@ -42,6 +42,7 @@ import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import fr.xpdustry.distributor.core.database.MySQLConnectionFactory;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
 import fr.xpdustry.distributor.core.dependency.DependencyManager;
+import fr.xpdustry.distributor.core.event.SimpleEventBus;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
 import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
 import fr.xpdustry.distributor.core.scheduler.TimeSource;
@@ -81,6 +82,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
     private final ArcCommandManager<CommandSender> serverCommands = ArcCommandManager.standardAsync(this);
     private final ArcCommandManager<CommandSender> clientCommands = ArcCommandManager.standardAsync(this);
     private final Map<String, ConnectionFactory> connections = new HashMap<>();
+    private final EventBus eventBus = new SimpleEventBus();
 
     private @MonotonicNonNull SQLPermissionService permissions = null;
     private @MonotonicNonNull SimplePluginScheduler scheduler = null;
@@ -157,19 +159,23 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
         // Add listeners to validate players
         this.playerValidator = new SQLPlayerValidator(validatorConnectionFactory);
         switch (this.configuration.getIdentityValidationPolicy()) {
-            case VALIDATE_UNKNOWN -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
-                if (!this.playerValidator.contains(event.player.uuid())) {
-                    this.playerValidator.validate(MUUID.of(event.player));
-                    return;
-                }
-                if (!this.playerValidator.isValid(MUUID.of(event.player))) {
-                    event.player.sendMessage(
-                            "[red]Warning, your identity couldn't be validated, please contact an administrator.");
-                }
-            });
-            case VALIDATE_ALL -> MoreEvents.subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
-                this.playerValidator.validate(MUUID.of(event.player));
-            });
+            case VALIDATE_UNKNOWN -> DistributorProvider.get()
+                    .getEventBus()
+                    .subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
+                        if (!this.playerValidator.contains(event.player.uuid())) {
+                            this.playerValidator.validate(MUUID.of(event.player));
+                            return;
+                        }
+                        if (!this.playerValidator.isValid(MUUID.of(event.player))) {
+                            event.player.sendMessage(
+                                    "[red]Warning, your identity couldn't be validated, please contact an administrator.");
+                        }
+                    });
+            case VALIDATE_ALL -> DistributorProvider.get()
+                    .getEventBus()
+                    .subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
+                        this.playerValidator.validate(MUUID.of(event.player));
+                    });
         }
 
         // Register permission utilities
@@ -215,6 +221,11 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
     @Override
     public PermissionService getPermissionService() {
         return this.permissions;
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return this.eventBus;
     }
 
     @Override

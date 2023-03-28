@@ -16,12 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.event;
+package fr.xpdustry.distributor.core.event;
 
 import arc.Events;
 import arc.func.Cons;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
+import fr.xpdustry.distributor.api.event.EventBus;
+import fr.xpdustry.distributor.api.event.EventHandler;
+import fr.xpdustry.distributor.api.event.EventSubscription;
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.plugin.PluginAware;
 import fr.xpdustry.distributor.api.util.Priority;
@@ -32,43 +35,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Utility class for subscribing to events. A better alternative to {@link Events}.
- * <br>
- * Event subscribers registered with this class will not crash the server if an exception is thrown but be logged instead.
- * Subscribers also come with {@link EventSubscription} objects to dynamically unsubscribe them. And also
- * {@link Priority} to make sure your subscribers are called in a specific order.
- * <pre> {@code
- *      final MindustryPlugin plugin = ...;
- *      final EventSubscription subscription = MoreEvents.subscribe(EventType.PlayerJoin.class, plugin, event -> {
- *          event.player.sendMessage("Hello, " + event.player.name() + "!");
- *      });
- *      // When no longer needed, unsubscribe the listener
- *      subscription.unsubscribe();
- * } </pre>
- * <br>
- * This class also provides a way to subscribe to events using methods annotated with {@link EventHandler}.
- * <br>
- * <pre> {@code
- *      public final class PlayerListener {
- *          @EventHandler
- *          public void onPlayerJoin(final EventType.PlayerJoin event) {
- *              event.player.sendMessage("Hello, " + event.player.name() + "!");
- *          }
- *      }
- *
- *      public final class MyPlugin extends AbstractMindustryPlugin {
- *          @Override
- *          public void onInit() {
- *              MoreEvents.parse(this, new PlayerListener());
- *          }
- *      }
- * } </pre>
- */
-@SuppressWarnings("unchecked")
-public final class MoreEvents {
+public final class SimpleEventBus implements EventBus {
 
-    static final ObjectMap<Object, Seq<Cons<?>>> events;
+    final ObjectMap<Object, Seq<Cons<?>>> events;
 
     private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
         final var priorityA = a instanceof PriorityCons<?> m ? m.getPriority() : Priority.NORMAL;
@@ -76,121 +45,54 @@ public final class MoreEvents {
         return priorityA.compareTo(priorityB);
     };
 
-    static {
+    @SuppressWarnings("unchecked")
+    public SimpleEventBus() {
         try {
             final var field = Events.class.getDeclaredField("events");
             field.setAccessible(true);
-            events = (ObjectMap<Object, Seq<Cons<?>>>) field.get(null);
+            this.events = (ObjectMap<Object, Seq<Cons<?>>>) field.get(null);
         } catch (final ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private MoreEvents() {}
-
-    /**
-     * Subscribe to an event.
-     *
-     * @param event    the event class to subscribe to
-     * @param priority the priority of the listener
-     * @param plugin   the plugin that owns the listener
-     * @param listener the listener to subscribe
-     * @param <E>      the type of the event
-     * @return the subscription of the subscribed listener
-     */
-    public static <E> EventSubscription subscribe(
+    @Override
+    public <E> EventSubscription subscribe(
             final Class<E> event, final Priority priority, final MindustryPlugin plugin, final Consumer<E> listener) {
-        return MoreEvents.subscribe(event, new ConsumerCons<>(listener, priority, plugin));
+        return this.subscribe(event, new ConsumerCons<>(listener, priority, plugin));
     }
 
-    /**
-     * Subscribe to an event.
-     *
-     * @param event    the event class to subscribe to
-     * @param plugin   the plugin that owns the listener
-     * @param listener the listener to subscribe
-     * @param <E>      the type of the event
-     * @return the subscription of the subscribed listener
-     */
-    public static <E> EventSubscription subscribe(
-            final Class<E> event, final MindustryPlugin plugin, final Consumer<E> listener) {
-        return MoreEvents.subscribe(event, Priority.NORMAL, plugin, listener);
-    }
-
-    /**
-     * Subscribe to an event.
-     *
-     * @param event    the event enum to subscribe to
-     * @param priority the priority of the listener
-     * @param plugin   the plugin that owns the listener
-     * @param listener the listener to subscribe
-     * @param <E>      the type of the enum event
-     * @return the subscription of the subscribed listener
-     */
-    public static <E extends Enum<E>> EventSubscription subscribe(
+    @Override
+    public <E extends Enum<E>> EventSubscription subscribe(
             final E event, final Priority priority, final MindustryPlugin plugin, final Runnable listener) {
-        return MoreEvents.subscribe(event, new ConsumerCons<>(e -> listener.run(), priority, plugin));
+        return this.subscribe(event, new ConsumerCons<>(e -> listener.run(), priority, plugin));
     }
 
-    /**
-     * Subscribe to an event.
-     *
-     * @param event    the event enum to subscribe to
-     * @param plugin   the plugin that owns the listener
-     * @param listener the listener to subscribe
-     * @param <E>      the type of the enum event
-     * @return the subscription of the subscribed listener
-     */
-    public static <E extends Enum<E>> EventSubscription subscribe(
-            final E event, final MindustryPlugin plugin, final Runnable listener) {
-        return MoreEvents.subscribe(event, Priority.NORMAL, plugin, listener);
-    }
-
-    private static <E> EventSubscription subscribe(final Object event, final PriorityCons<E> subscriber) {
-        MoreEvents.events
-                .get(event, () -> new Seq<>(Cons.class))
-                .add(subscriber)
-                .sort(COMPARATOR);
+    private <E> EventSubscription subscribe(final Object event, final PriorityCons<E> subscriber) {
+        this.events.get(event, () -> new Seq<>(Cons.class)).add(subscriber).sort(COMPARATOR);
         return () -> {
-            final var subscribers = MoreEvents.events.get(event);
+            final var subscribers = this.events.get(event);
             if (subscribers != null) {
                 subscribers.remove(subscriber);
                 if (subscribers.isEmpty()) {
-                    MoreEvents.events.remove(event);
+                    this.events.remove(event);
                 }
             }
         };
     }
 
-    /**
-     * Posts the event to the arc event bus.
-     *
-     * @param event the event to post
-     * @param <E>   the type of the event
-     */
-    public static <E> void post(final E event) {
+    @Override
+    public <E> void post(final E event) {
         Events.fire(event.getClass(), event);
     }
 
-    /**
-     * Posts the enum event to the arc event bus.
-     *
-     * @param event the enum event to post
-     * @param <E>   the type of the enum event
-     */
-    public static <E extends Enum<E>> void post(final E event) {
+    @Override
+    public <E extends Enum<E>> void post(final E event) {
         Events.fire(event);
     }
 
-    /**
-     * Parses the given listener to extract methods annotated with {@link EventHandler} and subscribes them to the
-     * arc event bus.
-     *
-     * @param plugin   the plugin that owns the listener
-     * @param listener the listener to parse
-     * @return the subscription of the subscribed handlers
-     */
-    public static EventSubscription parse(final MindustryPlugin plugin, final Object listener) {
+    @Override
+    public EventSubscription parse(final MindustryPlugin plugin, final Object listener) {
         final List<EventSubscription> subscriptions = new ArrayList<>();
         for (final var method : listener.getClass().getDeclaredMethods()) {
             final var annotation = method.getAnnotation(EventHandler.class);
@@ -204,7 +106,7 @@ public final class MoreEvents {
             }
 
             final var cons = new MethodCons<>(listener, method, annotation.priority(), plugin);
-            subscriptions.add(subscribe(cons.getEventType(), cons));
+            subscriptions.add(this.subscribe(cons.getEventType(), cons));
         }
         return () -> subscriptions.forEach(EventSubscription::unsubscribe);
     }

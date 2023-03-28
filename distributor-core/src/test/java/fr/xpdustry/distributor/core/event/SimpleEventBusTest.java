@@ -16,22 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package fr.xpdustry.distributor.api.event;
+package fr.xpdustry.distributor.core.event;
 
 import arc.Events;
+import fr.xpdustry.distributor.api.event.EventHandler;
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.util.Priority;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public final class MoreEventsTest {
+public final class SimpleEventBusTest {
 
     @Mock
     private MindustryPlugin plugin;
+
+    private SimpleEventBus bus;
+
+    @BeforeEach
+    void setup() {
+        this.bus = new SimpleEventBus();
+    }
 
     @AfterEach
     void clean() {
@@ -41,16 +50,16 @@ public final class MoreEventsTest {
     @Test
     void test_class_subscribe() {
         final var subscriber = new ClassEventSubscriber<TestEvent1>();
-        MoreEvents.subscribe(TestEvent1.class, this.plugin, subscriber);
-        MoreEvents.post(new TestEvent1());
+        this.bus.subscribe(TestEvent1.class, this.plugin, subscriber);
+        this.bus.post(new TestEvent1());
         assertThat(subscriber.hasBeenTriggered()).isTrue();
     }
 
     @Test
     void test_enum_subscribe() {
         final var subscriber = new EnumEventSubscriber();
-        MoreEvents.subscribe(TestEnum.VALUE, this.plugin, subscriber);
-        MoreEvents.post(TestEnum.VALUE);
+        this.bus.subscribe(TestEnum.VALUE, this.plugin, subscriber);
+        this.bus.post(TestEnum.VALUE);
         assertThat(subscriber.hasBeenTriggered()).isTrue();
     }
 
@@ -73,11 +82,11 @@ public final class MoreEventsTest {
         final var subscriber1 = new ClassEventSubscriber<TestEvent1>();
         final var subscriber2 = new EnumEventSubscriber();
 
-        final var subscription1 = MoreEvents.subscribe(TestEvent1.class, this.plugin, subscriber1);
-        final var subscription2 = MoreEvents.subscribe(TestEnum.VALUE, this.plugin, subscriber2);
+        final var subscription1 = this.bus.subscribe(TestEvent1.class, this.plugin, subscriber1);
+        final var subscription2 = this.bus.subscribe(TestEnum.VALUE, this.plugin, subscriber2);
 
-        MoreEvents.post(new TestEvent1());
-        MoreEvents.post(TestEnum.VALUE);
+        this.bus.post(new TestEvent1());
+        this.bus.post(TestEnum.VALUE);
         assertThat(subscriber1.hasBeenTriggered()).isTrue();
         assertThat(subscriber2.hasBeenTriggered()).isTrue();
 
@@ -86,12 +95,12 @@ public final class MoreEventsTest {
         subscriber1.reset();
         subscriber2.reset();
 
-        MoreEvents.post(new TestEvent1());
-        MoreEvents.post(TestEnum.VALUE);
+        this.bus.post(new TestEvent1());
+        this.bus.post(TestEnum.VALUE);
         assertThat(subscriber1.hasBeenTriggered()).isFalse();
         assertThat(subscriber2.hasBeenTriggered()).isFalse();
 
-        assertThat(MoreEvents.events.isEmpty()).isTrue();
+        assertThat(this.bus.events.isEmpty()).isTrue();
     }
 
     @Test
@@ -100,11 +109,11 @@ public final class MoreEventsTest {
         final var subscriber2 = new ClassEventSubscriber<TestEvent1>();
         final var subscriber3 = new ClassEventSubscriber<TestEvent1>();
 
-        MoreEvents.subscribe(TestEvent1.class, Priority.HIGH, this.plugin, subscriber1);
+        this.bus.subscribe(TestEvent1.class, Priority.HIGH, this.plugin, subscriber1);
         Events.on(TestEvent1.class, subscriber2::accept);
-        MoreEvents.subscribe(TestEvent1.class, Priority.LOW, this.plugin, subscriber3);
+        this.bus.subscribe(TestEvent1.class, Priority.LOW, this.plugin, subscriber3);
 
-        MoreEvents.post(new TestEvent1());
+        this.bus.post(new TestEvent1());
 
         assertThat(subscriber1.hasBeenTriggered()).isTrue();
         assertThat(subscriber2.hasBeenTriggered()).isTrue();
@@ -120,11 +129,11 @@ public final class MoreEventsTest {
         final var subscriber2 = new EnumEventSubscriber();
         final var subscriber3 = new EnumEventSubscriber();
 
-        MoreEvents.subscribe(TestEnum.VALUE, Priority.HIGH, this.plugin, subscriber1);
+        this.bus.subscribe(TestEnum.VALUE, Priority.HIGH, this.plugin, subscriber1);
         Events.run(TestEnum.VALUE, subscriber2);
-        MoreEvents.subscribe(TestEnum.VALUE, Priority.LOW, this.plugin, subscriber3);
+        this.bus.subscribe(TestEnum.VALUE, Priority.LOW, this.plugin, subscriber3);
 
-        MoreEvents.post(TestEnum.VALUE);
+        this.bus.post(TestEnum.VALUE);
 
         assertThat(subscriber1.hasBeenTriggered()).isTrue();
         assertThat(subscriber2.hasBeenTriggered()).isTrue();
@@ -137,17 +146,17 @@ public final class MoreEventsTest {
     @Test
     void test_annotated_subscriber() {
         final var listener = new AnnotatedEventListener();
-        final var subscription = MoreEvents.parse(this.plugin, listener);
+        final var subscription = this.bus.parse(this.plugin, listener);
 
         assertThat(listener.hasBeenTriggered1()).isFalse();
         assertThat(listener.hasBeenTriggered2()).isFalse();
 
-        MoreEvents.post(new TestEvent1());
+        this.bus.post(new TestEvent1());
 
         assertThat(listener.hasBeenTriggered1()).isTrue();
         assertThat(listener.hasBeenTriggered2()).isFalse();
 
-        MoreEvents.post(new TestEvent2());
+        this.bus.post(new TestEvent2());
 
         assertThat(listener.hasBeenTriggered1()).isTrue();
         assertThat(listener.hasBeenTriggered2()).isTrue();
@@ -155,8 +164,8 @@ public final class MoreEventsTest {
         listener.reset();
         subscription.unsubscribe();
 
-        MoreEvents.post(new TestEvent1());
-        MoreEvents.post(new TestEvent2());
+        this.bus.post(new TestEvent1());
+        this.bus.post(new TestEvent2());
 
         assertThat(listener.hasBeenTriggered1()).isFalse();
         assertThat(listener.hasBeenTriggered2()).isFalse();

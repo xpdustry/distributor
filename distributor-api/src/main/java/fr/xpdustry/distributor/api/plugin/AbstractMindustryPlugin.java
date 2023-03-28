@@ -23,7 +23,6 @@ import arc.Core;
 import arc.files.Fi;
 import arc.util.CommandHandler;
 import fr.xpdustry.distributor.api.DistributorProvider;
-import fr.xpdustry.distributor.api.event.MoreEvents;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -36,6 +35,8 @@ import org.slf4j.LoggerFactory;
 /**
  * An abstract implementation of {@link MindustryPlugin}, without the quirks of {@link Plugin} (like the fact that
  * {@link #registerServerCommands(CommandHandler)} is called before {@link #init()}).
+ * <br>
+ * It also registers the plugin and its listeners in the event bus and the plugin scheduler automatically.
  */
 public abstract class AbstractMindustryPlugin extends Plugin implements MindustryPlugin {
 
@@ -66,14 +67,15 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             throw new IllegalArgumentException("Listener already registered.");
         }
         this.listeners.add(listener);
-        MoreEvents.parse(this, listener);
+
+        DistributorProvider.get().getEventBus().parse(this, listener);
         DistributorProvider.get().getPluginScheduler().parse(this, listener);
     }
 
     @Deprecated
     @Override
     public final void registerServerCommands(final CommandHandler handler) {
-        MoreEvents.parse(this, this);
+        DistributorProvider.get().getEventBus().parse(this, this);
         DistributorProvider.get().getPluginScheduler().parse(this, this);
 
         try {
