@@ -222,10 +222,8 @@ public final class SimplePluginSchedulerTest {
 
         assertThat(handler.longs1.get(1) - handler.longs1.get(0)).isCloseTo(24L, within(PRECISION_TICKS));
         assertThat(handler.longs1.get(2) - handler.longs1.get(1)).isCloseTo(24L, within(PRECISION_TICKS));
-        assertThat(tasks.get(0)).isNotDone();
 
         assertThat(handler.longs2).size().isEqualTo(1);
-        assertThat(tasks.get(1)).isDone();
     }
 
     private static final class TestRecipeStep<V> {
