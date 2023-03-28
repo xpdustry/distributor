@@ -94,10 +94,14 @@ public final class SimplePluginScheduler implements PluginScheduler, PluginListe
                         "The event handler on " + method + " hasn't the right parameter type.");
             }
 
-            tasks.add((annotation.async() ? this.scheduleAsync(plugin) : this.scheduleSync(plugin))
-                    .repeat(annotation.interval(), annotation.unit())
-                    .delay(annotation.delay(), annotation.unit())
-                    .execute(new MethodPluginTask(object, method)));
+            final var builder = annotation.async() ? this.scheduleAsync(plugin) : this.scheduleSync(plugin);
+            if (annotation.interval() > -1) {
+                builder.repeat(annotation.interval(), annotation.unit());
+            }
+            if (annotation.delay() > -1) {
+                builder.delay(annotation.delay(), annotation.unit());
+            }
+            tasks.add(builder.execute(new MethodPluginTask(object, method)));
         }
         return Collections.unmodifiableList(tasks);
     }

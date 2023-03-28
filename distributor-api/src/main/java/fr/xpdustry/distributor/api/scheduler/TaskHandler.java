@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Marks a method as a task handler, meaning it will be registered and called as a repeated task in the
+ * Marks a method as a task handler, meaning it will be registered and called as a scheduled task in the
  * {@link PluginScheduler}.
  * <br>
  * The annotated method can have one {@link Cancellable} parameter to allow the task to cancel itself.
@@ -37,15 +37,16 @@ public @interface TaskHandler {
     /**
      * The interval between each execution of the task.
      */
-    long interval();
+    long interval() default -1;
 
     /**
      * The initial delay before the first execution of the task.
      */
-    long delay() default 1;
+    long delay() default -1;
 
     /**
      * The time unit of the interval and initial delay.
+     * See {@link PluginScheduler} if you want to use ticks as time unit.
      */
     TimeUnit unit() default TimeUnit.SECONDS;
 
