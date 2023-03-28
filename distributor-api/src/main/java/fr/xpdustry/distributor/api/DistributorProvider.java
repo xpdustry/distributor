@@ -21,7 +21,7 @@ package fr.xpdustry.distributor.api;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Provides a {@link Distributor} instance.
+ * A holder for the global {@link Distributor} instance.
  */
 public final class DistributorProvider {
 
@@ -29,16 +29,24 @@ public final class DistributorProvider {
 
     private DistributorProvider() {}
 
+    /**
+     * Returns the global {@link Distributor} instance.
+     * @throws DistributorInitializationException if the API hasn't been initialized yet
+     */
     public static Distributor get() {
         if (DistributorProvider.instance == null) {
-            throw new IllegalStateException("The API hasn't been initialized yet.");
+            throw new DistributorInitializationException("The API hasn't been initialized yet.");
         }
         return DistributorProvider.instance;
     }
 
+    /**
+     * Sets the global {@link Distributor} instance.
+     * @throws DistributorInitializationException if the API has already been initialized
+     */
     public static void set(final Distributor distributor) {
         if (DistributorProvider.instance != null) {
-            throw new IllegalStateException("The API has already been initialized.");
+            throw new DistributorInitializationException("The API has already been initialized.");
         }
         DistributorProvider.instance = distributor;
     }
