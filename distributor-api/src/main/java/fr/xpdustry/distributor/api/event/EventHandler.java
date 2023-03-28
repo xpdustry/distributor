@@ -19,7 +19,6 @@
 package fr.xpdustry.distributor.api.event;
 
 import fr.xpdustry.distributor.api.util.Priority;
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,7 +30,6 @@ import java.lang.annotation.Target;
  * <br>
  * The annotated method must have exactly one parameter, which is the event class.
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface EventHandler {
