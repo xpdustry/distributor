@@ -23,7 +23,7 @@ package fr.xpdustry.distributor.api;
  */
 public final class DistributorInitializationException extends RuntimeException {
 
-    public DistributorInitializationException(final String message) {
+    DistributorInitializationException(final String message) {
         super(message);
     }
 }
