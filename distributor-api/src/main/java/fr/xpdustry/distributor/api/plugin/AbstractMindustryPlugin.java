@@ -22,6 +22,7 @@ import arc.ApplicationListener;
 import arc.Core;
 import arc.files.Fi;
 import arc.util.CommandHandler;
+import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.event.MoreEvents;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,12 +67,14 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         }
         this.listeners.add(listener);
         MoreEvents.parse(this, listener);
+        DistributorProvider.get().getPluginScheduler().parse(this, listener);
     }
 
     @Deprecated
     @Override
     public final void registerServerCommands(final CommandHandler handler) {
         MoreEvents.parse(this, this);
+        DistributorProvider.get().getPluginScheduler().parse(this, this);
 
         try {
             Files.createDirectories(this.getDirectory());

@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.api.scheduler;
 
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
+import java.util.List;
 
 /**
  * A {@code PluginScheduler} is used to schedule tasks for a plugin. A better alternative to {@link arc.util.Timer}.
@@ -49,4 +50,14 @@ public interface PluginScheduler {
      * @return a new {@link PluginTaskRecipe} instance.
      */
     <V> PluginTaskRecipe<V> recipe(final MindustryPlugin plugin, final V value);
+
+    /**
+     * Parses the given object to extract methods annotated with {@link TaskHandler} and schedules them to the arc
+     * event bus.
+     *
+     * @param plugin the plugin that owns the listener
+     * @param object the object to parse
+     * @return a list of scheduled tasks
+     */
+    List<PluginTask<?>> parse(final MindustryPlugin plugin, final Object object);
 }

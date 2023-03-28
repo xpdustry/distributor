@@ -21,8 +21,11 @@ package fr.xpdustry.distributor.core.scheduler;
 import arc.Core;
 import arc.mock.MockApplication;
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
+import fr.xpdustry.distributor.api.scheduler.Cancellable;
+import fr.xpdustry.distributor.api.scheduler.TaskHandler;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
+// TODO The tests are so cursed, A better way to measure the time and precision of the scheduler is needed
 public final class SimplePluginSchedulerTest {
 
     // Precision of 0.2 seconds
@@ -146,8 +150,11 @@ public final class SimplePluginSchedulerTest {
                             }
                         }))
                 .failsWithin(Duration.ofSeconds(1L).plus(PRECISION));
-        final var end = future.join();
-        assertThat(end - begin).isCloseTo(60L, within(PRECISION_TICKS));
+
+        assertTimeoutPreemptively(Duration.ofSeconds(2L), () -> {
+            final var end = future.join();
+            assertThat(end - begin).isCloseTo(60L, within(PRECISION_TICKS));
+        });
     }
 
     @Test
@@ -205,6 +212,22 @@ public final class SimplePluginSchedulerTest {
                 .isEqualTo("run async");
     }
 
+    @Test
+    void test_task_handler() {
+        final var handler = new TestTaskHandler(this.source);
+        final var tasks = this.scheduler.parse(this.plugin, handler);
+
+        assertThat(tasks).size().isEqualTo(2);
+        assertTimeoutPreemptively(Duration.ofSeconds(1L), () -> handler.latch.await());
+
+        assertThat(handler.longs1.get(1) - handler.longs1.get(0)).isCloseTo(24L, within(PRECISION_TICKS));
+        assertThat(handler.longs1.get(2) - handler.longs1.get(1)).isCloseTo(24L, within(PRECISION_TICKS));
+        assertThat(tasks.get(0)).isNotDone();
+
+        assertThat(handler.longs2).size().isEqualTo(1);
+        assertThat(tasks.get(1)).isDone();
+    }
+
     private static final class TestRecipeStep<V> {
 
         private final V value;
@@ -224,6 +247,32 @@ public final class SimplePluginSchedulerTest {
 
         public boolean isSyncThread() {
             return !this.isAsyncThread();
+        }
+    }
+
+    private static final class TestTaskHandler {
+
+        private final List<Long> longs1 = new ArrayList<>();
+        private final List<Long> longs2 = new ArrayList<>();
+        private final CountDownLatch latch = new CountDownLatch(1);
+        private final TimeSource source;
+
+        private TestTaskHandler(final TimeSource source) {
+            this.source = source;
+        }
+
+        @TaskHandler(interval = 400L, unit = TimeUnit.MILLISECONDS)
+        public void someTask1() {
+            this.longs1.add(this.source.getCurrentTicks());
+            if (this.longs1.size() == 3) {
+                this.latch.countDown();
+            }
+        }
+
+        @TaskHandler(interval = 400L, unit = TimeUnit.MILLISECONDS)
+        public void someTask2(final Cancellable cancellable) {
+            this.longs2.add(this.source.getCurrentTicks());
+            cancellable.cancel();
         }
     }
 }
