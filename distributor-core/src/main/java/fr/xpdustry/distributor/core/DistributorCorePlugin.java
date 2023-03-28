@@ -92,6 +92,9 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
     @SuppressWarnings({"MissingCasesInEnumSwitch", "resource"})
     @Override
     public void onInit() {
+        // This may be dangerous, but I need to use the API here too
+        DistributorProvider.set(this);
+
         // Display the cool ass banner
         final var banner = this.getClass().getClassLoader().getResourceAsStream("banner.txt");
         if (banner == null) {
@@ -125,6 +128,12 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
                 throw new RuntimeException("Can't create default config for Javelin.", e);
             }
         }
+
+        // Start scheduler
+        final var parallelism = this.configuration.getSchedulerWorkers() < 1
+                ? Math.max(4, Runtime.getRuntime().availableProcessors())
+                : this.configuration.getSchedulerWorkers();
+        this.addListener(this.scheduler = new SimplePluginScheduler(TimeSource.arc(), Core.app::post, parallelism));
 
         // Create dependency manager
         this.dependencyManager = new DependencyManager(this.getDirectory().resolve("libs"));
@@ -182,14 +191,6 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
         this.addListener(new PlayerPermissibleCommands(this, this.permissions.getPlayerPermissionManager()));
         this.addListener(new GroupPermissibleCommands(this, this.permissions.getGroupPermissionManager()));
         this.addListener(new PlayerValidatorCommands(this));
-
-        // Start scheduler
-        final var parallelism = this.configuration.getSchedulerWorkers() < 1
-                ? Math.max(4, Runtime.getRuntime().availableProcessors())
-                : this.configuration.getSchedulerWorkers();
-        this.addListener(this.scheduler = new SimplePluginScheduler(TimeSource.arc(), Core.app::post, parallelism));
-
-        DistributorProvider.set(this);
     }
 
     @Override

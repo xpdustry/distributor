@@ -95,9 +95,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     @Deprecated
     @Override
     public final void registerServerCommands(final CommandHandler handler) {
-        DistributorProvider.get().getEventBus().parse(this, this);
-        DistributorProvider.get().getPluginScheduler().parse(this, this);
-
         try {
             Files.createDirectories(this.getDirectory());
         } catch (final IOException e) {
@@ -113,6 +110,9 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         for (final var listener : AbstractMindustryPlugin.this.listeners) {
             listener.onPluginServerCommandsRegistration(handler);
         }
+
+        DistributorProvider.get().getEventBus().parse(this, this);
+        DistributorProvider.get().getPluginScheduler().parse(this, this);
 
         Core.app.addListener(new ApplicationListener() {
 
