@@ -71,7 +71,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_PASSWORD }}"
 
       - name: Upload Artifact to Release (Core)
-        if: "${{ env.STATUS == 'release' }}"
+        if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
         uses: svenstaro/upload-release-action@v2
         with:
           asset_name: DistributorCore.jar
@@ -80,7 +80,7 @@ jobs:
           tag: ${{ github.ref }}
 
       - name: Upload Artifact to Release (Kotlin)
-        if: "${{ env.STATUS == 'release' }}"
+        if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
         uses: svenstaro/upload-release-action@v2
         with:
           asset_name: DistributorKotlin.jar
