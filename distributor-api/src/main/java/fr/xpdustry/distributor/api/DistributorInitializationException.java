@@ -18,10 +18,15 @@
  */
 package fr.xpdustry.distributor.api;
 
+import java.io.Serial;
+
 /**
  * This exception is thrown when the distributor fails to initialize.
  */
 public final class DistributorInitializationException extends RuntimeException {
+
+    @Serial
+    private static final long serialVersionUID = 7989381683086211607L;
 
     DistributorInitializationException(final String message) {
         super(message);
