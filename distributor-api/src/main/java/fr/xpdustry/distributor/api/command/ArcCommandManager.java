@@ -36,6 +36,7 @@ import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.command.specifier.AllTeams;
 import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
 import fr.xpdustry.distributor.api.plugin.PluginAware;
+import fr.xpdustry.distributor.api.scheduler.PluginTaskRecipe;
 import fr.xpdustry.distributor.api.util.MUUID;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
@@ -87,6 +88,7 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      *                                     your choice
      * @param backwardsCommandSenderMapper the function that will convert your command sender
      *                                     type to {@link CommandSender}
+     * @param async                        whether the command manager should execute commands asynchronously
      */
     public ArcCommandManager(
             final MindustryPlugin plugin,
@@ -193,14 +195,26 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
                 .registerInjector(CommandHandler.class, (ctx, annotation) -> ArcCommandManager.this.handler);
     }
 
+    /**
+     * Returns the command sender mapper of this command manager.
+     */
     public final Function<CommandSender, C> getCommandSenderMapper() {
         return this.commandSenderMapper;
     }
 
+    /**
+     * Returns the backwards command sender mapper of this command manager.
+     */
     public final Function<C, CommandSender> getBackwardsCommandSenderMapper() {
         return this.backwardsCommandSenderMapper;
     }
 
+    /**
+     * A shortcut method for creating an AnnotationParser.
+     *
+     * @param type the type token of the command sender
+     * @return the created annotation parser
+     */
     public AnnotationParser<C> createAnnotationParser(final TypeToken<C> type) {
         return new AnnotationParser<>(this, type, params -> {
             final var builder = CommandMeta.simple().with(this.createDefaultCommandMeta());
@@ -211,8 +225,25 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
         });
     }
 
+    /**
+     * A shortcut method for creating an AnnotationParser.
+     *
+     * @param type the type of the command sender
+     * @return the created annotation parser
+     */
     public final AnnotationParser<C> createAnnotationParser(final Class<C> type) {
         return this.createAnnotationParser(TypeToken.get(type));
+    }
+
+    /**
+     * A shortcut method for creating recipe commands, with steps executing synchronously or asynchronously.
+     *
+     * @param value the initial value of the recipe, usually a {@link cloud.commandframework.context.CommandContext
+     *              command context}
+     * @return the created recipe
+     */
+    public final <V> PluginTaskRecipe<V> recipe(final V value) {
+        return DistributorProvider.get().getPluginScheduler().recipe(this.plugin, value);
     }
 
     @SuppressWarnings("NullableProblems")
