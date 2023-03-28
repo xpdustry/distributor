@@ -32,10 +32,23 @@ public final class PlayerLookup {
 
     private PlayerLookup() {}
 
+    /**
+     * Finds a player by its name, UUID or entity ID.
+     *
+     * @param query the query
+     * @return the list player of matching players
+     */
     public static List<Player> findPlayers(final String query) {
         return findPlayers(query, false);
     }
 
+    /**
+     * Finds a player by its name, UUID or entity ID.
+     *
+     * @param query the query
+     * @param uuid  whether the query should also search by UUID
+     * @return the list player of matching players
+     */
     public static List<Player> findPlayers(final String query, final boolean uuid) {
         if (query.startsWith("#")) {
             final var id = Strings.parseInt(query.substring(1), -1);
