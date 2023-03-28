@@ -138,4 +138,9 @@ public final class MUUID {
         return obj == this
                 || (obj instanceof MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid));
     }
+
+    @Override
+    public String toString() {
+        return "MUUID{" + "uuid='" + this.uuid + '\'' + ", usid='" + this.usid + '\'' + '}';
+    }
 }
