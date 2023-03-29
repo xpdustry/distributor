@@ -35,11 +35,13 @@ public @interface TaskHandler {
 
     /**
      * The interval between each execution of the task.
+     * The task will be executed once if the interval is set to a value below -1.
      */
     long interval() default -1;
 
     /**
      * The initial delay before the first execution of the task.
+     * The task will be executed immediately if the delay is set to a value below -1.
      */
     long delay() default -1;
 

@@ -70,6 +70,12 @@ public final class MUUID {
         return new MUUID(info.id, info.adminUsid);
     }
 
+    /**
+     * Returns whether the given string is a valid UUID.
+     *
+     * @param uuid the UUID to check
+     * @return true if the given string is a valid UUID, false otherwise
+     */
     public static boolean isUuid(final String uuid) {
         try {
             final var bytes = Base64.getDecoder().decode(uuid);
@@ -79,12 +85,21 @@ public final class MUUID {
         }
     }
 
+    /**
+     * Throws an {@link IllegalArgumentException} if the given string is not a valid UUID.
+     */
     public static void checkUuid(final String uuid) {
         if (!isUuid(uuid)) {
             throw new IllegalArgumentException(String.format("Invalid UUID: %s", uuid));
         }
     }
 
+    /**
+     * Returns whether the given string is a valid USID.
+     *
+     * @param usid the USID to check
+     * @return true if the given string is a valid USID, false otherwise
+     */
     public static boolean isUsid(final String usid) {
         try {
             final var bytes = Base64.getDecoder().decode(usid);
@@ -94,6 +109,9 @@ public final class MUUID {
         }
     }
 
+    /**
+     * Throws an {@link IllegalArgumentException} if the given string is not a valid USID.
+     */
     public static void checkUsid(final String usid) {
         if (!isUsid(usid)) {
             throw new IllegalArgumentException(String.format("Invalid USID: %s", usid));

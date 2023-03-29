@@ -26,14 +26,14 @@ public interface GroupPermissible extends Permissible {
     /**
      * Returns the weight of this group.
      * <p>
-     * <strong>Note:</strong> the higher the weight, the higher the priority.
+     * <strong>Note:</strong> the higher the weight, the higher the priority during permission lookup.
      */
     int getWeight();
 
     /**
      * Sets the weight of this group.
      * <p>
-     * <strong>Note:</strong> the higher the weight, the higher the priority.
+     * <strong>Note:</strong> the higher the weight, the higher the priority during permission lookup.
      */
     void setWeight(int weight);
 }
