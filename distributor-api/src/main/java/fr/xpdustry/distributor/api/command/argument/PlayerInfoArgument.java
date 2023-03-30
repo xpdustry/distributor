@@ -136,6 +136,7 @@ public final class PlayerInfoArgument<C> extends CommandArgument<C, PlayerInfo> 
             }
 
             if (MUUID.isUuid(input)) {
+                inputQueue.remove();
                 return ArgumentParseResult.success(Vars.netServer.admins.getInfo(input));
             }
 
