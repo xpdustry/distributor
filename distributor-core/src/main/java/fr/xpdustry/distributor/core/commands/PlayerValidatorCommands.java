@@ -27,7 +27,9 @@ import fr.xpdustry.distributor.api.command.argument.PlayerInfoArgument;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
 import fr.xpdustry.distributor.api.plugin.PluginListener;
 import fr.xpdustry.distributor.api.util.MUUID;
+import fr.xpdustry.distributor.core.DistributorConfiguration.PlayerValidationPolicy;
 import fr.xpdustry.distributor.core.DistributorCorePlugin;
+import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import mindustry.net.Administration.PlayerInfo;
 
@@ -92,6 +94,13 @@ public final class PlayerValidatorCommands implements PluginListener {
                     }
                     this.distributor.getPlayerValidator().removeAll();
                     ctx.getSender().sendLocalizedMessage("distributor.identity.clear.success");
+
+                    final var policy = this.distributor.getConfiguration().getIdentityValidationPolicy();
+                    if (policy == PlayerValidationPolicy.VALIDATE_ALL
+                            || policy == PlayerValidationPolicy.VALIDATE_UNKNOWN) {
+                        Groups.player.forEach(
+                                player -> this.distributor.getPlayerValidator().validate(MUUID.of(player)));
+                    }
                 }));
     }
 }
