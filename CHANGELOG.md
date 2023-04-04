@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v3.0.0-rc.3 - 2023-04-04
+
+This is it, fellow plugin enjoyers, the final release of Distributor (its breaking with the version `v3.0.0-rc.3`).
+
+### Features
+
+- Added entity id and uuid lookup in `PlayerArgument`.
+- Added `PlayerInfoArgument`.
+- Added dedicated methods for async and sync tasks for `PluginScheduler`.
+- Added usid player identity validation for the permission system.
+- Added support for asynchronous execution in Cloud commands.
+- Added `distributor-kotlin` for Kotlin extensions.
+- Added command name fallback system in Cloud commands.
+- Added permission lookup for group permissions.
+- Added Mindustry UUID utilities.
+- Added `MindustryTimeUnit` for the plugin scheduler.
+- Added annotation based APIs for the plugin scheduler and event bus.
+- Much more...
+
+### Changes
+
+- Use root parameter description when available instead of the command description.
+- Changed distributor plugin id from `xpdustry-distributor-core` to `distributor-core`.
+- Replaced `ExtendedPlugin` with the interface `MindustryPlugin` and its partial implementation `AbstractMindustryPlugin`.
+- Reduce Arc collection wrappers visibility to replace with the `ArcCollections`.
+- Implemented USID hashing in the player identity validator.
+- Much more...
+
+### Chores
+
+- Overhaul of the internals to be more performant.
+- Bumped Cloud commands.
+- Bumped Mindustry.
+- Bumped Toxopid.
+- More consistent Javadoc.
+
 ## v3.0.0-rc.3 - 2022-11-21
 
 **Final release candidate.**
