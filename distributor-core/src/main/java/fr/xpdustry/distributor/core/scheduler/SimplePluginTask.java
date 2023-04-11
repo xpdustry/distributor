@@ -76,13 +76,14 @@ public final class SimplePluginTask<V> extends FutureTask<V> implements Schedule
     }
 
     @Override
-    protected void setException(final Throwable t) {
-        super.setException(t);
+    protected void setException(final Throwable throwable) {
+        super.setException(throwable);
         this.plugin
                 .getLogger()
                 .error(
                         "An error occurred in thread {} of the plugin scheduler.",
-                        Thread.currentThread().getName());
+                        Thread.currentThread().getName(),
+                        throwable);
     }
 
     @Override
