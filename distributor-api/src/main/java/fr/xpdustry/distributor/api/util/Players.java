@@ -19,6 +19,8 @@
 package fr.xpdustry.distributor.api.util;
 
 import arc.util.Strings;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.StreamSupport;
@@ -52,22 +54,33 @@ public final class Players {
     public static List<Player> findPlayers(final String query, final boolean uuid) {
         if (query.startsWith("#")) {
             final var id = Strings.parseInt(query.substring(1), -1);
-            final var result = StreamSupport.stream(Groups.player.spliterator(), false)
+            final var players = StreamSupport.stream(Groups.player.spliterator(), false)
                     .filter(p -> p.id() == id)
                     .toList();
-            if (!result.isEmpty()) {
-                return result;
+            if (!players.isEmpty()) {
+                return players;
             }
         }
+
         if (uuid && MUUID.isUuid(query)) {
             return StreamSupport.stream(Groups.player.spliterator(), false)
                     .filter(p -> p.uuid().equals(query))
                     .toList();
         }
-        final var name = stripAndLower(query);
-        return StreamSupport.stream(Groups.player.spliterator(), false)
-                .filter(p -> stripAndLower(p.name()).contains(name))
-                .toList();
+
+        final List<Player> list = new ArrayList<>();
+        final var plainName = stripAndLower(query);
+
+        for (final var player : Groups.player) {
+            final var playerName = stripAndLower(player.name());
+            if (playerName.equalsIgnoreCase(plainName)) {
+                return Collections.singletonList(player);
+            } else if (playerName.contains(plainName)) {
+                list.add(player);
+            }
+        }
+
+        return Collections.unmodifiableList(list);
     }
 
     /**
