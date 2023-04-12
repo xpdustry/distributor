@@ -32,6 +32,7 @@ public final class PlayerPermissibleParser<C> extends PermissibleParser<C, Playe
         this.manager = manager;
     }
 
+    // TODO Should cases with players having the same plain name be handled?
     @Override
     protected Optional<PlayerPermissible> findPermissible(final String name) {
         if (MUUID.isUuid(name)) {

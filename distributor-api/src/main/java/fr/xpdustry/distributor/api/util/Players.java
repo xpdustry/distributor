@@ -67,19 +67,24 @@ public final class Players {
                     .toList();
         }
 
-        final List<Player> list = new ArrayList<>();
+        final List<Player> result = new ArrayList<>();
         final var plainName = stripAndLower(query);
+
+        Player match = null;
+        int matches = 0;
 
         for (final var player : Groups.player) {
             final var playerName = stripAndLower(player.name());
             if (playerName.equalsIgnoreCase(plainName)) {
-                return Collections.singletonList(player);
+                match = player;
+                matches++;
+                result.add(player);
             } else if (playerName.contains(plainName)) {
-                list.add(player);
+                result.add(player);
             }
         }
 
-        return Collections.unmodifiableList(list);
+        return matches == 1 ? Collections.singletonList(match) : Collections.unmodifiableList(result);
     }
 
     /**
