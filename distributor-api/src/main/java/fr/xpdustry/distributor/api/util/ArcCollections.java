@@ -21,15 +21,29 @@ package fr.xpdustry.distributor.api.util;
 import arc.struct.ObjectMap;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import mindustry.entities.EntityGroup;
+import mindustry.gen.Entityc;
 
 /**
  * A utility class for wrapping arc collections into standard java collections.
  */
 public final class ArcCollections {
+
+    private static final Field ENTITY_GROUP_ARRAY_ACCESSOR;
+
+    static {
+        try {
+            ENTITY_GROUP_ARRAY_ACCESSOR = EntityGroup.class.getDeclaredField("array");
+            ENTITY_GROUP_ARRAY_ACCESSOR.setAccessible(true);
+        } catch (final NoSuchFieldException e) {
+            throw new RuntimeException("Failed to access EntityGroup#array field", e);
+        }
+    }
 
     private ArcCollections() {}
 
@@ -49,7 +63,7 @@ public final class ArcCollections {
      *
      * @param seq the arc set
      * @param <E> the element type
-     * @return the wrapped set
+     * @return the wrapped {@link ObjectSet}
      */
     public static <E> Set<E> immutableSet(final ObjectSet<E> seq) {
         return Collections.unmodifiableSet(new ArcSet<>(seq));
@@ -60,7 +74,7 @@ public final class ArcCollections {
      *
      * @param seq the arc list
      * @param <E> the element type
-     * @return the wrapped list
+     * @return the wrapped {@link Seq}
      */
     public static <E> List<E> mutableList(final Seq<E> seq) {
         return new ArcList<>(seq);
@@ -71,10 +85,32 @@ public final class ArcCollections {
      *
      * @param seq the arc list
      * @param <E> the element type
-     * @return the wrapped list
+     * @return the wrapped {@link Seq}
      */
     public static <E> List<E> immutableList(final Seq<E> seq) {
         return Collections.unmodifiableList(new ArcList<>(seq));
+    }
+
+    /**
+     * Wraps an {@link EntityGroup} into a {@link List}.
+     *
+     * @param group the entity group
+     * @param <E> the entity type
+     * @return the wrapped {@link EntityGroup}
+     */
+    public static <E extends Entityc> List<E> mutableList(final EntityGroup<E> group) {
+        return ArcCollections.mutableList(getArray(group));
+    }
+
+    /**
+     * Wraps an {@link EntityGroup} into an immutable {@link List}.
+     *
+     * @param group the entity group
+     * @param <E> the entity type
+     * @return the wrapped {@link EntityGroup}
+     */
+    public static <E extends Entityc> List<E> immutableList(final EntityGroup<E> group) {
+        return ArcCollections.immutableList(getArray(group));
     }
 
     /**
@@ -83,7 +119,7 @@ public final class ArcCollections {
      * @param map the arc map
      * @param <K> the key type
      * @param <V> the value type
-     * @return the wrapped map
+     * @return the wrapped {@link ObjectMap}
      */
     public static <K, V> Map<K, V> mutableMap(final ObjectMap<K, V> map) {
         return new ArcMap<>(map);
@@ -95,9 +131,18 @@ public final class ArcCollections {
      * @param map the arc map
      * @param <K> the key type
      * @param <V> the value type
-     * @return the wrapped map
+     * @return the wrapped {@link ObjectMap}
      */
     public static <K, V> Map<K, V> immutableMap(final ObjectMap<K, V> map) {
         return Collections.unmodifiableMap(new ArcMap<>(map));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Entityc> Seq<E> getArray(final EntityGroup<E> group) {
+        try {
+            return (Seq<E>) ENTITY_GROUP_ARRAY_ACCESSOR.get(group);
+        } catch (final IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

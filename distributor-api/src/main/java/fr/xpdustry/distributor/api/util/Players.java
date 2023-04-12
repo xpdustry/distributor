@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.StreamSupport;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
 
@@ -54,7 +53,7 @@ public final class Players {
     public static List<Player> findPlayers(final String query, final boolean uuid) {
         if (query.startsWith("#")) {
             final var id = Strings.parseInt(query.substring(1), -1);
-            final var players = StreamSupport.stream(Groups.player.spliterator(), false)
+            final var players = ArcCollections.immutableList(Groups.player).stream()
                     .filter(p -> p.id() == id)
                     .toList();
             if (!players.isEmpty()) {
@@ -63,7 +62,7 @@ public final class Players {
         }
 
         if (uuid && MUUID.isUuid(query)) {
-            return StreamSupport.stream(Groups.player.spliterator(), false)
+            return ArcCollections.immutableList(Groups.player).stream()
                     .filter(p -> p.uuid().equals(query))
                     .toList();
         }
