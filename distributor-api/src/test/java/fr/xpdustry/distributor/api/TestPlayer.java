@@ -29,6 +29,12 @@ public final class TestPlayer extends Player {
         this.uuid = uuid;
     }
 
+    public TestPlayer(final String name, final String uuid, final int id) {
+        this.name(name);
+        this.id(id);
+        this.uuid = uuid;
+    }
+
     @Override
     public String uuid() {
         return this.uuid;
