@@ -87,9 +87,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             throw new IllegalArgumentException("Listener already registered.");
         }
         this.listeners.add(listener);
-
-        DistributorProvider.get().getEventBus().parse(this, listener);
-        DistributorProvider.get().getPluginScheduler().parse(this, listener);
     }
 
     @Deprecated
@@ -111,27 +108,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             listener.onPluginServerCommandsRegistration(handler);
         }
 
-        DistributorProvider.get().getEventBus().parse(this, this);
-        DistributorProvider.get().getPluginScheduler().parse(this, this);
-
-        Core.app.addListener(new ApplicationListener() {
-
-            @Override
-            public void init() {
-                AbstractMindustryPlugin.this.onLoad();
-                for (final var listener : AbstractMindustryPlugin.this.listeners) {
-                    listener.onPluginLoad();
-                }
-            }
-
-            @Override
-            public void update() {
-                AbstractMindustryPlugin.this.onUpdate();
-                for (final var listener : AbstractMindustryPlugin.this.listeners) {
-                    listener.onPluginUpdate();
-                }
-            }
-        });
+        Core.app.addListener(new PluginApplicationListener());
     }
 
     @Deprecated
@@ -155,5 +132,34 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     @Override
     public Fi getConfig() {
         return new Fi(this.getDirectory().resolve("config.json").toFile());
+    }
+
+    private final class PluginApplicationListener implements ApplicationListener {
+
+        @Override
+        public void init() {
+            AbstractMindustryPlugin.this.onLoad();
+            for (final var listener : AbstractMindustryPlugin.this.listeners) {
+                listener.onPluginLoad();
+            }
+
+            final var eventBus = DistributorProvider.get().getEventBus();
+            final var pluginScheduler = DistributorProvider.get().getPluginScheduler();
+
+            eventBus.parse(AbstractMindustryPlugin.this, this);
+            pluginScheduler.parse(AbstractMindustryPlugin.this, this);
+            for (final var listener : AbstractMindustryPlugin.this.listeners) {
+                eventBus.parse(AbstractMindustryPlugin.this, listener);
+                pluginScheduler.parse(AbstractMindustryPlugin.this, listener);
+            }
+        }
+
+        @Override
+        public void update() {
+            AbstractMindustryPlugin.this.onUpdate();
+            for (final var listener : AbstractMindustryPlugin.this.listeners) {
+                listener.onPluginUpdate();
+            }
+        }
     }
 }
