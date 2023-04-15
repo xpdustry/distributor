@@ -61,6 +61,7 @@ import mindustry.game.EventType;
 import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public final class DistributorCorePlugin extends AbstractMindustryPlugin implements Distributor {
 
@@ -75,6 +76,10 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
                     Make sure another plugin doesn't set it's own logging implementation or that it's logging implementation is relocated correctly.""",
                     LoggerFactory.getILoggerFactory().getClass().getName());
         }
+        // Redirect JUL to SLF4J
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        // Restore the class loader
         Thread.currentThread().setContextClassLoader(temp);
     }
 
@@ -231,7 +236,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
 
     @Override
     public void onExit() {
-        for (final var connection : DistributorCorePlugin.this.connections.entrySet()) {
+        for (final var connection : this.connections.entrySet()) {
             try {
                 this.getLogger().debug("Closing SQL connection '{}'", connection.getKey());
                 connection.getValue().close();
