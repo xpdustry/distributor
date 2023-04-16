@@ -97,6 +97,23 @@ public final class PluginDescriptor {
         }
     }
 
+    public static PluginDescriptor from(final ClassLoader classLoader) {
+        var resource = classLoader.getResourceAsStream("plugin.json");
+        if (resource == null) {
+            resource = classLoader.getResourceAsStream("plugin.hjson");
+            if (resource == null) {
+                throw new IllegalStateException("Missing plugin descriptor.");
+            }
+        }
+        try (final var input = resource) {
+            final var meta = new Json().fromJson(Mods.ModMeta.class, input);
+            meta.cleanup();
+            return PluginDescriptor.from(meta);
+        } catch (final IOException e) {
+            throw new IllegalStateException("The plugin descriptor is invalid.", e);
+        }
+    }
+
     /**
      * Returns the name of the plugin.
      */

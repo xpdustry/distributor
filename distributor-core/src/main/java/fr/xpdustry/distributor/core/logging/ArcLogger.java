@@ -20,10 +20,9 @@ package fr.xpdustry.distributor.core.logging;
 
 import arc.util.ColorCodes;
 import arc.util.Log;
-import fr.xpdustry.distributor.api.plugin.PluginDescriptor;
+import arc.util.Log.LogLevel;
 import java.io.Serial;
 import java.util.Arrays;
-import mindustry.mod.Plugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
@@ -35,19 +34,11 @@ public final class ArcLogger extends AbstractLogger {
     @Serial
     private static final long serialVersionUID = 3476499937056865545L;
 
-    @SuppressWarnings("unchecked")
-    public ArcLogger(final String name) {
-        try {
-            final var caller = Class.forName(name);
-            if (Plugin.class.isAssignableFrom(caller)) {
-                this.name =
-                        PluginDescriptor.from((Class<? extends Plugin>) caller).getDisplayName();
-            } else {
-                this.name = caller.getName();
-            }
-        } catch (final ClassNotFoundException ignored) {
-            this.name = name;
-        }
+    private final @Nullable String plugin;
+
+    public ArcLogger(final String name, final @Nullable String plugin) {
+        this.name = name;
+        this.plugin = plugin;
     }
 
     @Override
@@ -115,14 +106,23 @@ public final class ArcLogger extends AbstractLogger {
         final var builder = new StringBuilder();
 
         if (!this.name.equals(ROOT_LOGGER_NAME)) {
-            builder.append(ColorCodes.white)
+            if (this.plugin != null) {
+                builder.append(getColorCode(level))
+                        .append('[')
+                        .append(this.plugin)
+                        .append(']')
+                        .append(ColorCodes.reset)
+                        .append(' ');
+            }
+            builder.append(getColorCode(level))
                     .append('[')
-                    .append(ColorCodes.reset)
                     .append(this.name)
-                    .append(ColorCodes.white)
                     .append(']')
                     .append(ColorCodes.reset)
                     .append(' ');
+        }
+        if (level == Level.ERROR) {
+            builder.append(getColorCode(level)).append(ColorCodes.bold);
         }
 
         if (throwable == null
@@ -148,7 +148,7 @@ public final class ArcLogger extends AbstractLogger {
     }
 
     private boolean isArcLogLevelAtLeast(final Log.LogLevel level) {
-        return Log.level.ordinal() <= level.ordinal();
+        return level != LogLevel.none && Log.level.ordinal() <= level.ordinal();
     }
 
     private Log.LogLevel getArcLogLevel(final Level level) {
@@ -157,6 +157,16 @@ public final class ArcLogger extends AbstractLogger {
             case INFO -> Log.LogLevel.info;
             case WARN -> Log.LogLevel.warn;
             case ERROR -> Log.LogLevel.err;
+        };
+    }
+
+    private String getColorCode(final Level level) {
+        return switch (level) {
+            case TRACE -> ColorCodes.lightBlack;
+            case DEBUG -> ColorCodes.lightCyan + ColorCodes.bold;
+            case INFO -> ColorCodes.lightBlue + ColorCodes.bold;
+            case WARN -> ColorCodes.lightYellow + ColorCodes.bold;
+            case ERROR -> ColorCodes.lightRed + ColorCodes.bold;
         };
     }
 }

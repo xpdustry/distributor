@@ -18,8 +18,11 @@
  */
 package fr.xpdustry.distributor.core.logging;
 
+import fr.xpdustry.distributor.api.plugin.PluginDescriptor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import mindustry.mod.ModClassLoader;
+import mindustry.mod.Plugin;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
@@ -29,6 +32,40 @@ public final class ArcLoggerFactory implements ILoggerFactory {
 
     @Override
     public Logger getLogger(final String name) {
-        return this.cache.computeIfAbsent(name, ArcLogger::new);
+        if (this.cache.containsKey(name)) {
+            return this.cache.get(name);
+        }
+
+        final Class<?> caller;
+        try {
+            caller = Class.forName(name);
+        } catch (final ClassNotFoundException ignored) {
+            return this.cache.computeIfAbsent(name, key -> new ArcLogger(name, null));
+        }
+
+        if (Plugin.class.isAssignableFrom(caller)) {
+            @SuppressWarnings("unchecked")
+            final var plugin = (Class<? extends Plugin>) caller;
+            return this.cache.computeIfAbsent(
+                    name, key -> new ArcLogger(PluginDescriptor.from(plugin).getDisplayName(), null));
+        }
+
+        ClassLoader classLoader = caller.getClassLoader();
+        while (classLoader.getParent() != null && !(classLoader.getParent() instanceof ModClassLoader)) {
+            classLoader = classLoader.getParent();
+        }
+
+        if (classLoader.getParent() instanceof ModClassLoader) {
+            final PluginDescriptor descriptor;
+            try {
+                descriptor = PluginDescriptor.from(classLoader);
+            } catch (final Exception ignored) {
+                return this.cache.computeIfAbsent(name, key -> new ArcLogger(caller.getName(), null));
+            }
+            return this.cache.computeIfAbsent(
+                    name, key -> new ArcLogger(caller.getName(), descriptor.getDisplayName()));
+        }
+
+        return this.cache.computeIfAbsent(name, key -> new ArcLogger(caller.getName(), null));
     }
 }
