@@ -19,8 +19,8 @@
 package fr.xpdustry.distributor.api.plugin;
 
 import arc.util.serialization.Json;
+import fr.xpdustry.distributor.api.util.ArcCollections;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import mindustry.mod.Mods;
@@ -40,18 +40,19 @@ public final class PluginDescriptor {
     private final int minGameVersion;
     private final String repository;
     private final List<String> dependencies;
+    private final List<String> softDependencies;
 
     private PluginDescriptor(final Mods.ModMeta meta) {
         this.name = Objects.requireNonNull(meta.name);
         this.displayName = meta.displayName();
-        this.author = Objects.requireNonNullElse(meta.author, "unknown");
+        this.author = Objects.requireNonNullElse(meta.author, "Unknown");
         this.description = Objects.requireNonNullElse(meta.description, "");
         this.version = Objects.requireNonNullElse(meta.version, "1.0.0");
         this.main = Objects.requireNonNull(meta.main);
         this.minGameVersion = meta.getMinMajor();
         this.repository = Objects.requireNonNullElse(meta.repo, "");
-        this.dependencies = Collections.unmodifiableList(
-                Objects.requireNonNull(meta.dependencies).list());
+        this.dependencies = List.copyOf(ArcCollections.immutableList(meta.dependencies));
+        this.softDependencies = List.copyOf(ArcCollections.immutableList(meta.softDependencies));
     }
 
     /**
@@ -65,52 +66,51 @@ public final class PluginDescriptor {
     }
 
     /**
-     * Returns the descriptor of the given plugin.
+     * Returns the plugin descriptor of the given plugin.
      *
      * @param plugin the plugin to get the descriptor from
      * @return the descriptor of the given plugin
      */
     public static PluginDescriptor from(final Plugin plugin) {
-        return from(plugin.getClass());
+        return PluginDescriptor.from(plugin.getClass());
     }
 
     /**
-     * Returns the descriptor of the given plugin class.
+     * Returns the plugin descriptor of the given plugin class.
      *
      * @param clazz the plugin class to get the descriptor from
      * @return the descriptor of the given plugin class
+     * @throws RuntimeException if the plugin descriptor is missing or invalid
      */
     public static PluginDescriptor from(final Class<? extends Plugin> clazz) {
-        var resource = clazz.getClassLoader().getResourceAsStream("plugin.json");
-        if (resource == null) {
-            resource = clazz.getClassLoader().getResourceAsStream("plugin.hjson");
-            if (resource == null) {
-                throw new IllegalStateException("Missing plugin descriptor.");
-            }
-        }
-        try (final var input = resource) {
-            final var meta = new Json().fromJson(Mods.ModMeta.class, input);
-            meta.cleanup();
-            return PluginDescriptor.from(meta);
+        try {
+            return PluginDescriptor.from(clazz.getClassLoader());
         } catch (final IOException e) {
-            throw new IllegalStateException("The plugin descriptor is invalid.", e);
+            throw new RuntimeException("Failed to load plugin descriptor.", e);
         }
     }
 
-    public static PluginDescriptor from(final ClassLoader classLoader) {
+    /**
+     * Returns the plugin descriptor of the given class loader.
+     *
+     * @param classLoader the class loader to get the descriptor from
+     * @return the descriptor of the given class loader
+     * @throws IOException if the plugin descriptor is missing or invalid
+     */
+    public static PluginDescriptor from(final ClassLoader classLoader) throws IOException {
         var resource = classLoader.getResourceAsStream("plugin.json");
         if (resource == null) {
             resource = classLoader.getResourceAsStream("plugin.hjson");
             if (resource == null) {
-                throw new IllegalStateException("Missing plugin descriptor.");
+                throw new IOException("Missing plugin descriptor.");
             }
         }
         try (final var input = resource) {
             final var meta = new Json().fromJson(Mods.ModMeta.class, input);
             meta.cleanup();
             return PluginDescriptor.from(meta);
-        } catch (final IOException e) {
-            throw new IllegalStateException("The plugin descriptor is invalid.", e);
+        } catch (final Exception e) {
+            throw new IOException("The plugin descriptor is invalid.", e);
         }
     }
 
@@ -175,5 +175,12 @@ public final class PluginDescriptor {
      */
     public List<String> getDependencies() {
         return this.dependencies;
+    }
+
+    /**
+     * Returns the soft dependencies of the plugin.
+     */
+    public List<String> getSoftDependencies() {
+        return this.softDependencies;
     }
 }

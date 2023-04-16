@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.core.logging;
 
 import fr.xpdustry.distributor.api.plugin.PluginDescriptor;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import mindustry.mod.ModClassLoader;
@@ -45,9 +46,8 @@ public final class ArcLoggerFactory implements ILoggerFactory {
 
         if (Plugin.class.isAssignableFrom(caller)) {
             @SuppressWarnings("unchecked")
-            final var plugin = (Class<? extends Plugin>) caller;
-            return this.cache.computeIfAbsent(
-                    name, key -> new ArcLogger(PluginDescriptor.from(plugin).getDisplayName(), null));
+            final var descriptor = PluginDescriptor.from((Class<? extends Plugin>) caller);
+            return this.cache.computeIfAbsent(name, key -> new ArcLogger(descriptor.getDisplayName(), null));
         }
 
         ClassLoader classLoader = caller.getClassLoader();
@@ -59,7 +59,7 @@ public final class ArcLoggerFactory implements ILoggerFactory {
             final PluginDescriptor descriptor;
             try {
                 descriptor = PluginDescriptor.from(classLoader);
-            } catch (final Exception ignored) {
+            } catch (final IOException ignored) {
                 return this.cache.computeIfAbsent(name, key -> new ArcLogger(caller.getName(), null));
             }
             return this.cache.computeIfAbsent(
