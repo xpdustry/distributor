@@ -107,22 +107,23 @@ public final class ArcLogger extends AbstractLogger {
 
         if (!this.name.equals(ROOT_LOGGER_NAME)) {
             if (this.plugin != null) {
-                builder.append(getColorCode(level))
+                builder.append(this.getColorCode(level))
                         .append('[')
                         .append(this.plugin)
                         .append(']')
                         .append(ColorCodes.reset)
                         .append(' ');
             }
-            builder.append(getColorCode(level))
+            builder.append(this.getColorCode(level))
                     .append('[')
                     .append(this.name)
                     .append(']')
                     .append(ColorCodes.reset)
                     .append(' ');
         }
+
         if (level == Level.ERROR) {
-            builder.append(getColorCode(level)).append(ColorCodes.bold);
+            builder.append(this.getColorCode(level));
         }
 
         if (throwable == null
@@ -133,6 +134,7 @@ public final class ArcLogger extends AbstractLogger {
             arguments = arguments.length == 1 ? null : Arrays.copyOf(arguments, arguments.length - 1);
         }
 
+        // TODO Use ColorCodes instead of &fb&lb&fr ?
         final var string = builder.append(
                         MessageFormatter.basicArrayFormat(messagePattern.replace("{}", "&fb&lb{}&fr"), arguments))
                 .toString();

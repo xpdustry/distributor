@@ -187,9 +187,10 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
                     });
             case VALIDATE_ALL -> DistributorProvider.get()
                     .getEventBus()
-                    .subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
-                        this.playerValidator.validate(MUUID.of(event.player));
-                    });
+                    .subscribe(
+                            EventType.PlayerConnectionConfirmed.class,
+                            this,
+                            event -> this.playerValidator.validate(MUUID.of(event.player)));
         }
 
         // Register permission utilities
