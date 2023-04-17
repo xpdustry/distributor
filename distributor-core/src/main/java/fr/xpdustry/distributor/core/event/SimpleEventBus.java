@@ -37,13 +37,13 @@ import java.util.function.Consumer;
 
 public final class SimpleEventBus implements EventBus {
 
-    final ObjectMap<Object, Seq<Cons<?>>> events;
-
     private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
         final var priorityA = a instanceof PriorityCons<?> m ? m.getPriority() : Priority.NORMAL;
         final var priorityB = b instanceof PriorityCons<?> m ? m.getPriority() : Priority.NORMAL;
         return priorityA.compareTo(priorityB);
     };
+
+    final ObjectMap<Object, Seq<Cons<?>>> events;
 
     @SuppressWarnings("unchecked")
     public SimpleEventBus() {
@@ -136,7 +136,7 @@ public final class SimpleEventBus implements EventBus {
                 this.plugin
                         .getLogger()
                         .atError()
-                        .setMessage("An error occurred while handling an {} event")
+                        .setMessage("An error occurred while handling a {} event.")
                         .addArgument(event.getClass().getSimpleName())
                         .setCause(e)
                         .log();
@@ -177,7 +177,7 @@ public final class SimpleEventBus implements EventBus {
                 this.plugin
                         .getLogger()
                         .atError()
-                        .setMessage("An error occurred while handling an {} event: {}")
+                        .setMessage("An error occurred while handling a {} event.")
                         .addArgument(event.getClass().getSimpleName())
                         .setCause(e.getTargetException())
                         .log();
