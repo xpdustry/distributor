@@ -121,6 +121,15 @@ public interface EventBus {
     <E> void post(final E event);
 
     /**
+     * Posts the event to the arc event bus to the listeners of the given super class.
+     *
+     * @param clazz the class of the event
+     * @param event the event to post
+     * @param <E>   the type of the event
+     */
+    <E> void post(final Class<? super E> clazz, final E event);
+
+    /**
      * Posts the enum event to the arc event bus.
      *
      * @param event the enum event to post

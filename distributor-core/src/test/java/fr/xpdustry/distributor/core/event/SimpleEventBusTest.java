@@ -171,6 +171,18 @@ public final class SimpleEventBusTest {
         assertThat(listener.hasBeenTriggered2()).isFalse();
     }
 
+    @Test
+    void test_super_class_post() {
+        final var subscriber = new ClassEventSubscriber<TestEvent3>();
+        this.bus.subscribe(TestEvent3.class, this.plugin, subscriber);
+        this.bus.post(new TestEvent4());
+        // SimpleEventBus does not support super class posting
+        assertThat(subscriber.hasBeenTriggered()).isFalse();
+        // So we have to do it manually
+        this.bus.post(TestEvent3.class, new TestEvent4());
+        assertThat(subscriber.hasBeenTriggered()).isTrue();
+    }
+
     private enum TestEnum {
         VALUE
     }
@@ -178,6 +190,10 @@ public final class SimpleEventBusTest {
     private static final class TestEvent1 {}
 
     private static final class TestEvent2 {}
+
+    private static class TestEvent3 {}
+
+    private static class TestEvent4 extends TestEvent3 {}
 
     private static final class ClassEventSubscriber<E> implements Consumer<E> {
 

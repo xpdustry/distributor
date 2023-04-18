@@ -87,6 +87,11 @@ public final class SimpleEventBus implements EventBus {
     }
 
     @Override
+    public <E> void post(final Class<? super E> clazz, final E event) {
+        Events.fire(clazz, event);
+    }
+
+    @Override
     public <E extends Enum<E>> void post(final E event) {
         Events.fire(event);
     }
