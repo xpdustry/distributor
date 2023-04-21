@@ -159,7 +159,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                             (s, e) -> this.sendException(
                                     sender,
                                     ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
-                                    CaptionVariable.of("message", this.getErrorMessage(e))));
+                                    CaptionVariable.of("message", this.getErrorMessage(e.getCause()))));
                     this.manager
                             .getPlugin()
                             .getLogger()
