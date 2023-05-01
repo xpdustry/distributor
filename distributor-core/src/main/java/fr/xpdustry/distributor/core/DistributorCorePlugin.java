@@ -100,7 +100,8 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
         DistributorProvider.set(this);
 
         // Display the cool ass banner
-        final var banner = this.getClass().getClassLoader().getResourceAsStream("banner.txt");
+        final var banner =
+                this.getClass().getClassLoader().getResourceAsStream("fr/xpdustry/distributor/assets/banner.txt");
         if (banner == null) {
             throw new RuntimeException("The Distributor banner cannot be found, are you sure the plugin is valid ?");
         }
@@ -162,8 +163,14 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
 
         // Register bundles
         final var registry = LocalizationSourceRegistry.create(Locale.ENGLISH);
-        registry.registerAll(Locale.ENGLISH, "bundles/bundle", this.getClass().getClassLoader());
-        registry.registerAll(Locale.FRENCH, "bundles/bundle", this.getClass().getClassLoader());
+        registry.registerAll(
+                Locale.ENGLISH,
+                "fr/xpdustry/distributor/assets/bundles/bundle",
+                this.getClass().getClassLoader());
+        registry.registerAll(
+                Locale.FRENCH,
+                "fr/xpdustry/distributor/assets/bundles/bundle",
+                this.getClass().getClassLoader());
 
         this.source.addLocalizationSource(registry);
         this.source.addLocalizationSource(LocalizationSource.router());

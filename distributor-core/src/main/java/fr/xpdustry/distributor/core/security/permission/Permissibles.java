@@ -26,7 +26,8 @@ public final class Permissibles {
     private Permissibles() {}
 
     public static void createDatabase(final ConnectionFactory factory) {
-        try (final var input = Permissibles.class.getResourceAsStream("/schemas/permission.sql")) {
+        try (final var input =
+                Permissibles.class.getResourceAsStream("/fr/xpdustry/distributor/assets/schemas/permission.sql")) {
             if (input == null) {
                 throw new IllegalStateException("Missing schema file.");
             }
