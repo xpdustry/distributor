@@ -50,9 +50,17 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             public void dispose() {
                 Seq.with(Vars.mods.orderedMods()).reverse().forEach(mod -> {
                     if (mod.enabled() && mod.main instanceof final AbstractMindustryPlugin plugin) {
-                        plugin.onExit();
-                        for (final var listener : plugin.listeners) {
-                            listener.onPluginExit();
+                        try {
+                            plugin.onExit();
+                            for (final var listener : plugin.listeners) {
+                                listener.onPluginExit();
+                            }
+                        } catch (final Throwable exception) {
+                            plugin.getLogger()
+                                    .error(
+                                            "An error occurred while exiting plugin {}.",
+                                            plugin.getDescriptor().getName(),
+                                            exception);
                         }
                     }
                 });
