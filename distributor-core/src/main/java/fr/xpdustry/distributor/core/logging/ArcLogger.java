@@ -129,7 +129,7 @@ public final class ArcLogger extends AbstractLogger {
         if (throwable == null
                 && arguments != null
                 && arguments.length != 0
-                && arguments[arguments.length - 1] instanceof Throwable last) {
+                && arguments[arguments.length - 1] instanceof final Throwable last) {
             throwable = last;
             arguments = arguments.length == 1 ? null : Arrays.copyOf(arguments, arguments.length - 1);
         }

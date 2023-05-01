@@ -105,7 +105,7 @@ public final class PermissionTree {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PermissionTree that)) {
+        if (!(o instanceof final PermissionTree that)) {
             return false;
         }
         if (!this.children.equals(that.children)) {

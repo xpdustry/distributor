@@ -154,7 +154,7 @@ public final class MUUID {
     @Override
     public boolean equals(final @Nullable Object obj) {
         return obj == this
-                || (obj instanceof MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid));
+                || (obj instanceof final MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid));
     }
 
     @Override

@@ -49,7 +49,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             @Override
             public void dispose() {
                 Seq.with(Vars.mods.orderedMods()).reverse().forEach(mod -> {
-                    if (mod.enabled() && mod.main instanceof AbstractMindustryPlugin plugin) {
+                    if (mod.enabled() && mod.main instanceof final AbstractMindustryPlugin plugin) {
                         plugin.onExit();
                         for (final var listener : plugin.listeners) {
                             listener.onPluginExit();

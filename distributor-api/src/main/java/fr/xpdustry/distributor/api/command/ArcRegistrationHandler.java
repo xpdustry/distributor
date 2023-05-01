@@ -98,7 +98,7 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler {
     public void unregisterRootCommand(final StaticArgument<?> root) {
         this.registered.remove(root);
         for (final var command : ArcCollections.immutableList(this.handler.getCommandList())) {
-            if (command instanceof ArcCommand<?> cloud
+            if (command instanceof final ArcCommand<?> cloud
                     && cloud.getManager() == this.manager
                     && root.getAliases().contains(cloud.getRealName())) {
                 this.handler.removeCommand(command.text);

@@ -113,12 +113,12 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                 if (throwable == null) {
                     return;
                 }
-                if (throwable instanceof ArgumentParseException t) {
+                if (throwable instanceof final ArgumentParseException t) {
                     // NullAway doesn't understand that the cause is not null
                     throwable = Objects.requireNonNull(t.getCause());
                 }
 
-                if (throwable instanceof InvalidSyntaxException t) {
+                if (throwable instanceof final InvalidSyntaxException t) {
                     this.manager.handleException(
                             sender,
                             InvalidSyntaxException.class,
@@ -127,7 +127,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                                     sender,
                                     ArcCaptionKeys.COMMAND_INVALID_SYNTAX,
                                     CaptionVariable.of("syntax", e.getCorrectSyntax())));
-                } else if (throwable instanceof NoPermissionException t) {
+                } else if (throwable instanceof final NoPermissionException t) {
                     this.manager.handleException(
                             sender,
                             NoPermissionException.class,
@@ -136,7 +136,7 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                                     sender,
                                     ArcCaptionKeys.COMMAND_INVALID_PERMISSION,
                                     CaptionVariable.of("permission", e.getMissingPermission())));
-                } else if (throwable instanceof NoSuchCommandException t) {
+                } else if (throwable instanceof final NoSuchCommandException t) {
                     this.manager.handleException(
                             sender,
                             NoSuchCommandException.class,
@@ -145,21 +145,19 @@ public final class ArcCommand<C> extends CommandHandler.Command {
                                     sender,
                                     ArcCaptionKeys.COMMAND_FAILURE_NO_SUCH_COMMAND,
                                     CaptionVariable.of("command", e.getSuppliedCommand())));
-                } else if (throwable instanceof ParserException t) {
+                } else if (throwable instanceof final ParserException t) {
                     this.manager.handleException(
                             sender,
                             ParserException.class,
                             t,
                             (s, e) -> this.sendException(sender, e.errorCaption(), e.captionVariables()));
-                } else if (throwable instanceof CommandExecutionException t) {
-                    this.manager.handleException(
-                            sender,
-                            CommandExecutionException.class,
-                            t,
-                            (s, e) -> this.sendException(
-                                    sender,
-                                    ArcCaptionKeys.COMMAND_FAILURE_EXECUTION,
-                                    CaptionVariable.of("message", this.getErrorMessage(e.getCause()))));
+                } else if (throwable instanceof final CommandExecutionException t) {
+                    this.manager.handleException(sender, CommandExecutionException.class, t, (s, e) -> {
+                        @SuppressWarnings("NullAway")
+                        // TODO Open a pull request to annotate CommandExecutionException#getCause NonNull
+                        final var variable = CaptionVariable.of("message", this.getErrorMessage(e.getCause()));
+                        this.sendException(sender, ArcCaptionKeys.COMMAND_FAILURE_EXECUTION, variable);
+                    });
                     this.manager
                             .getPlugin()
                             .getLogger()

@@ -193,7 +193,7 @@ final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
 
         @Override
         public boolean equals(final Object o) {
-            return o instanceof Map.Entry<?, ?> entry
+            return o instanceof final Map.Entry<?, ?> entry
                     && Objects.equals(this.key, entry.getKey())
                     && Objects.equals(this.getValue(), entry.getValue());
         }
