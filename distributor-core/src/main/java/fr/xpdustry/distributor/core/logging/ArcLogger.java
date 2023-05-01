@@ -140,7 +140,8 @@ public final class ArcLogger extends AbstractLogger {
                 .toString();
 
         if (throwable != null && (arguments == null || arguments.length == 0)) {
-            Log.err(string, throwable);
+            Log.err(string);
+            Log.err(throwable);
         } else {
             Log.log(this.getArcLogLevel(level), string);
             if (throwable != null) {
