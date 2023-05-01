@@ -33,8 +33,6 @@ import fr.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import fr.xpdustry.distributor.api.scheduler.PluginScheduler;
 import fr.xpdustry.distributor.api.security.PlayerValidator;
 import fr.xpdustry.distributor.api.security.permission.PermissionService;
-import fr.xpdustry.distributor.api.util.MUUID;
-import fr.xpdustry.distributor.api.util.Players;
 import fr.xpdustry.distributor.core.commands.GroupPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PlayerPermissibleCommands;
 import fr.xpdustry.distributor.core.commands.PlayerValidatorCommands;
@@ -46,6 +44,7 @@ import fr.xpdustry.distributor.core.event.SimpleEventBus;
 import fr.xpdustry.distributor.core.logging.ArcLoggerFactory;
 import fr.xpdustry.distributor.core.scheduler.SimplePluginScheduler;
 import fr.xpdustry.distributor.core.scheduler.TimeSource;
+import fr.xpdustry.distributor.core.security.PlayerValidatorListener;
 import fr.xpdustry.distributor.core.security.SQLPlayerValidator;
 import fr.xpdustry.distributor.core.security.permission.SQLPermissionService;
 import java.io.BufferedReader;
@@ -57,7 +56,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import mindustry.game.EventType;
 import org.aeonbits.owner.ConfigFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.LoggerFactory;
@@ -172,26 +170,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
 
         // Add listeners to validate players
         this.playerValidator = new SQLPlayerValidator(validatorConnectionFactory);
-        switch (this.configuration.getIdentityValidationPolicy()) {
-            case VALIDATE_UNKNOWN -> DistributorProvider.get()
-                    .getEventBus()
-                    .subscribe(EventType.PlayerConnectionConfirmed.class, this, event -> {
-                        if (!this.playerValidator.contains(event.player.uuid())) {
-                            this.playerValidator.validate(MUUID.of(event.player));
-                            return;
-                        }
-                        if (!this.playerValidator.isValid(MUUID.of(event.player))) {
-                            event.player.sendMessage(this.source.format(
-                                    "distributor.identity.player.failure", Players.getLocale(event.player)));
-                        }
-                    });
-            case VALIDATE_ALL -> DistributorProvider.get()
-                    .getEventBus()
-                    .subscribe(
-                            EventType.PlayerConnectionConfirmed.class,
-                            this,
-                            event -> this.playerValidator.validate(MUUID.of(event.player)));
-        }
+        this.addListener(new PlayerValidatorListener(this.playerValidator, this.configuration));
 
         // Register permission utilities
         this.permissions = new SQLPermissionService(this.configuration, mainConnectionFactory, this.playerValidator);

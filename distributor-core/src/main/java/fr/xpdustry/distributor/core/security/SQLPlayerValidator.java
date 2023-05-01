@@ -21,7 +21,10 @@ package fr.xpdustry.distributor.core.security;
 import com.password4j.Argon2Function;
 import com.password4j.HashingFunction;
 import com.password4j.types.Argon2;
+import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.security.PlayerValidator;
+import fr.xpdustry.distributor.api.security.PlayerValidatorEvent;
+import fr.xpdustry.distributor.api.security.PlayerValidatorEvent.Type;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.core.database.ConnectionFactory;
 import java.sql.Connection;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import mindustry.gen.Groups;
 
 public final class SQLPlayerValidator implements PlayerValidator {
 
@@ -73,11 +77,13 @@ public final class SQLPlayerValidator implements PlayerValidator {
     @Override
     public void validate(final MUUID muuid) {
         this.factory.withConsumer(con -> this.saveValidation(con, new Validation(muuid, true)));
+        this.notifyChangeForOnlinePlayer(muuid, Type.VALIDATED);
     }
 
     @Override
     public void invalidate(final MUUID muuid) {
         this.factory.withConsumer(con -> this.saveValidation(con, new Validation(muuid, false)));
+        this.notifyChangeForOnlinePlayer(muuid, Type.INVALIDATED);
     }
 
     @Override
@@ -89,6 +95,7 @@ public final class SQLPlayerValidator implements PlayerValidator {
                 }
             }
         });
+        this.notifyChangeForOnlinePlayer(uuid, Type.INVALIDATED);
     }
 
     @Override
@@ -98,6 +105,7 @@ public final class SQLPlayerValidator implements PlayerValidator {
                 statement.executeUpdate();
             }
         });
+        this.notifyChangeForAllOnlinePlayers(Type.INVALIDATED);
     }
 
     @Override
@@ -109,6 +117,7 @@ public final class SQLPlayerValidator implements PlayerValidator {
                 statement.executeUpdate();
             }
         });
+        this.notifyChangeForOnlinePlayer(uuid, Type.REMOVED);
     }
 
     @Override
@@ -121,6 +130,7 @@ public final class SQLPlayerValidator implements PlayerValidator {
                 statement.executeUpdate();
             }
         });
+        this.notifyChangeForOnlinePlayer(muuid, Type.REMOVED);
     }
 
     @Override
@@ -130,6 +140,7 @@ public final class SQLPlayerValidator implements PlayerValidator {
                 statement.executeUpdate();
             }
         });
+        this.notifyChangeForAllOnlinePlayers(Type.REMOVED);
     }
 
     private Optional<Validation> findValidation(final Connection con, final MUUID muuid) throws SQLException {
@@ -188,6 +199,23 @@ public final class SQLPlayerValidator implements PlayerValidator {
                 return result.next();
             }
         }
+    }
+
+    private void notifyChangeForOnlinePlayer(final MUUID muuid, final PlayerValidatorEvent.Type type) {
+        Groups.player.each(
+                player -> player.uuid().equals(muuid.getUuid()) && player.usid().equals(muuid.getUsid()),
+                player -> DistributorProvider.get().getEventBus().post(new PlayerValidatorEvent(player, type)));
+    }
+
+    private void notifyChangeForOnlinePlayer(final String uuid, final PlayerValidatorEvent.Type type) {
+        Groups.player.each(
+                player -> player.uuid().equals(uuid),
+                player -> DistributorProvider.get().getEventBus().post(new PlayerValidatorEvent(player, type)));
+    }
+
+    private void notifyChangeForAllOnlinePlayers(final PlayerValidatorEvent.Type type) {
+        Groups.player.each(
+                player -> DistributorProvider.get().getEventBus().post(new PlayerValidatorEvent(player, type)));
     }
 
     public record Validation(String uuid, byte[] hash, boolean valid) {

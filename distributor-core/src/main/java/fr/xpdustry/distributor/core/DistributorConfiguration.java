@@ -63,6 +63,10 @@ public interface DistributorConfiguration extends Accessible {
     @Config.DefaultValue("VALIDATE_UNKNOWN")
     PlayerValidationPolicy getIdentityValidationPolicy();
 
+    @Config.Key("distributor.security.validation.auto-admin")
+    @Config.DefaultValue("false")
+    boolean isValidationAutoAdminEnabled();
+
     @Config.Key("distributor.security.permission.primary-group")
     @Config.DefaultValue("default")
     String getPermissionPrimaryGroup();

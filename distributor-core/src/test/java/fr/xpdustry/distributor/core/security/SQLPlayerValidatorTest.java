@@ -18,13 +18,25 @@
  */
 package fr.xpdustry.distributor.core.security;
 
+import arc.Events;
+import fr.xpdustry.distributor.api.Distributor;
+import fr.xpdustry.distributor.api.DistributorProvider;
+import fr.xpdustry.distributor.api.plugin.MindustryPlugin;
+import fr.xpdustry.distributor.api.security.PlayerValidatorEvent;
+import fr.xpdustry.distributor.api.security.PlayerValidatorEvent.Type;
 import fr.xpdustry.distributor.api.util.MUUID;
 import fr.xpdustry.distributor.core.database.SQLiteConnectionFactory;
+import fr.xpdustry.distributor.core.event.SimpleEventBus;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import mindustry.gen.Groups;
+import mindustry.gen.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,6 +46,10 @@ public final class SQLPlayerValidatorTest {
     private static final MUUID PLAYER_1B = MUUID.of("1AAAAAAAAAAAAAAAAAAAAA==", "BAAAAAAAAAA=");
     private static final MUUID PLAYER_2A = MUUID.of("2AAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAA=");
     private static final MUUID PLAYER_2B = MUUID.of("2AAAAAAAAAAAAAAAAAAAAA==", "BAAAAAAAAAA=");
+
+    private Player player1;
+    private Player player2;
+    private final Map<Player, PlayerValidatorEvent.Type> statuses = new HashMap<>();
 
     private SQLiteConnectionFactory factory;
     private @TempDir Path dbDir;
@@ -45,11 +61,27 @@ public final class SQLPlayerValidatorTest {
                 "test_", this.dbDir.resolve("test.db"), this.getClass().getClassLoader());
         this.factory.start();
         this.validator = new SQLPlayerValidator(this.factory);
+
+        Groups.init();
+        Groups.player.add(this.player1 = this.mock(PLAYER_1A));
+        Groups.player.add(this.player2 = this.mock(PLAYER_2A));
+
+        final var distributor = Mockito.mock(Distributor.class);
+        final var eventBus = new SimpleEventBus();
+        Mockito.when(distributor.getEventBus()).thenReturn(eventBus);
+        DistributorProvider.set(distributor);
+        eventBus.subscribe(
+                PlayerValidatorEvent.class,
+                Mockito.mock(MindustryPlugin.class),
+                event -> this.statuses.put(event.player(), event.type()));
     }
 
     @AfterEach
     void tearDown() throws Exception {
         this.factory.close();
+        Groups.clear();
+        Events.clear();
+        DistributorProvider.clear();
     }
 
     @Test
@@ -61,22 +93,26 @@ public final class SQLPlayerValidatorTest {
     void test_validate() {
         assertThat(this.validator.isValid(PLAYER_1A)).isFalse();
         assertThat(this.validator.contains(PLAYER_1A.getUuid())).isFalse();
+
         this.validator.validate(PLAYER_1A);
+
         assertThat(this.validator.isValid(PLAYER_1A)).isTrue();
-    }
-
-    @Test
-    void test_contains_validated() {
-        assertThat(this.validator.contains(PLAYER_1A.getUuid())).isFalse();
-        this.validator.validate(PLAYER_1A);
         assertThat(this.validator.contains(PLAYER_1A.getUuid())).isTrue();
+
+        assertThat(this.statuses).containsExactlyInAnyOrderEntriesOf(Map.of(this.player1, Type.VALIDATED));
     }
 
     @Test
-    void test_contains_invalidated() {
+    void test_invalidate() {
+        assertThat(this.validator.isValid(PLAYER_1A)).isFalse();
         assertThat(this.validator.contains(PLAYER_1A.getUuid())).isFalse();
+
         this.validator.invalidate(PLAYER_1A);
+
+        assertThat(this.validator.isValid(PLAYER_1A)).isFalse();
         assertThat(this.validator.contains(PLAYER_1A.getUuid())).isTrue();
+
+        assertThat(this.statuses).containsExactlyInAnyOrderEntriesOf(Map.of(this.player1, Type.INVALIDATED));
     }
 
     @Test
@@ -97,6 +133,11 @@ public final class SQLPlayerValidatorTest {
         assertThat(this.validator.isValid(PLAYER_1B)).isTrue();
         assertThat(this.validator.isValid(PLAYER_2A)).isTrue();
         assertThat(this.validator.isValid(PLAYER_2B)).isTrue();
+
+        assertThat(this.statuses)
+                .containsExactlyInAnyOrderEntriesOf(Map.of(
+                        this.player2, Type.VALIDATED,
+                        this.player1, Type.INVALIDATED));
     }
 
     @Test
@@ -117,6 +158,11 @@ public final class SQLPlayerValidatorTest {
         assertThat(this.validator.isValid(PLAYER_1B)).isFalse();
         assertThat(this.validator.isValid(PLAYER_2A)).isTrue();
         assertThat(this.validator.isValid(PLAYER_2B)).isTrue();
+
+        assertThat(this.statuses)
+                .containsExactlyInAnyOrderEntriesOf(Map.of(
+                        this.player2, Type.VALIDATED,
+                        this.player1, Type.INVALIDATED));
     }
 
     @Test
@@ -137,6 +183,10 @@ public final class SQLPlayerValidatorTest {
         assertThat(this.validator.isValid(PLAYER_1B)).isFalse();
         assertThat(this.validator.isValid(PLAYER_2A)).isFalse();
         assertThat(this.validator.isValid(PLAYER_2B)).isFalse();
+
+        assertThat(this.statuses)
+                .containsExactlyInAnyOrderEntriesOf(
+                        Map.of(this.player1, Type.INVALIDATED, this.player2, Type.INVALIDATED));
     }
 
     @Test
@@ -157,6 +207,11 @@ public final class SQLPlayerValidatorTest {
         assertThat(this.validator.contains(PLAYER_1B)).isTrue();
         assertThat(this.validator.contains(PLAYER_2A)).isTrue();
         assertThat(this.validator.contains(PLAYER_2B)).isTrue();
+
+        assertThat(this.statuses)
+                .containsExactlyInAnyOrderEntriesOf(Map.of(
+                        this.player2, Type.VALIDATED,
+                        this.player1, Type.REMOVED));
     }
 
     @Test
@@ -177,6 +232,11 @@ public final class SQLPlayerValidatorTest {
         assertThat(this.validator.contains(PLAYER_1B)).isFalse();
         assertThat(this.validator.contains(PLAYER_2A)).isTrue();
         assertThat(this.validator.contains(PLAYER_2B)).isTrue();
+
+        assertThat(this.statuses)
+                .containsExactlyInAnyOrderEntriesOf(Map.of(
+                        this.player2, Type.VALIDATED,
+                        this.player1, Type.REMOVED));
     }
 
     @Test
@@ -197,5 +257,15 @@ public final class SQLPlayerValidatorTest {
         assertThat(this.validator.contains(PLAYER_1B)).isFalse();
         assertThat(this.validator.contains(PLAYER_2A)).isFalse();
         assertThat(this.validator.contains(PLAYER_2B)).isFalse();
+
+        assertThat(this.statuses)
+                .containsExactlyInAnyOrderEntriesOf(Map.of(this.player1, Type.REMOVED, this.player2, Type.REMOVED));
+    }
+
+    private Player mock(final MUUID muuid) {
+        final var player = Mockito.mock(Player.class);
+        Mockito.when(player.uuid()).thenReturn(muuid.getUuid());
+        Mockito.when(player.usid()).thenReturn(muuid.getUsid());
+        return player;
     }
 }
