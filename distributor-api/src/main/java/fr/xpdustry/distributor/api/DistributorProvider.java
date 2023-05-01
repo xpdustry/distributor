@@ -50,4 +50,23 @@ public final class DistributorProvider {
         }
         DistributorProvider.instance = distributor;
     }
+
+    /**
+     * Clears the global {@link Distributor} instance.
+     * @throws DistributorInitializationException if the API hasn't been initialized yet
+     */
+    public static void clear() {
+        if (DistributorProvider.instance != null) {
+            DistributorProvider.instance = null;
+        } else {
+            throw new DistributorInitializationException("The API hasn't been initialized yet.");
+        }
+    }
+
+    /**
+     * Returns whether the API has been initialized.
+     */
+    public static boolean isInitialized() {
+        return DistributorProvider.instance != null;
+    }
 }
