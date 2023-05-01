@@ -44,4 +44,5 @@ tasks.shadowJar {
     relocate("com.mysql", "$shadowPackage.mysql")
     relocate("com.google.protobuf", "$shadowPackage.protobuf")
     relocate("com.password4j", "$shadowPackage.password4j")
+    relocate("google", "$shadowPackage.google")
 }
