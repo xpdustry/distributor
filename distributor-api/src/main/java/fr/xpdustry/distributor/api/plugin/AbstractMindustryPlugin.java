@@ -27,8 +27,8 @@ import fr.xpdustry.distributor.api.DistributorProvider;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import mindustry.Vars;
 import mindustry.mod.Plugin;
 import org.slf4j.Logger;
@@ -52,9 +52,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
                     if (mod.enabled() && mod.main instanceof final AbstractMindustryPlugin plugin) {
                         try {
                             plugin.onExit();
-                            for (final var listener : plugin.listeners) {
-                                listener.onPluginExit();
-                            }
+                            plugin.forEachListener(PluginListener::onPluginExit);
                         } catch (final Throwable exception) {
                             plugin.getLogger()
                                     .error(
@@ -86,7 +84,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
      * Returns an unmodifiable list of the listeners registered to this plugin.
      */
     protected final List<PluginListener> getListeners() {
-        return Collections.unmodifiableList(this.listeners);
+        return List.copyOf(this.listeners);
     }
 
     @Override
@@ -107,14 +105,10 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         }
 
         this.onInit();
-        for (final var listener : AbstractMindustryPlugin.this.listeners) {
-            listener.onPluginInit();
-        }
+        this.forEachListener(PluginListener::onPluginInit);
 
         this.onServerCommandsRegistration(handler);
-        for (final var listener : AbstractMindustryPlugin.this.listeners) {
-            listener.onPluginServerCommandsRegistration(handler);
-        }
+        this.forEachListener(listener -> listener.onPluginServerCommandsRegistration(handler));
 
         Core.app.addListener(new PluginApplicationListener());
     }
@@ -123,9 +117,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     @Override
     public final void registerClientCommands(final CommandHandler handler) {
         this.onClientCommandsRegistration(handler);
-        for (final var listener : AbstractMindustryPlugin.this.listeners) {
-            listener.onPluginClientCommandsRegistration(handler);
-        }
+        this.forEachListener(listener -> listener.onPluginClientCommandsRegistration(handler));
     }
 
     @Deprecated
@@ -142,32 +134,35 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         return new Fi(this.getDirectory().resolve("config.json").toFile());
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    private void forEachListener(final Consumer<PluginListener> consumer) {
+        for (int i = 0; i < this.listeners.size(); i++) {
+            consumer.accept(this.listeners.get(i));
+        }
+    }
+
     private final class PluginApplicationListener implements ApplicationListener {
 
         @Override
         public void init() {
             AbstractMindustryPlugin.this.onLoad();
-            for (final var listener : AbstractMindustryPlugin.this.listeners) {
-                listener.onPluginLoad();
-            }
+            AbstractMindustryPlugin.this.forEachListener(PluginListener::onPluginLoad);
 
             final var eventBus = DistributorProvider.get().getEventBus();
             final var pluginScheduler = DistributorProvider.get().getPluginScheduler();
 
             eventBus.parse(AbstractMindustryPlugin.this, this);
             pluginScheduler.parse(AbstractMindustryPlugin.this, this);
-            for (final var listener : AbstractMindustryPlugin.this.listeners) {
+            AbstractMindustryPlugin.this.forEachListener(listener -> {
                 eventBus.parse(AbstractMindustryPlugin.this, listener);
                 pluginScheduler.parse(AbstractMindustryPlugin.this, listener);
-            }
+            });
         }
 
         @Override
         public void update() {
             AbstractMindustryPlugin.this.onUpdate();
-            for (final var listener : AbstractMindustryPlugin.this.listeners) {
-                listener.onPluginUpdate();
-            }
+            AbstractMindustryPlugin.this.forEachListener(PluginListener::onPluginUpdate);
         }
     }
 }
