@@ -69,6 +69,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     private final PluginDescriptor descriptor = PluginDescriptor.from(this);
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginListener> listeners = new ArrayList<>();
+    private boolean canParseListeners = false;
 
     @Override
     public final PluginDescriptor getDescriptor() {
@@ -93,6 +94,9 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             throw new IllegalArgumentException("Listener already registered.");
         }
         this.listeners.add(listener);
+        if (this.canParseListeners) {
+            this.parseObject(listener);
+        }
     }
 
     @Deprecated
@@ -141,22 +145,21 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         }
     }
 
+    private void parseObject(final Object object) {
+        DistributorProvider.get().getEventBus().parse(AbstractMindustryPlugin.this, object);
+        DistributorProvider.get().getPluginScheduler().parse(AbstractMindustryPlugin.this, object);
+    }
+
     private final class PluginApplicationListener implements ApplicationListener {
 
         @Override
         public void init() {
             AbstractMindustryPlugin.this.onLoad();
             AbstractMindustryPlugin.this.forEachListener(PluginListener::onPluginLoad);
+            AbstractMindustryPlugin.this.canParseListeners = true;
 
-            final var eventBus = DistributorProvider.get().getEventBus();
-            final var pluginScheduler = DistributorProvider.get().getPluginScheduler();
-
-            eventBus.parse(AbstractMindustryPlugin.this, this);
-            pluginScheduler.parse(AbstractMindustryPlugin.this, this);
-            AbstractMindustryPlugin.this.forEachListener(listener -> {
-                eventBus.parse(AbstractMindustryPlugin.this, listener);
-                pluginScheduler.parse(AbstractMindustryPlugin.this, listener);
-            });
+            AbstractMindustryPlugin.this.parseObject(AbstractMindustryPlugin.this);
+            AbstractMindustryPlugin.this.forEachListener(AbstractMindustryPlugin.this::parseObject);
         }
 
         @Override
