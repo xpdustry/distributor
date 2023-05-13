@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## v3.0.0-rc.3 - 2023-04-04
+## v3.0.0 - 2023-04-04
 
 This is it, fellow plugin enjoyers, the final release of Distributor (its breaking with the version `v3.0.0-rc.3`).
 
