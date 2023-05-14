@@ -12,6 +12,7 @@ val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("p
 toxopid {
     compileVersion.set("v" + metadata.minGameVersion)
     platforms.add(fr.xpdustry.toxopid.spec.ModPlatform.HEADLESS)
+    useMindustryMirror.set(true)
 }
 
 repositories {
