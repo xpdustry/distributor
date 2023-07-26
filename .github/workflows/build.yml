@@ -74,7 +74,7 @@ jobs:
         if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
         uses: svenstaro/upload-release-action@v2
         with:
-          asset_name: DistributorCore.jar
+          asset_name: distributor-core.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.CORE_ARTIFACT_PATH }}
           tag: ${{ github.ref }}
@@ -83,7 +83,7 @@ jobs:
         if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
         uses: svenstaro/upload-release-action@v2
         with:
-          asset_name: DistributorKotlin.jar
+          asset_name: distributor-kotlin.jar
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.KOTLIN_ARTIFACT_PATH }}
           tag: ${{ github.ref }}
