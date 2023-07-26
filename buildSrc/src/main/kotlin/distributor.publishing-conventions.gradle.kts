@@ -14,7 +14,7 @@ indra {
 
     gpl3OnlyLicense()
 
-    github("Xpdustry", "Distributor") {
+    github("xpdustry", "distributor") {
         ci(true)
         issues(true)
         scm(true)
