@@ -34,6 +34,8 @@ public final class ArcLogger extends AbstractLogger {
     @Serial
     private static final long serialVersionUID = 3476499937056865545L;
 
+    private static final Object WRITE_LOCK = new Object();
+
     private final @Nullable String plugin;
 
     public ArcLogger(final String name, final @Nullable String plugin) {
@@ -139,13 +141,15 @@ public final class ArcLogger extends AbstractLogger {
                         MessageFormatter.basicArrayFormat(messagePattern.replace("{}", "&fb&lb{}&fr"), arguments))
                 .toString();
 
-        if (throwable != null && (arguments == null || arguments.length == 0)) {
-            Log.err(string);
-            Log.err(throwable);
-        } else {
-            Log.log(this.getArcLogLevel(level), string);
-            if (throwable != null) {
+        synchronized (WRITE_LOCK) {
+            if (throwable != null && (arguments == null || arguments.length == 0)) {
+                Log.err(string);
                 Log.err(throwable);
+            } else {
+                Log.log(this.getArcLogLevel(level), string);
+                if (throwable != null) {
+                    Log.err(throwable);
+                }
             }
         }
     }
