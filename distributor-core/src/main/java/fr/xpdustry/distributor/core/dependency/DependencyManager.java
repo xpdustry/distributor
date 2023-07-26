@@ -27,7 +27,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -155,8 +154,6 @@ public final class DependencyManager {
                         logger.error(" URL :  " + url);
                         logger.error(" Expected :  " + Base64.getEncoder().encodeToString(dependency.checksum()));
                         logger.error(" Actual :  " + Base64.getEncoder().encodeToString(checksum));
-                        logger.error(" Expected :  " + new String(dependency.checksum(), StandardCharsets.UTF_8));
-                        logger.error(" Actual :  " + new String(checksum, StandardCharsets.UTF_8));
                         throw new RuntimeException("Invalid checksum for dependency '" + dependency + "'");
                     }
                 }

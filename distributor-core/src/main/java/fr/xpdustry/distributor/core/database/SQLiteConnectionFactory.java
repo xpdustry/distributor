@@ -31,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 public final class SQLiteConnectionFactory implements ConnectionFactory {
 
     public static final Dependency SQLITE_DRIVER =
-            new Dependency("org.xerial", "sqlite-jdbc", "3.40.0.0", "46G5CXh7M7s34E8lLzfkq0ekieHB1FqAmgmCw3lEXBA=");
+            new Dependency("org.xerial", "sqlite-jdbc", "3.42.0.0", "UxdNdgh7tzzCnbnAJ2b7kh/X/GUveVLzYJ4AGOPdXe0=");
 
     private final String prefix;
     private final Path path;
