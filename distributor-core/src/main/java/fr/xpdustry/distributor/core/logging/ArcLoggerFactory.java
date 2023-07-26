@@ -24,48 +24,80 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import mindustry.mod.ModClassLoader;
 import mindustry.mod.Plugin;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ArcLoggerFactory implements ILoggerFactory {
 
-    private final Map<String, ArcLogger> cache = new ConcurrentHashMap<>();
+    private final Map<String, ArcLogger> loggers = new ConcurrentHashMap<>();
+
+    {
+        this.loggers.put(Logger.ROOT_LOGGER_NAME, new ArcLogger(Logger.ROOT_LOGGER_NAME, null));
+    }
 
     @Override
     public Logger getLogger(final String name) {
-        if (this.cache.containsKey(name)) {
-            return this.cache.get(name);
+        if (this.loggers.containsKey(name)) {
+            return this.loggers.get(name);
         }
 
-        final Class<?> caller;
+        Class<?> caller;
+        var cache = true;
+
         try {
             caller = Class.forName(name);
-        } catch (final ClassNotFoundException ignored) {
-            return this.cache.computeIfAbsent(name, key -> new ArcLogger(name, null));
+        } catch (final ClassNotFoundException ignored1) {
+            final var stacktrace = Thread.currentThread().getStackTrace();
+            if (stacktrace.length >= 4 && stacktrace[2].getClassName().equals(LoggerFactory.class.getName())) {
+                try {
+                    caller = Class.forName(stacktrace[3].getClassName());
+                    cache = false;
+                } catch (final ClassNotFoundException ignored2) {
+                    return new ArcLogger(name, null);
+                }
+            } else {
+                return new ArcLogger(name, null);
+            }
         }
 
         if (Plugin.class.isAssignableFrom(caller)) {
             @SuppressWarnings("unchecked")
             final var descriptor = PluginDescriptor.from((Class<? extends Plugin>) caller);
-            return this.cache.computeIfAbsent(name, key -> new ArcLogger(descriptor.getDisplayName(), null));
+            // Plugin loggers are found on the first lookup, thus if the cache flag is false,
+            // it means a custom logger has been created inside the plugin class
+            final var logger = cache
+                    ? new ArcLogger(descriptor.getDisplayName(), null)
+                    : new ArcLogger(name, descriptor.getDisplayName());
+            if (cache) {
+                this.loggers.put(name, logger);
+            }
+            return logger;
         }
 
         ClassLoader classLoader = caller.getClassLoader();
-        while (classLoader.getParent() != null && !(classLoader.getParent() instanceof ModClassLoader)) {
+        while (classLoader != null) {
+            if (classLoader.getParent() instanceof ModClassLoader) {
+                final PluginDescriptor descriptor;
+                try {
+                    descriptor = PluginDescriptor.from(classLoader);
+                } catch (final IOException ignored) {
+                    return this.createLogger(name, null, cache);
+                }
+                return this.createLogger(name, descriptor.getDisplayName(), cache);
+            }
             classLoader = classLoader.getParent();
         }
 
-        if (classLoader.getParent() instanceof ModClassLoader) {
-            final PluginDescriptor descriptor;
-            try {
-                descriptor = PluginDescriptor.from(classLoader);
-            } catch (final IOException ignored) {
-                return this.cache.computeIfAbsent(name, key -> new ArcLogger(caller.getName(), null));
-            }
-            return this.cache.computeIfAbsent(
-                    name, key -> new ArcLogger(caller.getName(), descriptor.getDisplayName()));
-        }
+        return this.createLogger(name, null, cache);
+    }
 
-        return this.cache.computeIfAbsent(name, key -> new ArcLogger(caller.getName(), null));
+    private ArcLogger createLogger(final String name, final @Nullable String plugin, final boolean cache) {
+        final var logger = new ArcLogger(name, plugin);
+        if (cache) {
+            this.loggers.put(name, logger);
+        }
+        return logger;
     }
 }
