@@ -81,7 +81,7 @@ public final class DependencyManager {
     }
 
     public void addXpdustryMaven() {
-        this.addRepository("https://maven.xpdustry.fr/releases/");
+        this.addRepository("https://maven.xpdustry.com/releases/");
     }
 
     public void addJitPack() {

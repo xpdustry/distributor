@@ -9,7 +9,7 @@ plugins {
 }
 
 repositories {
-    maven("https://maven.xpdustry.fr/releases") {
+    maven("https://maven.xpdustry.com/releases") {
         name = "xpdustry-releases"
         mavenContent { releasesOnly() }
     }

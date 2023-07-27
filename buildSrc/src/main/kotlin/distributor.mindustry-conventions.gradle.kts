@@ -17,7 +17,7 @@ toxopid {
 
 repositories {
     mavenCentral()
-    maven("https://maven.xpdustry.fr/anuken") {
+    maven("https://maven.xpdustry.com/anuken") {
         name = "xpdustry-anuken"
         mavenContent { releasesOnly() }
     }
