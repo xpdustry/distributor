@@ -1,7 +1,7 @@
 {
-  "author": "Xpdustry",
-  "minGameVersion": "142",
+  "author": "xpdustry",
+  "minGameVersion": "145",
   "hidden": true,
   "java": true,
-  "repo": "Xpdustry/Distributor"
+  "repo": "xpdustry/distributor"
 }

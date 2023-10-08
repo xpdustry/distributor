@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v3.1.0 - 2023-07-26
+
+### Features
+
+- Added `List` wrappers for entity groups.
+- Added JUL to SLF4J bridge.
+- Added plugin name along the class name for logger.
+- Added soft dependencies field to `PluginDescriptor`.
+- Added `PluginDescriptor#from(ClassLoader)`.
+- Added method for super class event posting.
+- Added option to automatically grant admin to validated admin player with different usids.
+- Added `DistributorProvider#isInitialized` and `DistributorProvider#clear`.
+- Allowed plugin listeners to register sub-listeners in `AbstractMindustryPlugin`.
+- Implemented logger caller lookup for logger without an explicit class name.
+
+### Changes
+
+- Moved plugin and plugin listener annotation parsing after plugin load.
+- Separated details of error logging from stacktrace.
+
+### Bugfixes
+
+- Fixed missing stacktrace log when an exception occurs in a plugin task.
+- Fixed `Players#findPlayers` sometimes returning multiple players even with exact name match.
+- Fixed not sending the cause of a command execution exception to the sender.
+- Much more...
+
+### Chores
+
+- Bumped Mindustry version to `v145`.
+
 ## v3.0.0 - 2023-04-04
 
 This is it, fellow plugin enjoyers, the final release of Distributor (its breaking with the version `v3.0.0-rc.3`).
