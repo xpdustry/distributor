@@ -136,7 +136,6 @@ public final class ArcLogger extends AbstractLogger {
             arguments = arguments.length == 1 ? null : Arrays.copyOf(arguments, arguments.length - 1);
         }
 
-        // TODO Use ColorCodes instead of &fb&lb&fr ?
         final var string = builder.append(
                         MessageFormatter.basicArrayFormat(messagePattern.replace("{}", "&fb&lb{}&fr"), arguments))
                 .toString();
@@ -169,8 +168,7 @@ public final class ArcLogger extends AbstractLogger {
 
     private String getColorCode(final Level level) {
         return switch (level) {
-            case TRACE -> ColorCodes.lightBlack;
-            case DEBUG -> ColorCodes.lightCyan + ColorCodes.bold;
+            case DEBUG, TRACE -> ColorCodes.lightCyan + ColorCodes.bold;
             case INFO -> ColorCodes.lightBlue + ColorCodes.bold;
             case WARN -> ColorCodes.lightYellow + ColorCodes.bold;
             case ERROR -> ColorCodes.lightRed + ColorCodes.bold;
