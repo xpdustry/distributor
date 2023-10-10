@@ -23,6 +23,7 @@ import arc.util.Log;
 import arc.util.Log.LogLevel;
 import java.io.Serial;
 import java.util.Arrays;
+import mindustry.net.Administration;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
@@ -35,6 +36,8 @@ public final class ArcLogger extends AbstractLogger {
     private static final long serialVersionUID = 3476499937056865545L;
 
     private static final Object WRITE_LOCK = new Object();
+    private static final Administration.Config TRACE =
+            new Administration.Config("trace", "Enable trace logging when debug is enabled.", false);
 
     private final @Nullable String plugin;
 
@@ -45,12 +48,12 @@ public final class ArcLogger extends AbstractLogger {
 
     @Override
     public boolean isTraceEnabled() {
-        return this.isArcLogLevelAtLeast(Log.LogLevel.debug);
+        return this.isArcLogLevelAtLeast(Log.LogLevel.debug) && TRACE.bool();
     }
 
     @Override
     public boolean isTraceEnabled(final Marker marker) {
-        return this.isArcLogLevelAtLeast(Log.LogLevel.debug);
+        return this.isArcLogLevelAtLeast(Log.LogLevel.debug) && TRACE.bool();
     }
 
     @Override
