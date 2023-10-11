@@ -18,11 +18,17 @@ repositories {
 dependencies {
     compileOnly("com.xpdustry:kotlin-runtime:3.1.0-k.1.9.10")
     compileOnly(project(":distributor-core"))
-    api(cloudCommandFramework("kotlin-extensions")) {
-        exclude(group = "org.jetbrains.kotlin")
-        exclude(group = "cloud.commandframework", module = "cloud-core")
-    }
+    api(cloudCommandFramework("kotlin-extensions"))
+    api(cloudCommandFramework("kotlin-coroutines"))
+    api(cloudCommandFramework("kotlin-coroutines-annotations"))
     testImplementation(kotlin("stdlib"))
+}
+
+configurations.runtimeClasspath {
+    exclude(group = "cloud.commandframework", module = "cloud-core")
+    exclude(group = "cloud.commandframework", module = "cloud-annotations")
+    exclude(group = "org.jetbrains.kotlin")
+    exclude(group = "org.jetbrains.kotlinx")
 }
 
 val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("plugin.json"))
