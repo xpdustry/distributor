@@ -13,7 +13,6 @@ dependencies {
     implementation("com.github.johnrengelman:shadow:8.1.1")
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:3.1.0")
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.22.0")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.9.0")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.49.0")
 }
 

@@ -5,7 +5,6 @@ plugins {
     id("distributor.base-conventions")
     id("distributor.publishing-conventions")
     id("distributor.mindustry-conventions")
-    id("org.jetbrains.dokka")
 }
 
 repositories {
@@ -71,10 +70,14 @@ val kotlinRuntime =
         version.set("v3.1.0-k.1.9.10")
     }
 
-tasks.javadocJar {
-    from(tasks.dokkaHtml)
-}
-
 tasks.runMindustryServer {
     mods.setFrom(project(":distributor-core").tasks.shadowJar, tasks.shadowJar, kotlinRuntime)
+}
+
+// Indra adds the javadoc task, we don't want that so disable it
+components.named("java") {
+    val component = this as AdhocComponentWithVariants
+    component.withVariantsFromConfiguration(configurations.javadocElements.get()) {
+        skip()
+    }
 }
