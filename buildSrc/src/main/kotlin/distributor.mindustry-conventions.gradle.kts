@@ -1,4 +1,3 @@
-import fr.xpdustry.toxopid.dsl.anukenJitpack
 import fr.xpdustry.toxopid.dsl.mindustryDependencies
 
 plugins {
@@ -12,13 +11,12 @@ val metadata = fr.xpdustry.toxopid.spec.ModMetadata.fromJson(rootProject.file("p
 toxopid {
     compileVersion.set("v" + metadata.minGameVersion)
     platforms.add(fr.xpdustry.toxopid.spec.ModPlatform.HEADLESS)
-    useMindustryMirror.set(true)
 }
 
 repositories {
     mavenCentral()
-    maven("https://maven.xpdustry.com/anuken") {
-        name = "xpdustry-anuken"
+    maven("https://maven.xpdustry.com/mindustry") {
+        name = "xpdustry-mindustry"
         mavenContent { releasesOnly() }
     }
 }

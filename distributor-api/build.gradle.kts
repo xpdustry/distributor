@@ -8,7 +8,7 @@ dependencies {
     val apiGuardian = "1.1.2"
     compileOnlyApi("org.apiguardian:apiguardian-api:$apiGuardian")
 
-    val slf4j = "2.0.7"
+    val slf4j = "2.0.9"
     api("org.slf4j:slf4j-api:$slf4j")
     testRuntimeOnly("org.slf4j:slf4j-simple:$slf4j")
 

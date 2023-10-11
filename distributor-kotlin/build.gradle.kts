@@ -1,7 +1,7 @@
 import fr.xpdustry.toxopid.task.GithubArtifactDownload
 
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.10"
     id("distributor.base-conventions")
     id("distributor.publishing-conventions")
     id("distributor.mindustry-conventions")
@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.xpdustry:kotlin-runtime:3.0.0-k.1.9.0")
+    compileOnly("com.xpdustry:kotlin-runtime:3.1.0-k.1.9.10")
     compileOnly(project(":distributor-core"))
     api(cloudCommandFramework("kotlin-extensions")) {
         exclude(group = "org.jetbrains.kotlin")
@@ -34,7 +34,7 @@ metadata.main = "fr.xpdustry.distributor.kotlin.DistributorKotlinPlugin"
 metadata.dependencies += listOf("distributor-core", "kotlin-runtime")
 
 kotlin {
-    coreLibrariesVersion = "1.9.0"
+    coreLibrariesVersion = "1.9.10"
     explicitApi()
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
@@ -57,12 +57,13 @@ tasks.shadowJar {
     }
 }
 
-val kotlinRuntime = tasks.register<GithubArtifactDownload>("downloadKotlinRuntime") {
-    user.set("xpdustry")
-    repo.set("kotlin-runtime")
-    name.set("kotlin-runtime.jar")
-    version.set("v3.0.0-k.1.9.0")
-}
+val kotlinRuntime =
+    tasks.register<GithubArtifactDownload>("downloadKotlinRuntime") {
+        user.set("xpdustry")
+        repo.set("kotlin-runtime")
+        name.set("kotlin-runtime.jar")
+        version.set("v3.1.0-k.1.9.10")
+    }
 
 tasks.javadocJar {
     from(tasks.dokkaHtml)
