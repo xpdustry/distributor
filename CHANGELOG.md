@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v3.2.0 - 2023-10-11
+
+### Features
+
+- Added cloud Kotlin coroutines extensions to the distributor Kotlin module.
+- Added dedicated option for `TRACE` logging (`config trace [true|false]`), only active when debug is.
+
+### Bugfixes
+
+- Fixed inconsistent colors with the `TRACE` log level.
+
+### Chores
+
+- Bumped Mindustry version to `v146` and more.
+- Renamed `xpdustry.fr` to `xpdustry.com`.
+- Removed Kotlin javadoc.
+
 ## v3.1.0 - 2023-07-26
 
 ### Features
