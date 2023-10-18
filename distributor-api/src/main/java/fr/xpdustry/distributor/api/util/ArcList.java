@@ -23,11 +23,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.RandomAccess;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
@@ -49,22 +46,6 @@ final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAc
     @Override
     public void replaceAll(final UnaryOperator<E> operator) {
         this.seq.replace(operator::apply);
-    }
-
-    @Override
-    public void sort(final Comparator<? super E> c) {
-        this.seq.sort(c);
-    }
-
-    @Override
-    public boolean removeIf(final Predicate<? super E> filter) {
-        final var size = this.seq.size;
-        return size != this.seq.removeAll(filter::test).size;
-    }
-
-    @Override
-    public void forEach(final Consumer<? super E> action) {
-        this.seq.forEach(action);
     }
 
     @Override

@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * A wrapper {@link Set} for an {@link ObjectSet}.
@@ -43,13 +42,8 @@ final class ArcSet<E> extends AbstractSet<E> implements Serializable {
     }
 
     @Override
-    public void forEach(final Consumer<? super E> action) {
-        this.set.forEach(action);
-    }
-
-    @Override
     public Iterator<E> iterator() {
-        return this.set.iterator();
+        return this.set.new ObjectSetIterator();
     }
 
     @Override
@@ -66,16 +60,6 @@ final class ArcSet<E> extends AbstractSet<E> implements Serializable {
     @Override
     public boolean contains(final Object o) {
         return this.set.contains((E) o);
-    }
-
-    @Override
-    public Object[] toArray() {
-        return this.set.toSeq().toArray();
-    }
-
-    @Override
-    public <T> T[] toArray(final T[] a) {
-        return this.set.toSeq().toArray(a.getClass().getComponentType());
     }
 
     @Override

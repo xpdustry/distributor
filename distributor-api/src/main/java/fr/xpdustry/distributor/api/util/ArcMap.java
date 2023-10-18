@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -100,11 +99,6 @@ final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
     @Override
     public V getOrDefault(final Object key, final V defaultValue) {
         return this.map.get((K) key, defaultValue);
-    }
-
-    @Override
-    public void forEach(final BiConsumer<? super K, ? super V> action) {
-        this.map.each(action::accept);
     }
 
     @Override
