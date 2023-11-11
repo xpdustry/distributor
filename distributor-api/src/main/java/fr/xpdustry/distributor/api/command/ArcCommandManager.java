@@ -30,6 +30,7 @@ import cloud.commandframework.internal.CommandRegistrationHandler;
 import cloud.commandframework.meta.CommandMeta;
 import fr.xpdustry.distributor.api.DistributorProvider;
 import fr.xpdustry.distributor.api.command.argument.PlayerArgument;
+import fr.xpdustry.distributor.api.command.argument.PlayerInfoArgument;
 import fr.xpdustry.distributor.api.command.argument.TeamArgument;
 import fr.xpdustry.distributor.api.command.argument.TeamArgument.TeamMode;
 import fr.xpdustry.distributor.api.command.sender.CommandSender;
@@ -43,6 +44,7 @@ import java.text.MessageFormat;
 import java.util.function.Function;
 import mindustry.game.Team;
 import mindustry.gen.Player;
+import mindustry.net.Administration;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
@@ -142,6 +144,11 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
 
         this.parserRegistry()
                 .registerParserSupplier(TypeToken.get(Player.class), params -> new PlayerArgument.PlayerParser<>());
+
+        this.parserRegistry()
+                .registerParserSupplier(
+                        TypeToken.get(Administration.PlayerInfo.class),
+                        params -> new PlayerInfoArgument.PlayerInfoParser<>());
 
         this.parserRegistry()
                 .registerParserSupplier(
