@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v3.2.1 - 2023-11-13
+
+### Bugfixes
+
+- Added compliance tests for arc container wrappers. They now have the same behavior as the standard java container types.
+- Added accent normalization in `Players#findPlayers`.
+- Added missing player info parser to `ArcCommandManager`.
+- Fix arc container wrappers messing up the internal iterators of their internal collection. Concurrent reads goes BRRR...
+
 ## v3.2.0 - 2023-10-11
 
 ### Features
