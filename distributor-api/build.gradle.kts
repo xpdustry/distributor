@@ -19,4 +19,6 @@ dependencies {
     api(cloudCommandFramework("annotations"))
     api(cloudCommandFramework("tasks"))
     api(cloudCommandFramework("services"))
+
+    testImplementation("com.google.guava:guava-testlib:32.1.3-jre")
 }

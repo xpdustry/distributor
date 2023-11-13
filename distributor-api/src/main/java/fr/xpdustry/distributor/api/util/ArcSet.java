@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A wrapper {@link Set} for an {@link ObjectSet}.
@@ -59,22 +60,31 @@ final class ArcSet<E> extends AbstractSet<E> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean contains(final Object o) {
+        checkNullElement(o);
         return this.set.contains((E) o);
     }
 
     @Override
     public boolean add(final E e) {
+        checkNullElement(e);
         return this.set.add(e);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean remove(final Object o) {
+        checkNullElement(o);
         return this.set.remove((E) o);
     }
 
     @Override
     public void clear() {
         this.set.clear();
+    }
+
+    private void checkNullElement(final @Nullable Object o) {
+        if (o == null) {
+            throw new NullPointerException("ArcSet does not support null elements");
+        }
     }
 }

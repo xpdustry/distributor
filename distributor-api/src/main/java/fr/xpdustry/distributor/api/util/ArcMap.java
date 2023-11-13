@@ -65,23 +65,27 @@ final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean containsKey(final Object key) {
+        checkNullKey(key);
         return this.map.containsKey((K) key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public V get(final Object key) {
+        checkNullKey(key);
         return this.map.get((K) key);
     }
 
     @Override
     public V put(final K key, final V value) {
+        checkNullKey(key);
         return this.map.put(key, value);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public V remove(final Object key) {
+        checkNullKey(key);
         return this.map.remove((K) key);
     }
 
@@ -98,6 +102,7 @@ final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public V getOrDefault(final Object key, final V defaultValue) {
+        checkNullKey(key);
         return this.map.get((K) key, defaultValue);
     }
 
@@ -107,6 +112,12 @@ final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
             this.entries = new EntrySet();
         }
         return this.entries;
+    }
+
+    private void checkNullKey(final @Nullable Object o) {
+        if (o == null) {
+            throw new NullPointerException("ArcMap does not support null keys");
+        }
     }
 
     private final class EntrySet extends AbstractSet<Map.Entry<K, V>> {

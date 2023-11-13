@@ -22,6 +22,7 @@ import arc.struct.Seq;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.RandomAccess;
@@ -64,13 +65,14 @@ final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAc
         return this.seq.contains((E) o);
     }
 
-    @Override
-    public Object[] toArray() {
-        return this.seq.toArray();
-    }
-
+    @SuppressWarnings("SuspiciousSystemArraycopy")
     @Override
     public <T> T[] toArray(final T[] a) {
+        if (a.length >= size()) {
+            System.arraycopy(this.seq.items, 0, a, 0, this.seq.size);
+            Arrays.fill(a, this.seq.size, a.length, null);
+            return a;
+        }
         return this.seq.toArray(a.getClass().getComponentType());
     }
 
@@ -88,7 +90,7 @@ final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAc
     @Override
     public boolean addAll(final Collection<? extends E> c) {
         this.seq.addAll(c);
-        return true;
+        return !c.isEmpty();
     }
 
     @Override
