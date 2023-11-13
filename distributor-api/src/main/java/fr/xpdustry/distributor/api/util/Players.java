@@ -19,6 +19,7 @@
 package fr.xpdustry.distributor.api.util;
 
 import arc.util.Strings;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,18 +69,18 @@ public final class Players {
         }
 
         final List<Player> result = new ArrayList<>();
-        final var plainName = stripAndLower(query);
+        final var normalized = normalize(query);
 
         Player match = null;
         int matches = 0;
 
         for (final var player : Groups.player) {
-            final var playerName = stripAndLower(player.name());
-            if (playerName.equalsIgnoreCase(plainName)) {
+            final var playerName = normalize(player.name());
+            if (playerName.equalsIgnoreCase(normalized)) {
                 match = player;
                 matches++;
                 result.add(player);
-            } else if (playerName.contains(plainName)) {
+            } else if (playerName.contains(normalized)) {
                 result.add(player);
             }
         }
@@ -97,7 +98,10 @@ public final class Players {
         return Locale.forLanguageTag(player.locale().replace('_', '-'));
     }
 
-    private static String stripAndLower(final String string) {
-        return Strings.stripColors(string.toLowerCase(Locale.ROOT));
+    // https://stackoverflow.com/a/4122207
+    private static String normalize(final String string) {
+        return Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "")
+                .toLowerCase(Locale.ROOT);
     }
 }

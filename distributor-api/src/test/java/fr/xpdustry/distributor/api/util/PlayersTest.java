@@ -79,6 +79,11 @@ public final class PlayersTest {
     }
 
     @Test
+    void test_find_by_name_accents() {
+        assertThat(Players.findPlayers("phînnér")).singleElement().isEqualTo(this.player3);
+    }
+
+    @Test
     void test_find_by_multiple_exact_names() {
         assertThat(Players.findPlayers("zeta")).containsExactlyInAnyOrder(this.player4, this.player5);
     }
