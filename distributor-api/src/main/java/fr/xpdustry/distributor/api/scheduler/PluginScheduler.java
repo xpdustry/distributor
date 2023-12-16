@@ -58,6 +58,8 @@ public interface PluginScheduler {
      * @param plugin the plugin that owns the listener
      * @param object the object to parse
      * @return a list of scheduled tasks
+     * @deprecated replace with {@link fr.xpdustry.distributor.api.plugin.PluginAnnotationParser}
      */
+    @Deprecated(forRemoval = true)
     List<PluginTask<?>> parse(final MindustryPlugin plugin, final Object object);
 }

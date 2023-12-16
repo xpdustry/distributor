@@ -144,6 +144,8 @@ public interface EventBus {
      * @param plugin   the plugin that owns the listener
      * @param listener the listener to parse
      * @return the subscription of the subscribed handlers
+     * @deprecated replace with {@link fr.xpdustry.distributor.api.plugin.PluginAnnotationParser}
      */
+    @Deprecated(forRemoval = true)
     EventSubscription parse(final MindustryPlugin plugin, final Object listener);
 }

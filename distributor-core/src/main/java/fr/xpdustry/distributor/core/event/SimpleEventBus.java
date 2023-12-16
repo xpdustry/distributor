@@ -96,6 +96,7 @@ public final class SimpleEventBus implements EventBus {
         Events.fire(event);
     }
 
+    @SuppressWarnings("removal")
     @Override
     public EventSubscription parse(final MindustryPlugin plugin, final Object listener) {
         final List<EventSubscription> subscriptions = new ArrayList<>();
