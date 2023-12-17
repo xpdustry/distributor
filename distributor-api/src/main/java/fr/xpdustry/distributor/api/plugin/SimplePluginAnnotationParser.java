@@ -49,8 +49,8 @@ final class SimplePluginAnnotationParser implements PluginAnnotationParser {
         }
         if (method.getParameterCount() != 1) {
             throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
-        } else if (!method.canAccess(object) || !method.trySetAccessible()) {
-            throw new RuntimeException("Unable to make " + method + " accessible.");
+        } else if (!method.canAccess(object)) {
+            method.setAccessible(true);
         }
 
         final var handler = new MethodEventHandler<>(object, method, plugin);
@@ -66,8 +66,8 @@ final class SimplePluginAnnotationParser implements PluginAnnotationParser {
         }
         if (method.getParameterCount() > 1) {
             throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
-        } else if (!method.canAccess(object) || !method.trySetAccessible()) {
-            throw new RuntimeException("Unable to make " + method + " accessible.");
+        } else if (!method.canAccess(object)) {
+            method.setAccessible(true);
         } else if (method.getParameterCount() == 1 && !Cancellable.class.equals(method.getParameterTypes()[0])) {
             throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter type.");
         }
@@ -80,7 +80,7 @@ final class SimplePluginAnnotationParser implements PluginAnnotationParser {
         if (annotation.delay() > -1) {
             builder.delay(annotation.delay(), annotation.unit());
         }
-        builder.execute(new MethodPluginTask(object, method));
+        builder.execute(new MethodTaskHandler(object, method));
     }
 
     private static final class MethodEventHandler<E> implements Consumer<E> {
@@ -118,12 +118,12 @@ final class SimplePluginAnnotationParser implements PluginAnnotationParser {
         }
     }
 
-    private static final class MethodPluginTask implements Consumer<Cancellable> {
+    private static final class MethodTaskHandler implements Consumer<Cancellable> {
 
         private final Object object;
         private final Method method;
 
-        private MethodPluginTask(final Object object, final Method method) {
+        private MethodTaskHandler(final Object object, final Method method) {
             this.object = object;
             this.method = method;
         }

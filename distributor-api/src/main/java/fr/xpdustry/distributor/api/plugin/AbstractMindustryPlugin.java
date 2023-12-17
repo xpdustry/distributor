@@ -26,6 +26,7 @@ import arc.util.CommandHandler;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import mindustry.Vars;
@@ -68,7 +69,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     private final PluginDescriptor descriptor = PluginDescriptor.from(this);
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginListener> listeners = new ArrayList<>();
-    private final PluginAnnotationParser annotationParser = PluginAnnotationParser.simple(this);
     private boolean canParseListeners = false;
 
     @Override
@@ -81,15 +81,15 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         return this.logger;
     }
 
-    protected final PluginAnnotationParser getAnnotationParser() {
-        return this.annotationParser;
-    }
-
     /**
      * Returns an unmodifiable list of the listeners registered to this plugin.
      */
     protected final List<PluginListener> getListeners() {
-        return List.copyOf(this.listeners);
+        return Collections.unmodifiableList(this.listeners);
+    }
+
+    protected PluginAnnotationParser getPluginAnnotationParser() {
+        return PluginAnnotationParser.simple(this);
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         }
         this.listeners.add(listener);
         if (this.canParseListeners) {
-            this.annotationParser.parse(listener);
+            getPluginAnnotationParser().parse(listener);
         }
     }
 
@@ -156,9 +156,9 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             AbstractMindustryPlugin.this.onLoad();
             AbstractMindustryPlugin.this.forEachListener(PluginListener::onPluginLoad);
             AbstractMindustryPlugin.this.canParseListeners = true;
-
-            AbstractMindustryPlugin.this.annotationParser.parse(AbstractMindustryPlugin.this);
-            AbstractMindustryPlugin.this.forEachListener(AbstractMindustryPlugin.this.annotationParser::parse);
+            final var parser = AbstractMindustryPlugin.this.getPluginAnnotationParser();
+            parser.parse(AbstractMindustryPlugin.this);
+            AbstractMindustryPlugin.this.forEachListener(parser::parse);
         }
 
         @Override
