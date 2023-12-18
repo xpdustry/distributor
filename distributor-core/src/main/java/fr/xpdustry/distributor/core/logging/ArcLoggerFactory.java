@@ -20,6 +20,7 @@ package fr.xpdustry.distributor.core.logging;
 
 import fr.xpdustry.distributor.api.plugin.PluginDescriptor;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import mindustry.mod.ModClassLoader;
@@ -27,7 +28,6 @@ import mindustry.mod.Plugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class ArcLoggerFactory implements ILoggerFactory {
 
@@ -49,15 +49,14 @@ public final class ArcLoggerFactory implements ILoggerFactory {
         try {
             caller = Class.forName(name);
         } catch (final ClassNotFoundException ignored1) {
-            final var stacktrace = Thread.currentThread().getStackTrace();
-            if (stacktrace.length >= 4 && stacktrace[2].getClassName().equals(LoggerFactory.class.getName())) {
-                try {
-                    caller = Class.forName(stacktrace[3].getClassName());
-                    cache = false;
-                } catch (final ClassNotFoundException ignored2) {
-                    return new ArcLogger(name, null);
-                }
-            } else {
+            final var candidate = tryFindCaller(Thread.currentThread().getStackTrace());
+            if (candidate == null) {
+                return new ArcLogger(name, null);
+            }
+            try {
+                caller = Class.forName(candidate);
+                cache = false;
+            } catch (final ClassNotFoundException ignored2) {
                 return new ArcLogger(name, null);
             }
         }
@@ -99,5 +98,17 @@ public final class ArcLoggerFactory implements ILoggerFactory {
             this.loggers.put(name, logger);
         }
         return logger;
+    }
+
+    private @Nullable String tryFindCaller(final StackTraceElement[] stacktrace) {
+        return Arrays.stream(stacktrace)
+                .skip(3) // 0: stacktrace call, 1: ArcLoggerFactory#getLogger, 2: LoggerFactory#getLogger
+                .map(StackTraceElement::getClassName)
+                // Skips the logger wrappers
+                .dropWhile(clazz -> clazz.startsWith("org.slf4j")
+                        || clazz.startsWith("java.util.logging")
+                        || clazz.startsWith("sun.util.logging"))
+                .findFirst()
+                .orElse(null);
     }
 }
