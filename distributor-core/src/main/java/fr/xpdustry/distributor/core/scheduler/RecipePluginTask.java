@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
+final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
 
     private final SimplePluginScheduler scheduler;
     private final MindustryPlugin plugin;
@@ -116,7 +116,7 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
         return 0L;
     }
 
-    private abstract static sealed class RecipeStep<T, R> implements Function<T, R> {
+    abstract static sealed class RecipeStep<T, R> implements Function<T, R> {
 
         public final boolean async;
 
@@ -125,7 +125,7 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
         }
     }
 
-    private static final class ConsumerRecipeStep<T> extends RecipeStep<T, T> {
+    static final class ConsumerRecipeStep<T> extends RecipeStep<T, T> {
 
         private final Consumer<T> consumer;
 
@@ -141,7 +141,7 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
         }
     }
 
-    private static final class FunctionRecipeStep<T, R> extends RecipeStep<T, R> {
+    static final class FunctionRecipeStep<T, R> extends RecipeStep<T, R> {
 
         private final Function<T, R> function;
 
@@ -156,7 +156,7 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
         }
     }
 
-    private static final class RunnableRecipeStep<T> extends RecipeStep<T, T> {
+    static final class RunnableRecipeStep<T> extends RecipeStep<T, T> {
 
         private final Runnable runnable;
 
@@ -172,7 +172,7 @@ public final class RecipePluginTask<V> implements ScheduledPluginTask<V> {
         }
     }
 
-    public static final class Builder<V> implements PluginTaskRecipe<V> {
+    static final class Builder<V> implements PluginTaskRecipe<V> {
 
         private final SimplePluginScheduler scheduler;
         private final MindustryPlugin plugin;

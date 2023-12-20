@@ -48,7 +48,10 @@ public interface PluginScheduler {
      * @param plugin the plugin to schedule the task for.
      * @param value  the initial value.
      * @return a new {@link PluginTaskRecipe} instance.
+     * @deprecated The recipe API is awful given the better alternatives such as completable futures, coroutines,
+     *             or even the structured concurrency API of java 21.
      */
+    @Deprecated(forRemoval = true)
     <V> PluginTaskRecipe<V> recipe(final MindustryPlugin plugin, final V value);
 
     /**

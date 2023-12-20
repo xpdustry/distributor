@@ -72,6 +72,7 @@ public final class SimplePluginScheduler implements PluginScheduler, PluginListe
         return new SimplePluginTask.Builder(this, plugin, false);
     }
 
+    @SuppressWarnings("removal")
     @Override
     public <V> PluginTaskRecipe<V> recipe(final MindustryPlugin plugin, final V value) {
         return new RecipePluginTask.Builder<>(this, plugin, value, new ArrayList<>());

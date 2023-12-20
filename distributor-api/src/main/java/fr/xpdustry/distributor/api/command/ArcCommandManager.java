@@ -248,7 +248,10 @@ public class ArcCommandManager<C> extends CommandManager<C> implements PluginAwa
      * @param value the initial value of the recipe, usually a {@link cloud.commandframework.context.CommandContext
      *              command context}
      * @return the created recipe
+     * @deprecated see {@link fr.xpdustry.distributor.api.scheduler.PluginScheduler#recipe(MindustryPlugin, Object)}
      */
+    @SuppressWarnings("removal")
+    @Deprecated
     public final <V> PluginTaskRecipe<V> recipe(final V value) {
         return DistributorProvider.get().getPluginScheduler().recipe(this.plugin, value);
     }

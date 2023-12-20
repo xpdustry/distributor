@@ -28,7 +28,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface LocalizationSource {
 
     /**
-     * Returns a {@code LocalizationSource} for the router language :^).
+     * Returns a {@code LocalizationSource} for the router language {@code :^)}.
      */
     static LocalizationSource router() {
         return RouterLocalizationSource.INSTANCE;

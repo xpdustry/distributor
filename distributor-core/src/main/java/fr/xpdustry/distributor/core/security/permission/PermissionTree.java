@@ -80,7 +80,7 @@ public final class PermissionTree {
             }
             node.value = state;
             var index = parts.length - 1;
-            while (node.parent != null && node.children.size() == 0) {
+            while (node.parent != null && node.children.isEmpty()) {
                 node = node.parent;
                 node.children.remove(parts[index--]);
             }
