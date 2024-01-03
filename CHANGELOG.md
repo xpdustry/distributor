@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v3.3.0 - 2024-01-03
 
-### Features
+### Features
 
 - Moved plugin annotation parsing to dedicated class (`PluginAnnotationParser`).
 
