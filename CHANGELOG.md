@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v3.3.0 - 2024-01-03
+
+### Features
+
+- Moved plugin annotation parsing to dedicated class (`PluginAnnotationParser`).
+
+### Bugfixes
+
+- Add missing translation for `argument.parse.failure.duration`.
+- Fixed annotation parsing failing for package private classes.
+- Fixed `ArcLoggerFactory` not taking into account common logger wrappers.
+
+### Deprecated
+
+- Scheduled `EventBus#parse`, `ArcCommandManager#recipe` and `PluginScheduler#recipe` for removal.
+
 ## v3.2.1 - 2023-11-13
 
 ### Bugfixes
