@@ -1,6 +1,6 @@
 rootProject.name = "distributor-parent"
 
-include(":distributor-bom")
-include(":distributor-api")
-include(":distributor-core")
-include(":distributor-kotlin")
+includeBuild("distributor-build-logic")
+include(":distributor-logging-simple")
+include(":distributor-common")
+include(":distributor-command-cloud")

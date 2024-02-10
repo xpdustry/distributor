@@ -36,22 +36,22 @@ jobs:
       - name: Build Artifact
         run: ./gradlew build
 
-      - name: Set up Artifact Upload
-        run: |
-          echo "CORE_ARTIFACT_PATH=$(./gradlew :distributor-core:getArtifactPath -q)" >> $GITHUB_ENV
-          echo "KOTLIN_ARTIFACT_PATH=$(./gradlew :distributor-kotlin:getArtifactPath -q)" >> $GITHUB_ENV
+      # - name: Set up Artifact Upload
+      #   run: |
+      #     echo "CORE_ARTIFACT_PATH=$(./gradlew :distributor-core:getArtifactPath -q)" >> $GITHUB_ENV
+      #     echo "KOTLIN_ARTIFACT_PATH=$(./gradlew :distributor-kotlin:getArtifactPath -q)" >> $GITHUB_ENV
 
-      - name: Upload Artifact to Actions (Core)
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.event.repository.name }}
-          path: ${{ env.CORE_ARTIFACT_PATH }}
+      # - name: Upload Artifact to Actions (Core)
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ github.event.repository.name }}
+      #     path: ${{ env.CORE_ARTIFACT_PATH }}
 
-      - name: Upload Artifact to Actions (Kotlin)
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.event.repository.name }}
-          path: ${{ env.KOTLIN_ARTIFACT_PATH }}
+      # - name: Upload Artifact to Actions (Kotlin)
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ github.event.repository.name }}
+      #     path: ${{ env.KOTLIN_ARTIFACT_PATH }}
 
       - name: Determine Status
         run: |
@@ -70,23 +70,23 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_KEY }}"
           ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.XPDUSTRY_MAVEN_SIGNING_PASSWORD }}"
 
-      - name: Upload Artifact to Release (Core)
-        if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
-        uses: svenstaro/upload-release-action@v2
-        with:
-          asset_name: distributor-core.jar
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.CORE_ARTIFACT_PATH }}
-          tag: ${{ github.ref }}
+      # - name: Upload Artifact to Release (Core)
+      #   if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     asset_name: distributor-core.jar
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: ${{ env.CORE_ARTIFACT_PATH }}
+      #     tag: ${{ github.ref }}
 
-      - name: Upload Artifact to Release (Kotlin)
-        if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
-        uses: svenstaro/upload-release-action@v2
-        with:
-          asset_name: distributor-kotlin.jar
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.KOTLIN_ARTIFACT_PATH }}
-          tag: ${{ github.ref }}
+      # - name: Upload Artifact to Release (Kotlin)
+      #   if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     asset_name: distributor-kotlin.jar
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: ${{ env.KOTLIN_ARTIFACT_PATH }}
+      #     tag: ${{ github.ref }}
 
       - name: Update Changelog
         if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
