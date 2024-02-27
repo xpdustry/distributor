@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.core.player;
 
+import arc.Core;
 import arc.util.Strings;
 import com.xpdustry.distributor.core.collection.ArcCollections;
 import java.text.Normalizer;
@@ -85,17 +86,21 @@ final class SimplePlayerLookup implements PlayerLookup {
     @Override
     public CompletableFuture<List<Administration.PlayerInfo>> findOfflinePlayers(
             final String query, final boolean admin) {
-        final Set<Administration.PlayerInfo> result = new LinkedHashSet<>();
-        for (final var online : findOnlinePlayers(query, admin)) {
-            result.add(online.getInfo());
-        }
-        if (admin && MUUID.isUuid(query)) {
-            final var info = Vars.netServer.admins.getInfoOptional(query);
-            if (info != null) {
-                result.add(info);
-            }
-        }
-        return CompletableFuture.completedFuture(List.copyOf(result));
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    final Set<Administration.PlayerInfo> result = new LinkedHashSet<>();
+                    for (final var online : findOnlinePlayers(query, admin)) {
+                        result.add(online.getInfo());
+                    }
+                    if (admin && MUUID.isUuid(query)) {
+                        final var info = Vars.netServer.admins.getInfoOptional(query);
+                        if (info != null) {
+                            result.add(info);
+                        }
+                    }
+                    return List.copyOf(result);
+                },
+                Core.app::post);
     }
 
     // https://stackoverflow.com/a/4122207

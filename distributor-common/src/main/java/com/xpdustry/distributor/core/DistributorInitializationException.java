@@ -18,9 +18,12 @@
  */
 package com.xpdustry.distributor.core;
 
-import java.util.Optional;
+/**
+ * This exception is thrown when the distributor fails to initialize.
+ */
+public final class DistributorInitializationException extends RuntimeException {
 
-public interface Distributor {
-
-    <S> Optional<S> getService(final Class<S> clazz);
+    DistributorInitializationException(final String message) {
+        super(message);
+    }
 }
