@@ -39,9 +39,11 @@ public final class PlayerInfoParser<C> implements ArgumentParser.FutureArgumentP
                 .findOfflinePlayers(query, true)
                 .thenApply(result -> {
                     if (result.isEmpty()) {
-                        return ArgumentParseResult.failure(new PlayerParser.PlayerNotFoundException(query, ctx));
+                        return ArgumentParseResult.failure(
+                                new PlayerParseException.PlayerNotFound(PlayerInfoParser.class, query, ctx));
                     } else if (result.size() > 1) {
-                        return ArgumentParseResult.failure(new PlayerParser.TooManyPlayersFoundException(query, ctx));
+                        return ArgumentParseResult.failure(
+                                new PlayerParseException.TooManyPlayers(PlayerInfoParser.class, query, ctx));
                     } else {
                         return ArgumentParseResult.success(result.get(0));
                     }
