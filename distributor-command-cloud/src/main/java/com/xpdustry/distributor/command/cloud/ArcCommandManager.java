@@ -18,14 +18,16 @@
  */
 package com.xpdustry.distributor.command.cloud;
 
+import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
+import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
+import com.xpdustry.distributor.command.cloud.parser.TeamParser;
+import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.core.command.CommandSender;
 import com.xpdustry.distributor.core.plugin.MindustryPlugin;
 import com.xpdustry.distributor.core.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import mindustry.game.Team;
-import mindustry.gen.Player;
-import mindustry.net.Administration;
 import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
@@ -57,6 +59,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
         this.registerDefaultExceptionHandlers();
 
+        /* TODO Set Distributor caption registry
         this.captionRegistry().registerProvider((caption, sender) -> {
             final var source = DistributorProvider.get().getGlobalLocalizationSource();
             final var locale =
@@ -64,6 +67,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
             final var format = source.localize(caption.getKey(), locale);
             return format != null ? format.toPattern() : "???" + caption.getKey() + "???";
         });
+         */
 
         this.captionFormatter((key, recipient, caption, variables) -> {
             final var arguments = variables.toArray();
@@ -76,24 +80,18 @@ public class ArcCommandManager<C> extends CommandManager<C>
         });
 
         this.parserRegistry()
+                .registerParser(PlayerParser.playerParser())
+                .registerParser(PlayerInfoParser.playerInfoParser());
+
+        this.parserRegistry()
                 .registerAnnotationMapper(
                         AllTeams.class,
                         (annotation, typeToken) ->
-                                ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamMode.ALL));
-
-        this.parserRegistry()
-                .registerParserSupplier(TypeToken.get(Player.class), params -> new PlayerArgument.PlayerParser<>());
-
-        this.parserRegistry()
-                .registerParserSupplier(
-                        TypeToken.get(Administration.PlayerInfo.class),
-                        params -> new PlayerInfoArgument.PlayerInfoParser<>());
-
-        this.parserRegistry()
+                                ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamParser.TeamMode.ALL))
                 .registerParserSupplier(
                         TypeToken.get(Team.class),
-                        params -> new TeamArgument.TeamParser<>(
-                                params.get(ArcParserParameters.TEAM_MODE, TeamMode.BASE)));
+                        params ->
+                                new TeamParser<>(params.get(ArcParserParameters.TEAM_MODE, TeamParser.TeamMode.BASE)));
     }
 
     @Override

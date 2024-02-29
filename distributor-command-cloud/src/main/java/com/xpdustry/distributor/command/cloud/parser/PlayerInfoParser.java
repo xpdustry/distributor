@@ -18,16 +18,33 @@
  */
 package com.xpdustry.distributor.command.cloud.parser;
 
+import arc.Core;
 import com.xpdustry.distributor.core.DistributorProvider;
+import com.xpdustry.distributor.core.collection.ArcCollections;
 import com.xpdustry.distributor.core.player.PlayerLookup;
 import java.util.concurrent.CompletableFuture;
+import mindustry.gen.Groups;
+import mindustry.gen.Player;
 import mindustry.net.Administration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
+import org.incendo.cloud.parser.ParserDescriptor;
+import org.incendo.cloud.suggestion.Suggestion;
+import org.incendo.cloud.suggestion.SuggestionProvider;
 
 public final class PlayerInfoParser<C> implements ArgumentParser.FutureArgumentParser<C, Administration.PlayerInfo> {
+
+    public static <C> ParserDescriptor<C, Administration.PlayerInfo> playerInfoParser() {
+        return ParserDescriptor.of(new PlayerInfoParser<>(), Administration.PlayerInfo.class);
+    }
+
+    public static <C> CommandComponent.Builder<C, Administration.PlayerInfo> playerInfoComponent() {
+        return CommandComponent.<C, Administration.PlayerInfo>builder().parser(playerInfoParser());
+    }
 
     @Override
     public CompletableFuture<ArgumentParseResult<Administration.PlayerInfo>> parseFuture(
@@ -48,5 +65,15 @@ public final class PlayerInfoParser<C> implements ArgumentParser.FutureArgumentP
                         return ArgumentParseResult.success(result.get(0));
                     }
                 });
+    }
+
+    @Override
+    public @NonNull SuggestionProvider<C> suggestionProvider() {
+        return (ctx, input) -> CompletableFuture.supplyAsync(
+                () -> ArcCollections.immutableList(Groups.player).stream()
+                        .map(Player::plainName)
+                        .map(Suggestion::simple)
+                        .toList(),
+                Core.app::post);
     }
 }

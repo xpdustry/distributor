@@ -20,16 +20,30 @@ package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.Core;
 import com.xpdustry.distributor.core.DistributorProvider;
+import com.xpdustry.distributor.core.collection.ArcCollections;
 import com.xpdustry.distributor.core.player.PlayerLookup;
 import java.util.concurrent.CompletableFuture;
+import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
+import org.incendo.cloud.parser.ParserDescriptor;
+import org.incendo.cloud.suggestion.Suggestion;
+import org.incendo.cloud.suggestion.SuggestionProvider;
 
 public final class PlayerParser<C> implements ArgumentParser<C, Player> {
+
+    public static <C> ParserDescriptor<C, Player> playerParser() {
+        return ParserDescriptor.of(new PlayerParser<>(), Player.class);
+    }
+
+    public static <C> CommandComponent.Builder<C, Player> playerComponent() {
+        return CommandComponent.<C, Player>builder().parser(playerParser());
+    }
 
     @Override
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
@@ -51,5 +65,15 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     public @NonNull CompletableFuture<@NonNull ArgumentParseResult<Player>> parseFuture(
             final CommandContext<C> ctx, final CommandInput input) {
         return CompletableFuture.supplyAsync(() -> this.parse(ctx, input), Core.app::post);
+    }
+
+    @Override
+    public @NonNull SuggestionProvider<C> suggestionProvider() {
+        return (ctx, input) -> CompletableFuture.supplyAsync(
+                () -> ArcCollections.immutableList(Groups.player).stream()
+                        .map(Player::plainName)
+                        .map(Suggestion::simple)
+                        .toList(),
+                Core.app::post);
     }
 }

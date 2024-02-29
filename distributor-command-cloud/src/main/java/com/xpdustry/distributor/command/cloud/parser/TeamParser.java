@@ -27,11 +27,13 @@ import java.util.stream.Collectors;
 import mindustry.game.Team;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.caption.CaptionVariable;
+import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
+import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
 public final class TeamParser<C> implements ArgumentParser<C, Team> {
@@ -41,6 +43,18 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
 
     private static final Map<String, Team> ALL_TEAMS = Arrays.stream(Team.all)
             .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
+
+    public static <C> ParserDescriptor<C, Team> teamParser() {
+        return teamParser(TeamMode.BASE);
+    }
+
+    public static <C> @NonNull ParserDescriptor<C, Team> teamParser(final TeamMode teamMode) {
+        return ParserDescriptor.of(new TeamParser<>(teamMode), Team.class);
+    }
+
+    public static <C> CommandComponent.Builder<C, Team> teamComponent() {
+        return CommandComponent.<C, Team>builder().parser(teamParser());
+    }
 
     private final TeamMode teamMode;
 
