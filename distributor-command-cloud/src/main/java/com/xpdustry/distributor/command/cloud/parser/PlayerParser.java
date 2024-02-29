@@ -19,9 +19,8 @@
 package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.Core;
-import com.xpdustry.distributor.core.DistributorProvider;
+import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
 import com.xpdustry.distributor.core.collection.ArcCollections;
-import com.xpdustry.distributor.core.player.PlayerLookup;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
@@ -37,6 +36,13 @@ import org.incendo.cloud.suggestion.SuggestionProvider;
 
 public final class PlayerParser<C> implements ArgumentParser<C, Player> {
 
+    static SuggestionProvider<?> SUGGESTION_PROVIDER = (ctx, input) -> CompletableFuture.supplyAsync(
+            () -> ArcCollections.immutableList(Groups.player).stream()
+                    .map(Player::plainName)
+                    .map(Suggestion::simple)
+                    .toList(),
+            Core.app::post);
+
     public static <C> ParserDescriptor<C, Player> playerParser() {
         return ParserDescriptor.of(new PlayerParser<>(), Player.class);
     }
@@ -48,16 +54,14 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     @Override
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var query = input.readString();
-        final var result = DistributorProvider.get()
-                .getService(PlayerLookup.class)
-                .orElseThrow()
-                .findOnlinePlayers(query, true);
-        if (result.isEmpty()) {
+        final var players =
+                PlayerLookup.findOnlinePlayers(query, ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false));
+        if (players.isEmpty()) {
             return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(PlayerParser.class, query, ctx));
-        } else if (result.size() > 1) {
+        } else if (players.size() > 1) {
             return ArgumentParseResult.failure(new PlayerParseException.TooManyPlayers(PlayerParser.class, query, ctx));
         } else {
-            return ArgumentParseResult.success(result.get(0));
+            return ArgumentParseResult.success(players.iterator().next());
         }
     }
 
@@ -67,13 +71,9 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
         return CompletableFuture.supplyAsync(() -> this.parse(ctx, input), Core.app::post);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @NonNull SuggestionProvider<C> suggestionProvider() {
-        return (ctx, input) -> CompletableFuture.supplyAsync(
-                () -> ArcCollections.immutableList(Groups.player).stream()
-                        .map(Player::plainName)
-                        .map(Suggestion::simple)
-                        .toList(),
-                Core.app::post);
+        return (SuggestionProvider<C>) SUGGESTION_PROVIDER;
     }
 }

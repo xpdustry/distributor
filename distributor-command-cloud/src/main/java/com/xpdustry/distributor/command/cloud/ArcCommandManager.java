@@ -92,6 +92,15 @@ public class ArcCommandManager<C> extends CommandManager<C>
                         TypeToken.get(Team.class),
                         params ->
                                 new TeamParser<>(params.get(ArcParserParameters.TEAM_MODE, TeamParser.TeamMode.BASE)));
+
+        this.registerCommandPreProcessor(ctx -> {
+            final var reversed =
+                    this.senderMapper().reverse(ctx.commandContext().sender());
+            ctx.commandContext()
+                    .store(
+                            ArcCommandContextKeys.MINDUSTRY_ADMIN,
+                            reversed.isServer() || reversed.getPlayer().admin());
+        });
     }
 
     @Override

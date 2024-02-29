@@ -18,13 +18,7 @@
  */
 package com.xpdustry.distributor.command.cloud.parser;
 
-import arc.Core;
-import com.xpdustry.distributor.core.DistributorProvider;
-import com.xpdustry.distributor.core.collection.ArcCollections;
-import com.xpdustry.distributor.core.player.PlayerLookup;
-import java.util.concurrent.CompletableFuture;
-import mindustry.gen.Groups;
-import mindustry.gen.Player;
+import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
 import mindustry.net.Administration;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.component.CommandComponent;
@@ -33,10 +27,9 @@ import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
-import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
-public final class PlayerInfoParser<C> implements ArgumentParser.FutureArgumentParser<C, Administration.PlayerInfo> {
+public final class PlayerInfoParser<C> implements ArgumentParser<C, Administration.PlayerInfo> {
 
     public static <C> ParserDescriptor<C, Administration.PlayerInfo> playerInfoParser() {
         return ParserDescriptor.of(new PlayerInfoParser<>(), Administration.PlayerInfo.class);
@@ -47,33 +40,24 @@ public final class PlayerInfoParser<C> implements ArgumentParser.FutureArgumentP
     }
 
     @Override
-    public CompletableFuture<ArgumentParseResult<Administration.PlayerInfo>> parseFuture(
-            final CommandContext<C> ctx, final CommandInput input) {
+    public ArgumentParseResult<Administration.PlayerInfo> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var query = input.readString();
-        return DistributorProvider.get()
-                .getService(PlayerLookup.class)
-                .orElseThrow()
-                .findOfflinePlayers(query, true)
-                .thenApply(result -> {
-                    if (result.isEmpty()) {
-                        return ArgumentParseResult.failure(
-                                new PlayerParseException.PlayerNotFound(PlayerInfoParser.class, query, ctx));
-                    } else if (result.size() > 1) {
-                        return ArgumentParseResult.failure(
-                                new PlayerParseException.TooManyPlayers(PlayerInfoParser.class, query, ctx));
-                    } else {
-                        return ArgumentParseResult.success(result.get(0));
-                    }
-                });
+        final var result =
+                PlayerLookup.findOfflinePlayers(query, ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false));
+        if (result.isEmpty()) {
+            return ArgumentParseResult.failure(
+                    new PlayerParseException.PlayerNotFound(PlayerInfoParser.class, query, ctx));
+        } else if (result.size() > 1) {
+            return ArgumentParseResult.failure(
+                    new PlayerParseException.TooManyPlayers(PlayerInfoParser.class, query, ctx));
+        } else {
+            return ArgumentParseResult.success(result.iterator().next());
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @NonNull SuggestionProvider<C> suggestionProvider() {
-        return (ctx, input) -> CompletableFuture.supplyAsync(
-                () -> ArcCollections.immutableList(Groups.player).stream()
-                        .map(Player::plainName)
-                        .map(Suggestion::simple)
-                        .toList(),
-                Core.app::post);
+        return (SuggestionProvider<C>) PlayerParser.SUGGESTION_PROVIDER;
     }
 }

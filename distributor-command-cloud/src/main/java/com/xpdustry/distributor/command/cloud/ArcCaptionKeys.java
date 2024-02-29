@@ -31,7 +31,7 @@ import org.incendo.cloud.caption.StandardCaptionKeys;
  */
 public final class ArcCaptionKeys {
 
-    private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(7);
+    private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(3);
 
     /**
      * Variables: {@code {input}}.
@@ -47,26 +47,6 @@ public final class ArcCaptionKeys {
      * Variables: {@code {input}}, {@code {teamMode}}.
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_TEAM = of("argument.parse.failure.team");
-
-    /**
-     * Variables: {@code {syntax}}.
-     */
-    public static final Caption COMMAND_INVALID_SYNTAX = of("command.invalid.syntax");
-
-    /**
-     * Variables: {@code {permission}}.
-     */
-    public static final Caption COMMAND_INVALID_PERMISSION = of("command.invalid.permission");
-
-    /**
-     * Variables: {@code {command}}.
-     */
-    public static final Caption COMMAND_FAILURE_NO_SUCH_COMMAND = of("command.failure.no_such_command");
-
-    /**
-     * Variables: {@code {message}}.
-     */
-    public static final Caption COMMAND_FAILURE_EXECUTION = of("command.failure.execution");
 
     private ArcCaptionKeys() {}
 

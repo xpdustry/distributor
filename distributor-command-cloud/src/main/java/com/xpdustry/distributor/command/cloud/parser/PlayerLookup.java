@@ -16,37 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.core.player;
+package com.xpdustry.distributor.command.cloud.parser;
 
-import arc.Core;
 import arc.util.Strings;
 import com.xpdustry.distributor.core.collection.ArcCollections;
+import com.xpdustry.distributor.core.player.MUUID;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import mindustry.Vars;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
 
-final class SimplePlayerLookup implements PlayerLookup {
+final class PlayerLookup {
 
-    static final SimplePlayerLookup INSTANCE = new SimplePlayerLookup();
-
-    /**
-     * Finds online players their its name, UUID or entity ID.
-     *
-     * @param query the query
-     * @param admin  whether the query should also search by sensitive IDs such as MUUID
-     * @return the list player of matching players
-     */
-    @Override
-    public List<Player> findOnlinePlayers(final String query, final boolean admin) {
+    public static Collection<Player> findOnlinePlayers(final String query, final boolean admin) {
         if (query.startsWith("#")) {
             final var id = Strings.parseInt(query.substring(1), -1);
             final var players = ArcCollections.immutableList(Groups.player).stream()
@@ -83,24 +73,18 @@ final class SimplePlayerLookup implements PlayerLookup {
         return matches == 1 ? Collections.singletonList(match) : Collections.unmodifiableList(result);
     }
 
-    @Override
-    public CompletableFuture<List<Administration.PlayerInfo>> findOfflinePlayers(
-            final String query, final boolean admin) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    final Set<Administration.PlayerInfo> result = new LinkedHashSet<>();
-                    for (final var online : findOnlinePlayers(query, admin)) {
-                        result.add(online.getInfo());
-                    }
-                    if (admin && MUUID.isUuid(query)) {
-                        final var info = Vars.netServer.admins.getInfoOptional(query);
-                        if (info != null) {
-                            result.add(info);
-                        }
-                    }
-                    return List.copyOf(result);
-                },
-                Core.app::post);
+    static Collection<Administration.PlayerInfo> findOfflinePlayers(final String query, final boolean admin) {
+        final Set<Administration.PlayerInfo> result = new LinkedHashSet<>();
+        for (final var online : findOnlinePlayers(query, admin)) {
+            result.add(online.getInfo());
+        }
+        if (admin && MUUID.isUuid(query)) {
+            final var info = Vars.netServer.admins.getInfoOptional(query);
+            if (info != null) {
+                result.add(info);
+            }
+        }
+        return Collections.unmodifiableSet(result);
     }
 
     // https://stackoverflow.com/a/4122207

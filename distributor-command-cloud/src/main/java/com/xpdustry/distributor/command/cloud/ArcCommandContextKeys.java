@@ -16,20 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.core.player;
+package com.xpdustry.distributor.command.cloud;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import mindustry.gen.Player;
-import mindustry.net.Administration;
+import io.leangen.geantyref.TypeToken;
+import org.incendo.cloud.key.CloudKey;
 
-public interface PlayerLookup {
+public final class ArcCommandContextKeys {
 
-    static PlayerLookup simple() {
-        return SimplePlayerLookup.INSTANCE;
-    }
+    public static final CloudKey<Boolean> MINDUSTRY_ADMIN =
+            CloudKey.of("mindustry:admin", TypeToken.get(Boolean.class));
 
-    List<Player> findOnlinePlayers(final String query, final boolean admin);
-
-    CompletableFuture<List<Administration.PlayerInfo>> findOfflinePlayers(final String query, final boolean admin);
+    private ArcCommandContextKeys() {}
 }

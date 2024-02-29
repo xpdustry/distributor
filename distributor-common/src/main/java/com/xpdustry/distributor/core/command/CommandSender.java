@@ -37,6 +37,11 @@ public interface CommandSender {
             public boolean isServer() {
                 return false;
             }
+
+            @Override
+            public Player getPlayer() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 
@@ -51,10 +56,17 @@ public interface CommandSender {
             public boolean isServer() {
                 return true;
             }
+
+            @Override
+            public Player getPlayer() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 
     boolean isPlayer();
 
     boolean isServer();
+
+    Player getPlayer();
 }
