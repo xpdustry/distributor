@@ -22,7 +22,9 @@ import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
+import com.xpdustry.distributor.core.DistributorProvider;
 import com.xpdustry.distributor.core.command.CommandSender;
+import com.xpdustry.distributor.core.permission.PermissionManager;
 import com.xpdustry.distributor.core.plugin.MindustryPlugin;
 import com.xpdustry.distributor.core.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
@@ -105,7 +107,16 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
     @Override
     public boolean hasPermission(final @NonNull C sender, final String permission) {
-        return permission.isEmpty() || senderMapper().reverse(sender).isServer(); // TODO Add permission
+        if (permission.isEmpty()) {
+            return true;
+        }
+        final var reversed = senderMapper().reverse(sender);
+        return reversed.isServer()
+                || DistributorProvider.get()
+                        .getService(PermissionManager.class)
+                        .orElseThrow()
+                        .getPermission(reversed.getPlayer(), permission)
+                        .asBoolean();
     }
 
     @Override
