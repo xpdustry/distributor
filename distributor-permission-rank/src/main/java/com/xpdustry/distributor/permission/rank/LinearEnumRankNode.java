@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.permission.rank;
 
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
@@ -36,8 +36,7 @@ record LinearEnumRankNode<E extends Enum<E>>(E value, Function<E, String> namePr
 
     @Override
     public @Nullable EnumRankNode<E> getPrevious() {
-        @SuppressWarnings("unchecked")
-        final var constants = (E[]) this.value.getClass().getEnumConstants();
+        final var constants = this.value.getDeclaringClass().getEnumConstants();
         if (this.ascending) {
             return (this.value.ordinal() > 0)
                     ? new LinearEnumRankNode<>(constants[this.value.ordinal() - 1], this.nameProvider, true)

@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.core.util;
 
-import java.util.Collection;
-import mindustry.gen.Player;
-
-public interface RankProvider {
-
-    Collection<RankNode> getRanks(final Player player);
+public enum Priority {
+    HIGHEST,
+    HIGH,
+    NORMAL,
+    LOW,
+    LOWEST
 }

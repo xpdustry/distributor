@@ -24,7 +24,6 @@ import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.core.DistributorProvider;
 import com.xpdustry.distributor.core.command.CommandSender;
-import com.xpdustry.distributor.core.permission.PermissionManager;
 import com.xpdustry.distributor.core.plugin.MindustryPlugin;
 import com.xpdustry.distributor.core.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
@@ -113,8 +112,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
         final var reversed = senderMapper().reverse(sender);
         return reversed.isServer()
                 || DistributorProvider.get()
-                        .getService(PermissionManager.class)
-                        .orElseThrow()
+                        .getPermissionManager()
                         .getPermission(reversed.getPlayer(), permission)
                         .asBoolean();
     }

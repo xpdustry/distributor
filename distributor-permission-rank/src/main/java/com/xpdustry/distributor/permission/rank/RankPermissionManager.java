@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.permission.rank;
 
 import com.xpdustry.distributor.core.permission.PermissionManager;
 import com.xpdustry.distributor.core.permission.TriState;
@@ -24,8 +24,8 @@ import mindustry.gen.Player;
 
 final class RankPermissionManager implements PermissionManager {
 
-    private RankProvider provider;
-    private RankPermissionStorage storage;
+    private final RankProvider provider;
+    private final RankPermissionStorage storage;
 
     RankPermissionManager(final RankProvider provider, final RankPermissionStorage storage) {
         this.provider = provider;

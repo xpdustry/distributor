@@ -16,14 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.core;
+package com.xpdustry.distributor.permission.rank;
 
-import com.xpdustry.distributor.core.permission.PermissionManager;
-import com.xpdustry.distributor.core.service.ServiceManager;
+import com.xpdustry.distributor.core.permission.PermissionTree;
 
-public interface Distributor {
+public interface RankPermissionStorage {
 
-    ServiceManager getServiceManager();
-
-    PermissionManager getPermissionManager();
+    PermissionTree getRankPermissions(final RankNode node);
 }

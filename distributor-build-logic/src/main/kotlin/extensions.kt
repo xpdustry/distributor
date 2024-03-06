@@ -13,5 +13,7 @@ open class DistributorModuleExtension(project: Project) {
     val display = project.objects.property(String::class.java)
     val main = project.objects.property(String::class.java)
     val description = project.objects.property(String::class.java)
+
+    // TODO Does not handle transitive dependencies, FIX IT
     val dependencies = project.objects.setProperty(Project::class.java)
 }

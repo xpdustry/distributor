@@ -37,6 +37,7 @@ final class SimplePermissionTree implements PermissionTree {
         this.parent = parent;
     }
 
+    @Override
     public TriState getPermission(final String permission) {
         if (!PermissionManager.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
@@ -57,6 +58,7 @@ final class SimplePermissionTree implements PermissionTree {
         return state;
     }
 
+    @Override
     public void setPermission(final String permission, final TriState state) {
         if (!PermissionManager.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
@@ -85,6 +87,7 @@ final class SimplePermissionTree implements PermissionTree {
         }
     }
 
+    @Override
     public Map<String, Boolean> getPermissions() {
         final Map<String, Boolean> permissions = new HashMap<>();
         for (final var child : this.children.entrySet()) {

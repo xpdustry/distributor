@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.permission.rank;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Collection;
+import mindustry.gen.Player;
 
-public interface RankNode {
+public interface RankProvider {
 
-    String getName();
-
-    @Nullable RankNode getPrevious();
+    Collection<RankNode> getRanks(final Player player);
 }

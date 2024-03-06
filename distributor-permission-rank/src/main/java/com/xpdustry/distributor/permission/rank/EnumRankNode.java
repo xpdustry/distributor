@@ -16,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.permission.rank;
 
-import com.xpdustry.distributor.core.permission.PermissionTree;
+import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 
-public interface RankPermissionStorage {
+public interface EnumRankNode<E extends Enum<E>> extends RankNode {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    static <E extends Enum<E>> RankNode linear(
+            final E value, final Function<E, String> nameProvider, boolean ascending) {
+        return new LinearEnumRankNode<>(value, nameProvider, ascending);
+    }
+
+    E getValue();
+
+    @Override
+    @Nullable EnumRankNode<E> getPrevious();
 }

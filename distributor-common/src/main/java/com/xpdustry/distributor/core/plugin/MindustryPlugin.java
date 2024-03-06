@@ -40,7 +40,7 @@ public interface MindustryPlugin {
     }
 
     /**
-     * Called after the plugin instance creation.
+     * Called after the plugin factory creation.
      * Initialize your plugin here.
      * <p>
      * <strong>Warning: </strong> Only call other plugins in this method if they use Distributor too.

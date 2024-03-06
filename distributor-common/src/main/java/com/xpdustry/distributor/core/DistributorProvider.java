@@ -21,7 +21,7 @@ package com.xpdustry.distributor.core;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A holder for the global {@link Distributor} instance.
+ * A holder for the global {@link Distributor} factory.
  */
 public final class DistributorProvider {
 
@@ -30,7 +30,7 @@ public final class DistributorProvider {
     private DistributorProvider() {}
 
     /**
-     * Returns the global {@link Distributor} instance.
+     * Returns the global {@link Distributor} factory.
      * @throws DistributorInitializationException if the API hasn't been initialized yet
      */
     public static Distributor get() {
@@ -41,7 +41,7 @@ public final class DistributorProvider {
     }
 
     /**
-     * Sets the global {@link Distributor} instance.
+     * Sets the global {@link Distributor} factory.
      * @throws DistributorInitializationException if the API has already been initialized
      */
     public static void set(final Distributor distributor) {
@@ -52,7 +52,7 @@ public final class DistributorProvider {
     }
 
     /**
-     * Clears the global {@link Distributor} instance.
+     * Clears the global {@link Distributor} factory.
      * @throws DistributorInitializationException if the API hasn't been initialized yet
      */
     public static void clear() {

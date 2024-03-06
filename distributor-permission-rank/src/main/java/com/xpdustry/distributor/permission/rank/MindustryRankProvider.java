@@ -16,20 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.permission.rank;
 
-import java.util.function.Function;
-import org.jspecify.annotations.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
+import mindustry.gen.Player;
 
-public interface EnumRankNode<E extends Enum<E>> extends RankNode {
-
-    static <E extends Enum<E>> RankNode linear(
-            final E value, final Function<E, String> nameProvider, boolean ascending) {
-        return new LinearEnumRankNode<>(value, nameProvider, ascending);
-    }
-
-    E getValue();
+final class MindustryRankProvider implements RankProvider {
 
     @Override
-    @Nullable EnumRankNode<E> getPrevious();
+    public Collection<RankNode> getRanks(final Player player) {
+        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
+        return Collections.singleton(
+                EnumRankNode.linear(rank, r -> "mindustry:" + r.name().toLowerCase(Locale.ROOT), true));
+    }
+
+    private enum MindustryRank {
+        PLAYER,
+        ADMIN
+    }
 }

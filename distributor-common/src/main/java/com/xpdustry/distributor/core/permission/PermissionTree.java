@@ -26,6 +26,10 @@ public interface PermissionTree {
         return new SimplePermissionTree();
     }
 
+    static PermissionTree empty() {
+        return EmptyPermissionTree.INSTANCE;
+    }
+
     static PermissionTree immutable(final PermissionTree tree) {
         return (tree instanceof ImmutablePermissionTree) ? tree : new ImmutablePermissionTree(tree);
     }

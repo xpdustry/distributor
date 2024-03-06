@@ -18,6 +18,38 @@
  */
 package com.xpdustry.distributor.core;
 
+import com.xpdustry.distributor.core.permission.PermissionManager;
 import com.xpdustry.distributor.core.plugin.AbstractMindustryPlugin;
+import com.xpdustry.distributor.core.service.ServiceManager;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
-public final class DistributorCorePlugin extends AbstractMindustryPlugin {}
+public final class DistributorCorePlugin extends AbstractMindustryPlugin implements Distributor {
+
+    private final ServiceManager services = ServiceManager.simple();
+    private @Nullable PermissionManager permissions = null;
+
+    @Override
+    public ServiceManager getServiceManager() {
+        return this.services;
+    }
+
+    @Override
+    public PermissionManager getPermissionManager() {
+        return Objects.requireNonNull(permissions, notInitialized("permission"));
+    }
+
+    @Override
+    public void onInit() {
+        DistributorProvider.set(this);
+    }
+
+    @Override
+    public void onLoad() {
+        this.permissions = services.provide(PermissionManager.class);
+    }
+
+    private String notInitialized(final String subsystem) {
+        return String.format("The \"%s\" subsystem is not initialized yet.", subsystem);
+    }
+}
