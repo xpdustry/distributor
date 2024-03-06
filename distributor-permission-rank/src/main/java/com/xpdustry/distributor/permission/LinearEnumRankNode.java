@@ -22,24 +22,29 @@ import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 
 record LinearEnumRankNode<E extends Enum<E>>(E value, Function<E, String> nameProvider, boolean ascending)
-        implements RankNode {
+        implements EnumRankNode<E> {
 
     @Override
     public String getName() {
-        return nameProvider.apply(value);
+        return this.nameProvider.apply(this.value);
     }
 
     @Override
-    public @Nullable RankNode getPrevious() {
+    public E getValue() {
+        return this.value;
+    }
+
+    @Override
+    public @Nullable EnumRankNode<E> getPrevious() {
         @SuppressWarnings("unchecked")
-        final var constants = (E[]) value.getClass().getEnumConstants();
-        if (ascending) {
-            return (value.ordinal() > 0)
-                    ? new LinearEnumRankNode<>(constants[value.ordinal() - 1], nameProvider, true)
+        final var constants = (E[]) this.value.getClass().getEnumConstants();
+        if (this.ascending) {
+            return (this.value.ordinal() > 0)
+                    ? new LinearEnumRankNode<>(constants[this.value.ordinal() - 1], this.nameProvider, true)
                     : null;
         } else {
-            return (value.ordinal() + 1 < constants.length)
-                    ? new LinearEnumRankNode<>(constants[value.ordinal() + 1], nameProvider, false)
+            return (this.value.ordinal() + 1 < constants.length)
+                    ? new LinearEnumRankNode<>(constants[this.value.ordinal() + 1], this.nameProvider, false)
                     : null;
         }
     }

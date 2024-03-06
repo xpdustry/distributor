@@ -18,11 +18,6 @@
  */
 package com.xpdustry.distributor.permission;
 
-import org.jspecify.annotations.Nullable;
+import com.xpdustry.distributor.core.plugin.AbstractMindustryPlugin;
 
-public interface RankNode {
-
-    String getName();
-
-    @Nullable RankNode getPrevious();
-}
+public final class DistributorPermissionRankPlugin extends AbstractMindustryPlugin {}

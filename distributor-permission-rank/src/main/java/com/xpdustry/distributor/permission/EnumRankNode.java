@@ -18,11 +18,18 @@
  */
 package com.xpdustry.distributor.permission;
 
+import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 
-public interface RankNode {
+public interface EnumRankNode<E extends Enum<E>> extends RankNode {
 
-    String getName();
+    static <E extends Enum<E>> RankNode linear(
+            final E value, final Function<E, String> nameProvider, boolean ascending) {
+        return new LinearEnumRankNode<>(value, nameProvider, ascending);
+    }
 
-    @Nullable RankNode getPrevious();
+    E getValue();
+
+    @Override
+    @Nullable EnumRankNode<E> getPrevious();
 }

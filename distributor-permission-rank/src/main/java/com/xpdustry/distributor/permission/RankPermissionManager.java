@@ -22,12 +22,12 @@ import com.xpdustry.distributor.core.permission.PermissionManager;
 import com.xpdustry.distributor.core.permission.TriState;
 import mindustry.gen.Player;
 
-final class SimpleRankPermissionManager implements PermissionManager {
+final class RankPermissionManager implements PermissionManager {
 
     private RankProvider provider;
     private RankPermissionStorage storage;
 
-    SimpleRankPermissionManager(final RankProvider provider, final RankPermissionStorage storage) {
+    RankPermissionManager(final RankProvider provider, final RankPermissionStorage storage) {
         this.provider = provider;
         this.storage = storage;
     }

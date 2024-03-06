@@ -4,10 +4,10 @@ plugins {
 }
 
 module {
-    identifier = "distributor-permission"
-    display = "DistributorLoggerSimple"
-    main = "com.xpdustry.distributor.logger.simple.DistributorLoggerPlugin"
-    description = "Simple permission system based on linear ranks."
+    identifier = "distributor-permission-rank"
+    display = "DistributorPermissionRank"
+    main = "com.xpdustry.distributor.permission.rank.DistributorPermissionRankPlugin"
+    description = "Simple permission system based on ranks."
 }
 
 dependencies {
