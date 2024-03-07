@@ -27,6 +27,7 @@ import org.incendo.cloud.exception.parsing.ParserException;
 /**
  * An exception thrown when a parsing error occurs while searching for a player.
  */
+@SuppressWarnings("serial")
 public sealed class PlayerParseException extends ParserException {
 
     private final String input;
@@ -54,6 +55,7 @@ public sealed class PlayerParseException extends ParserException {
     /**
      * An exception thrown when too many players are found for the given input.
      */
+    @SuppressWarnings("serial")
     public static final class TooManyPlayers extends PlayerParseException {
 
         /**
@@ -70,6 +72,7 @@ public sealed class PlayerParseException extends ParserException {
     /**
      * An exception thrown when no player was found for the given input.
      */
+    @SuppressWarnings("serial")
     public static final class PlayerNotFound extends PlayerParseException {
 
         /**

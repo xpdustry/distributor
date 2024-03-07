@@ -103,6 +103,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
     /**
      * Exception thrown when a team cannot be found for the given input and {@link TeamMode}.
      */
+    @SuppressWarnings("serial")
     public static final class TeamParseException extends ParserException {
 
         private final String input;

@@ -48,6 +48,11 @@ public final class ArcCaptionKeys {
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_TEAM = of("argument.parse.failure.team");
 
+    /**
+     * Variables: {@code {input}}, {@code {type}}.
+     */
+    public static final Caption ARGUMENT_PARSE_FAILURE_CONTENT = of("argument.parse.failure.content");
+
     private ArcCaptionKeys() {}
 
     private static Caption of(final String key) {
