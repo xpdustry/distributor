@@ -18,12 +18,15 @@
  */
 package com.xpdustry.distributor.common;
 
+import com.xpdustry.distributor.common.command.CommandFacade;
 import com.xpdustry.distributor.common.permission.PermissionManager;
 import com.xpdustry.distributor.common.service.ServiceManager;
 
 public interface Distributor {
 
     ServiceManager getServiceManager();
+
+    CommandFacade.Factory getCommandFacadeFactory();
 
     PermissionManager getPermissionManager();
 }

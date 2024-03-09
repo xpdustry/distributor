@@ -22,11 +22,7 @@ import arc.util.CommandHandler;
 
 final class SimpleCommandFacadeFactory implements CommandFacade.Factory {
 
-    private static final SimpleCommandFacadeFactory INSTANCE = new SimpleCommandFacadeFactory();
-
-    static SimpleCommandFacadeFactory getInstance() {
-        return INSTANCE;
-    }
+    static final SimpleCommandFacadeFactory INSTANCE = new SimpleCommandFacadeFactory();
 
     @Override
     public CommandFacade create(final CommandHandler.Command command) {

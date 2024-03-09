@@ -42,6 +42,10 @@ public interface CommandFacade {
 
     interface Factory {
 
+        static Factory simple() {
+            return SimpleCommandFacadeFactory.INSTANCE;
+        }
+
         CommandFacade create(final CommandHandler.Command command);
     }
 }

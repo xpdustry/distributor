@@ -21,6 +21,7 @@ package com.xpdustry.distributor.common;
 /**
  * This exception is thrown when the distributor fails to initialize.
  */
+@SuppressWarnings("serial")
 public final class DistributorInitializationException extends RuntimeException {
 
     DistributorInitializationException(final String message) {
