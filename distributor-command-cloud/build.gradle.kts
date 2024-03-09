@@ -1,6 +1,7 @@
 plugins {
     id("distributor.base-conventions")
     id("distributor.mindustry-conventions")
+    id("distributor.publish-conventions")
 }
 
 repositories {
