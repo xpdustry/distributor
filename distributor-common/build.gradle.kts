@@ -15,5 +15,4 @@ dependencies {
     compileOnlyApi(libs.immutables)
     annotationProcessor(libs.immutables)
     compileOnlyApi(libs.slf4j.api)
-    implementation(libs.geantyref)
 }
