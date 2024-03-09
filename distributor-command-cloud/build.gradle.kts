@@ -1,6 +1,6 @@
 plugins {
-    id("distributor4.base-conventions")
-    id("distributor4.mindustry-conventions")
+    id("distributor.base-conventions")
+    id("distributor.mindustry-conventions")
 }
 
 repositories {

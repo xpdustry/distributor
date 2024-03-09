@@ -1,5 +1,5 @@
 plugins {
-    id("distributor4.parent-conventions")
+    id("distributor.parent-conventions")
 }
 
 version = "4.0.0" + if (indraGit.headTag() == null) "-SNAPSHOT" else ""
