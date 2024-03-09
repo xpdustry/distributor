@@ -20,7 +20,7 @@ package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.Core;
 import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
-import com.xpdustry.distributor.core.collection.ArcCollections;
+import com.xpdustry.distributor.common.collection.ArcCollections;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;

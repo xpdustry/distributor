@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.plugin;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+public interface PluginAnnotationParser {
 
-public interface RankPermissionStorage {
+    static PluginAnnotationParser noop(final MindustryPlugin plugin) {
+        return object -> {};
+    }
 
-    PermissionTree getRankPermissions(final RankNode node);
+    void parse(final Object object);
 }

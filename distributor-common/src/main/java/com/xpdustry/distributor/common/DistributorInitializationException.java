@@ -16,11 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+/**
+ * This exception is thrown when the distributor fails to initialize.
+ */
+public final class DistributorInitializationException extends RuntimeException {
 
-public interface RankPermissionStorage {
-
-    PermissionTree getRankPermissions(final RankNode node);
+    DistributorInitializationException(final String message) {
+        super(message);
+    }
 }

@@ -16,11 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.permission;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+import java.util.Map;
 
-public interface RankPermissionStorage {
+public interface PermissionTree {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    static PermissionTree simple() {
+        return new SimplePermissionTree();
+    }
+
+    static PermissionTree empty() {
+        return EmptyPermissionTree.INSTANCE;
+    }
+
+    static PermissionTree immutable(final PermissionTree tree) {
+        return (tree instanceof ImmutablePermissionTree) ? tree : new ImmutablePermissionTree(tree);
+    }
+
+    TriState getPermission(final String permission);
+
+    void setPermission(final String permission, final TriState state);
+
+    Map<String, Boolean> getPermissions();
 }
