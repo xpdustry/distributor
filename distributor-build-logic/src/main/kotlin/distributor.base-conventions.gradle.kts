@@ -8,6 +8,10 @@ plugins {
     id("net.ltgt.errorprone")
 }
 
+version = rootProject.version
+group = rootProject.group
+description = rootProject.description
+
 repositories {
     mavenCentral()
     maven("https://maven.xpdustry.com/mindustry") {
