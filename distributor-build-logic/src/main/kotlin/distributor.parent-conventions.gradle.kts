@@ -1,4 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("com.diffplug.spotless")
@@ -33,4 +35,11 @@ tasks.dependencyUpdates {
     rejectVersionIf {
         isNonStable(candidate.version) && !isNonStable(currentVersion)
     }
+}
+
+tasks.register<Copy>("dist") {
+    dependsOn(tasks.build)
+    from(rootProject.subprojects.filter { it.plugins.hasPlugin(ShadowJavaPlugin::class) }.map { it.tasks.named<ShadowJar>("shadowJar") })
+    into(temporaryDir)
+    rename { it.replace("-${rootProject.version}-plugin", "") }
 }
