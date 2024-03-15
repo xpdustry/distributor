@@ -7,7 +7,7 @@ plugins {
     id("fr.xpdustry.toxopid")
 }
 
-val extension = project.extensions.findOrCreateExtension<DistributorModuleExtension>("module")
+val extension = project.extensions.findOrCreateExtension<DistributorModuleExtension>(DistributorModuleExtension.EXTENSION_NAME)
 
 toxopid {
     compileVersion.set(libs.versions.mindustry)
@@ -18,17 +18,27 @@ dependencies {
     mindustryDependencies()
 }
 
+afterEvaluate {
+    dependencies {
+        for (dependency in extension.dependencies.get()) {
+            compileOnly(dependency)
+        }
+    }
+}
+
 tasks.runMindustryClient {
     mods.setFrom()
 }
 
 tasks.runMindustryServer {
     mods.from(tasks.shadowJar)
-    mods.from(extension.dependencies.map { projects -> projects.map { it.tasks.shadowJar } })
 }
 
-tasks.register("getArtifactPath") {
-    doLast { println(tasks.shadowJar.get().archiveFile.get().toString()) }
+// Cursed way to collect dependent distributor modules
+gradle.projectsEvaluated {
+    tasks.runMindustryServer {
+        mods.from(collectAllPluginDependencies())
+    }
 }
 
 tasks.shadowJar {
@@ -47,7 +57,7 @@ tasks.shadowJar {
                 hidden = true,
                 dependencies =
                     extension.dependencies.get()
-                        .map { it.extensions.getByType<DistributorModuleExtension>().identifier.get() }
+                        .map { it.dependencyProject.extensions.getByType<DistributorModuleExtension>().identifier.get() }
                         .toMutableList(),
             )
 

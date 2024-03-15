@@ -19,9 +19,9 @@
 package com.xpdustry.distributor.permission.rank;
 
 import arc.util.Log;
-import com.xpdustry.distributor.common.permission.PermissionTree;
-import com.xpdustry.distributor.common.permission.TriState;
-import com.xpdustry.distributor.common.plugin.PluginListener;
+import com.xpdustry.distributor.core.permission.PermissionTree;
+import com.xpdustry.distributor.core.permission.TriState;
+import com.xpdustry.distributor.core.plugin.PluginListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;

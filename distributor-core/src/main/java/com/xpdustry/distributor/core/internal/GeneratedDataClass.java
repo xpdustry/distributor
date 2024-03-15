@@ -16,11 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.core.internal;
 
-import com.xpdustry.distributor.core.permission.PermissionTree;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.immutables.value.Value;
 
-public interface RankPermissionStorage {
-
-    PermissionTree getRankPermissions(final RankNode node);
-}
+@Target({ElementType.PACKAGE, ElementType.TYPE})
+@Retention(RetentionPolicy.CLASS)
+@Value.Style(
+        get = {"is*", "get*"},
+        init = "set*",
+        build = "create",
+        allParameters = true,
+        visibility = Value.Style.ImplementationVisibility.PACKAGE,
+        builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
+        defaults = @Value.Immutable(copy = false, builder = false))
+public @interface GeneratedDataClass {}

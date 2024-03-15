@@ -37,7 +37,7 @@ tasks.dependencyUpdates {
     }
 }
 
-tasks.register<Copy>("dist") {
+tasks.register<Copy>("release") {
     dependsOn(tasks.build)
     from(rootProject.subprojects.filter { it.plugins.hasPlugin(ShadowJavaPlugin::class) }.map { it.tasks.named<ShadowJar>("shadowJar") })
     into(temporaryDir)

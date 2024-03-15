@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+
 plugins {
     id("net.kyori.indra.publishing")
 }
@@ -33,6 +35,14 @@ indra {
                     timezone.set("Europe/Brussels")
                 }
             }
+        }
+    }
+}
+
+plugins.withType<ShadowJavaPlugin> {
+    components.withType<AdhocComponentWithVariants>().forEach {
+        it.withVariantsFromConfiguration(project.configurations.named("shadowRuntimeElements").get()) {
+            skip()
         }
     }
 }

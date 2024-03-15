@@ -3,7 +3,7 @@ plugins {
     id("distributor.mindustry-conventions")
 }
 
-module {
+distributorModule {
     identifier = "distributor-logger"
     display = "DistributorLoggerSimple"
     main = "com.xpdustry.distributor.logger.simple.DistributorLoggerPlugin"

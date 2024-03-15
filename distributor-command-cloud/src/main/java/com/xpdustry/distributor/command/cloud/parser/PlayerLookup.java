@@ -19,8 +19,8 @@
 package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.util.Strings;
-import com.xpdustry.distributor.common.collection.ArcCollections;
-import com.xpdustry.distributor.common.player.MUUID;
+import com.xpdustry.distributor.core.collection.ArcCollections;
+import com.xpdustry.distributor.core.player.MUUID;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;

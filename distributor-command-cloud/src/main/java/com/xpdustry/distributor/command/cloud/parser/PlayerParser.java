@@ -20,7 +20,7 @@ package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.Core;
 import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
-import com.xpdustry.distributor.common.collection.ArcCollections;
+import com.xpdustry.distributor.core.collection.ArcCollections;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
@@ -39,7 +39,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     static SuggestionProvider<?> SUGGESTION_PROVIDER = (ctx, input) -> CompletableFuture.supplyAsync(
             () -> ArcCollections.immutableList(Groups.player).stream()
                     .map(Player::plainName)
-                    .map(Suggestion::simple)
+                    .map(Suggestion::suggestion)
                     .toList(),
             Core.app::post);
 

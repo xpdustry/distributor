@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.permission.rank;
 
-import com.xpdustry.distributor.common.permission.PermissionManager;
-import com.xpdustry.distributor.common.permission.TriState;
+import com.xpdustry.distributor.core.permission.PermissionManager;
+import com.xpdustry.distributor.core.permission.TriState;
 import mindustry.gen.Player;
 
 final class RankPermissionManager implements PermissionManager {

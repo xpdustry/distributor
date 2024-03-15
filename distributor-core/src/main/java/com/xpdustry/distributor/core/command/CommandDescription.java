@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.core.command;
 
-import com.xpdustry.distributor.core.permission.PermissionTree;
+public interface CommandDescription {
 
-public interface RankPermissionStorage {
+    String getText();
 
-    PermissionTree getRankPermissions(final RankNode node);
+    default String getText(final CommandSender sender) {
+        return this.getText();
+    }
 }

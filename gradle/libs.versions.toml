@@ -11,7 +11,7 @@ mindustry = "v146"
 slf4j = "2.0.12"
 
 # command
-cloud = "2.0.0-beta.3"
+cloud = "2.0.0-beta.4"
 
 # utilities
 immutables = "2.10.1"
@@ -56,7 +56,8 @@ slf4j-from-jul = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
 cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
 
 # utilities
-immutables = { module = "org.immutables:value", version.ref = "immutables" }
+immutables-processor = { module = "org.immutables:value-processor", version.ref = "immutables" }
+immutables-annotations = { module = "org.immutables:value-annotations", version.ref = "immutables" }
 geantyref = { module = "io.leangen.geantyref:geantyref", version.ref = "geantyref" }
 configurate-core = { module = "org.spongepowered:configurate-core", version.ref = "configurate" }
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
