@@ -58,7 +58,7 @@ jobs:
           fi
 
       - name: Publish to Xpdustry
-        if: "${{ env.STATUS == 'release' || startsWith(github.ref, 'refs/heads/master' || startsWith(github.ref, 'refs/heads/dev') }}"
+        if: "${{ env.STATUS == 'release' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/dev') }}"
         run: ./gradlew publish
         env:
           ORG_GRADLE_PROJECT_xpdustryUsername: "${{ secrets.XPDUSTRY_MAVEN_USERNAME }}"
