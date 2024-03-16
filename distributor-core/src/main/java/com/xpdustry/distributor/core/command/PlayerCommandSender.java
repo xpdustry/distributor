@@ -20,23 +20,30 @@ package com.xpdustry.distributor.core.command;
 
 import mindustry.gen.Player;
 
-public interface CommandSender {
+record PlayerCommandSender(Player player) implements CommandSender {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
+    @Override
+    public void sendMessage(final String text) {
+        this.player.sendMessage(text);
     }
 
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
+    @Override
+    public void sendWarning(final String text) {
+        this.player.sendMessage("[red]" + text);
     }
 
-    void sendWarning(final String text);
+    @Override
+    public boolean isPlayer() {
+        return true;
+    }
 
-    void sendMessage(final String text);
+    @Override
+    public boolean isServer() {
+        return false;
+    }
 
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
+    @Override
+    public Player getPlayer() {
+        return this.player;
+    }
 }

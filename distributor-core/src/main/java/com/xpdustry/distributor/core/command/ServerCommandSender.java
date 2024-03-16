@@ -18,25 +18,41 @@
  */
 package com.xpdustry.distributor.core.command;
 
+import arc.util.Log;
 import mindustry.gen.Player;
 
-public interface CommandSender {
+final class ServerCommandSender implements CommandSender {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
+    static final ServerCommandSender INSTANCE = new ServerCommandSender();
+
+    private ServerCommandSender() {}
+
+    @Override
+    public void sendMessage(final String text) {
+        for (final var line : text.split("\n", -1)) {
+            Log.info(line);
+        }
     }
 
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
+    @Override
+    public void sendWarning(final String text) {
+        for (final var line : text.split("\n", -1)) {
+            Log.warn(line);
+        }
     }
 
-    void sendWarning(final String text);
+    @Override
+    public boolean isPlayer() {
+        return false;
+    }
 
-    void sendMessage(final String text);
+    @Override
+    public boolean isServer() {
+        return true;
+    }
 
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
+    @Override
+    public Player getPlayer() {
+        throw new UnsupportedOperationException();
+    }
 }
