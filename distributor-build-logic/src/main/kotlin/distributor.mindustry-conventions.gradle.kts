@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import fr.xpdustry.toxopid.dsl.mindustryDependencies
 import fr.xpdustry.toxopid.spec.ModMetadata
 import kotlin.reflect.cast
@@ -8,7 +9,7 @@ plugins {
     id("fr.xpdustry.toxopid")
 }
 
-val extension = project.extensions.findOrCreateExtension<DistributorModuleExtension>(DistributorModuleExtension.EXTENSION_NAME)
+val extension = project.extensions.create<DistributorModuleExtension>(DistributorModuleExtension.EXTENSION_NAME)
 
 toxopid {
     compileVersion.set(libs.versions.mindustry)
@@ -29,8 +30,18 @@ tasks.runMindustryClient {
     mods.setFrom()
 }
 
+fun collectAllPluginDependencies(project: Project): Provider<Set<TaskProvider<out ShadowJar>>> =
+    project.configurations.named("pluginCompileOnlyApi").flatMap { configuration ->
+        configuration.dependencies.map(ProjectDependency::class::cast)
+            .fold(project.providers.provider(::emptySet)) { provider, dependency ->
+                provider
+                    .map { it + setOf(dependency.dependencyProject.tasks.shadowJar) }
+                    .zip(collectAllPluginDependencies(dependency.dependencyProject)) { a, b -> a + b }
+            }
+    }
+
 tasks.runMindustryServer {
-    mods.from(tasks.shadowJar, collectAllPluginDependencies())
+    mods.from(tasks.shadowJar, collectAllPluginDependencies(project))
 }
 
 tasks.shadowJar {

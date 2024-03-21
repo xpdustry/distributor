@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.shadow)
     implementation(libs.bundles.indra)
     implementation(libs.errorprone.gradle)
-    implementation(libs.mammoth)
     implementation(libs.gradle.versions)
 
     // https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
