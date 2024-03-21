@@ -30,9 +30,9 @@ import org.jspecify.annotations.Nullable;
 public final class DistributorCorePlugin extends AbstractMindustryPlugin implements Distributor {
 
     private final ServiceManager services = ServiceManager.simple();
+    private final MultiLocalizationSource source = MultiLocalizationSource.create();
     private CommandFacade.@Nullable Factory factory = null;
     private @Nullable PermissionManager permissions = null;
-    private final MultiLocalizationSource source = MultiLocalizationSource.create();
 
     @Override
     public ServiceManager getServiceManager() {
