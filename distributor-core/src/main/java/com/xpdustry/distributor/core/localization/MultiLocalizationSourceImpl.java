@@ -16,40 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.core.command;
+package com.xpdustry.distributor.core.localization;
 
+import java.text.MessageFormat;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Locale;
-import mindustry.gen.Player;
+import org.jspecify.annotations.Nullable;
 
-record PlayerCommandSender(Player player) implements CommandSender {
+final class MultiLocalizationSourceImpl implements MultiLocalizationSource {
+
+    private final Deque<LocalizationSource> sources = new ArrayDeque<>();
 
     @Override
-    public void sendMessage(final String text) {
-        this.player.sendMessage(text);
+    public void addLocalizationSource(final LocalizationSource source) {
+        this.sources.add(source);
     }
 
     @Override
-    public void sendWarning(final String text) {
-        this.player.sendMessage("[red]" + text);
-    }
+    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        final var iterator = this.sources.descendingIterator();
 
-    @Override
-    public boolean isPlayer() {
-        return true;
-    }
+        while (iterator.hasNext()) {
+            final var translation = iterator.next().localize(key, locale);
+            if (translation != null) {
+                return translation;
+            }
+        }
 
-    @Override
-    public boolean isServer() {
-        return false;
-    }
-
-    @Override
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    @Override
-    public Locale getLocale() {
-        return Locale.forLanguageTag(this.player.locale().replace('_', '-'));
+        return null;
     }
 }

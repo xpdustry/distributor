@@ -16,20 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.core;
+package com.xpdustry.distributor.core.localization;
 
-import com.xpdustry.distributor.core.command.CommandFacade;
-import com.xpdustry.distributor.core.localization.MultiLocalizationSource;
-import com.xpdustry.distributor.core.permission.PermissionManager;
-import com.xpdustry.distributor.core.service.ServiceManager;
+/**
+ * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
+ */
+public interface MultiLocalizationSource extends LocalizationSource {
 
-public interface Distributor {
+    /**
+     * Creates a new {@code MultiLocalizationSource} instance.
+     */
+    static MultiLocalizationSource create() {
+        return new MultiLocalizationSourceImpl();
+    }
 
-    ServiceManager getServiceManager();
-
-    CommandFacade.Factory getCommandFacadeFactory();
-
-    PermissionManager getPermissionManager();
-
-    MultiLocalizationSource getLocalizationSource();
+    /**
+     * Adds a localization source to the list of sources.
+     *
+     * @param source the source to add
+     */
+    void addLocalizationSource(final LocalizationSource source);
 }

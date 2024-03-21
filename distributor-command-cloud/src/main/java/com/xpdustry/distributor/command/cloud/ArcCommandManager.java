@@ -67,15 +67,12 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
         this.registerDefaultExceptionHandlers();
 
-        /* TODO Set Distributor caption registry
         this.captionRegistry().registerProvider((caption, sender) -> {
-            final var source = DistributorProvider.get().getGlobalLocalizationSource();
-            final var locale =
-                    this.getBackwardsCommandSenderMapper().apply(sender).getLocale();
-            final var format = source.localize(caption.getKey(), locale);
-            return format != null ? format.toPattern() : "???" + caption.getKey() + "???";
+            final var source = DistributorProvider.get().getLocalizationSource();
+            final var locale = this.senderMapper().reverse(sender).getLocale();
+            final var format = source.localize(caption.key(), locale);
+            return format != null ? format.toPattern() : "???" + caption.key() + "???";
         });
-         */
 
         this.captionFormatter((key, recipient, caption, variables) -> {
             final var arguments = variables.toArray();

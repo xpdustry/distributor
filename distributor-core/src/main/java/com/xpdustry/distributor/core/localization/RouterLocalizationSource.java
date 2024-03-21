@@ -16,30 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.core.command;
+package com.xpdustry.distributor.core.localization;
 
+import java.text.MessageFormat;
 import java.util.Locale;
-import mindustry.gen.Player;
+import org.jspecify.annotations.Nullable;
 
-public interface CommandSender {
+final class RouterLocalizationSource implements LocalizationSource {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
+    static final RouterLocalizationSource INSTANCE = new RouterLocalizationSource();
+
+    static final Locale ROUTER_LOCALE = new Locale("router");
+    private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router", ROUTER_LOCALE);
+
+    private RouterLocalizationSource() {}
+
+    @Override
+    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        return locale.equals(ROUTER_LOCALE) ? ROUTER_FORMAT : null;
     }
 
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
+    @Override
+    public String toString() {
+        return "RouterLocalizationSource";
     }
-
-    void sendWarning(final String text);
-
-    void sendMessage(final String text);
-
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
-
-    Locale getLocale();
 }

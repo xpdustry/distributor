@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.core.command;
 
 import arc.util.Log;
+import java.util.Locale;
 import mindustry.gen.Player;
 
 final class ServerCommandSender implements CommandSender {
@@ -54,5 +55,10 @@ final class ServerCommandSender implements CommandSender {
     @Override
     public Player getPlayer() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.getDefault();
     }
 }

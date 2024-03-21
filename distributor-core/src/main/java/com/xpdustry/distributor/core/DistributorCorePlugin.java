@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.core;
 
 import com.xpdustry.distributor.core.command.CommandFacade;
+import com.xpdustry.distributor.core.localization.MultiLocalizationSource;
 import com.xpdustry.distributor.core.permission.PermissionManager;
 import com.xpdustry.distributor.core.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.core.service.ServiceManager;
@@ -31,6 +32,7 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
     private final ServiceManager services = ServiceManager.simple();
     private CommandFacade.@Nullable Factory factory = null;
     private @Nullable PermissionManager permissions = null;
+    private final MultiLocalizationSource source = MultiLocalizationSource.create();
 
     @Override
     public ServiceManager getServiceManager() {
@@ -45,6 +47,11 @@ public final class DistributorCorePlugin extends AbstractMindustryPlugin impleme
     @Override
     public PermissionManager getPermissionManager() {
         return Objects.requireNonNull(permissions, notInitialized("permission"));
+    }
+
+    @Override
+    public MultiLocalizationSource getLocalizationSource() {
+        return this.source;
     }
 
     @Override
