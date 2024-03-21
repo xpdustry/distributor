@@ -9,10 +9,10 @@ distributorModule {
     display = "DistributorPermissionRank"
     main = "com.xpdustry.distributor.permission.rank.DistributorPermissionRankPlugin"
     description = "Simple permission system based on ranks."
-    dependencies = setOf(projects.distributorCore)
 }
 
 dependencies {
+    pluginCompileOnlyApi(projects.distributorCore)
     implementation(libs.configurate.core)
     implementation(libs.configurate.yaml)
 }

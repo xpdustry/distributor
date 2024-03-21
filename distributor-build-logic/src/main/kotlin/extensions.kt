@@ -4,11 +4,12 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.plugins.ExtensionContainer
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.property
-import org.gradle.kotlin.dsl.setProperty
 import org.gradle.kotlin.dsl.the
+import kotlin.reflect.cast
 
 internal val Project.libs: LibrariesForLibs get() = the()
 
@@ -19,19 +20,18 @@ open class DistributorModuleExtension(project: Project) {
     val display = project.objects.property<String>()
     val main = project.objects.property<String>()
     val description = project.objects.property<String>()
-    val dependencies = project.objects.setProperty<ProjectDependency>()
 
     companion object {
         const val EXTENSION_NAME = "distributorModule"
     }
 }
 
-fun Project.collectAllPluginDependencies(): Set<TaskProvider<out ShadowJar>> {
-    val dependencies = mutableSetOf<TaskProvider<out ShadowJar>>()
-    val extension = extensions.findOrCreateExtension<DistributorModuleExtension>(DistributorModuleExtension.EXTENSION_NAME)
-    for (dependency in extension.dependencies.get()) {
-        dependencies += dependency.dependencyProject.tasks.named<ShadowJar>("shadowJar")
-        dependencies += dependency.dependencyProject.collectAllPluginDependencies()
+fun Project.collectAllPluginDependencies(): Provider<Set<TaskProvider<out ShadowJar>>> =
+    configurations.named("pluginCompileOnlyApi").flatMap { configuration ->
+        configuration.dependencies.map(ProjectDependency::class::cast)
+            .fold(project.providers.provider(::emptySet)) { provider, dependency ->
+                provider
+                    .map { it + setOf(dependency.dependencyProject.tasks.named<ShadowJar>("shadowJar")) }
+                    .zip(dependency.dependencyProject.collectAllPluginDependencies(), Set<TaskProvider<out ShadowJar>>::plus)
+            }
     }
-    return dependencies
-}

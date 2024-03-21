@@ -1,5 +1,6 @@
 import fr.xpdustry.toxopid.dsl.mindustryDependencies
 import fr.xpdustry.toxopid.spec.ModMetadata
+import kotlin.reflect.cast
 
 plugins {
     id("net.kyori.indra")
@@ -18,12 +19,10 @@ dependencies {
     mindustryDependencies()
 }
 
-afterEvaluate {
-    dependencies {
-        for (dependency in extension.dependencies.get()) {
-            compileOnly(dependency)
-        }
-    }
+val pluginCompileOnlyApi: Configuration by configurations.creating
+
+configurations.compileOnlyApi {
+    extendsFrom(pluginCompileOnlyApi)
 }
 
 tasks.runMindustryClient {
@@ -31,14 +30,7 @@ tasks.runMindustryClient {
 }
 
 tasks.runMindustryServer {
-    mods.from(tasks.shadowJar)
-}
-
-// Cursed way to collect dependent distributor modules
-gradle.projectsEvaluated {
-    tasks.runMindustryServer {
-        mods.from(collectAllPluginDependencies())
-    }
+    mods.from(tasks.shadowJar, collectAllPluginDependencies())
 }
 
 tasks.shadowJar {
@@ -56,7 +48,7 @@ tasks.shadowJar {
                 java = true,
                 hidden = true,
                 dependencies =
-                    extension.dependencies.get()
+                    pluginCompileOnlyApi.dependencies.map(ProjectDependency::class::cast)
                         .map { it.dependencyProject.extensions.getByType<DistributorModuleExtension>().identifier.get() }
                         .toMutableList(),
             )
