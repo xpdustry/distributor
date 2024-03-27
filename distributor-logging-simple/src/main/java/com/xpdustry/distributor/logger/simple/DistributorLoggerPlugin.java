@@ -48,7 +48,7 @@ public final class DistributorLoggerPlugin extends Plugin {
             SLF4JBridgeHandler.removeHandlersForRootLogger();
             SLF4JBridgeHandler.install();
 
-            LoggerFactory.getLogger(DistributorLoggerPlugin.class).info("Initialized");
+            LoggerFactory.getLogger(DistributorLoggerPlugin.class).info("Initialized simple logger");
         } finally {
             // Restore the class loader
             Thread.currentThread().setContextClassLoader(temp);

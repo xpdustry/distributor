@@ -19,9 +19,12 @@
 package com.xpdustry.distributor.common;
 
 import com.xpdustry.distributor.common.command.CommandFacadeManager;
+import com.xpdustry.distributor.common.event.EventManager;
 import com.xpdustry.distributor.common.localization.LocalizationSourceManager;
 import com.xpdustry.distributor.common.permission.PermissionManager;
 import com.xpdustry.distributor.common.plugin.AbstractMindustryPlugin;
+import com.xpdustry.distributor.common.scheduler.PluginScheduler;
+import com.xpdustry.distributor.common.scheduler.PluginTimeSource;
 import com.xpdustry.distributor.common.service.ServiceManager;
 import com.xpdustry.distributor.common.util.Priority;
 import java.util.Objects;
@@ -31,7 +34,9 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     private final ServiceManager services = ServiceManager.create();
     private final LocalizationSourceManager source = LocalizationSourceManager.create();
+    private @Nullable EventManager events = null;
     private @Nullable CommandFacadeManager factory = null;
+    private @Nullable PluginScheduler scheduler = null;
     private @Nullable PermissionManager permissions = null;
 
     @Override
@@ -40,8 +45,13 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
+    public EventManager getEventManager() {
+        return ensureInitialized(this.events, "event");
+    }
+
+    @Override
     public CommandFacadeManager getCommandFacadeFactory() {
-        return ensureInitialized(this.factory, "command-facade-manager");
+        return ensureInitialized(this.factory, "command-facade");
     }
 
     @Override
@@ -55,15 +65,27 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
+    public PluginScheduler getPluginScheduler() {
+        return ensureInitialized(this.scheduler, "scheduler");
+    }
+
+    @Override
     public void onInit() {
         DistributorProvider.set(this);
+        this.services.register(this, EventManager.class, Priority.LOW, EventManager::create);
         this.services.register(this, CommandFacadeManager.class, Priority.LOW, CommandFacadeManager::create);
+        this.services.register(this, PluginTimeSource.class, Priority.LOW, PluginTimeSource::arc);
     }
 
     @Override
     public void onLoad() {
         this.permissions = services.provide(PermissionManager.class);
+        this.events = services.provide(EventManager.class);
         this.factory = services.provide(CommandFacadeManager.class);
+        this.scheduler = PluginScheduler.create(
+                this,
+                this.services.provide(PluginTimeSource.class),
+                Runtime.getRuntime().availableProcessors());
     }
 
     private <T> T ensureInitialized(final @Nullable T instance, final String name) {

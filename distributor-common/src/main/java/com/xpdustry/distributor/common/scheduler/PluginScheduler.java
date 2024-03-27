@@ -18,12 +18,20 @@
  */
 package com.xpdustry.distributor.common.scheduler;
 
+import arc.Core;
 import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 
 /**
  * A {@code PluginScheduler} is used to schedule tasks for a plugin. A better alternative to {@link arc.util.Timer}.
  */
 public interface PluginScheduler {
+
+    static PluginScheduler create(
+            final MindustryPlugin plugin, final PluginTimeSource timeSource, final int parallelism) {
+        final var instance = new PluginSchedulerImpl(timeSource, Core.app::post, parallelism);
+        plugin.addListener(instance);
+        return instance;
+    }
 
     /**
      * Returns a new {@link PluginTask.Builder} instance scheduling a task.

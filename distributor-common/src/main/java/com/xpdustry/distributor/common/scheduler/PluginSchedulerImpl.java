@@ -44,7 +44,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
     private final Executor syncExecutor;
     private final PluginTimeSource source;
 
-    public PluginSchedulerImpl(final PluginTimeSource source, final Executor syncExecutor, final int parallelism) {
+    PluginSchedulerImpl(final PluginTimeSource source, final Executor syncExecutor, final int parallelism) {
         this.pool = new ForkJoinPool(parallelism, new PluginSchedulerWorkerThreadFactory(), null, false);
         this.syncExecutor = syncExecutor;
         this.source = source;
@@ -73,11 +73,11 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
 
     @Override
     public void onPluginExit() {
-        logger.info("Shutdown scheduler.");
+        logger.info("Shutting down scheduler.");
         this.pool.shutdown();
         try {
             if (!this.pool.awaitTermination(20, TimeUnit.SECONDS)) {
-                logger.error("Timed out waiting for the scheduler to terminate properly");
+                logger.error("Timed out waiting for the scheduler to terminate properly.");
                 Thread.getAllStackTraces().forEach((thread, stack) -> {
                     if (thread.getName().startsWith(DISTRIBUTOR_WORKER_BASE_NAME)) {
                         logger.error(

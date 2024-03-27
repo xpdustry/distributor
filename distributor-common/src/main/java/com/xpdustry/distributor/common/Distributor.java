@@ -19,17 +19,23 @@
 package com.xpdustry.distributor.common;
 
 import com.xpdustry.distributor.common.command.CommandFacadeManager;
+import com.xpdustry.distributor.common.event.EventManager;
 import com.xpdustry.distributor.common.localization.LocalizationSourceManager;
 import com.xpdustry.distributor.common.permission.PermissionManager;
+import com.xpdustry.distributor.common.scheduler.PluginScheduler;
 import com.xpdustry.distributor.common.service.ServiceManager;
 
 public interface Distributor {
 
     ServiceManager getServiceManager();
 
+    EventManager getEventManager();
+
     CommandFacadeManager getCommandFacadeFactory();
 
     PermissionManager getPermissionManager();
 
     LocalizationSourceManager getLocalizationSourceManager();
+
+    PluginScheduler getPluginScheduler();
 }
