@@ -38,8 +38,12 @@ public final class DistributorLogger extends AbstractLogger {
     private static final long serialVersionUID = 3476499937056865545L;
 
     private static final Object WRITE_LOCK = new Object();
-    private static final Administration.Config TRACE =
-            new Administration.Config("trace", "Enable trace logging when debug is enabled.", false);
+    private static final Administration.Config ENABLE_TRACE =
+            new Administration.Config("distributor-logger:trace", "Enable trace logging when debug is enabled.", false);
+    private static final Administration.Config ENABLE_PLUGIN =
+            new Administration.Config("distributor-logger:plugin", "Prepends the owning plugin name of a logger", true);
+    private static final Administration.Config ENABLE_CLASS =
+            new Administration.Config("distributor-logger:class", "Prepends the owning class of a logger.", false);
 
     private final @Nullable String plugin;
 
@@ -50,12 +54,12 @@ public final class DistributorLogger extends AbstractLogger {
 
     @Override
     public boolean isTraceEnabled() {
-        return this.isArcLogLevelAtLeast(LogLevel.debug) && TRACE.bool();
+        return this.isArcLogLevelAtLeast(LogLevel.debug) && ENABLE_TRACE.bool();
     }
 
     @Override
     public boolean isTraceEnabled(final Marker marker) {
-        return this.isArcLogLevelAtLeast(LogLevel.debug) && TRACE.bool();
+        return this.isArcLogLevelAtLeast(LogLevel.debug) && ENABLE_TRACE.bool();
     }
 
     @Override
@@ -113,7 +117,7 @@ public final class DistributorLogger extends AbstractLogger {
         final var builder = new StringBuilder();
 
         if (!this.name.equals(ROOT_LOGGER_NAME)) {
-            if (this.plugin != null) {
+            if (this.plugin != null && ENABLE_PLUGIN.isBool() && ENABLE_PLUGIN.bool()) {
                 builder.append(this.getColorCode(level))
                         .append('[')
                         .append(this.plugin)
@@ -121,12 +125,14 @@ public final class DistributorLogger extends AbstractLogger {
                         .append(ColorCodes.reset)
                         .append(' ');
             }
-            builder.append(this.getColorCode(level))
-                    .append('[')
-                    .append(this.name)
-                    .append(']')
-                    .append(ColorCodes.reset)
-                    .append(' ');
+            if (ENABLE_CLASS.isBool() && ENABLE_CLASS.bool()) {
+                builder.append(this.getColorCode(level))
+                        .append('[')
+                        .append(this.name)
+                        .append(']')
+                        .append(ColorCodes.reset)
+                        .append(' ');
+            }
         }
 
         if (level == Level.ERROR) {
