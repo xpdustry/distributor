@@ -16,20 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.common.command;
+package com.xpdustry.distributor.common.localization;
 
-import arc.util.CommandHandler;
+/**
+ * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
+ */
+public interface LocalizationSourceManager extends LocalizationSource {
 
-final class SimpleCommandFacadeFactory implements CommandFacade.Factory {
-
-    static final SimpleCommandFacadeFactory INSTANCE = new SimpleCommandFacadeFactory();
-
-    @Override
-    public CommandFacade create(final CommandHandler.Command command) {
-        if (command instanceof CommandFacade facade) {
-            return facade;
-        } else {
-            return new ArcCommandFacade(command);
-        }
+    /**
+     * Creates a new {@code MultiLocalizationSource} instance.
+     */
+    static LocalizationSourceManager create() {
+        return new LocalizationSourceManagerImpl();
     }
+
+    /**
+     * Adds a localization source to the list of sources.
+     *
+     * @param source the source to add
+     */
+    void addLocalizationSource(final LocalizationSource source);
 }

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.common.command;
 
-import com.xpdustry.distributor.common.internal.GeneratedDataClass;
+import com.xpdustry.distributor.common.internal.DistributorDataClass;
 import java.util.Collection;
 import org.immutables.value.Value;
 
@@ -31,7 +31,7 @@ public sealed interface CommandElement {
     Collection<String> getAliases();
 
     @SuppressWarnings("immutables:subtype")
-    @GeneratedDataClass
+    @DistributorDataClass
     @Value.Immutable
     sealed interface Argument extends CommandElement permits ImmutableArgument {
 
@@ -53,7 +53,7 @@ public sealed interface CommandElement {
     }
 
     @SuppressWarnings("immutables:subtype")
-    @GeneratedDataClass
+    @DistributorDataClass
     @Value.Immutable
     sealed interface Flag extends CommandElement permits ImmutableFlag {
 

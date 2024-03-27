@@ -30,7 +30,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-final class SimpleServiceManager implements ServiceManager {
+final class ServiceManagerImpl implements ServiceManager {
 
     private final Map<Class<?>, Queue<Provider<?>>> services = new HashMap<>();
     private final Object lock = new Object();

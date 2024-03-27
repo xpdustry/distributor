@@ -71,7 +71,7 @@ public final class DistributorLoggerFactory implements ILoggerFactory {
             }
             // Plugin loggers are found on the first lookup, thus if the cache flag is false,
             // it means a custom logger has been created inside the plugin class
-            final var logger = cache ? new DistributorLogger(display, null) : new DistributorLogger(name, display);
+            final var logger = cache ? new DistributorLogger(display, display) : new DistributorLogger(name, display);
             if (cache) {
                 this.loggers.put(name, logger);
             }

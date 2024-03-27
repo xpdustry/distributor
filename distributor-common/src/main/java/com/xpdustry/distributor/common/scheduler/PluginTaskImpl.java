@@ -87,7 +87,7 @@ final class PluginTaskImpl<V> extends FutureTask<V> implements PluginTask<V> {
         return this.nextRun;
     }
 
-    static final class Builder implements PluginTaskBuilder {
+    static final class Builder implements PluginTask.Builder {
 
         private final PluginSchedulerImpl scheduler;
         private final MindustryPlugin plugin;
@@ -101,19 +101,19 @@ final class PluginTaskImpl<V> extends FutureTask<V> implements PluginTask<V> {
         }
 
         @Override
-        public PluginTaskBuilder async(final boolean async) {
+        public PluginTask.Builder async(final boolean async) {
             this.async = async;
             return this;
         }
 
         @Override
-        public PluginTaskBuilder delay(final long delay, final MindustryTimeUnit unit) {
+        public PluginTask.Builder delay(final long delay, final MindustryTimeUnit unit) {
             this.delay = MindustryTimeUnit.TICKS.convert(delay, unit);
             return this;
         }
 
         @Override
-        public PluginTaskBuilder repeat(final long interval, final MindustryTimeUnit unit) {
+        public PluginTask.Builder repeat(final long interval, final MindustryTimeUnit unit) {
             this.repeat = MindustryTimeUnit.TICKS.convert(interval, unit);
             return this;
         }

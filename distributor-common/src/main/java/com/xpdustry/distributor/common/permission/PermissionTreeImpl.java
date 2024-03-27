@@ -23,17 +23,17 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
-final class SimplePermissionTree implements PermissionTree {
+final class PermissionTreeImpl implements PermissionTree {
 
-    private final @Nullable SimplePermissionTree parent;
-    private final Map<String, SimplePermissionTree> children = new HashMap<>();
+    private final @Nullable PermissionTreeImpl parent;
+    private final Map<String, PermissionTreeImpl> children = new HashMap<>();
     private TriState value = TriState.UNDEFINED;
 
-    SimplePermissionTree() {
+    PermissionTreeImpl() {
         this.parent = null;
     }
 
-    private SimplePermissionTree(final @Nullable SimplePermissionTree parent) {
+    private PermissionTreeImpl(final @Nullable PermissionTreeImpl parent) {
         this.parent = parent;
     }
 
@@ -68,7 +68,7 @@ final class SimplePermissionTree implements PermissionTree {
         if (state != TriState.UNDEFINED) {
             for (final var part : parts) {
                 final var parent = node;
-                node = node.children.computeIfAbsent(part, k -> new SimplePermissionTree(parent));
+                node = node.children.computeIfAbsent(part, k -> new PermissionTreeImpl(parent));
             }
             node.value = state;
         } else {
@@ -106,7 +106,7 @@ final class SimplePermissionTree implements PermissionTree {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof final SimplePermissionTree that)) {
+        if (!(o instanceof final PermissionTreeImpl that)) {
             return false;
         }
         if (!this.children.equals(that.children)) {

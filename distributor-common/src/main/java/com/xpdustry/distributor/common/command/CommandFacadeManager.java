@@ -16,22 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.common.internal;
+package com.xpdustry.distributor.common.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.immutables.value.Value;
+import arc.util.CommandHandler;
 
-@Target({ElementType.PACKAGE, ElementType.TYPE})
-@Retention(RetentionPolicy.CLASS)
-@Value.Style(
-        get = {"is*", "get*"},
-        init = "set*",
-        build = "create",
-        allParameters = true,
-        visibility = Value.Style.ImplementationVisibility.PACKAGE,
-        builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
-        defaults = @Value.Immutable(copy = false, builder = false))
-public @interface GeneratedDataClass {}
+public interface CommandFacadeManager {
+
+    static CommandFacadeManager create() {
+        return new CommandFacadeManagerImpl();
+    }
+
+    CommandFacade create(final CommandHandler.Command command);
+}

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.common.service;
 
-import com.xpdustry.distributor.common.internal.GeneratedDataClass;
+import com.xpdustry.distributor.common.internal.DistributorDataClass;
 import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 import com.xpdustry.distributor.common.util.Priority;
 import java.util.List;
@@ -27,8 +27,8 @@ import org.immutables.value.Value;
 
 public interface ServiceManager {
 
-    static ServiceManager simple() {
-        return new SimpleServiceManager();
+    static ServiceManager create() {
+        return new ServiceManagerImpl();
     }
 
     <T> void register(
@@ -38,7 +38,7 @@ public interface ServiceManager {
 
     <T> List<Provider<T>> getProviders(final Class<T> clazz);
 
-    @GeneratedDataClass
+    @DistributorDataClass
     @Value.Immutable
     sealed interface Provider<T> permits ImmutableProvider {
 

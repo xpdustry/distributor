@@ -22,8 +22,8 @@ import java.util.Map;
 
 public interface PermissionTree {
 
-    static PermissionTree simple() {
-        return new SimplePermissionTree();
+    static PermissionTree create() {
+        return new PermissionTreeImpl();
     }
 
     static PermissionTree empty() {

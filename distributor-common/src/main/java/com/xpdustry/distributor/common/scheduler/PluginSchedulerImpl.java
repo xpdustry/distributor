@@ -42,16 +42,16 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
             new PriorityBlockingQueue<>(16, Comparator.comparing(PluginTaskImpl::getNextExecutionTime));
     private final ForkJoinPool pool;
     private final Executor syncExecutor;
-    private final TimeSource source;
+    private final PluginTimeSource source;
 
-    public PluginSchedulerImpl(final TimeSource source, final Executor syncExecutor, final int parallelism) {
+    public PluginSchedulerImpl(final PluginTimeSource source, final Executor syncExecutor, final int parallelism) {
         this.pool = new ForkJoinPool(parallelism, new PluginSchedulerWorkerThreadFactory(), null, false);
         this.syncExecutor = syncExecutor;
         this.source = source;
     }
 
     @Override
-    public PluginTaskBuilder schedule(final MindustryPlugin plugin) {
+    public PluginTask.Builder schedule(final MindustryPlugin plugin) {
         return new PluginTaskImpl.Builder(this, plugin);
     }
 
@@ -96,7 +96,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
         this.tasks.add(task);
     }
 
-    TimeSource getTimeSource() {
+    PluginTimeSource getTimeSource() {
         return this.source;
     }
 

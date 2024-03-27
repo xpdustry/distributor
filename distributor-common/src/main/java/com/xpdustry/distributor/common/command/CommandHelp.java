@@ -18,13 +18,13 @@
  */
 package com.xpdustry.distributor.common.command;
 
-import com.xpdustry.distributor.common.internal.GeneratedDataClass;
+import com.xpdustry.distributor.common.internal.DistributorDataClass;
 import java.util.List;
 import org.immutables.value.Value;
 
 public sealed interface CommandHelp {
 
-    @GeneratedDataClass
+    @DistributorDataClass
     @Value.Immutable
     sealed interface Entry extends CommandHelp permits ImmutableEntry {
 
@@ -45,7 +45,7 @@ public sealed interface CommandHelp {
         List<CommandElement.Flag> getFlags();
     }
 
-    @GeneratedDataClass
+    @DistributorDataClass
     @Value.Immutable
     sealed interface Suggestion extends CommandHelp permits ImmutableSuggestion {
 

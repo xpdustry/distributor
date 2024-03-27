@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.common;
 
-import com.xpdustry.distributor.common.command.CommandFacade;
-import com.xpdustry.distributor.common.localization.MultiLocalizationSource;
+import com.xpdustry.distributor.common.command.CommandFacadeManager;
+import com.xpdustry.distributor.common.localization.LocalizationSourceManager;
 import com.xpdustry.distributor.common.permission.PermissionManager;
 import com.xpdustry.distributor.common.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.common.service.ServiceManager;
@@ -29,9 +29,9 @@ import org.jspecify.annotations.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
-    private final ServiceManager services = ServiceManager.simple();
-    private final MultiLocalizationSource source = MultiLocalizationSource.create();
-    private CommandFacade.@Nullable Factory factory = null;
+    private final ServiceManager services = ServiceManager.create();
+    private final LocalizationSourceManager source = LocalizationSourceManager.create();
+    private @Nullable CommandFacadeManager factory = null;
     private @Nullable PermissionManager permissions = null;
 
     @Override
@@ -40,33 +40,33 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public CommandFacade.Factory getCommandFacadeFactory() {
-        return Objects.requireNonNull(this.factory, notInitialized("command-facade-factory"));
+    public CommandFacadeManager getCommandFacadeFactory() {
+        return ensureInitialized(this.factory, "command-facade-manager");
     }
 
     @Override
     public PermissionManager getPermissionManager() {
-        return Objects.requireNonNull(permissions, notInitialized("permission"));
+        return ensureInitialized(this.permissions, "permission");
     }
 
     @Override
-    public MultiLocalizationSource getLocalizationSource() {
+    public LocalizationSourceManager getLocalizationSourceManager() {
         return this.source;
     }
 
     @Override
     public void onInit() {
         DistributorProvider.set(this);
-        this.services.register(this, CommandFacade.Factory.class, Priority.LOW, CommandFacade.Factory::simple);
+        this.services.register(this, CommandFacadeManager.class, Priority.LOW, CommandFacadeManager::create);
     }
 
     @Override
     public void onLoad() {
         this.permissions = services.provide(PermissionManager.class);
-        this.factory = services.provide(CommandFacade.Factory.class);
+        this.factory = services.provide(CommandFacadeManager.class);
     }
 
-    private String notInitialized(final String subsystem) {
-        return String.format("The \"%s\" subsystem is not initialized yet.", subsystem);
+    private <T> T ensureInitialized(final @Nullable T instance, final String name) {
+        return Objects.requireNonNull(instance, String.format("The \"%s\" subsystem is not initialized yet.", name));
     }
 }

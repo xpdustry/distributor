@@ -16,20 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.common;
+package com.xpdustry.distributor.common.internal;
 
-import com.xpdustry.distributor.common.command.CommandFacadeManager;
-import com.xpdustry.distributor.common.localization.LocalizationSourceManager;
-import com.xpdustry.distributor.common.permission.PermissionManager;
-import com.xpdustry.distributor.common.service.ServiceManager;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.immutables.value.Value;
 
-public interface Distributor {
-
-    ServiceManager getServiceManager();
-
-    CommandFacadeManager getCommandFacadeFactory();
-
-    PermissionManager getPermissionManager();
-
-    LocalizationSourceManager getLocalizationSourceManager();
-}
+@Target({ElementType.PACKAGE, ElementType.TYPE})
+@Retention(RetentionPolicy.CLASS)
+@Value.Style(
+        get = {"is*", "get*"},
+        init = "set*",
+        build = "create",
+        allParameters = true,
+        visibility = Value.Style.ImplementationVisibility.PACKAGE,
+        builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
+        defaults = @Value.Immutable(copy = false, builder = false))
+public @interface DistributorDataClass {}

@@ -26,10 +26,10 @@ import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 public interface PluginScheduler {
 
     /**
-     * Returns a new {@link PluginTaskBuilder} instance scheduling a task.
+     * Returns a new {@link PluginTask.Builder} instance scheduling a task.
      *
      * @param plugin the plugin to schedule the task for.
-     * @return a new {@link PluginTaskBuilder} instance.
+     * @return a new {@link PluginTask.Builder} instance.
      */
-    PluginTaskBuilder schedule(final MindustryPlugin plugin);
+    PluginTask.Builder schedule(final MindustryPlugin plugin);
 }

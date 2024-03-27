@@ -24,19 +24,19 @@ import arc.util.Time;
  * A {@code PluginTimeSource} provides the current time in milliseconds.
  */
 @FunctionalInterface
-public interface TimeSource {
+public interface PluginTimeSource {
 
     /**
      * Returns a {@code PluginTimeSource} using {@link Time#globalTime} to provide the current time.
      */
-    static TimeSource arc() {
+    static PluginTimeSource arc() {
         return () -> (long) Time.globalTime;
     }
 
     /**
      * Returns a {@code PluginTimeSource} using {@link System#currentTimeMillis()} to provide the current time.
      */
-    static TimeSource standard() {
+    static PluginTimeSource standard() {
         return () -> System.currentTimeMillis() / 16L;
     }
 

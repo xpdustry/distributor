@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Time units used by the {@link PluginTaskBuilder} and {@link PluginTask} classes to represent time.
+ * Time units used by the {@link PluginTask.Builder} and {@link PluginTask} classes to represent time.
  */
 public enum MindustryTimeUnit {
 

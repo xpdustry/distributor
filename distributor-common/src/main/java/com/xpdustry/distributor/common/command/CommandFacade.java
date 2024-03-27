@@ -18,7 +18,6 @@
  */
 package com.xpdustry.distributor.common.command;
 
-import arc.util.CommandHandler;
 import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 import org.jspecify.annotations.Nullable;
 
@@ -39,13 +38,4 @@ public interface CommandFacade {
     CommandHelp getHelp(final CommandSender sender, final String query);
 
     @Nullable MindustryPlugin getPlugin();
-
-    interface Factory {
-
-        static Factory simple() {
-            return SimpleCommandFacadeFactory.INSTANCE;
-        }
-
-        CommandFacade create(final CommandHandler.Command command);
-    }
 }

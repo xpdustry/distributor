@@ -24,7 +24,7 @@ import java.util.Deque;
 import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
-final class MultiLocalizationSourceImpl implements MultiLocalizationSource {
+final class LocalizationSourceManagerImpl implements LocalizationSourceManager {
 
     private final Deque<LocalizationSource> sources = new ArrayDeque<>();
 

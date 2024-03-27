@@ -77,7 +77,7 @@ final class YamlRankPermissionStorage implements RankPermissionStorage, PluginLi
             if (name == null || name.isBlank()) {
                 throw new IOException("Invalid rank name.");
             }
-            final var tree = PermissionTree.simple();
+            final var tree = PermissionTree.create();
             for (final var entry : node.node("permissions").childrenMap().entrySet()) {
                 tree.setPermission(
                         (String) entry.getKey(), TriState.of(entry.getValue().getBoolean()));
