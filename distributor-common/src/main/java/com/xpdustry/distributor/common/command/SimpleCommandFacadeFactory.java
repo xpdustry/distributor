@@ -16,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.command;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+import arc.util.CommandHandler;
 
-public interface RankPermissionStorage {
+final class SimpleCommandFacadeFactory implements CommandFacade.Factory {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    static final SimpleCommandFacadeFactory INSTANCE = new SimpleCommandFacadeFactory();
+
+    @Override
+    public CommandFacade create(final CommandHandler.Command command) {
+        if (command instanceof CommandFacade facade) {
+            return facade;
+        } else {
+            return new ArcCommandFacade(command);
+        }
+    }
 }

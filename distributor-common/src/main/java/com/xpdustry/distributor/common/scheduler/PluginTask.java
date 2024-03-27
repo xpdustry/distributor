@@ -16,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.scheduler;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+import com.xpdustry.distributor.common.plugin.PluginAware;
+import java.util.concurrent.Future;
 
-public interface RankPermissionStorage {
+/**
+ * A {@code PluginTask} is a future used by a {@link PluginScheduler}.
+ *
+ * @param <V> the type of the value returned by this task.
+ */
+public interface PluginTask<V> extends Future<V>, PluginAware {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    /**
+     * Returns whether this future is executed asynchronously.
+     */
+    boolean isAsync();
 }

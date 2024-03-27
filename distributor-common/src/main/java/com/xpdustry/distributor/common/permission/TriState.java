@@ -16,11 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.permission;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+import org.jspecify.annotations.Nullable;
 
-public interface RankPermissionStorage {
+/**
+ * A ternary boolean type, used by the permission system.
+ */
+public enum TriState {
+    FALSE(false),
+    TRUE(true),
+    UNDEFINED(false);
 
-    PermissionTree getRankPermissions(final RankNode node);
+    private final boolean value;
+
+    TriState(final boolean value) {
+        this.value = value;
+    }
+
+    public static TriState of(final @Nullable Boolean state) {
+        return state == null ? UNDEFINED : state ? TRUE : FALSE;
+    }
+
+    public boolean asBoolean() {
+        return this.value;
+    }
 }

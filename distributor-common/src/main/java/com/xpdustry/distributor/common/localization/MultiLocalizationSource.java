@@ -16,11 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.localization;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+/**
+ * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
+ */
+public interface MultiLocalizationSource extends LocalizationSource {
 
-public interface RankPermissionStorage {
+    /**
+     * Creates a new {@code MultiLocalizationSource} instance.
+     */
+    static MultiLocalizationSource create() {
+        return new MultiLocalizationSourceImpl();
+    }
 
-    PermissionTree getRankPermissions(final RankNode node);
+    /**
+     * Adds a localization source to the list of sources.
+     *
+     * @param source the source to add
+     */
+    void addLocalizationSource(final LocalizationSource source);
 }

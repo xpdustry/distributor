@@ -16,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.common.scheduler;
 
-import com.xpdustry.distributor.common.permission.PermissionTree;
+import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 
-public interface RankPermissionStorage {
+/**
+ * A {@code PluginScheduler} is used to schedule tasks for a plugin. A better alternative to {@link arc.util.Timer}.
+ */
+public interface PluginScheduler {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    /**
+     * Returns a new {@link PluginTaskBuilder} instance scheduling a task.
+     *
+     * @param plugin the plugin to schedule the task for.
+     * @return a new {@link PluginTaskBuilder} instance.
+     */
+    PluginTaskBuilder schedule(final MindustryPlugin plugin);
 }

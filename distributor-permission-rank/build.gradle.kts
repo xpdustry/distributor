@@ -12,7 +12,7 @@ distributorModule {
 }
 
 dependencies {
-    pluginCompileOnlyApi(projects.distributorCore)
+    pluginCompileOnlyApi(projects.distributorCommon)
     implementation(libs.configurate.core)
     implementation(libs.configurate.yaml)
 }
