@@ -85,7 +85,7 @@ public interface MindustryPlugin {
      * Returns the plugin data directory. {@code ./config/mods/[plugin-name]/} by default.
      */
     default Path getDirectory() {
-        return Vars.modDirectory.child(this.getDescriptor().getName()).file().toPath();
+        return Vars.modDirectory.child(this.getMetadata().getName()).file().toPath();
     }
 
     /**
@@ -94,9 +94,9 @@ public interface MindustryPlugin {
     Logger getLogger();
 
     /**
-     * Returns the descriptor of this plugin.
+     * Returns the metadata of this plugin.
      */
-    PluginDescriptor getDescriptor();
+    PluginMetadata getMetadata();
 
     /**
      * Adds a {@link PluginListener} to this plugin.

@@ -57,7 +57,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
                             plugin.getLogger()
                                     .error(
                                             "An error occurred while exiting plugin {}.",
-                                            plugin.getDescriptor().getName(),
+                                            plugin.getMetadata().getName(),
                                             exception);
                         }
                     }
@@ -66,14 +66,14 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         });
     }
 
-    private final PluginDescriptor descriptor = PluginDescriptor.from(this);
+    private final PluginMetadata metadata = PluginMetadata.from(this);
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginListener> listeners = new ArrayList<>();
     private boolean canParseListeners = false;
 
     @Override
-    public final PluginDescriptor getDescriptor() {
-        return this.descriptor;
+    public final PluginMetadata getMetadata() {
+        return this.metadata;
     }
 
     @Override

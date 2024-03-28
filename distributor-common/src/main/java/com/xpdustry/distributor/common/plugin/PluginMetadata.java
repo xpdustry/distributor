@@ -20,49 +20,45 @@ package com.xpdustry.distributor.common.plugin;
 
 import arc.util.serialization.Json;
 import com.xpdustry.distributor.common.collection.ArcCollections;
+import com.xpdustry.distributor.common.internal.DistributorDataClass;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import mindustry.mod.Mods;
 import mindustry.mod.Plugin;
+import org.immutables.value.Value;
 
-/**
- * Contains relevant information about a plugin.
- */
-public final class PluginDescriptor {
+@DistributorDataClass
+@Value.Immutable(builder = true, copy = false)
+public sealed interface PluginMetadata permits ImmutablePluginMetadata {
 
-    private final String name;
-    private final String displayName;
-    private final String author;
-    private final String description;
-    private final String version;
-    private final String main;
-    private final int minGameVersion;
-    private final String repository;
-    private final List<String> dependencies;
-    private final List<String> softDependencies;
+    static PluginMetadata.Builder builder() {
+        return ImmutablePluginMetadata.builder();
+    }
 
-    private PluginDescriptor(final Mods.ModMeta meta) {
-        this.name = Objects.requireNonNull(meta.name);
-        this.displayName = meta.displayName();
-        this.author = Objects.requireNonNullElse(meta.author, "Unknown");
-        this.description = Objects.requireNonNullElse(meta.description, "");
-        this.version = Objects.requireNonNullElse(meta.version, "1.0.0");
-        this.main = Objects.requireNonNull(meta.main);
-        this.minGameVersion = meta.getMinMajor();
-        this.repository = Objects.requireNonNullElse(meta.repo, "");
-        this.dependencies = List.copyOf(ArcCollections.immutableList(meta.dependencies));
-        this.softDependencies = List.copyOf(ArcCollections.immutableList(meta.softDependencies));
+    static PluginMetadata.Builder from(final PluginMetadata metadata) {
+        return ImmutablePluginMetadata.builder().from(metadata);
     }
 
     /**
-     * Creates a new {@link PluginDescriptor} from a {@link Mods.ModMeta}.
+     * Creates a new {@link PluginMetadata} from a {@link Mods.ModMeta}.
      *
-     * @param meta the {@link Mods.ModMeta} to create the {@link PluginDescriptor} from
-     * @return the created {@link PluginDescriptor}
+     * @param meta the {@link Mods.ModMeta} to create the {@link PluginMetadata} from
+     * @return the created {@link PluginMetadata}
      */
-    public static PluginDescriptor from(final Mods.ModMeta meta) {
-        return new PluginDescriptor(meta);
+    static PluginMetadata from(final Mods.ModMeta meta) {
+        return PluginMetadata.builder()
+                .setName(Objects.requireNonNull(meta.name))
+                .setDisplayName(meta.displayName())
+                .setAuthor(Objects.requireNonNullElse(meta.author, "Unknown"))
+                .setDescription(Objects.requireNonNullElse(meta.description, ""))
+                .setVersion(Objects.requireNonNullElse(meta.version, "1.0.0"))
+                .setMainClass(Objects.requireNonNull(meta.main))
+                .setMinGameVersion(meta.getMinMajor())
+                .setRepository(Objects.requireNonNullElse(meta.repo, ""))
+                .setDependencies(ArcCollections.immutableList(meta.dependencies))
+                .setSoftDependencies(ArcCollections.immutableList(meta.softDependencies))
+                .create();
     }
 
     /**
@@ -71,8 +67,8 @@ public final class PluginDescriptor {
      * @param plugin the plugin to get the descriptor from
      * @return the descriptor of the given plugin
      */
-    public static PluginDescriptor from(final Plugin plugin) {
-        return PluginDescriptor.from(plugin.getClass());
+    static PluginMetadata from(final Plugin plugin) {
+        return PluginMetadata.from(plugin.getClass());
     }
 
     /**
@@ -82,9 +78,9 @@ public final class PluginDescriptor {
      * @return the descriptor of the given plugin class
      * @throws RuntimeException if the plugin descriptor is missing or invalid
      */
-    public static PluginDescriptor from(final Class<? extends Plugin> clazz) {
+    static PluginMetadata from(final Class<? extends Plugin> clazz) {
         try {
-            return PluginDescriptor.from(clazz.getClassLoader());
+            return PluginMetadata.from(clazz.getClassLoader());
         } catch (final IOException e) {
             throw new RuntimeException("Failed to load plugin descriptor.", e);
         }
@@ -95,20 +91,20 @@ public final class PluginDescriptor {
      *
      * @param classLoader the class loader to get the descriptor from
      * @return the descriptor of the given class loader
-     * @throws IOException if the plugin descriptor is missing or invalid
+     * @throws IOException if the plugin metadata is missing or invalid
      */
-    public static PluginDescriptor from(final ClassLoader classLoader) throws IOException {
+    static PluginMetadata from(final ClassLoader classLoader) throws IOException {
         var resource = classLoader.getResourceAsStream("plugin.json");
         if (resource == null) {
             resource = classLoader.getResourceAsStream("plugin.hjson");
             if (resource == null) {
-                throw new IOException("Missing plugin descriptor.");
+                throw new IOException("Missing plugin metadata.");
             }
         }
         try (final var input = resource) {
             final var meta = new Json().fromJson(Mods.ModMeta.class, input);
             meta.cleanup();
-            return PluginDescriptor.from(meta);
+            return PluginMetadata.from(meta);
         } catch (final Exception e) {
             throw new IOException("The plugin descriptor is invalid.", e);
         }
@@ -117,70 +113,74 @@ public final class PluginDescriptor {
     /**
      * Returns the name of the plugin.
      */
-    public String getName() {
-        return this.name;
-    }
+    String getName();
 
     /**
      * Returns the display name of the plugin.
      */
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
+    String getDisplayName();
     /**
      * Returns the author of the plugin.
      */
-    public String getAuthor() {
-        return this.author;
-    }
+    String getAuthor();
 
     /**
      * Returns the description of the plugin.
      */
-    public String getDescription() {
-        return this.description;
-    }
+    String getDescription();
 
     /**
      * Returns the version of the plugin.
      */
-    public String getVersion() {
-        return this.version;
-    }
+    String getVersion();
 
     /**
      * Returns the main class of the plugin.
      */
-    public String getMain() {
-        return this.main;
-    }
+    String getMainClass();
 
     /**
      * Returns the minimum game version required by the plugin.
      */
-    public int getMinGameVersion() {
-        return this.minGameVersion;
-    }
+    int getMinGameVersion();
 
     /**
      * Returns the GitHub repository of the plugin. Empty if not specified.
      */
-    public String getRepository() {
-        return this.repository;
-    }
+    String getRepository();
 
     /**
      * Returns the dependencies of the plugin.
      */
-    public List<String> getDependencies() {
-        return this.dependencies;
-    }
+    List<String> getDependencies();
 
     /**
      * Returns the soft dependencies of the plugin.
      */
-    public List<String> getSoftDependencies() {
-        return this.softDependencies;
+    List<String> getSoftDependencies();
+
+    sealed interface Builder permits ImmutablePluginMetadata.Builder {
+
+        Builder setName(final String name);
+
+        Builder setDisplayName(final String displayName);
+
+        Builder setAuthor(final String author);
+
+        Builder setDescription(final String description);
+
+        Builder setVersion(final String version);
+
+        Builder setMainClass(final String mainClass);
+
+        Builder setMinGameVersion(final int minGameVersion);
+
+        Builder setRepository(final String repository);
+
+        Builder setDependencies(final Iterable<String> elements);
+
+        Builder setSoftDependencies(final Iterable<String> elements);
+
+        PluginMetadata create();
     }
 }

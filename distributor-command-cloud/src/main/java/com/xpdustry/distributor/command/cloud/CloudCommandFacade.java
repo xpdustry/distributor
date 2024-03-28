@@ -54,7 +54,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
             final boolean alias,
             final boolean prefixed) {
         super(
-                (prefixed ? manager.getPlugin().getDescriptor().getName() + ":" : "") + name,
+                (prefixed ? manager.getPlugin().getMetadata().getName() + ":" : "") + name,
                 "[args...]",
                 description.textDescription(),
                 new ArcCommandRunner<>(name, manager));

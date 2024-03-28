@@ -60,8 +60,8 @@ final class WrappingMindustryPlugin implements MindustryPlugin {
     }
 
     @Override
-    public PluginDescriptor getDescriptor() {
-        return PluginDescriptor.from(this.plugin);
+    public PluginMetadata getMetadata() {
+        return PluginMetadata.from(this.plugin);
     }
 
     @Override

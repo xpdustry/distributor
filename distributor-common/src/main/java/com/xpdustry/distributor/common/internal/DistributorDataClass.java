@@ -33,5 +33,6 @@ import org.immutables.value.Value;
         allParameters = true,
         visibility = Value.Style.ImplementationVisibility.PACKAGE,
         builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
-        defaults = @Value.Immutable(copy = false, builder = false))
+        defaults = @Value.Immutable(copy = false, builder = false),
+        depluralize = true)
 public @interface DistributorDataClass {}
