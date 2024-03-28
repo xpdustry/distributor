@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.0-beta.1 - 2024-03-28
+
+Initial beta release to finally start migrating xpdustry plugins to distributor 4, and be able to detect potential runtime and design issues.
+The documentation is currently a copy of distributor 3.
+
 ## v3.3.0 - 2024-01-03
 
 ### Features
