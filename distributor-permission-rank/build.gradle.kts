@@ -18,5 +18,7 @@ dependencies {
 }
 
 tasks.shadowJar {
+    isEnableRelocation = true
+    relocationPrefix = "com.xpdustry.distributor.permission.rank.shadow"
     minimize()
 }
