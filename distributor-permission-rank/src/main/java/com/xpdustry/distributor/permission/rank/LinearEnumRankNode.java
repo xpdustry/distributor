@@ -34,6 +34,7 @@ record LinearEnumRankNode<E extends Enum<E>>(E value, Function<E, String> namePr
         return this.value;
     }
 
+    @SuppressWarnings("EnumOrdinal")
     @Override
     public @Nullable EnumRankNode<E> getPrevious() {
         final var constants = this.value.getDeclaringClass().getEnumConstants();

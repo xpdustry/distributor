@@ -161,6 +161,7 @@ public final class DistributorLogger extends AbstractLogger {
         }
     }
 
+    @SuppressWarnings("EnumOrdinal")
     private boolean isArcLogLevelAtLeast(final LogLevel level) {
         return level != LogLevel.none && Log.level.ordinal() <= level.ordinal();
     }
