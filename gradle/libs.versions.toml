@@ -25,11 +25,11 @@ assert4j = "3.25.3"
 # static analysis
 jspecify = "0.3.0"
 errorprone-gradle = "3.1.0"
-errorprone-core = "2.25.0"
+errorprone-core = "2.26.1"
 nullaway = "0.10.24"
 
 # linting
-palantir = "2.40.0"
+palantir = "2.41.0"
 ktlint = "0.51.0-FINAL"
 
 # gradle
