@@ -18,16 +18,10 @@
  */
 package com.xpdustry.distributor.command.cloud;
 
+import com.xpdustry.distributor.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
-import com.xpdustry.distributor.command.cloud.parser.content.BlockParser;
-import com.xpdustry.distributor.command.cloud.parser.content.ItemParser;
-import com.xpdustry.distributor.command.cloud.parser.content.LiquidParser;
-import com.xpdustry.distributor.command.cloud.parser.content.PlanetParser;
-import com.xpdustry.distributor.command.cloud.parser.content.StatusParser;
-import com.xpdustry.distributor.command.cloud.parser.content.UnitParser;
-import com.xpdustry.distributor.command.cloud.parser.content.WeatherParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.common.DistributorProvider;
 import com.xpdustry.distributor.common.command.CommandSender;
@@ -87,13 +81,13 @@ public class ArcCommandManager<C> extends CommandManager<C>
         this.parserRegistry()
                 .registerParser(PlayerParser.playerParser())
                 .registerParser(PlayerInfoParser.playerInfoParser())
-                .registerParser(BlockParser.blockParser())
-                .registerParser(ItemParser.itemParser())
-                .registerParser(LiquidParser.liquidParser())
-                .registerParser(PlanetParser.planetParser())
-                .registerParser(StatusParser.statusParser())
-                .registerParser(UnitParser.unitParser())
-                .registerParser(WeatherParser.weatherParser());
+                .registerParser(ContentParser.Block.blockParser())
+                .registerParser(ContentParser.Item.itemParser())
+                .registerParser(ContentParser.Liquid.liquidParser())
+                .registerParser(ContentParser.Planet.planetParser())
+                .registerParser(ContentParser.Status.statusParser())
+                .registerParser(ContentParser.Unit.unitParser())
+                .registerParser(ContentParser.Weather.weatherParser());
 
         this.parserRegistry()
                 .registerAnnotationMapper(
