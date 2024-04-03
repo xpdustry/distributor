@@ -22,7 +22,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.6.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
 
-    annotationProcessor("com.uber.nullaway:nullaway:0.10.14")
+    annotationProcessor("com.uber.nullaway:nullaway:0.10.25")
     errorprone("com.google.errorprone:error_prone_core:2.22.0")
 }
 
