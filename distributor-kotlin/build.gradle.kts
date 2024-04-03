@@ -1,7 +1,7 @@
 import fr.xpdustry.toxopid.task.GithubArtifactDownload
 
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.23"
     id("distributor.base-conventions")
     id("distributor.publishing-conventions")
     id("distributor.mindustry-conventions")
