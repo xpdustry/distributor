@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly(projects.distributorCommon)
     api(libs.cloud.core)
-    compileOnly(libs.bundles.mindustry)
+    compileOnlyApi(projects.distributorCommon)
+    compileOnlyApi(libs.bundles.mindustry)
 }

@@ -39,7 +39,11 @@ tasks.dependencyUpdates {
 
 tasks.register<Copy>("release") {
     dependsOn(tasks.build)
-    from(rootProject.subprojects.filter { it.plugins.hasPlugin(ShadowJavaPlugin::class) }.map { it.tasks.named<ShadowJar>("shadowJar") })
+    from(
+        rootProject.subprojects.filter {
+            it.plugins.hasPlugin(ShadowJavaPlugin::class)
+        }.map { it.tasks.named<ShadowJar>(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME) },
+    )
     into(temporaryDir)
     rename { it.replace("-${rootProject.version}-plugin", "") }
 }

@@ -9,11 +9,15 @@ distributorModule {
     display = "DistributorCommon"
     main = "com.xpdustry.distributor.common.DistributorCommonPlugin"
     description = "Core classes of distributor."
+    dependencies = listOf("distributor-logging")
 }
 
 dependencies {
-    pluginCompileOnlyApi(projects.distributorLoggingSimple)
     compileOnlyApi(libs.immutables.annotations)
     annotationProcessor(libs.immutables.processor)
     compileOnlyApi(libs.slf4j.api)
+}
+
+tasks.runMindustryServer {
+    mods.from(projects.distributorLoggingSimple.shadowJar)
 }

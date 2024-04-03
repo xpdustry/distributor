@@ -1,7 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import fr.xpdustry.toxopid.dsl.mindustryDependencies
 import fr.xpdustry.toxopid.spec.ModMetadata
-import kotlin.reflect.cast
 
 plugins {
     id("net.kyori.indra")
@@ -20,28 +18,12 @@ dependencies {
     mindustryDependencies()
 }
 
-val pluginCompileOnlyApi: Configuration by configurations.creating
-
-configurations.compileOnlyApi {
-    extendsFrom(pluginCompileOnlyApi)
-}
-
 tasks.runMindustryClient {
     mods.setFrom()
 }
 
-fun collectAllPluginDependencies(project: Project): Provider<Set<TaskProvider<out ShadowJar>>> =
-    project.configurations.named("pluginCompileOnlyApi").flatMap { configuration ->
-        configuration.dependencies.map(ProjectDependency::class::cast)
-            .fold(project.providers.provider(::emptySet)) { provider, dependency ->
-                provider
-                    .map { it + setOf(dependency.dependencyProject.tasks.shadowJar) }
-                    .zip(collectAllPluginDependencies(dependency.dependencyProject)) { a, b -> a + b }
-            }
-    }
-
 tasks.runMindustryServer {
-    mods.from(tasks.shadowJar, collectAllPluginDependencies(project))
+    mods.from(tasks.shadowJar)
 }
 
 tasks.shadowJar {
@@ -58,10 +40,7 @@ tasks.shadowJar {
                 main = extension.main.get(),
                 java = true,
                 hidden = true,
-                dependencies =
-                    pluginCompileOnlyApi.dependencies.map(ProjectDependency::class::cast)
-                        .map { it.dependencyProject.extensions.getByType<DistributorModuleExtension>().identifier.get() }
-                        .toMutableList(),
+                dependencies = extension.dependencies.get(),
             )
 
         val temp = temporaryDir.resolve("plugin.json")
