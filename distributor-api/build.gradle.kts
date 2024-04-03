@@ -12,7 +12,7 @@ dependencies {
     api("org.slf4j:slf4j-api:$slf4j")
     testRuntimeOnly("org.slf4j:slf4j-simple:$slf4j")
 
-    val geantyref = "1.3.14"
+    val geantyref = "1.3.15"
     api("io.leangen.geantyref:geantyref:$geantyref")
 
     api(cloudCommandFramework("core"))
