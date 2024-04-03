@@ -4,10 +4,10 @@ plugins {
 }
 
 distributorModule {
-    identifier = "distributor-logger"
+    identifier = "distributor-logging"
     display = "DistributorLoggerSimple"
-    main = "com.xpdustry.distributor.logger.simple.DistributorLoggerPlugin"
-    description = "Simple slf4j logger implementation for plugins."
+    main = "com.xpdustry.distributor.logging.simple.DistributorLoggerPlugin"
+    description = "Simple slf4j logger implementation redirecting to arc.util.Log."
 }
 
 dependencies {

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.logger.simple;
+package com.xpdustry.distributor.logging.simple;
 
 import arc.util.ColorCodes;
 import arc.util.Log;
