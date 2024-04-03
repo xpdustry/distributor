@@ -15,7 +15,7 @@ repositories {
 dependencies {
     compileOnlyApi("org.checkerframework:checker-qual:3.39.0")
 
-    val junit = "5.10.0"
+    val junit = "5.10.2"
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
