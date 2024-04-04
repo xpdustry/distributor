@@ -16,17 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud;
+package com.xpdustry.distributor.localization;
 
-import com.xpdustry.distributor.command.DescriptionFacade;
-import org.incendo.cloud.description.Description;
+import java.text.MessageFormat;
+import java.util.Locale;
+import org.jspecify.annotations.Nullable;
 
-@FunctionalInterface
-public interface DescriptionMapper {
+final class RouterLocalizationSource implements LocalizationSource {
 
-    static DescriptionMapper simple() {
-        return description -> DescriptionFacade.of(description.textDescription());
+    static final RouterLocalizationSource INSTANCE = new RouterLocalizationSource();
+
+    static final Locale ROUTER_LOCALE = new Locale("router");
+    private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router", ROUTER_LOCALE);
+
+    private RouterLocalizationSource() {}
+
+    @Override
+    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        return locale.equals(ROUTER_LOCALE) ? ROUTER_FORMAT : null;
     }
 
-    DescriptionFacade map(final Description description);
+    @Override
+    public String toString() {
+        return "RouterLocalizationSource";
+    }
 }

@@ -16,11 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor;
 
-import com.xpdustry.distributor.permission.PermissionTree;
+import com.xpdustry.distributor.command.CommandFacadeManager;
+import com.xpdustry.distributor.event.EventManager;
+import com.xpdustry.distributor.localization.LocalizationSourceManager;
+import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.scheduler.PluginScheduler;
+import com.xpdustry.distributor.service.ServiceManager;
 
-public interface RankPermissionStorage {
+public interface Distributor {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    ServiceManager getServiceManager();
+
+    EventManager getEventManager();
+
+    CommandFacadeManager getCommandFacadeFactory();
+
+    PermissionManager getPermissionManager();
+
+    LocalizationSourceManager getLocalizationSourceManager();
+
+    PluginScheduler getPluginScheduler();
 }

@@ -20,7 +20,7 @@ package com.xpdustry.distributor.command.cloud;
 
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.common.collection.ArcCollections;
+import com.xpdustry.distributor.collection.ArcCollections;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;

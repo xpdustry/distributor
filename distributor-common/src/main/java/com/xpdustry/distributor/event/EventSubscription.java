@@ -16,11 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.event;
 
-import com.xpdustry.distributor.permission.PermissionTree;
+/**
+ * A subscription to an event.
+ */
+public interface EventSubscription {
 
-public interface RankPermissionStorage {
-
-    PermissionTree getRankPermissions(final RankNode node);
+    /**
+     * Unsubscribes the bound subscriber from the event.
+     */
+    void unsubscribe();
 }

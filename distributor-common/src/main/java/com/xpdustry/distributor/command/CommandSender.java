@@ -16,11 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.command;
 
-import com.xpdustry.distributor.permission.PermissionTree;
+import java.util.Locale;
+import mindustry.gen.Player;
 
-public interface RankPermissionStorage {
+public interface CommandSender {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    static CommandSender player(final Player player) {
+        return new PlayerCommandSender(player);
+    }
+
+    static CommandSender server() {
+        return ServerCommandSender.INSTANCE;
+    }
+
+    void sendWarning(final String text);
+
+    void sendMessage(final String text);
+
+    boolean isPlayer();
+
+    boolean isServer();
+
+    Player getPlayer();
+
+    Locale getLocale();
 }

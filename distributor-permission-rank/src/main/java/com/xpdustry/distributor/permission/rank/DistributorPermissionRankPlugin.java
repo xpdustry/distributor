@@ -18,10 +18,10 @@
  */
 package com.xpdustry.distributor.permission.rank;
 
-import com.xpdustry.distributor.common.DistributorProvider;
-import com.xpdustry.distributor.common.permission.PermissionManager;
-import com.xpdustry.distributor.common.plugin.AbstractMindustryPlugin;
-import com.xpdustry.distributor.common.util.Priority;
+import com.xpdustry.distributor.DistributorProvider;
+import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
+import com.xpdustry.distributor.util.Priority;
 
 public final class DistributorPermissionRankPlugin extends AbstractMindustryPlugin {
 

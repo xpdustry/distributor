@@ -7,7 +7,7 @@ plugins {
 distributorModule {
     identifier = "distributor-common"
     display = "DistributorCommon"
-    main = "com.xpdustry.distributor.common.DistributorCommonPlugin"
+    main = "com.xpdustry.distributor.DistributorCommonPlugin"
     description = "Core classes of distributor."
     dependencies = listOf("distributor-logging")
 }

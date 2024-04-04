@@ -19,15 +19,15 @@
 package com.xpdustry.distributor.command.cloud;
 
 import arc.util.CommandHandler;
+import com.xpdustry.distributor.DistributorProvider;
+import com.xpdustry.distributor.command.CommandSender;
 import com.xpdustry.distributor.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
-import com.xpdustry.distributor.common.DistributorProvider;
-import com.xpdustry.distributor.common.command.CommandSender;
-import com.xpdustry.distributor.common.plugin.MindustryPlugin;
-import com.xpdustry.distributor.common.plugin.PluginAware;
+import com.xpdustry.distributor.plugin.MindustryPlugin;
+import com.xpdustry.distributor.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.Objects;

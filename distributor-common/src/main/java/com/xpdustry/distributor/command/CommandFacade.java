@@ -16,11 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.command;
 
-import com.xpdustry.distributor.permission.PermissionTree;
+import com.xpdustry.distributor.plugin.MindustryPlugin;
+import org.jspecify.annotations.Nullable;
 
-public interface RankPermissionStorage {
+public interface CommandFacade {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    String getRealName();
+
+    String getName();
+
+    DescriptionFacade getDescription();
+
+    boolean isAlias();
+
+    boolean isPrefixed();
+
+    boolean isVisible(final CommandSender sender);
+
+    CommandHelp getHelp(final CommandSender sender, final String query);
+
+    @Nullable MindustryPlugin getPlugin();
 }

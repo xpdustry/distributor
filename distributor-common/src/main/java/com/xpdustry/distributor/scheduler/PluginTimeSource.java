@@ -16,11 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.scheduler;
 
-import com.xpdustry.distributor.permission.PermissionTree;
+import arc.util.Time;
 
-public interface RankPermissionStorage {
+/**
+ * A {@code PluginTimeSource} provides the current time in milliseconds.
+ */
+@FunctionalInterface
+public interface PluginTimeSource {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    /**
+     * Returns a {@code PluginTimeSource} using {@link Time#globalTime} to provide the current time.
+     */
+    static PluginTimeSource arc() {
+        return () -> (long) Time.globalTime;
+    }
+
+    /**
+     * Returns a {@code PluginTimeSource} using {@link System#currentTimeMillis()} to provide the current time.
+     */
+    static PluginTimeSource standard() {
+        return () -> System.currentTimeMillis() / 16L;
+    }
+
+    long getCurrentTicks();
 }

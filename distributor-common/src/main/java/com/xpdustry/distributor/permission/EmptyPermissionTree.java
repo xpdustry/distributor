@@ -16,11 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.permission;
 
-import com.xpdustry.distributor.permission.PermissionTree;
+import java.util.Collections;
+import java.util.Map;
 
-public interface RankPermissionStorage {
+final class EmptyPermissionTree implements PermissionTree {
 
-    PermissionTree getRankPermissions(final RankNode node);
+    static EmptyPermissionTree INSTANCE = new EmptyPermissionTree();
+
+    private EmptyPermissionTree() {}
+
+    @Override
+    public TriState getPermission(final String permission) {
+        return TriState.UNDEFINED;
+    }
+
+    @Override
+    public void setPermission(final String permission, final TriState state) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, Boolean> getPermissions() {
+        return Collections.emptyMap();
+    }
 }
