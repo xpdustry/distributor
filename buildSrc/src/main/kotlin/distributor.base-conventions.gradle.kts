@@ -23,7 +23,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
 
     annotationProcessor("com.uber.nullaway:nullaway:0.10.14")
-    errorprone("com.google.errorprone:error_prone_core:2.22.0")
+    errorprone("com.google.errorprone:error_prone_core:2.26.1")
 }
 
 indra {
