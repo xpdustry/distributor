@@ -26,7 +26,7 @@ public sealed interface CommandElement {
 
     String getName();
 
-    CommandDescription getDescription();
+    DescriptionFacade getDescription();
 
     Collection<String> getAliases();
 
@@ -37,7 +37,7 @@ public sealed interface CommandElement {
 
         static Argument of(
                 final String name,
-                final CommandDescription description,
+                final DescriptionFacade description,
                 final Collection<String> aliases,
                 final Kind kind) {
             return ImmutableArgument.of(name, description, aliases, kind);
@@ -59,7 +59,7 @@ public sealed interface CommandElement {
 
         static Flag of(
                 final String name,
-                final CommandDescription description,
+                final DescriptionFacade description,
                 final Collection<String> aliases,
                 final boolean repeatable) {
             return ImmutableFlag.of(name, description, aliases, repeatable);

@@ -26,9 +26,11 @@ import org.jspecify.annotations.Nullable;
 final class ArcCommandFacade implements CommandFacade {
 
     private final CommandHandler.Command command;
+    private final DescriptionFacade description;
 
     ArcCommandFacade(final CommandHandler.Command command) {
         this.command = command;
+        this.description = DescriptionFacade.of(command.description);
     }
 
     @Override
@@ -42,8 +44,8 @@ final class ArcCommandFacade implements CommandFacade {
     }
 
     @Override
-    public CommandDescription getDescription() {
-        return () -> command.description;
+    public DescriptionFacade getDescription() {
+        return this.description;
     }
 
     @Override
@@ -63,7 +65,8 @@ final class ArcCommandFacade implements CommandFacade {
 
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
-        return CommandHelp.Entry.of(command.paramText, getDescription(), List.of(), List.of());
+        return CommandHelp.Entry.of(
+                command.paramText, getDescription(), DescriptionFacade.empty(), List.of(), List.of());
     }
 
     @Override

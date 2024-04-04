@@ -16,13 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.common.command;
+package com.xpdustry.distributor.command.cloud;
 
-public interface CommandDescription {
+import com.xpdustry.distributor.common.command.DescriptionFacade;
+import org.incendo.cloud.description.Description;
 
-    String getText();
+@FunctionalInterface
+public interface DescriptionMapper {
 
-    default String getText(final CommandSender sender) {
-        return this.getText();
+    static DescriptionMapper simple() {
+        return description -> DescriptionFacade.of(description.textDescription());
     }
+
+    DescriptionFacade map(final Description description);
 }

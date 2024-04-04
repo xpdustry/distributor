@@ -27,7 +27,7 @@ public interface CommandFacade {
 
     String getName();
 
-    CommandDescription getDescription();
+    DescriptionFacade getDescription();
 
     boolean isAlias();
 

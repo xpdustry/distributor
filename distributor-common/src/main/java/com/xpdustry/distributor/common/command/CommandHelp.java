@@ -30,15 +30,18 @@ public sealed interface CommandHelp {
 
         static Entry of(
                 final String syntax,
-                final CommandDescription description,
+                final DescriptionFacade description,
+                final DescriptionFacade verboseDescription,
                 final List<CommandElement.Argument> arguments,
                 final List<CommandElement.Flag> flags) {
-            return ImmutableEntry.of(syntax, description, arguments, flags);
+            return ImmutableEntry.of(syntax, description, verboseDescription, arguments, flags);
         }
 
         String getSyntax();
 
-        CommandDescription getDescription();
+        DescriptionFacade getDescription();
+
+        DescriptionFacade getVerboseDescription();
 
         List<CommandElement.Argument> getArguments();
 

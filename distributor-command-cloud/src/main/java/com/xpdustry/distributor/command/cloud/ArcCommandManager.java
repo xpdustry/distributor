@@ -49,17 +49,20 @@ public class ArcCommandManager<C> extends CommandManager<C>
         implements PluginAware, SenderMapperHolder<CommandSender, C> {
 
     private final MindustryPlugin plugin;
-    private final SenderMapper<CommandSender, C> mapper;
+    private final SenderMapper<CommandSender, C> senderMapper;
+    private final DescriptionMapper descriptionMapper;
     private final Logger logger;
     private @Nullable CommandHandler handler = null;
 
     public ArcCommandManager(
             final MindustryPlugin plugin,
             final ExecutionCoordinator<C> coordinator,
-            final SenderMapper<CommandSender, C> mapper) {
+            final SenderMapper<CommandSender, C> senderMapper,
+            final DescriptionMapper descriptionMapper) {
         super(coordinator, CommandRegistrationHandler.nullCommandRegistrationHandler());
         this.plugin = plugin;
-        this.mapper = mapper;
+        this.senderMapper = senderMapper;
+        this.descriptionMapper = descriptionMapper;
         this.logger = LoggerFactory.getLogger(this.getClass());
 
         this.registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
@@ -129,6 +132,13 @@ public class ArcCommandManager<C> extends CommandManager<C>
                         (ctx, annotation) -> Objects.requireNonNull(ArcCommandManager.this.handler));
     }
 
+    /**
+     * Returns the {@code DescriptionMapper} of this command manager.
+     */
+    public final DescriptionMapper descriptionMapper() {
+        return this.descriptionMapper;
+    }
+
     @Override
     public boolean hasPermission(final @NonNull C sender, final String permission) {
         if (permission.isEmpty()) {
@@ -149,7 +159,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
     @Override
     public final @NonNull SenderMapper<CommandSender, C> senderMapper() {
-        return this.mapper;
+        return this.senderMapper;
     }
 
     protected void registerDefaultExceptionHandlers() {

@@ -19,11 +19,11 @@
 package com.xpdustry.distributor.command.cloud;
 
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.common.command.CommandDescription;
 import com.xpdustry.distributor.common.command.CommandElement;
 import com.xpdustry.distributor.common.command.CommandFacade;
 import com.xpdustry.distributor.common.command.CommandHelp;
 import com.xpdustry.distributor.common.command.CommandSender;
+import com.xpdustry.distributor.common.command.DescriptionFacade;
 import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,8 +79,8 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
     }
 
     @Override
-    public CommandDescription getDescription() {
-        return this.cloudDescription::textDescription;
+    public DescriptionFacade getDescription() {
+        return this.manager.descriptionMapper().map(this.cloudDescription);
     }
 
     /**
@@ -118,7 +118,12 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
             final var command = verbose.entry().command();
             return CommandHelp.Entry.of(
                     verbose.entry().syntax(),
-                    command.commandDescription().description()::textDescription,
+                    this.manager
+                            .descriptionMapper()
+                            .map(command.commandDescription().description()),
+                    this.manager
+                            .descriptionMapper()
+                            .map(command.commandDescription().verboseDescription()),
                     getArguments(command),
                     getFlags(command));
         } else {
@@ -130,7 +135,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
         return command.nonFlagArguments().stream()
                 .map(component -> CommandElement.Argument.of(
                         component.name(),
-                        component.description()::textDescription,
+                        this.manager.descriptionMapper().map(component.description()),
                         component.alternativeAliases(),
                         switch (component.type()) {
                             case LITERAL -> CommandElement.Argument.Kind.LITERAL;
@@ -148,7 +153,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
             for (final var flag : parser.flags()) {
                 flags.add(CommandElement.Flag.of(
                         flag.name(),
-                        flag.description()::textDescription,
+                        this.manager.descriptionMapper().map(flag.description()),
                         flag.aliases(),
                         flag.mode() == CommandFlag.FlagMode.REPEATABLE));
             }
