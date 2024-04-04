@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.command.cloud;
 
+import arc.util.CommandHandler;
 import com.xpdustry.distributor.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
@@ -29,6 +30,7 @@ import com.xpdustry.distributor.common.plugin.MindustryPlugin;
 import com.xpdustry.distributor.common.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
+import java.util.Objects;
 import mindustry.game.Team;
 import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
@@ -37,7 +39,9 @@ import org.incendo.cloud.SenderMapperHolder;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.internal.CommandRegistrationHandler;
 import org.incendo.cloud.parser.ParserParameters;
+import org.incendo.cloud.state.RegistrationState;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +51,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
     private final MindustryPlugin plugin;
     private final SenderMapper<CommandSender, C> mapper;
     private final Logger logger;
+    private @Nullable CommandHandler handler = null;
 
     public ArcCommandManager(
             final MindustryPlugin plugin,
@@ -107,6 +112,21 @@ public class ArcCommandManager<C> extends CommandManager<C>
                             ArcCommandContextKeys.MINDUSTRY_ADMIN,
                             reversed.isServer() || reversed.getPlayer().admin());
         });
+    }
+
+    /**
+     * Initializes the command manager with it's backing command handler.
+     *
+     * @param handler the backing command handler
+     */
+    public final void initialize(final CommandHandler handler) {
+        this.commandRegistrationHandler(new ArcRegistrationHandler<>(this, handler));
+        this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
+        this.handler = handler;
+        this.parameterInjectorRegistry()
+                .registerInjector(
+                        CommandHandler.class,
+                        (ctx, annotation) -> Objects.requireNonNull(ArcCommandManager.this.handler));
     }
 
     @Override

@@ -41,7 +41,7 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler<C> {
         try {
             COMMAND_MAP_ACCESSOR = CommandHandler.class.getDeclaredField("commands");
             COMMAND_MAP_ACCESSOR.setAccessible(true);
-        } catch (final NoSuchFieldException e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Unable to access CommandHandler#commands.", e);
         }
     }
