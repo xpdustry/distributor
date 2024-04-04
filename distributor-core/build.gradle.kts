@@ -8,7 +8,7 @@ dependencies {
     api(project(":distributor-api"))
     api("org.aeonbits.owner:owner-java8:1.0.12")
     api("com.zaxxer:HikariCP:5.0.1")
-    api("com.mysql:mysql-connector-j:8.1.0")
+    api("com.mysql:mysql-connector-j:8.3.0")
     api("com.password4j:password4j:1.7.3")
     api("org.slf4j:jul-to-slf4j:2.0.9")
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
