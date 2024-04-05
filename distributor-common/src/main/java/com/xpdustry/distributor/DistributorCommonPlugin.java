@@ -18,26 +18,27 @@
  */
 package com.xpdustry.distributor;
 
-import com.xpdustry.distributor.event.EventManager;
-import com.xpdustry.distributor.localization.LocalizationSourceManager;
+import arc.Core;
+import arc.util.OS;
+import com.xpdustry.distributor.event.EventBus;
+import com.xpdustry.distributor.event.EventBusImpl;
+import com.xpdustry.distributor.localization.ListLocalizationSource;
 import com.xpdustry.distributor.permission.PermissionManager;
 import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.scheduler.PluginScheduler;
+import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
 import com.xpdustry.distributor.scheduler.PluginTimeSource;
 import com.xpdustry.distributor.service.ServiceManager;
-import com.xpdustry.distributor.util.Priority;
+import com.xpdustry.distributor.service.ServiceManagerImpl;
 import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
-    private final ServiceManager services = ServiceManager.create();
-    private final LocalizationSourceManager source = LocalizationSourceManager.create();
-    private final EventManager events = EventManager.create();
-    private final PluginScheduler scheduler = PluginScheduler.create(
-            this,
-            this.services.provide(PluginTimeSource.class),
-            Runtime.getRuntime().availableProcessors());
+    private final ServiceManager services = new ServiceManagerImpl();
+    private final ListLocalizationSource source = ListLocalizationSource.create();
+    private final EventBus events = new EventBusImpl();
+    private final PluginScheduler scheduler = new PluginSchedulerImpl(PluginTimeSource.arc(), Core.app::post, OS.cores);
     private @Nullable PermissionManager permissions = null;
 
     @Override
@@ -46,7 +47,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public EventManager getEventManager() {
+    public EventBus getEventBus() {
         return this.events;
     }
 
@@ -56,7 +57,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public LocalizationSourceManager getLocalizationSourceManager() {
+    public ListLocalizationSource getGlobalLocalizationSource() {
         return this.source;
     }
 
@@ -68,7 +69,6 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     @Override
     public void onInit() {
         DistributorProvider.set(this);
-        this.services.register(this, PluginTimeSource.class, Priority.LOW, PluginTimeSource::arc);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
         this.registerDefaultExceptionHandlers();
 
         this.captionRegistry().registerProvider((caption, sender) -> {
-            final var source = DistributorProvider.get().getLocalizationSourceManager();
+            final var source = DistributorProvider.get().getGlobalLocalizationSource();
             final var locale = this.senderMapper().reverse(sender).getLocale();
             final var format = source.localize(caption.key(), locale);
             return format != null ? format.toPattern() : "???" + caption.key() + "???";

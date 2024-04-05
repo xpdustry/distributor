@@ -13,7 +13,7 @@ distributorModule {
 }
 
 dependencies {
-    compileOnlyApi(projects.distributorCommon)
+    compileOnlyApi(projects.distributorCommonApi)
     implementation(libs.configurate.core)
     implementation(libs.configurate.yaml)
 }

@@ -28,7 +28,7 @@ import com.xpdustry.distributor.util.Priority;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-final class EventManagerImpl implements EventManager {
+public final class EventBusImpl implements EventBus {
 
     private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
         final var priorityA = a instanceof ConsumerCons<?> m ? m.priority : Priority.NORMAL;
@@ -39,7 +39,7 @@ final class EventManagerImpl implements EventManager {
     final ObjectMap<Object, Seq<Cons<?>>> events;
 
     @SuppressWarnings("unchecked")
-    EventManagerImpl() {
+    public EventBusImpl() {
         try {
             final var field = Events.class.getDeclaredField("events");
             field.setAccessible(true);

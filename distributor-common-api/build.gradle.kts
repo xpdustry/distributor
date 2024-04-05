@@ -4,7 +4,8 @@ plugins {
 }
 
 dependencies {
-    api(libs.cloud.core)
-    compileOnlyApi(projects.distributorCommonApi)
+    compileOnlyApi(libs.immutables.annotations)
+    annotationProcessor(libs.immutables.processor)
+    compileOnlyApi(libs.slf4j.api)
     compileOnlyApi(libs.bundles.mindustry)
 }

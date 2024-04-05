@@ -13,9 +13,7 @@ distributorModule {
 }
 
 dependencies {
-    compileOnlyApi(libs.immutables.annotations)
-    annotationProcessor(libs.immutables.processor)
-    compileOnlyApi(libs.slf4j.api)
+    implementation(projects.distributorCommonApi)
 }
 
 tasks.runMindustryServer {

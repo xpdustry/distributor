@@ -39,11 +39,7 @@ import java.util.function.Consumer;
  * } </pre>
  * <br>
  */
-public interface EventManager {
-
-    static EventManager create() {
-        return new EventManagerImpl();
-    }
+public interface EventBus {
 
     /**
      * Subscribe to an event.

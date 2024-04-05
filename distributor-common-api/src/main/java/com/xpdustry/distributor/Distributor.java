@@ -16,24 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor;
 
-/**
- * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
- */
-public interface LocalizationSourceManager extends LocalizationSource {
+import com.xpdustry.distributor.event.EventBus;
+import com.xpdustry.distributor.localization.ListLocalizationSource;
+import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.scheduler.PluginScheduler;
+import com.xpdustry.distributor.service.ServiceManager;
 
-    /**
-     * Creates a new {@code MultiLocalizationSource} instance.
-     */
-    static LocalizationSourceManager create() {
-        return new LocalizationSourceManagerImpl();
-    }
+public interface Distributor {
 
-    /**
-     * Adds a localization source to the list of sources.
-     *
-     * @param source the source to add
-     */
-    void addLocalizationSource(final LocalizationSource source);
+    ServiceManager getServiceManager();
+
+    ListLocalizationSource getGlobalLocalizationSource();
+
+    EventBus getEventBus();
+
+    PermissionManager getPermissionManager();
+
+    PluginScheduler getPluginScheduler();
 }

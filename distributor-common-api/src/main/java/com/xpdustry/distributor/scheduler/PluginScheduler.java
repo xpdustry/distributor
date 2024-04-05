@@ -16,23 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor;
+package com.xpdustry.distributor.scheduler;
 
-import com.xpdustry.distributor.event.EventManager;
-import com.xpdustry.distributor.localization.LocalizationSourceManager;
-import com.xpdustry.distributor.permission.PermissionManager;
-import com.xpdustry.distributor.scheduler.PluginScheduler;
-import com.xpdustry.distributor.service.ServiceManager;
+import com.xpdustry.distributor.plugin.MindustryPlugin;
 
-public interface Distributor {
+/**
+ * A {@code PluginScheduler} is used to schedule tasks for a plugin. A better alternative to {@link arc.util.Timer}.
+ */
+public interface PluginScheduler {
 
-    ServiceManager getServiceManager();
-
-    EventManager getEventManager();
-
-    PermissionManager getPermissionManager();
-
-    LocalizationSourceManager getLocalizationSourceManager();
-
-    PluginScheduler getPluginScheduler();
+    /**
+     * Returns a new {@link PluginTask.Builder} instance scheduling a task.
+     *
+     * @param plugin the plugin to schedule the task for.
+     * @return a new {@link PluginTask.Builder} instance.
+     */
+    PluginTask.Builder schedule(final MindustryPlugin plugin);
 }

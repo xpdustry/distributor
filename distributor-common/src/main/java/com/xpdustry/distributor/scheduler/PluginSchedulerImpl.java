@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
+public final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
 
     static final String DISTRIBUTOR_WORKER_BASE_NAME = "distributor-worker-";
     private static final Logger logger = LoggerFactory.getLogger("PluginScheduler");
@@ -44,7 +44,7 @@ final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
     private final Executor syncExecutor;
     private final PluginTimeSource source;
 
-    PluginSchedulerImpl(final PluginTimeSource source, final Executor syncExecutor, final int parallelism) {
+    public PluginSchedulerImpl(final PluginTimeSource source, final Executor syncExecutor, final int parallelism) {
         this.pool = new ForkJoinPool(parallelism, new PluginSchedulerWorkerThreadFactory(), null, false);
         this.syncExecutor = syncExecutor;
         this.source = source;

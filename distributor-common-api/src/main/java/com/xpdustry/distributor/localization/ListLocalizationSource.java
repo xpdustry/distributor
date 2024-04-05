@@ -16,27 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.annotation;
-
-import com.xpdustry.distributor.event.EventManager;
-import com.xpdustry.distributor.util.Priority;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.xpdustry.distributor.localization;
 
 /**
- * Marks a method as an event handler, meaning it will be called by a {@link EventManager} when its corresponding event is
- * posted.
- * <br>
- * The annotated method must have exactly one parameter, which is the event class.
+ * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface EventHandler {
+public interface ListLocalizationSource extends LocalizationSource {
 
     /**
-     * The priority of the event handler.
+     * Creates a new {@code MultiLocalizationSource} instance.
      */
-    Priority priority() default Priority.NORMAL;
+    static ListLocalizationSource create() {
+        return new ListLocalizationSourceImpl();
+    }
+
+    /**
+     * Adds a localization source to the list of sources.
+     *
+     * @param source the source to add
+     */
+    void addLocalizationSource(final LocalizationSource source);
 }

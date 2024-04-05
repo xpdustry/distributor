@@ -27,10 +27,6 @@ import org.immutables.value.Value;
 
 public interface ServiceManager {
 
-    static ServiceManager create() {
-        return new ServiceManagerImpl();
-    }
-
     <T> void register(
             final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final Supplier<T> factory);
 

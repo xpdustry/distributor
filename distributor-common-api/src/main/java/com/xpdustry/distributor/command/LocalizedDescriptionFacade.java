@@ -25,21 +25,21 @@ record LocalizedDescriptionFacade(String key, Locale defaultLocale) implements D
 
     @Override
     public String getText() {
-        return DistributorProvider.get().getLocalizationSourceManager().format(key, this.defaultLocale);
+        return DistributorProvider.get().getGlobalLocalizationSource().format(key, this.defaultLocale);
     }
 
     @Override
     public String getText(final CommandSender sender) {
-        return DistributorProvider.get().getLocalizationSourceManager().format(key, sender.getLocale());
+        return DistributorProvider.get().getGlobalLocalizationSource().format(key, sender.getLocale());
     }
 
     @Override
     public boolean isEmpty() {
-        return DistributorProvider.get().getLocalizationSourceManager().localize(key, this.defaultLocale) != null;
+        return DistributorProvider.get().getGlobalLocalizationSource().localize(key, this.defaultLocale) != null;
     }
 
     @Override
     public boolean isEmpty(final CommandSender sender) {
-        return DistributorProvider.get().getLocalizationSourceManager().localize(key, sender.getLocale()) != null;
+        return DistributorProvider.get().getGlobalLocalizationSource().localize(key, sender.getLocale()) != null;
     }
 }
