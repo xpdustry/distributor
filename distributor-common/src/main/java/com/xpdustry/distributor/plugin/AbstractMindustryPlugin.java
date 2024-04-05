@@ -80,13 +80,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         return this.logger;
     }
 
-    /**
-     * Returns an unmodifiable list of the listeners registered to this plugin.
-     */
-    protected final List<PluginListener> getListeners() {
-        return Collections.unmodifiableList(this.listeners);
-    }
-
     @Override
     public void addListener(final PluginListener listener) {
         if (this.listeners.contains(listener)) {
@@ -94,6 +87,13 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         }
         this.listeners.add(listener);
         onListenerRegistration(listener);
+    }
+
+    /**
+     * Returns an unmodifiable list of the listeners registered to this plugin.
+     */
+    protected final List<PluginListener> getListeners() {
+        return Collections.unmodifiableList(this.listeners);
     }
 
     protected void onListenerRegistration(final PluginListener listener) {}

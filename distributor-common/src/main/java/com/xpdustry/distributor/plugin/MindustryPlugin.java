@@ -36,7 +36,7 @@ public interface MindustryPlugin {
      * @return the wrapped plugin
      */
     static MindustryPlugin wrap(final Plugin plugin) {
-        return new WrappingMindustryPlugin(plugin);
+        return plugin instanceof MindustryPlugin casted ? casted : new WrappingMindustryPlugin(plugin);
     }
 
     /**
