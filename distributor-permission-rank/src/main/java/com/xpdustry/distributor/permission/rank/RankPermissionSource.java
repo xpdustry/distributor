@@ -20,7 +20,7 @@ package com.xpdustry.distributor.permission.rank;
 
 import com.xpdustry.distributor.permission.PermissionTree;
 
-public interface RankPermissionStorage {
+public interface RankPermissionSource {
 
     PermissionTree getRankPermissions(final RankNode node);
 }

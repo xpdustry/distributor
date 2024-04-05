@@ -33,15 +33,15 @@ import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-final class YamlRankPermissionStorage implements RankPermissionStorage, PluginListener {
+final class YamlRankPermissionSource implements RankPermissionSource, PluginListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YamlRankPermissionStorage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YamlRankPermissionSource.class);
 
     private Map<String, PermissionTree> permissions = Collections.emptyMap();
     private final Object lock = new Object();
     private final YamlConfigurationLoader loader;
 
-    YamlRankPermissionStorage(final Path file) {
+    YamlRankPermissionSource(final Path file) {
         this.loader = YamlConfigurationLoader.builder()
                 .path(file)
                 .nodeStyle(NodeStyle.BLOCK)
