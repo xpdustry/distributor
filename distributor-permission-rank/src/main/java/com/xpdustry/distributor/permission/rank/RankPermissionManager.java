@@ -18,30 +18,33 @@
  */
 package com.xpdustry.distributor.permission.rank;
 
+import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.permission.PermissionManager;
 import com.xpdustry.distributor.permission.TriState;
+import java.util.HashSet;
 import mindustry.gen.Player;
 
 final class RankPermissionManager implements PermissionManager {
 
-    private final RankProvider provider;
-    private final RankPermissionStorage storage;
-
-    RankPermissionManager(final RankProvider provider, final RankPermissionStorage storage) {
-        this.provider = provider;
-        this.storage = storage;
-    }
-
     @Override
     public TriState getPermission(final Player player, final String permission) {
-        for (final var node : this.provider.getRanks(player)) {
-            RankNode current = node;
-            while (current != null) {
-                final var state = this.storage.getRankPermissions(current).getPermission(permission);
-                if (state != TriState.UNDEFINED) {
-                    return state;
+        final var services = DistributorProvider.get().getServiceManager();
+        final var storages = services.getProviders(RankPermissionStorage.class);
+        for (final var provider : services.getProviders(RankProvider.class)) {
+            for (final var node : provider.getInstance().getRanks(player)) {
+                final var visited = new HashSet<RankNode>();
+                for (final var storage : storages) {
+                    RankNode current = node;
+                    while (current != null && visited.add(current)) {
+                        final var state = storage.getInstance()
+                                .getRankPermissions(current)
+                                .getPermission(permission);
+                        if (state != TriState.UNDEFINED) {
+                            return state;
+                        }
+                        current = node.getPrevious();
+                    }
                 }
-                current = node.getPrevious();
             }
         }
         return TriState.UNDEFINED;

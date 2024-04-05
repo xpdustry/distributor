@@ -36,7 +36,7 @@ public sealed interface PluginMetadata permits ImmutablePluginMetadata {
         return ImmutablePluginMetadata.builder();
     }
 
-    static PluginMetadata.Builder from(final PluginMetadata metadata) {
+    static PluginMetadata.Builder builder(final PluginMetadata metadata) {
         return ImmutablePluginMetadata.builder().from(metadata);
     }
 

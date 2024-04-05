@@ -23,6 +23,10 @@ import mindustry.gen.Player;
 
 public interface PermissionManager {
 
+    static PermissionManager noop() {
+        return NoopPermissionManager.INSTANCE;
+    }
+
     /**
      * Regex pattern used to validate permission strings.
      * <p>

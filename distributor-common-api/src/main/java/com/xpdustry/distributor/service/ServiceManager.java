@@ -27,10 +27,18 @@ import org.immutables.value.Value;
 
 public interface ServiceManager {
 
-    <T> void register(
-            final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final Supplier<T> factory);
+    <T> void register(final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance);
 
-    <T> T provide(final Class<T> clazz);
+    default <T> T provide(final Class<T> clazz) {
+        return provideOrDefault(clazz, () -> {
+            throw new IllegalStateException("Expected provider for " + clazz.getCanonicalName() + ", got nothing.");
+        });
+    }
+
+    default <T> T provideOrDefault(final Class<T> clazz, final Supplier<T> factory) {
+        final var providers = this.getProviders(clazz);
+        return providers.isEmpty() ? factory.get() : providers.get(0).getInstance();
+    }
 
     <T> List<Provider<T>> getProviders(final Class<T> clazz);
 
@@ -39,11 +47,8 @@ public interface ServiceManager {
     sealed interface Provider<T> permits ImmutableProvider {
 
         static <T> Provider<T> of(
-                final MindustryPlugin plugin,
-                final Class<T> clazz,
-                final Priority priority,
-                final Supplier<T> factory) {
-            return ImmutableProvider.of(plugin, clazz, priority, factory);
+                final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance) {
+            return ImmutableProvider.of(plugin, clazz, priority, instance);
         }
 
         MindustryPlugin getPlugin();
@@ -52,6 +57,6 @@ public interface ServiceManager {
 
         Priority getPriority();
 
-        Supplier<T> getFactory();
+        T getInstance();
     }
 }

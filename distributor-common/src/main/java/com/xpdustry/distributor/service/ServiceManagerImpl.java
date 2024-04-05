@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.function.Supplier;
 
 public final class ServiceManagerImpl implements ServiceManager {
 
@@ -37,7 +36,7 @@ public final class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public <T> void register(
-            final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final Supplier<T> instance) {
+            final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance) {
         synchronized (this.lock) {
             this.services
                     .computeIfAbsent(
@@ -52,7 +51,7 @@ public final class ServiceManagerImpl implements ServiceManager {
         if (providers.isEmpty()) {
             throw new IllegalStateException("Expected provider for " + clazz.getCanonicalName() + ", got nothing.");
         }
-        return providers.get(0).getFactory().get();
+        return providers.get(0).getInstance();
     }
 
     @SuppressWarnings("unchecked")

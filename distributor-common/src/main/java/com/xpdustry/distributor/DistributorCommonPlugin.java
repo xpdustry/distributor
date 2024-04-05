@@ -63,17 +63,18 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public PluginScheduler getPluginScheduler() {
-        return ensureInitialized(this.scheduler, "scheduler");
+        return this.scheduler;
     }
 
     @Override
     public void onInit() {
         DistributorProvider.set(this);
+        this.addListener((PluginSchedulerImpl) this.scheduler);
     }
 
     @Override
     public void onLoad() {
-        this.permissions = services.provide(PermissionManager.class);
+        this.permissions = services.provideOrDefault(PermissionManager.class, PermissionManager::noop);
     }
 
     private <T> T ensureInitialized(final @Nullable T instance, final String name) {
