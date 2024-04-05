@@ -50,7 +50,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public CommandFacadeManager getCommandFacadeFactory() {
+    public CommandFacadeManager getCommandFacadeManager() {
         return ensureInitialized(this.factory, "command-facade");
     }
 

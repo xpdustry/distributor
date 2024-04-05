@@ -31,7 +31,7 @@ public interface Distributor {
 
     EventManager getEventManager();
 
-    CommandFacadeManager getCommandFacadeFactory();
+    CommandFacadeManager getCommandFacadeManager();
 
     PermissionManager getPermissionManager();
 
