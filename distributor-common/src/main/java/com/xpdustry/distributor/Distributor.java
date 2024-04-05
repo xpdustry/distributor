@@ -18,7 +18,6 @@
  */
 package com.xpdustry.distributor;
 
-import com.xpdustry.distributor.command.CommandFacadeManager;
 import com.xpdustry.distributor.event.EventManager;
 import com.xpdustry.distributor.localization.LocalizationSourceManager;
 import com.xpdustry.distributor.permission.PermissionManager;
@@ -30,8 +29,6 @@ public interface Distributor {
     ServiceManager getServiceManager();
 
     EventManager getEventManager();
-
-    CommandFacadeManager getCommandFacadeManager();
 
     PermissionManager getPermissionManager();
 

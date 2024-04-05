@@ -18,10 +18,19 @@
  */
 package com.xpdustry.distributor.command;
 
+import arc.util.CommandHandler;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
 import org.jspecify.annotations.Nullable;
 
 public interface CommandFacade {
+
+    static CommandFacade wrap(final CommandHandler.Command command) {
+        if (command instanceof CommandFacade facade) {
+            return facade;
+        } else {
+            return new ArcCommandFacade(command);
+        }
+    }
 
     String getRealName();
 
