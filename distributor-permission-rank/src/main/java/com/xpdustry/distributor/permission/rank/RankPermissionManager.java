@@ -29,16 +29,15 @@ final class RankPermissionManager implements PermissionManager {
     @Override
     public TriState getPermission(final Player player, final String permission) {
         final var services = DistributorProvider.get().getServiceManager();
-        final var storages = services.getProviders(RankPermissionStorage.class);
+        final var sources = services.getProviders(RankPermissionSource.class);
         for (final var provider : services.getProviders(RankProvider.class)) {
             for (final var node : provider.getInstance().getRanks(player)) {
                 final var visited = new HashSet<RankNode>();
-                for (final var storage : storages) {
+                for (final var source : sources) {
                     RankNode current = node;
                     while (current != null && visited.add(current)) {
-                        final var state = storage.getInstance()
-                                .getRankPermissions(current)
-                                .getPermission(permission);
+                        final var state =
+                                source.getInstance().getRankPermissions(current).getPermission(permission);
                         if (state != TriState.UNDEFINED) {
                             return state;
                         }
