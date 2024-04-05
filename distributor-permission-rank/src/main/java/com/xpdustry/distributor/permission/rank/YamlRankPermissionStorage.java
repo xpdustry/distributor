@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.permission.rank;
 
-import arc.util.Log;
+import arc.util.CommandHandler;
 import com.xpdustry.distributor.permission.PermissionTree;
 import com.xpdustry.distributor.permission.TriState;
 import com.xpdustry.distributor.plugin.PluginListener;
@@ -28,11 +28,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import mindustry.server.ServerControl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 final class YamlRankPermissionStorage implements RankPermissionStorage, PluginListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(YamlRankPermissionStorage.class);
 
     private Map<String, PermissionTree> permissions = Collections.emptyMap();
     private final Object lock = new Object();
@@ -52,13 +55,16 @@ final class YamlRankPermissionStorage implements RankPermissionStorage, PluginLi
         } catch (final IOException error) {
             throw new RuntimeException("Failed to load permission file.", error);
         }
+    }
 
-        ServerControl.instance.handler.register("rank-permission-reload", "Reload the permissions", $ -> {
+    @Override
+    public void onPluginServerCommandsRegistration(final CommandHandler handler) {
+        handler.register("rank-permission-reload", "Reload the permissions", $ -> {
             try {
                 reload();
-                Log.info("Reloaded rank permissions file");
+                LOGGER.info("Reloaded rank permissions file");
             } catch (final IOException e) {
-                Log.err("Failed to reload rank permission file", e);
+                LOGGER.error("Failed to reload rank permission file", e);
             }
         });
     }
