@@ -45,15 +45,6 @@ public final class ServiceManagerImpl implements ServiceManager {
         }
     }
 
-    @Override
-    public <T> T provide(final Class<T> clazz) {
-        final var providers = this.getProviders(clazz);
-        if (providers.isEmpty()) {
-            throw new IllegalStateException("Expected provider for " + clazz.getCanonicalName() + ", got nothing.");
-        }
-        return providers.get(0).getInstance();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<Provider<T>> getProviders(final Class<T> clazz) {
