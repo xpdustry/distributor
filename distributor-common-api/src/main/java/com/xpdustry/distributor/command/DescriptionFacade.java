@@ -29,7 +29,7 @@ public interface DescriptionFacade {
     DescriptionFacade EMPTY = DescriptionFacade.of("");
 
     static DescriptionFacade of(final String text) {
-        return ImmutableDescriptionFacade.of(text);
+        return DescriptionFacadeImpl.of(text);
     }
 
     static DescriptionFacade localized(final String key, final Locale defaultLocale) {

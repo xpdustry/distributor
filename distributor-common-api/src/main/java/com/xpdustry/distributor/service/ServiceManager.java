@@ -44,11 +44,11 @@ public interface ServiceManager {
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Provider<T> permits ImmutableProvider {
+    sealed interface Provider<T> permits ProviderImpl {
 
         static <T> Provider<T> of(
                 final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance) {
-            return ImmutableProvider.of(plugin, clazz, priority, instance);
+            return ProviderImpl.of(plugin, clazz, priority, instance);
         }
 
         MindustryPlugin getPlugin();

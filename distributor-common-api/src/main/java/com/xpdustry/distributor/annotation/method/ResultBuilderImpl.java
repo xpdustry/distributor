@@ -39,7 +39,7 @@ final class ResultBuilderImpl implements MethodAnnotationScanner.Result.Builder 
 
     @Override
     public MethodAnnotationScanner.Result build() {
-        return ImmutableResult.of(outputs);
+        return ResultImpl.of(outputs);
     }
 
     @Override

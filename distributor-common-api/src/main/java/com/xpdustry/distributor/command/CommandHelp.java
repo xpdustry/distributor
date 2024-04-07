@@ -26,7 +26,7 @@ public sealed interface CommandHelp {
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Entry extends CommandHelp permits ImmutableEntry {
+    sealed interface Entry extends CommandHelp permits EntryImpl {
 
         static Entry of(
                 final String syntax,
@@ -34,7 +34,7 @@ public sealed interface CommandHelp {
                 final DescriptionFacade verboseDescription,
                 final List<CommandElement.Argument> arguments,
                 final List<CommandElement.Flag> flags) {
-            return ImmutableEntry.of(syntax, description, verboseDescription, arguments, flags);
+            return EntryImpl.of(syntax, description, verboseDescription, arguments, flags);
         }
 
         String getSyntax();
@@ -50,10 +50,10 @@ public sealed interface CommandHelp {
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Suggestion extends CommandHelp permits ImmutableSuggestion {
+    sealed interface Suggestion extends CommandHelp permits SuggestionImpl {
 
         static Suggestion of(final String longestSharedPath, final List<String> childSuggestions) {
-            return ImmutableSuggestion.of(longestSharedPath, childSuggestions);
+            return SuggestionImpl.of(longestSharedPath, childSuggestions);
         }
 
         String getLongestSharedPath();

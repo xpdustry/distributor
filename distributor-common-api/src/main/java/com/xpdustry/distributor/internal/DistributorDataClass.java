@@ -29,7 +29,7 @@ import org.immutables.value.Value;
 @Value.Style(
         get = {"is*", "get*"},
         init = "set*",
-        build = "create",
+        typeImmutable = "*Impl",
         allParameters = true,
         visibility = Value.Style.ImplementationVisibility.PACKAGE,
         builderVisibility = Value.Style.BuilderVisibility.PACKAGE,

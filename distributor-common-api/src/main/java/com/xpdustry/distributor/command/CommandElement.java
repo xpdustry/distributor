@@ -33,14 +33,14 @@ public sealed interface CommandElement {
     @SuppressWarnings("immutables:subtype")
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Argument extends CommandElement permits ImmutableArgument {
+    sealed interface Argument extends CommandElement permits ArgumentImpl {
 
         static Argument of(
                 final String name,
                 final DescriptionFacade description,
                 final Collection<String> aliases,
                 final Kind kind) {
-            return ImmutableArgument.of(name, description, aliases, kind);
+            return ArgumentImpl.of(name, description, aliases, kind);
         }
 
         Kind getKind();
@@ -55,14 +55,14 @@ public sealed interface CommandElement {
     @SuppressWarnings("immutables:subtype")
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Flag extends CommandElement permits ImmutableFlag {
+    sealed interface Flag extends CommandElement permits FlagImpl {
 
         static Flag of(
                 final String name,
                 final DescriptionFacade description,
                 final Collection<String> aliases,
                 final boolean repeatable) {
-            return ImmutableFlag.of(name, description, aliases, repeatable);
+            return FlagImpl.of(name, description, aliases, repeatable);
         }
 
         boolean isRepeatable();

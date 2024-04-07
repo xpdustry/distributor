@@ -61,10 +61,10 @@ public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodA
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Key<I extends Annotation, O> permits ImmutableKey {
+    sealed interface Key<I extends Annotation, O> permits KeyImpl {
 
         static <I extends Annotation, O> Key<I, O> of(final Class<I> annotation, final Class<O> output) {
-            return ImmutableKey.of(annotation, output);
+            return KeyImpl.of(annotation, output);
         }
 
         Class<I> getAnnotationClass();
@@ -78,7 +78,7 @@ public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodA
 
         static <I extends Annotation, O> KeyWithProcessor<I, O> of(
                 final Key<I, O> key, final Processor<I, O> processor) {
-            return ImmutableKeyWithProcessor.of(key, processor);
+            return KeyWithProcessorImpl.of(key, processor);
         }
 
         Key<I, O> getKey();
@@ -92,7 +92,7 @@ public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodA
 
         static <A extends Annotation> Context<A> of(
                 final Object instance, final Method method, final A annotation, final MindustryPlugin plugin) {
-            return ImmutableContext.of(instance, method, annotation, plugin);
+            return ContextImpl.of(instance, method, annotation, plugin);
         }
 
         Object getInstance();
@@ -106,7 +106,7 @@ public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodA
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Result permits ImmutableResult {
+    sealed interface Result permits ResultImpl {
 
         static Result.Builder builder() {
             return new ResultBuilderImpl();

@@ -30,14 +30,14 @@ import org.immutables.value.Value;
 
 @DistributorDataClass
 @Value.Immutable(builder = true, copy = false)
-public sealed interface PluginMetadata permits ImmutablePluginMetadata {
+public sealed interface PluginMetadata permits PluginMetadataImpl {
 
     static PluginMetadata.Builder builder() {
-        return ImmutablePluginMetadata.builder();
+        return PluginMetadataImpl.builder();
     }
 
     static PluginMetadata.Builder builder(final PluginMetadata metadata) {
-        return ImmutablePluginMetadata.builder().from(metadata);
+        return PluginMetadataImpl.builder().from(metadata);
     }
 
     /**
@@ -58,7 +58,7 @@ public sealed interface PluginMetadata permits ImmutablePluginMetadata {
                 .setRepository(Objects.requireNonNullElse(meta.repo, ""))
                 .setDependencies(ArcCollections.immutableList(meta.dependencies))
                 .setSoftDependencies(ArcCollections.immutableList(meta.softDependencies))
-                .create();
+                .build();
     }
 
     /**
@@ -159,7 +159,7 @@ public sealed interface PluginMetadata permits ImmutablePluginMetadata {
      */
     List<String> getSoftDependencies();
 
-    sealed interface Builder permits ImmutablePluginMetadata.Builder {
+    sealed interface Builder permits PluginMetadataImpl.Builder {
 
         Builder setName(final String name);
 
@@ -181,6 +181,6 @@ public sealed interface PluginMetadata permits ImmutablePluginMetadata {
 
         Builder setSoftDependencies(final Iterable<String> elements);
 
-        PluginMetadata create();
+        PluginMetadata build();
     }
 }
