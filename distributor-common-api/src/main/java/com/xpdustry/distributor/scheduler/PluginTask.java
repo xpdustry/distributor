@@ -28,12 +28,17 @@ import java.util.function.Supplier;
  *
  * @param <V> the type of the value returned by this task.
  */
-public interface PluginTask<V> extends Future<V>, PluginAware {
+public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
 
     /**
      * Returns whether this future is executed asynchronously.
      */
     boolean isAsync();
+
+    @Override
+    default void cancel() {
+        cancel(false);
+    }
 
     /**
      * A helper object for building and scheduling a {@link PluginTask}.

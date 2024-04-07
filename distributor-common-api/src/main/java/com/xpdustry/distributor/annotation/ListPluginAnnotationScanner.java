@@ -19,15 +19,25 @@
 package com.xpdustry.distributor.annotation;
 
 import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.plugin.PluginAware;
 import java.util.List;
 
-public interface PluginAnnotationScanner<R> extends PluginAware {
+final class ListPluginAnnotationScanner implements PluginAnnotationScanner<List<?>> {
 
-    static PluginAnnotationScanner<List<?>> list(
-            final MindustryPlugin plugin, final PluginAnnotationScanner<?>... scanners) {
-        return new ListPluginAnnotationScanner(plugin, List.of(scanners));
+    private final MindustryPlugin plugin;
+    private final List<PluginAnnotationScanner<?>> scanners;
+
+    ListPluginAnnotationScanner(final MindustryPlugin plugin, final List<PluginAnnotationScanner<?>> scanners) {
+        this.plugin = plugin;
+        this.scanners = scanners;
     }
 
-    R scan(final Object instance);
+    @Override
+    public List<?> scan(final Object instance) {
+        return this.scanners.stream().map(scanner -> scanner.scan(instance)).toList();
+    }
+
+    @Override
+    public MindustryPlugin getPlugin() {
+        return this.plugin;
+    }
 }

@@ -157,7 +157,7 @@ final class PluginTaskImpl<V> extends FutureTask<V> implements PluginTask<V> {
 
         @Override
         public void cancel() {
-            Objects.requireNonNull(this.task).cancel(false);
+            Objects.requireNonNull(this.task).cancel();
         }
     }
 }

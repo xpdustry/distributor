@@ -16,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.annotation;
+package com.xpdustry.distributor.annotation.method;
 
 import com.xpdustry.distributor.DistributorProvider;
+import com.xpdustry.distributor.event.EventSubscription;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-final class EventHandlerListener implements PluginAnnotationScanner.Listener<EventHandler> {
+final class EventHandlerProcessor implements MethodAnnotationScanner.Processor<EventHandler, EventSubscription> {
 
     @Override
-    public void onMethodAnnotation(final PluginAnnotationScanner.Context<EventHandler> context) {
+    public EventSubscription process(final MethodAnnotationScanner.Context<EventHandler> context) {
         if (context.getMethod().getParameterCount() != 1) {
             throw new IllegalArgumentException(
                     "The event handler on " + context.getMethod() + " hasn't the right parameter count.");
@@ -33,7 +34,7 @@ final class EventHandlerListener implements PluginAnnotationScanner.Listener<Eve
             context.getMethod().setAccessible(true);
         }
         final var handler = new MethodEventHandler<>(context.getInstance(), context.getMethod());
-        DistributorProvider.get()
+        return DistributorProvider.get()
                 .getEventBus()
                 .subscribe(handler.getEventType(), context.getAnnotation().priority(), context.getPlugin(), handler);
     }

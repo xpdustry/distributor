@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.annotation;
+package com.xpdustry.distributor.annotation.method;
 
 import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.scheduler.Cancellable;
@@ -24,10 +24,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-final class TaskHandlerListener implements PluginAnnotationScanner.Listener<TaskHandler> {
+final class TaskHandlerProcessor implements MethodAnnotationScanner.Processor<TaskHandler, Cancellable> {
 
     @Override
-    public void onMethodAnnotation(final PluginAnnotationScanner.Context<TaskHandler> context) {
+    public Cancellable process(final MethodAnnotationScanner.Context<TaskHandler> context) {
         if (context.getMethod().getParameterCount() > 1) {
             throw new IllegalArgumentException(
                     "The event handler on " + context.getMethod() + " hasn't the right parameter count.");
@@ -52,7 +52,7 @@ final class TaskHandlerListener implements PluginAnnotationScanner.Listener<Task
                     context.getAnnotation().interval(), context.getAnnotation().unit());
         }
 
-        builder.execute(new MethodTaskHandler(context.getInstance(), context.getMethod()));
+        return builder.execute(new MethodTaskHandler(context.getInstance(), context.getMethod()));
     }
 
     @SuppressWarnings("ClassCanBeRecord")
