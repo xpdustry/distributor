@@ -62,11 +62,8 @@ final class MindustryCommandHandlerImpl extends BaseCommandHandler implements Mi
         super.register(commands);
         for (final ExecutableCommand command : this.executables.values()) {
             if (command.getParent() != null) continue;
-            createArcCommand(
-                    command.getName(),
-                    descriptionMapper.map(LampElement.Command.of(command)),
-                    this.executables.values().stream()
-                            .anyMatch((ExecutableCommand cmd) -> cmd.getId() == command.getId()));
+            // TODO Try to find a good way to detect aliases
+            createArcCommand(command.getName(), descriptionMapper.map(LampElement.Command.of(command)), false);
         }
         for (final CommandCategory category : this.categories.values()) {
             if (category.getParent() != null) continue;
