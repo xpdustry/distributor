@@ -86,7 +86,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
             throw new IllegalArgumentException("Listener already registered.");
         }
         this.listeners.add(listener);
-        onListenerRegistration(listener);
     }
 
     /**
@@ -95,8 +94,6 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     protected final List<PluginListener> getListeners() {
         return Collections.unmodifiableList(this.listeners);
     }
-
-    protected void onListenerRegistration(final PluginListener listener) {}
 
     @Deprecated
     @Override

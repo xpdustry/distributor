@@ -22,7 +22,7 @@ import mindustry.gen.Player;
 
 final class NoopPermissionManager implements PermissionManager {
 
-    static NoopPermissionManager INSTANCE = new NoopPermissionManager();
+    static final NoopPermissionManager INSTANCE = new NoopPermissionManager();
 
     private NoopPermissionManager() {}
 

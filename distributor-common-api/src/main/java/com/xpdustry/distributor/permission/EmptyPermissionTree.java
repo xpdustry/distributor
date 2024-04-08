@@ -23,7 +23,7 @@ import java.util.Map;
 
 final class EmptyPermissionTree implements PermissionTree {
 
-    static EmptyPermissionTree INSTANCE = new EmptyPermissionTree();
+    static final EmptyPermissionTree INSTANCE = new EmptyPermissionTree();
 
     private EmptyPermissionTree() {}
 

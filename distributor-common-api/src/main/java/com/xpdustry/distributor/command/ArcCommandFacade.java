@@ -65,8 +65,7 @@ final class ArcCommandFacade implements CommandFacade {
 
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
-        return CommandHelp.Entry.of(
-                command.paramText, getDescription(), DescriptionFacade.empty(), List.of(), List.of());
+        return CommandHelp.Entry.of(command.paramText, getDescription(), DescriptionFacade.EMPTY, List.of(), List.of());
     }
 
     @Override

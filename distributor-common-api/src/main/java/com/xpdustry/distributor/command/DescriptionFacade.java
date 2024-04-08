@@ -36,10 +36,6 @@ public interface DescriptionFacade {
         return new LocalizedDescriptionFacade(key, defaultLocale);
     }
 
-    static DescriptionFacade empty() {
-        return EMPTY;
-    }
-
     String getText();
 
     default String getText(final CommandSender sender) {
