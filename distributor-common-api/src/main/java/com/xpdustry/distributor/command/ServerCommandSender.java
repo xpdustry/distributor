@@ -29,6 +29,11 @@ final class ServerCommandSender implements CommandSender {
     private ServerCommandSender() {}
 
     @Override
+    public String getName() {
+        return "server";
+    }
+
+    @Override
     public void sendMessage(final String text) {
         for (final var line : text.split("\n", -1)) {
             Log.info(line);

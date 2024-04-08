@@ -21,6 +21,7 @@ package com.xpdustry.distributor.command.cloud;
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.command.CommandSender;
+import com.xpdustry.distributor.command.DescriptionMapper;
 import com.xpdustry.distributor.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
@@ -36,6 +37,7 @@ import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
 import org.incendo.cloud.SenderMapperHolder;
+import org.incendo.cloud.description.Description;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.internal.CommandRegistrationHandler;
 import org.incendo.cloud.parser.ParserParameters;
@@ -50,7 +52,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
     private final MindustryPlugin plugin;
     private final SenderMapper<CommandSender, C> senderMapper;
-    private final DescriptionMapper descriptionMapper;
+    private final DescriptionMapper<Description> descriptionMapper;
     private final Logger logger;
     private @Nullable CommandHandler handler = null;
 
@@ -58,7 +60,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
             final MindustryPlugin plugin,
             final ExecutionCoordinator<C> coordinator,
             final SenderMapper<CommandSender, C> senderMapper,
-            final DescriptionMapper descriptionMapper) {
+            final DescriptionMapper<Description> descriptionMapper) {
         super(coordinator, CommandRegistrationHandler.nullCommandRegistrationHandler());
         this.plugin = plugin;
         this.senderMapper = senderMapper;
@@ -135,7 +137,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
     /**
      * Returns the {@code DescriptionMapper} of this command manager.
      */
-    public final DescriptionMapper descriptionMapper() {
+    public final DescriptionMapper<Description> descriptionMapper() {
         return this.descriptionMapper;
     }
 

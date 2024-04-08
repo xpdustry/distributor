@@ -31,6 +31,8 @@ public interface CommandSender {
         return ServerCommandSender.INSTANCE;
     }
 
+    String getName();
+
     void sendWarning(final String text);
 
     void sendMessage(final String text);

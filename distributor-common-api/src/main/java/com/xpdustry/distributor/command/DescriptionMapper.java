@@ -16,17 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud;
+package com.xpdustry.distributor.command;
 
-import com.xpdustry.distributor.command.DescriptionFacade;
-import org.incendo.cloud.description.Description;
+import java.util.function.Function;
 
 @FunctionalInterface
-public interface DescriptionMapper {
+public interface DescriptionMapper<T> {
 
-    static DescriptionMapper simple() {
-        return description -> DescriptionFacade.of(description.textDescription());
+    static <T> DescriptionMapper<T> text(final Function<T, String> extractor) {
+        return describable -> DescriptionFacade.text(extractor.apply(describable));
     }
 
-    DescriptionFacade map(final Description description);
+    DescriptionFacade map(final T describable);
 }

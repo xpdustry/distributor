@@ -24,6 +24,11 @@ import mindustry.gen.Player;
 record PlayerCommandSender(Player player) implements CommandSender {
 
     @Override
+    public String getName() {
+        return this.player.name();
+    }
+
+    @Override
     public void sendMessage(final String text) {
         this.player.sendMessage(text);
     }

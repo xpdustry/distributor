@@ -24,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 public interface CommandFacade {
 
-    static CommandFacade wrap(final CommandHandler.Command command) {
+    static CommandFacade from(final CommandHandler.Command command) {
         if (command instanceof CommandFacade facade) {
             return facade;
         } else {

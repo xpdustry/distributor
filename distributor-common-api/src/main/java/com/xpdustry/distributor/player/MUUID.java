@@ -18,26 +18,20 @@
  */
 package com.xpdustry.distributor.player;
 
+import com.xpdustry.distributor.internal.DistributorDataClass;
+import java.nio.ByteBuffer;
 import java.util.Base64;
-import java.util.Objects;
+import java.util.UUID;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
-import org.jspecify.annotations.Nullable;
+import org.immutables.value.Value;
 
 /**
  * The mindustry identity format. A combination of a UUID and a USID.
  */
-public final class MUUID {
-
-    private final String uuid;
-    private final String usid;
-
-    private MUUID(final String uuid, final String usid) {
-        checkUuid(uuid);
-        checkUsid(usid);
-        this.uuid = uuid;
-        this.usid = usid;
-    }
+@DistributorDataClass
+@Value.Immutable
+public interface MUUID {
 
     /**
      * Creates a new MUUID from a UUID and USID.
@@ -46,8 +40,10 @@ public final class MUUID {
      * @param usid the USID
      * @return the MUUID
      */
-    public static MUUID of(final String uuid, final String usid) {
-        return new MUUID(uuid, usid);
+    static MUUID of(final String uuid, final String usid) {
+        checkUuid(uuid);
+        checkUsid(usid);
+        return MUUIDImpl.of(uuid, usid);
     }
 
     /**
@@ -56,8 +52,8 @@ public final class MUUID {
      * @param player the player
      * @return the MUUID
      */
-    public static MUUID of(final Player player) {
-        return new MUUID(player.uuid(), player.usid());
+    static MUUID from(final Player player) {
+        return of(player.uuid(), player.usid());
     }
 
     /**
@@ -66,8 +62,8 @@ public final class MUUID {
      * @param info the player info
      * @return the MUUID
      */
-    public static MUUID of(final Administration.PlayerInfo info) {
-        return new MUUID(info.id, info.adminUsid);
+    static MUUID from(final Administration.PlayerInfo info) {
+        return of(info.id, info.adminUsid);
     }
 
     /**
@@ -76,7 +72,7 @@ public final class MUUID {
      * @param uuid the UUID to check
      * @return true if the given string is a valid UUID, false otherwise
      */
-    public static boolean isUuid(final String uuid) {
+    static boolean isUuid(final String uuid) {
         try {
             final var bytes = Base64.getDecoder().decode(uuid);
             return bytes.length == 16;
@@ -88,7 +84,7 @@ public final class MUUID {
     /**
      * Throws an {@link IllegalArgumentException} if the given string is not a valid UUID.
      */
-    public static void checkUuid(final String uuid) {
+    static void checkUuid(final String uuid) {
         if (!isUuid(uuid)) {
             throw new IllegalArgumentException(String.format("Invalid UUID: %s", uuid));
         }
@@ -100,7 +96,7 @@ public final class MUUID {
      * @param usid the USID to check
      * @return true if the given string is a valid USID, false otherwise
      */
-    public static boolean isUsid(final String usid) {
+    static boolean isUsid(final String usid) {
         try {
             final var bytes = Base64.getDecoder().decode(usid);
             return bytes.length == 8;
@@ -112,7 +108,7 @@ public final class MUUID {
     /**
      * Throws an {@link IllegalArgumentException} if the given string is not a valid USID.
      */
-    public static void checkUsid(final String usid) {
+    static void checkUsid(final String usid) {
         if (!isUsid(usid)) {
             throw new IllegalArgumentException(String.format("Invalid USID: %s", usid));
         }
@@ -121,44 +117,41 @@ public final class MUUID {
     /**
      * Returns the UUID.
      */
-    public String getUuid() {
-        return this.uuid;
-    }
+    String getUuid();
 
     /**
      * Returns the UUID as decoded bytes.
      */
-    public byte[] getDecodedUuid() {
-        return Base64.getDecoder().decode(this.uuid);
+    default byte[] getDecodedUuid() {
+        return Base64.getDecoder().decode(this.getUuid());
     }
 
     /**
      * Returns the USID.
      */
-    public String getUsid() {
-        return this.usid;
-    }
+    String getUsid();
 
     /**
      * Returns the USID as decoded bytes.
      */
-    public byte[] getDecodedUsid() {
-        return Base64.getDecoder().decode(this.usid);
+    default byte[] getDecodedUsid() {
+        return Base64.getDecoder().decode(this.getUsid());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.uuid, this.usid);
-    }
-
-    @Override
-    public boolean equals(final @Nullable Object obj) {
-        return obj == this
-                || (obj instanceof final MUUID muuid && this.uuid.equals(muuid.uuid) && this.usid.equals(muuid.usid));
-    }
-
-    @Override
-    public String toString() {
-        return "MUUID{" + "uuid='" + this.uuid + '\'' + ", usid='" + this.usid + '\'' + '}';
+    /**
+     * TODO important doc
+     * @see <a href="https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-11.html#name-uuid-version-8">UUID v8 spec</a>
+     */
+    default UUID toRealUUID() {
+        final var buffer = ByteBuffer.allocate(16);
+        final var uuid = getDecodedUuid();
+        buffer.put(uuid, 0, 4); // First 4 bytes
+        buffer.putShort((short) 0); // Next 2 bytes
+        buffer.putShort((short) 0x8000); // Version is 4 bits, put set to v8
+        buffer.putShort((short) 0x8000); // Variant is 2 bits, put set to IETF
+        buffer.putShort((short) 0); // Next 2 bytes
+        buffer.put(uuid, 4, 4); // Last 4 bytes
+        buffer.flip();
+        return new UUID(buffer.getLong(), buffer.getLong());
     }
 }

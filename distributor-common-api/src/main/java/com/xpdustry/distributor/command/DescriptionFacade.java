@@ -26,9 +26,9 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface DescriptionFacade {
 
-    DescriptionFacade EMPTY = DescriptionFacade.of("");
+    DescriptionFacade EMPTY = DescriptionFacade.text("");
 
-    static DescriptionFacade of(final String text) {
+    static DescriptionFacade text(final String text) {
         return DescriptionFacadeImpl.of(text);
     }
 

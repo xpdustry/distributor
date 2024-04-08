@@ -30,7 +30,7 @@ final class ArcCommandFacade implements CommandFacade {
 
     ArcCommandFacade(final CommandHandler.Command command) {
         this.command = command;
-        this.description = DescriptionFacade.of(command.description);
+        this.description = DescriptionFacade.text(command.description);
     }
 
     @Override
