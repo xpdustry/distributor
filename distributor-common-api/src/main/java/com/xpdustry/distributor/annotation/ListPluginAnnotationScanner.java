@@ -18,26 +18,23 @@
  */
 package com.xpdustry.distributor.annotation;
 
-import com.xpdustry.distributor.plugin.MindustryPlugin;
 import java.util.List;
+import java.util.Optional;
 
 final class ListPluginAnnotationScanner implements PluginAnnotationScanner<List<?>> {
 
-    private final MindustryPlugin plugin;
     private final List<PluginAnnotationScanner<?>> scanners;
 
-    ListPluginAnnotationScanner(final MindustryPlugin plugin, final List<PluginAnnotationScanner<?>> scanners) {
-        this.plugin = plugin;
+    ListPluginAnnotationScanner(final List<PluginAnnotationScanner<?>> scanners) {
         this.scanners = scanners;
     }
 
     @Override
-    public List<?> scan(final Object instance) {
-        return this.scanners.stream().map(scanner -> scanner.scan(instance)).toList();
-    }
-
-    @Override
-    public MindustryPlugin getPlugin() {
-        return this.plugin;
+    public Optional<List<?>> scan(final Object instance) {
+        return Optional.of(this.scanners.stream()
+                .map(scanner -> scanner.scan(instance))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList());
     }
 }

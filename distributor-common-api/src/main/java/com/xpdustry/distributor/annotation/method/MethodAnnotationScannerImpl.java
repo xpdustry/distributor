@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 final class MethodAnnotationScannerImpl implements MethodAnnotationScanner {
 
@@ -44,7 +45,7 @@ final class MethodAnnotationScannerImpl implements MethodAnnotationScanner {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Result scan(final Object instance) {
+    public Optional<Result> scan(final Object instance) {
         final var builder = Result.builder();
         for (final var method : instance.getClass().getDeclaredMethods()) {
             for (final var annotation : method.getDeclaredAnnotations()) {
@@ -52,12 +53,12 @@ final class MethodAnnotationScannerImpl implements MethodAnnotationScanner {
                 if (pairs == null) continue;
                 for (final KeyWithProcessor pair : pairs) {
                     final var output = pair.getProcessor().process(Context.of(instance, method, annotation, plugin));
-                    if (output == null) continue;
-                    builder.addOutput(pair.getKey(), output);
+                    if (output.isEmpty()) continue;
+                    builder.addOutput(pair.getKey(), output.get());
                 }
             }
         }
-        return builder.build();
+        return Optional.of(builder.build());
     }
 
     @Override

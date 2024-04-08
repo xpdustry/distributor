@@ -33,24 +33,24 @@ final class LampCommandFacade extends CommandHandler.Command implements CommandF
 
     final MindustryCommandHandler handler;
     private final String name;
-    private final DescriptionFacade description;
+    private final DescriptionFacade descriptionFacade;
     private final boolean alias;
     private final boolean prefixed;
 
     LampCommandFacade(
             final MindustryCommandHandler handler,
             final String name,
-            final DescriptionFacade description,
+            final DescriptionFacade descriptionFacade,
             final boolean alias,
             final boolean prefixed) {
         super(
                 prefixed ? handler.getPlugin().getMetadata().getName() + ":" + name : name,
                 "[args...]",
-                description.getText(),
+                descriptionFacade.getText(),
                 new LampCommandRunner(name, handler));
         this.handler = handler;
         this.name = name;
-        this.description = description;
+        this.descriptionFacade = descriptionFacade;
         this.alias = alias;
         this.prefixed = prefixed;
     }
@@ -67,7 +67,7 @@ final class LampCommandFacade extends CommandHandler.Command implements CommandF
 
     @Override
     public DescriptionFacade getDescription() {
-        return this.description;
+        return this.descriptionFacade;
     }
 
     @Override

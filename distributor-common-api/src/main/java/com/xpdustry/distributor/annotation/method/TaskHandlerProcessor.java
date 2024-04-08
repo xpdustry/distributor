@@ -22,12 +22,13 @@ import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.scheduler.Cancellable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 final class TaskHandlerProcessor implements MethodAnnotationScanner.Processor<TaskHandler, Cancellable> {
 
     @Override
-    public Cancellable process(final MethodAnnotationScanner.Context<TaskHandler> context) {
+    public Optional<Cancellable> process(final MethodAnnotationScanner.Context<TaskHandler> context) {
         if (context.getMethod().getParameterCount() > 1) {
             throw new IllegalArgumentException(
                     "The event handler on " + context.getMethod() + " hasn't the right parameter count.");
@@ -52,7 +53,7 @@ final class TaskHandlerProcessor implements MethodAnnotationScanner.Processor<Ta
                     context.getAnnotation().interval(), context.getAnnotation().unit());
         }
 
-        return builder.execute(new MethodTaskHandler(context.getInstance(), context.getMethod()));
+        return Optional.of(builder.execute(new MethodTaskHandler(context.getInstance(), context.getMethod())));
     }
 
     @SuppressWarnings("ClassCanBeRecord")

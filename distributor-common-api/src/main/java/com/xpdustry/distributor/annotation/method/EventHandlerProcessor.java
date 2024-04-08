@@ -21,12 +21,13 @@ package com.xpdustry.distributor.annotation.method;
 import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.event.EventSubscription;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 final class EventHandlerProcessor implements MethodAnnotationScanner.Processor<EventHandler, EventSubscription> {
 
     @Override
-    public EventSubscription process(final MethodAnnotationScanner.Context<EventHandler> context) {
+    public Optional<EventSubscription> process(final MethodAnnotationScanner.Context<EventHandler> context) {
         if (context.getMethod().getParameterCount() != 1) {
             throw new IllegalArgumentException(
                     "The event handler on " + context.getMethod() + " hasn't the right parameter count.");
@@ -34,9 +35,9 @@ final class EventHandlerProcessor implements MethodAnnotationScanner.Processor<E
             context.getMethod().setAccessible(true);
         }
         final var handler = new MethodEventHandler<>(context.getInstance(), context.getMethod());
-        return DistributorProvider.get()
+        return Optional.of(DistributorProvider.get()
                 .getEventBus()
-                .subscribe(handler.getEventType(), context.getAnnotation().priority(), context.getPlugin(), handler);
+                .subscribe(handler.getEventType(), context.getAnnotation().priority(), context.getPlugin(), handler));
     }
 
     @SuppressWarnings("ClassCanBeRecord")

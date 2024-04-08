@@ -18,16 +18,28 @@
  */
 package com.xpdustry.distributor.annotation;
 
-import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.plugin.PluginAware;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
-public interface PluginAnnotationScanner<R> extends PluginAware {
+@FunctionalInterface
+public interface PluginAnnotationScanner<R> {
 
-    static PluginAnnotationScanner<List<?>> list(
-            final MindustryPlugin plugin, final PluginAnnotationScanner<?>... scanners) {
-        return new ListPluginAnnotationScanner(plugin, List.of(scanners));
+    static PluginAnnotationScanner<Void> consume(final Consumer<Object> consumer) {
+        return instance -> {
+            consumer.accept(instance);
+            return Optional.empty();
+        };
     }
 
-    R scan(final Object instance);
+    static PluginAnnotationScanner<List<?>> list(final PluginAnnotationScanner<?>... scanners) {
+        return new ListPluginAnnotationScanner(List.of(scanners));
+    }
+
+    static PluginAnnotationScanner<List<?>> list(final Collection<PluginAnnotationScanner<?>> scanners) {
+        return new ListPluginAnnotationScanner(List.copyOf(scanners));
+    }
+
+    Optional<R> scan(final Object instance);
 }

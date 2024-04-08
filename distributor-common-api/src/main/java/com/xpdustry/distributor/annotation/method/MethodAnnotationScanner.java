@@ -22,15 +22,16 @@ import com.xpdustry.distributor.annotation.PluginAnnotationScanner;
 import com.xpdustry.distributor.event.EventSubscription;
 import com.xpdustry.distributor.internal.DistributorDataClass;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
+import com.xpdustry.distributor.plugin.PluginAware;
 import com.xpdustry.distributor.scheduler.Cancellable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.immutables.value.Value;
-import org.jspecify.annotations.Nullable;
 
-public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodAnnotationScanner.Result> {
+public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodAnnotationScanner.Result>, PluginAware {
 
     Key<TaskHandler, Cancellable> TASK_HANDLER_KEY = Key.of(TaskHandler.class, Cancellable.class);
 
@@ -56,7 +57,7 @@ public interface MethodAnnotationScanner extends PluginAnnotationScanner<MethodA
     @FunctionalInterface
     interface Processor<I extends Annotation, O> {
 
-        @Nullable O process(final Context<I> context);
+        Optional<O> process(final Context<I> context);
     }
 
     @DistributorDataClass
