@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.0-beta.2 - 2024-04-08
+
+Second beta release.
+The API is now much more stable is terms of breaking changes.
+There are still things to implement and finish like the new Lamp module.
+
 ## v4.0.0-beta.1 - 2024-03-28
 
 Initial beta release to finally start migrating xpdustry plugins to distributor 4, and be able to detect potential runtime and design issues.
