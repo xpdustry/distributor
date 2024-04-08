@@ -43,7 +43,7 @@ public interface PermissionManager {
      * allows you to set a default value for all permissions.
      * </blockquote>
      */
-    String PERMISSION_REGEX = "^(\\*|[a-z\\d\\-]+)(\\.(\\*|[a-z\\d\\-]+))*$";
+    String PERMISSION_REGEX = "^(\\*|[\\w\\-]+)(\\.(\\*|[\\w\\-]+))*$";
 
     Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
 
