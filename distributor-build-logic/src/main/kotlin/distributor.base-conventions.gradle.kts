@@ -18,6 +18,10 @@ repositories {
         name = "xpdustry-mindustry"
         mavenContent { releasesOnly() }
     }
+    maven("https://jitpack.io") {
+        name = "jitpack"
+        mavenContent { releasesOnly() }
+    }
 }
 
 dependencies {
