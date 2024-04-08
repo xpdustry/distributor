@@ -30,7 +30,7 @@ nullaway = "0.10.24"
 jetbrains-annotations = "24.1.0"
 
 # linting
-palantir = "2.41.0"
+palantir = "2.42.0"
 ktlint = "0.51.0-FINAL"
 
 # gradle
