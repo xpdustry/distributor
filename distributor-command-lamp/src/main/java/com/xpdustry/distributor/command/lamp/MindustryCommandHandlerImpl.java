@@ -25,14 +25,29 @@ import com.xpdustry.distributor.command.CommandFacade;
 import com.xpdustry.distributor.command.CommandSender;
 import com.xpdustry.distributor.command.DescriptionFacade;
 import com.xpdustry.distributor.command.DescriptionMapper;
+import com.xpdustry.distributor.command.lamp.resolver.ContentValueResolver;
+import com.xpdustry.distributor.command.lamp.resolver.PlayerInfoValueResolver;
+import com.xpdustry.distributor.command.lamp.resolver.PlayerValueResolver;
+import com.xpdustry.distributor.command.lamp.resolver.TeamValueResolver;
+import com.xpdustry.distributor.command.lamp.validator.AllTeamValidator;
+import com.xpdustry.distributor.content.TypedContentType;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
 import java.lang.reflect.Field;
+import java.util.Locale;
 import java.util.Objects;
+import mindustry.ctype.MappableContent;
+import mindustry.game.Team;
+import mindustry.gen.Player;
+import mindustry.net.Administration;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
+import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.command.CommandCategory;
 import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.core.BaseCommandHandler;
 import revxrsal.commands.core.CommandPath;
+import revxrsal.commands.locales.Translator;
+import revxrsal.commands.process.SenderResolver;
 
 @SuppressWarnings("UnstableApiUsage")
 final class MindustryCommandHandlerImpl extends BaseCommandHandler implements MindustryCommandHandler {
@@ -49,12 +64,27 @@ final class MindustryCommandHandlerImpl extends BaseCommandHandler implements Mi
     }
 
     private final MindustryPlugin plugin;
-    final DescriptionMapper<LampElement> descriptionMapper;
+    private final Translator translator = new DistributorTranslator(super.getTranslator());
+    private DescriptionMapper<LampDescribable> descriptionMapper =
+            DescriptionMapper.text(LampDescribable::getDescription);
     private @Nullable CommandHandler handler = null;
 
-    MindustryCommandHandlerImpl(final MindustryPlugin plugin, final DescriptionMapper<LampElement> descriptionMapper) {
+    MindustryCommandHandlerImpl(final MindustryPlugin plugin) {
         this.plugin = plugin;
-        this.descriptionMapper = descriptionMapper;
+
+        this.registerSenderResolver(MindustrySenderResolver.INSTANCE);
+        this.registerPermissionReader(MindustryPermissionReader.INSTANCE);
+
+        this.setFlagPrefix("--");
+        this.setSwitchPrefix("--");
+
+        this.registerValueResolver(Player.class, new PlayerValueResolver());
+        this.registerValueResolver(Administration.PlayerInfo.class, new PlayerInfoValueResolver());
+        this.registerValueResolver(Team.class, new TeamValueResolver());
+        this.registerParameterValidator(Team.class, new AllTeamValidator());
+        for (final var contentType : TypedContentType.ALL) {
+            this.registerContentValueResolver(contentType);
+        }
     }
 
     @Override
@@ -62,12 +92,11 @@ final class MindustryCommandHandlerImpl extends BaseCommandHandler implements Mi
         super.register(commands);
         for (final ExecutableCommand command : this.executables.values()) {
             if (command.getParent() != null) continue;
-            // TODO Try to find a good way to detect aliases
-            createArcCommand(command.getName(), descriptionMapper.map(LampElement.Command.of(command)), false);
+            createArcCommand(command.getName(), descriptionMapper.map(LampDescribable.Command.of(command)));
         }
         for (final CommandCategory category : this.categories.values()) {
             if (category.getParent() != null) continue;
-            createArcCommand(category.getName(), this.descriptionMapper.map(LampElement.Category.of(category)), false);
+            createArcCommand(category.getName(), DescriptionFacade.EMPTY);
         }
         return this;
     }
@@ -88,21 +117,53 @@ final class MindustryCommandHandlerImpl extends BaseCommandHandler implements Mi
     }
 
     @Override
-    public MindustryPlugin getPlugin() {
-        return this.plugin;
-    }
-
-    @Override
     public MindustryCommandActor wrap(final CommandSender sender) {
         return new MindustryCommandActorImpl(this, sender);
     }
 
     @Override
-    public void initialize(final CommandHandler handler) {
+    public MindustryCommandHandler initialize(final CommandHandler handler) {
         if (this.handler != null) {
             throw new IllegalStateException("This handler is already initialized.");
         }
         this.handler = handler;
+        this.registerDependency(CommandHandler.class, this.handler);
+        return this;
+    }
+
+    @Override
+    public Translator getTranslator() {
+        return this.translator;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return this.translator.getLocale();
+    }
+
+    @Override
+    public void setLocale(final Locale locale) {
+        this.translator.setLocale(locale);
+    }
+
+    @Override
+    public MindustryPlugin getPlugin() {
+        return this.plugin;
+    }
+
+    @Override
+    public DescriptionMapper<LampDescribable> getDescriptionMapper() {
+        return this.descriptionMapper;
+    }
+
+    @Override
+    public MindustryCommandHandler setDescriptionMapper(final DescriptionMapper<LampDescribable> descriptionMapper) {
+        this.descriptionMapper = descriptionMapper;
+        return this;
+    }
+
+    private <T extends MappableContent> void registerContentValueResolver(final TypedContentType<T> contentType) {
+        this.registerValueResolver(contentType.getContentTypeClass(), new ContentValueResolver<>(contentType));
     }
 
     @SuppressWarnings("unchecked")
@@ -114,9 +175,9 @@ final class MindustryCommandHandlerImpl extends BaseCommandHandler implements Mi
         }
     }
 
-    private void createArcCommand(final String name, final DescriptionFacade description, final boolean alias) {
+    private void createArcCommand(final String name, final DescriptionFacade description) {
         addCommand(new LampCommandFacade(
-                this, name, description, alias, getArcHandlerInternalMap().containsKey(name)));
+                this, name, description, getArcHandlerInternalMap().containsKey(name)));
     }
 
     private arc.util.CommandHandler getArcHandler() {
@@ -126,5 +187,23 @@ final class MindustryCommandHandlerImpl extends BaseCommandHandler implements Mi
     private void addCommand(final LampCommandFacade command) {
         getArcHandlerInternalMap().put(command.text, command);
         getArcHandler().getCommandList().add(command);
+    }
+
+    private static final class MindustrySenderResolver implements SenderResolver {
+
+        private static final MindustrySenderResolver INSTANCE = new MindustrySenderResolver();
+
+        private MindustrySenderResolver() {}
+
+        @Override
+        public boolean isCustomType(final Class<?> type) {
+            return Player.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public @NotNull Object getSender(
+                final Class<?> customSenderType, final CommandActor actor, final ExecutableCommand command) {
+            return ((MindustryCommandActor) actor).getCommandSender().getPlayer();
+        }
     }
 }

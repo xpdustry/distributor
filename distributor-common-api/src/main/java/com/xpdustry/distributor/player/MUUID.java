@@ -31,7 +31,7 @@ import org.immutables.value.Value;
  */
 @DistributorDataClass
 @Value.Immutable
-public interface MUUID {
+public sealed interface MUUID permits MUUIDImpl {
 
     /**
      * Creates a new MUUID from a UUID and USID.

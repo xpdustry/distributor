@@ -21,11 +21,10 @@ package com.xpdustry.distributor.command.lamp;
 import com.xpdustry.distributor.internal.DistributorDataClass;
 import java.util.Objects;
 import org.immutables.value.Value;
-import revxrsal.commands.command.CommandCategory;
 import revxrsal.commands.command.CommandParameter;
 import revxrsal.commands.command.ExecutableCommand;
 
-public sealed interface LampElement {
+public sealed interface LampDescribable {
 
     String getName();
 
@@ -33,64 +32,45 @@ public sealed interface LampElement {
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Category extends LampElement permits CategoryImpl {
-
-        static Category of(final CommandCategory category) {
-            return CategoryImpl.of(category);
-        }
-
-        CommandCategory getCategory();
-
-        @Override
-        default String getName() {
-            return getCategory().getName();
-        }
-
-        @Override
-        default String getDescription() {
-            return "";
-        }
-    }
-
-    @DistributorDataClass
-    @Value.Immutable
-    sealed interface Command extends LampElement permits CommandImpl {
+    sealed interface Command extends LampDescribable permits CommandImpl {
 
         static Command of(final ExecutableCommand command) {
             return CommandImpl.of(command);
         }
 
-        ExecutableCommand getCommand();
+        ExecutableCommand getLampCommand();
 
         @Override
         default String getName() {
-            return getCommand().getName();
+            return getLampCommand().getName();
         }
 
         @Override
         default String getDescription() {
-            return Objects.requireNonNullElse(getCommand().getDescription(), "");
+            return Objects.requireNonNullElse(getLampCommand().getDescription(), "");
         }
     }
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Parameter extends LampElement permits ParameterImpl {
+    sealed interface Parameter extends LampDescribable permits ParameterImpl {
 
-        static Parameter of(final CommandParameter parameter) {
-            return ParameterImpl.of(parameter);
+        static Parameter of(final ExecutableCommand command, final CommandParameter parameter) {
+            return ParameterImpl.of(Command.of(command), parameter);
         }
 
-        CommandParameter getParameter();
+        LampDescribable.Command getCommand();
+
+        CommandParameter getLampParameter();
 
         @Override
         default String getName() {
-            return getParameter().getName();
+            return getLampParameter().getName();
         }
 
         @Override
         default String getDescription() {
-            return Objects.requireNonNullElse(getParameter().getDescription(), "");
+            return Objects.requireNonNullElse(getLampParameter().getDescription(), "");
         }
     }
 }

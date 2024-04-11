@@ -21,6 +21,7 @@ package com.xpdustry.distributor.command.cloud.parser;
 import arc.Core;
 import com.xpdustry.distributor.collection.ArcCollections;
 import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
+import com.xpdustry.distributor.content.PlayerLookup;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
@@ -54,8 +55,11 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     @Override
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var query = input.readString();
-        final var players =
-                PlayerLookup.findOnlinePlayers(query, ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false));
+        final var options = PlayerLookup.Option.createDefaultOptions();
+        if (ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false)) {
+            options.add(PlayerLookup.Option.UUID);
+        }
+        final var players = PlayerLookup.findOnlinePlayers(query, options);
         if (players.isEmpty()) {
             return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(PlayerParser.class, query, ctx));
         } else if (players.size() > 1) {

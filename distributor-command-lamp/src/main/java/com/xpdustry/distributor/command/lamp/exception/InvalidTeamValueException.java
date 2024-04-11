@@ -16,35 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command;
+package com.xpdustry.distributor.command.lamp.exception;
 
-import com.xpdustry.distributor.permission.TriState;
-import java.util.Locale;
-import mindustry.gen.Player;
+import revxrsal.commands.command.CommandParameter;
+import revxrsal.commands.exception.InvalidValueException;
 
-public interface CommandSender {
+public final class InvalidTeamValueException extends InvalidValueException {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
+    public InvalidTeamValueException(final CommandParameter parameter, final String input) {
+        super(parameter, input);
     }
-
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
-    }
-
-    String getName();
-
-    void sendWarning(final String text);
-
-    void sendMessage(final String text);
-
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
-
-    Locale getLocale();
-
-    TriState hasPermission(final String permission);
 }

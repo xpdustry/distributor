@@ -19,12 +19,10 @@
 package com.xpdustry.distributor.command.cloud.parser;
 
 import com.xpdustry.distributor.command.cloud.ArcCaptionKeys;
+import com.xpdustry.distributor.content.TypedContentType;
 import java.util.Locale;
 import mindustry.Vars;
-import mindustry.ctype.ContentType;
 import mindustry.ctype.MappableContent;
-import mindustry.type.StatusEffect;
-import mindustry.type.UnitType;
 import org.incendo.cloud.caption.CaptionVariable;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
@@ -34,11 +32,21 @@ import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 
-public sealed class ContentParser<C, T extends MappableContent> implements ArgumentParser<C, T> {
+public final class ContentParser<C, T extends MappableContent> implements ArgumentParser<C, T> {
 
-    private final ContentType contentType;
+    public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(
+            final TypedContentType<T> contentType) {
+        return ParserDescriptor.of(new ContentParser<>(contentType), contentType.getContentTypeClass());
+    }
 
-    ContentParser(final ContentType contentType) {
+    public static <C, T extends MappableContent> CommandComponent.Builder<C, T> contentComponent(
+            final TypedContentType<T> contentType) {
+        return CommandComponent.<C, T>builder().parser(contentParser(contentType));
+    }
+
+    private final TypedContentType<T> contentType;
+
+    public ContentParser(final TypedContentType<T> contentType) {
         this.contentType = contentType;
     }
 
@@ -46,135 +54,30 @@ public sealed class ContentParser<C, T extends MappableContent> implements Argum
     @Override
     public ArgumentParseResult<T> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var name = input.readString().toLowerCase(Locale.ROOT);
-        final var content = Vars.content.getByName(contentType, name);
+        final var content = Vars.content.getByName(contentType.getContentType(), name);
         return (content == null)
                 ? ArgumentParseResult.failure(new ContentParseException(this.getClass(), ctx, name, contentType))
                 : ArgumentParseResult.success((T) content);
-    }
-
-    public static final class Weather<C> extends ContentParser<C, mindustry.type.Weather> {
-
-        public static <C> ParserDescriptor<C, mindustry.type.Weather> weatherParser() {
-            return ParserDescriptor.of(new Weather<>(), mindustry.type.Weather.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, mindustry.type.Weather> weatherComponent() {
-            return CommandComponent.<C, mindustry.type.Weather>builder().parser(weatherParser());
-        }
-
-        public Weather() {
-            super(ContentType.weather);
-        }
-    }
-
-    public static final class Unit<C> extends ContentParser<C, UnitType> {
-
-        public static <C> ParserDescriptor<C, UnitType> unitParser() {
-            return ParserDescriptor.of(new Unit<>(), UnitType.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, UnitType> unitComponent() {
-            return CommandComponent.<C, UnitType>builder().parser(unitParser());
-        }
-
-        public Unit() {
-            super(ContentType.unit);
-        }
-    }
-
-    public static final class Status<C> extends ContentParser<C, StatusEffect> {
-
-        public static <C> ParserDescriptor<C, StatusEffect> statusParser() {
-            return ParserDescriptor.of(new Status<>(), StatusEffect.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, StatusEffect> statusComponent() {
-            return CommandComponent.<C, StatusEffect>builder().parser(statusParser());
-        }
-
-        public Status() {
-            super(ContentType.status);
-        }
-    }
-
-    public static final class Planet<C> extends ContentParser<C, mindustry.type.Planet> {
-
-        public static <C> ParserDescriptor<C, mindustry.type.Planet> planetParser() {
-            return ParserDescriptor.of(new Planet<>(), mindustry.type.Planet.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, mindustry.type.Planet> planetComponent() {
-            return CommandComponent.<C, mindustry.type.Planet>builder().parser(planetParser());
-        }
-
-        public Planet() {
-            super(ContentType.planet);
-        }
-    }
-
-    public static final class Liquid<C> extends ContentParser<C, mindustry.type.Liquid> {
-
-        public static <C> ParserDescriptor<C, mindustry.type.Liquid> liquidParser() {
-            return ParserDescriptor.of(new Liquid<>(), mindustry.type.Liquid.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, mindustry.type.Liquid> liquidComponent() {
-            return CommandComponent.<C, mindustry.type.Liquid>builder().parser(liquidParser());
-        }
-
-        public Liquid() {
-            super(ContentType.liquid);
-        }
-    }
-
-    public static final class Item<C> extends ContentParser<C, mindustry.type.Item> {
-
-        public static <C> ParserDescriptor<C, mindustry.type.Item> itemParser() {
-            return ParserDescriptor.of(new Item<>(), mindustry.type.Item.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, mindustry.type.Item> itemComponent() {
-            return CommandComponent.<C, mindustry.type.Item>builder().parser(itemParser());
-        }
-
-        public Item() {
-            super(ContentType.item);
-        }
-    }
-
-    public static final class Block<C> extends ContentParser<C, mindustry.world.Block> {
-
-        public static <C> ParserDescriptor<C, mindustry.world.Block> blockParser() {
-            return ParserDescriptor.of(new Block<>(), mindustry.world.Block.class);
-        }
-
-        public static <C> CommandComponent.Builder<C, mindustry.world.Block> blockComponent() {
-            return CommandComponent.<C, mindustry.world.Block>builder().parser(blockParser());
-        }
-
-        public Block() {
-            super(ContentType.block);
-        }
     }
 
     @SuppressWarnings("serial")
     public static final class ContentParseException extends ParserException {
 
         private final String input;
-        private final ContentType contentType;
+        private final TypedContentType<?> contentType;
 
         @SuppressWarnings("rawtypes")
         public ContentParseException(
                 final Class<? extends ContentParser> clazz,
                 final CommandContext<?> ctx,
                 final String input,
-                final ContentType contentType) {
+                final TypedContentType<?> contentType) {
             super(
                     clazz,
                     ctx,
                     ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_CONTENT,
                     CaptionVariable.of("input", input),
-                    CaptionVariable.of("type", contentType.name()));
+                    CaptionVariable.of("type", contentType.getContentType().name()));
             this.input = input;
             this.contentType = contentType;
         }
@@ -183,7 +86,7 @@ public sealed class ContentParser<C, T extends MappableContent> implements Argum
             return input;
         }
 
-        public ContentType getContentType() {
+        public TypedContentType<?> getContentType() {
             return contentType;
         }
     }

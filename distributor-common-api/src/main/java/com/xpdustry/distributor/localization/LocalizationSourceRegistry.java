@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -88,6 +89,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param baseName the base name of the resource bundle
      * @param loader   the class loader to use
      * @throws IllegalArgumentException if a key is already registered
+     * @throws MissingResourceException if a bundle with the base name and locale does not exist
      */
     default void registerAll(final Locale locale, final String baseName, final ClassLoader loader) {
         this.registerAll(locale, ResourceBundle.getBundle(baseName, locale, loader));

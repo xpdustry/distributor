@@ -16,35 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command;
+package com.xpdustry.distributor.command.lamp.resolver;
 
-import com.xpdustry.distributor.permission.TriState;
-import java.util.Locale;
-import mindustry.gen.Player;
+import com.xpdustry.distributor.command.lamp.exception.InvalidTeamValueException;
+import java.util.Arrays;
+import mindustry.game.Team;
+import revxrsal.commands.process.ValueResolver;
 
-public interface CommandSender {
+public final class TeamValueResolver implements ValueResolver<Team> {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
+    @Override
+    public Team resolve(final ValueResolverContext context) {
+        final var input = context.pop();
+        return Arrays.stream(Team.all)
+                .filter(team -> team.name.equalsIgnoreCase(input))
+                .findFirst()
+                .orElseThrow(() -> new InvalidTeamValueException(context.parameter(), input));
     }
-
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
-    }
-
-    String getName();
-
-    void sendWarning(final String text);
-
-    void sendMessage(final String text);
-
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
-
-    Locale getLocale();
-
-    TriState hasPermission(final String permission);
 }

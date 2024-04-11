@@ -39,11 +39,11 @@ public sealed interface CommandElement {
                 final String name,
                 final DescriptionFacade description,
                 final Collection<String> aliases,
-                final Kind kind) {
+                final Argument.Kind kind) {
             return ArgumentImpl.of(name, description, aliases, kind);
         }
 
-        Kind getKind();
+        Argument.Kind getKind();
 
         enum Kind {
             LITERAL,
@@ -61,10 +61,23 @@ public sealed interface CommandElement {
                 final String name,
                 final DescriptionFacade description,
                 final Collection<String> aliases,
-                final boolean repeatable) {
-            return FlagImpl.of(name, description, aliases, repeatable);
+                final Flag.Kind kind,
+                final Mode mode) {
+            return FlagImpl.of(name, description, aliases, kind, mode);
         }
 
-        boolean isRepeatable();
+        Flag.Kind getKind();
+
+        Mode getMode();
+
+        enum Kind {
+            OPTIONAL,
+            REQUIRED
+        }
+
+        enum Mode {
+            SINGLE,
+            REPEATABLE
+        }
     }
 }

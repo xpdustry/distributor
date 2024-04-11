@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.command.cloud.parser;
 
 import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
+import com.xpdustry.distributor.content.PlayerLookup;
 import mindustry.net.Administration;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.component.CommandComponent;
@@ -42,8 +43,11 @@ public final class PlayerInfoParser<C> implements ArgumentParser<C, Administrati
     @Override
     public ArgumentParseResult<Administration.PlayerInfo> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var query = input.readString();
-        final var result =
-                PlayerLookup.findOfflinePlayers(query, ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false));
+        final var options = PlayerLookup.Option.createDefaultOptions();
+        if (ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false)) {
+            options.add(PlayerLookup.Option.UUID);
+        }
+        final var result = PlayerLookup.findOfflinePlayers(query, options);
         if (result.isEmpty()) {
             return ArgumentParseResult.failure(
                     new PlayerParseException.PlayerNotFound(PlayerInfoParser.class, query, ctx));

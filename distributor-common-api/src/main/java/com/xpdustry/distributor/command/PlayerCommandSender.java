@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.command;
 
+import com.xpdustry.distributor.DistributorProvider;
+import com.xpdustry.distributor.permission.TriState;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -56,5 +58,10 @@ record PlayerCommandSender(Player player) implements CommandSender {
     @Override
     public Locale getLocale() {
         return Locale.forLanguageTag(this.player.locale().replace('_', '-'));
+    }
+
+    @Override
+    public TriState hasPermission(final String permission) {
+        return DistributorProvider.get().getPermissionManager().getPermission(this.player, permission);
     }
 }

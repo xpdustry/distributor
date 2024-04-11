@@ -18,23 +18,21 @@
  */
 package com.xpdustry.distributor.command.lamp;
 
-import com.xpdustry.distributor.command.CommandSender;
-import com.xpdustry.distributor.command.DescriptionMapper;
-import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.plugin.PluginAware;
-import revxrsal.commands.CommandHandler;
+import com.xpdustry.distributor.command.lamp.annotation.CommandPermission;
+import org.jspecify.annotations.Nullable;
+import revxrsal.commands.command.trait.CommandAnnotationHolder;
+import revxrsal.commands.process.PermissionReader;
 
-public interface MindustryCommandHandler extends CommandHandler, PluginAware {
+final class MindustryPermissionReader implements PermissionReader {
 
-    static MindustryCommandHandler create(final MindustryPlugin plugin) {
-        return new MindustryCommandHandlerImpl(plugin);
+    static final MindustryPermissionReader INSTANCE = new MindustryPermissionReader();
+
+    private MindustryPermissionReader() {}
+
+    @Override
+    public revxrsal.commands.command.@Nullable CommandPermission getPermission(final CommandAnnotationHolder command) {
+        final var annotation = command.getAnnotation(CommandPermission.class);
+        if (annotation == null) return null;
+        return MindustryCommandPermission.of(annotation.value());
     }
-
-    MindustryCommandActor wrap(final CommandSender sender);
-
-    MindustryCommandHandler initialize(final arc.util.CommandHandler handler);
-
-    DescriptionMapper<LampDescribable> getDescriptionMapper();
-
-    MindustryCommandHandler setDescriptionMapper(final DescriptionMapper<LampDescribable> descriptionMapper);
 }

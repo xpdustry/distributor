@@ -18,23 +18,26 @@
  */
 package com.xpdustry.distributor.command.lamp;
 
-import com.xpdustry.distributor.command.CommandSender;
-import com.xpdustry.distributor.command.DescriptionMapper;
-import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.plugin.PluginAware;
-import revxrsal.commands.CommandHandler;
+import com.xpdustry.distributor.internal.DistributorDataClass;
+import org.immutables.value.Value;
+import revxrsal.commands.command.CommandActor;
+import revxrsal.commands.command.CommandPermission;
 
-public interface MindustryCommandHandler extends CommandHandler, PluginAware {
+@DistributorDataClass
+@Value.Immutable
+public sealed interface MindustryCommandPermission extends CommandPermission permits MindustryCommandPermissionImpl {
 
-    static MindustryCommandHandler create(final MindustryPlugin plugin) {
-        return new MindustryCommandHandlerImpl(plugin);
+    static MindustryCommandPermission of(final String permission) {
+        return MindustryCommandPermissionImpl.of(permission);
     }
 
-    MindustryCommandActor wrap(final CommandSender sender);
+    String getPermission();
 
-    MindustryCommandHandler initialize(final arc.util.CommandHandler handler);
-
-    DescriptionMapper<LampDescribable> getDescriptionMapper();
-
-    MindustryCommandHandler setDescriptionMapper(final DescriptionMapper<LampDescribable> descriptionMapper);
+    @Override
+    default boolean canExecute(final CommandActor actor) {
+        return ((MindustryCommandActor) actor)
+                .getCommandSender()
+                .hasPermission(getPermission())
+                .asBoolean();
+    }
 }

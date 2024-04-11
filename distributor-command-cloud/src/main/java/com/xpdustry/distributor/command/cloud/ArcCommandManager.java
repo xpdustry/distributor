@@ -27,6 +27,7 @@ import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
+import com.xpdustry.distributor.content.TypedContentType;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
 import com.xpdustry.distributor.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
@@ -52,19 +53,17 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
     private final MindustryPlugin plugin;
     private final SenderMapper<CommandSender, C> senderMapper;
-    private final DescriptionMapper<Description> descriptionMapper;
     private final Logger logger;
+    private DescriptionMapper<Description> descriptionMapper = DescriptionMapper.text(Description::textDescription);
     private @Nullable CommandHandler handler = null;
 
     public ArcCommandManager(
             final MindustryPlugin plugin,
             final ExecutionCoordinator<C> coordinator,
-            final SenderMapper<CommandSender, C> senderMapper,
-            final DescriptionMapper<Description> descriptionMapper) {
+            final SenderMapper<CommandSender, C> senderMapper) {
         super(coordinator, CommandRegistrationHandler.nullCommandRegistrationHandler());
         this.plugin = plugin;
         this.senderMapper = senderMapper;
-        this.descriptionMapper = descriptionMapper;
         this.logger = LoggerFactory.getLogger(this.getClass());
 
         this.registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
@@ -90,14 +89,10 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
         this.parserRegistry()
                 .registerParser(PlayerParser.playerParser())
-                .registerParser(PlayerInfoParser.playerInfoParser())
-                .registerParser(ContentParser.Block.blockParser())
-                .registerParser(ContentParser.Item.itemParser())
-                .registerParser(ContentParser.Liquid.liquidParser())
-                .registerParser(ContentParser.Planet.planetParser())
-                .registerParser(ContentParser.Status.statusParser())
-                .registerParser(ContentParser.Unit.unitParser())
-                .registerParser(ContentParser.Weather.weatherParser());
+                .registerParser(PlayerInfoParser.playerInfoParser());
+
+        TypedContentType.ALL.forEach(typedContentType ->
+                this.parserRegistry().registerParser(ContentParser.contentParser(typedContentType)));
 
         this.parserRegistry()
                 .registerAnnotationMapper(
@@ -141,17 +136,14 @@ public class ArcCommandManager<C> extends CommandManager<C>
         return this.descriptionMapper;
     }
 
+    public final void descriptionMapper(final DescriptionMapper<Description> descriptionMapper) {
+        this.descriptionMapper = descriptionMapper;
+    }
+
     @Override
     public boolean hasPermission(final @NonNull C sender, final String permission) {
-        if (permission.isEmpty()) {
-            return true;
-        }
-        final var reversed = senderMapper().reverse(sender);
-        return reversed.isServer()
-                || DistributorProvider.get()
-                        .getPermissionManager()
-                        .getPermission(reversed.getPlayer(), permission)
-                        .asBoolean();
+        return permission.isEmpty()
+                || senderMapper().reverse(sender).hasPermission(permission).asBoolean();
     }
 
     @Override

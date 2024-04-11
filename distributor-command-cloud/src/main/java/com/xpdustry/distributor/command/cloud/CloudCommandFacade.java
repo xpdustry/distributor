@@ -34,7 +34,6 @@ import org.incendo.cloud.description.Description;
 import org.incendo.cloud.help.HelpQuery;
 import org.incendo.cloud.help.result.MultipleCommandResult;
 import org.incendo.cloud.help.result.VerboseCommandResult;
-import org.incendo.cloud.parser.flag.CommandFlag;
 
 /**
  * This special command class delegates its call to its command manager.
@@ -155,7 +154,11 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
                         flag.name(),
                         this.manager.descriptionMapper().map(flag.description()),
                         flag.aliases(),
-                        flag.mode() == CommandFlag.FlagMode.REPEATABLE));
+                        CommandElement.Flag.Kind.OPTIONAL,
+                        switch (flag.mode()) {
+                            case SINGLE -> CommandElement.Flag.Mode.SINGLE;
+                            case REPEATABLE -> CommandElement.Flag.Mode.REPEATABLE;
+                        }));
             }
         }
         return flags;

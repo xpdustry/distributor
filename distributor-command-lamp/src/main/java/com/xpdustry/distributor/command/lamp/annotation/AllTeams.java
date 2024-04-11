@@ -16,35 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command;
+package com.xpdustry.distributor.command.lamp.annotation;
 
-import com.xpdustry.distributor.permission.TriState;
-import java.util.Locale;
-import mindustry.gen.Player;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface CommandSender {
-
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
-    }
-
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
-    }
-
-    String getName();
-
-    void sendWarning(final String text);
-
-    void sendMessage(final String text);
-
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
-
-    Locale getLocale();
-
-    TriState hasPermission(final String permission);
-}
+/**
+ * Annotation used to specify that a {@link mindustry.game.Team} command parameter can represent all the teams instead of the 6 base
+ * teams.
+ */
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AllTeams {}

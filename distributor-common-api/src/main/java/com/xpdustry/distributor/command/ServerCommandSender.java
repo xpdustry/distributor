@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.command;
 
 import arc.util.Log;
+import com.xpdustry.distributor.permission.TriState;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -65,5 +66,10 @@ final class ServerCommandSender implements CommandSender {
     @Override
     public Locale getLocale() {
         return Locale.getDefault();
+    }
+
+    @Override
+    public TriState hasPermission(final String permission) {
+        return TriState.TRUE;
     }
 }

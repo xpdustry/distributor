@@ -20,6 +20,7 @@ package com.xpdustry.distributor.command;
 
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
+import java.util.Arrays;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 
@@ -65,7 +66,20 @@ final class ArcCommandFacade implements CommandFacade {
 
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
-        return CommandHelp.Entry.of(command.paramText, getDescription(), DescriptionFacade.EMPTY, List.of(), List.of());
+        return CommandHelp.Entry.of(
+                command.paramText,
+                getDescription(),
+                DescriptionFacade.EMPTY,
+                Arrays.stream(command.params)
+                        .map(p -> CommandElement.Argument.of(
+                                p.name,
+                                DescriptionFacade.EMPTY,
+                                List.of(),
+                                p.optional
+                                        ? CommandElement.Argument.Kind.OPTIONAL
+                                        : CommandElement.Argument.Kind.REQUIRED))
+                        .toList(),
+                List.of());
     }
 
     @Override
