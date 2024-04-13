@@ -35,6 +35,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 final class YamlRankPermissionSource implements RankPermissionSource, PluginListener {
 
+    private static final int FILE_FORMAT_VERSION = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlRankPermissionSource.class);
 
     private Map<String, PermissionTree> permissions = Collections.emptyMap();
@@ -78,7 +79,12 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
 
     private void reload() throws IOException {
         final Map<String, PermissionTree> map = new HashMap<>();
-        for (final var node : loader.load().node("ranks").childrenList()) {
+        final var root = loader.load();
+        final var version = root.node("version").getInt(FILE_FORMAT_VERSION);
+        if (version != FILE_FORMAT_VERSION) {
+            throw new IOException("Unsupported rank file version: " + version);
+        }
+        for (final var node : root.node("ranks").childrenList()) {
             final var name = node.node("name").getString();
             if (name == null || name.isBlank()) {
                 throw new IOException("Invalid rank name.");
