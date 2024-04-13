@@ -19,27 +19,34 @@
 package com.xpdustry.distributor.command;
 
 import com.xpdustry.distributor.DistributorProvider;
+import com.xpdustry.distributor.localization.LocalizationSource;
 import java.util.Locale;
 
 record LocalizedDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
 
     @Override
     public String getText() {
-        return DistributorProvider.get().getGlobalLocalizationSource().format(key, this.defaultLocale);
+        return DistributorProvider.get()
+                .getGlobalLocalizationSource()
+                .getLocalization(key, this.defaultLocale, LocalizationSource.DEFAULT_FALLBACK)
+                .formatEmpty();
     }
 
     @Override
     public String getText(final CommandSender sender) {
-        return DistributorProvider.get().getGlobalLocalizationSource().format(key, sender.getLocale());
+        return DistributorProvider.get()
+                .getGlobalLocalizationSource()
+                .getLocalization(key, sender.getLocale(), LocalizationSource.DEFAULT_FALLBACK)
+                .formatEmpty();
     }
 
     @Override
     public boolean isEmpty() {
-        return DistributorProvider.get().getGlobalLocalizationSource().localize(key, this.defaultLocale) != null;
+        return DistributorProvider.get().getGlobalLocalizationSource().getLocalization(key, this.defaultLocale) != null;
     }
 
     @Override
     public boolean isEmpty(final CommandSender sender) {
-        return DistributorProvider.get().getGlobalLocalizationSource().localize(key, sender.getLocale()) != null;
+        return DistributorProvider.get().getGlobalLocalizationSource().getLocalization(key, sender.getLocale()) != null;
     }
 }

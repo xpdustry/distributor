@@ -18,7 +18,6 @@
  */
 package com.xpdustry.distributor.localization;
 
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +25,7 @@ import org.jspecify.annotations.Nullable;
 
 final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry {
 
-    private final Map<String, Localization> entries = new ConcurrentHashMap<>();
+    private final Map<String, Entry> entries = new ConcurrentHashMap<>();
     private final Locale defaultLocale;
 
     LocalizationSourceRegistryImpl(final Locale defaultLocale) {
@@ -34,13 +33,13 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
     }
 
     @Override
-    public @Nullable MessageFormat localize(final String key, final Locale locale) {
+    public @Nullable Localization getLocalization(final String key, final Locale locale) {
         return this.entries.containsKey(key) ? this.entries.get(key).localize(locale) : null;
     }
 
     @Override
-    public void register(final String key, final Locale locale, final MessageFormat format) {
-        if (!this.entries.computeIfAbsent(key, k -> new Localization()).register(locale, format)) {
+    public void register(final String key, final Locale locale, final Localization format) {
+        if (!this.entries.computeIfAbsent(key, k -> new Entry()).register(locale, format)) {
             throw new IllegalArgumentException(
                     String.format("A localization is already present: %s for %s.", key, locale));
         }
@@ -58,7 +57,8 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
 
     @Override
     public boolean registered(final String key, final Locale locale) {
-        return this.entries.containsKey(key) && this.entries.get(key).formats.containsKey(locale);
+        return this.entries.containsKey(key)
+                && this.entries.get(key).localizations.containsKey(locale);
     }
 
     @Override
@@ -66,27 +66,27 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
         return this.defaultLocale;
     }
 
-    private final class Localization {
+    private final class Entry {
 
-        private final Map<Locale, MessageFormat> formats = new ConcurrentHashMap<>();
+        private final Map<Locale, Localization> localizations = new ConcurrentHashMap<>();
 
-        private boolean register(final Locale locale, final MessageFormat format) {
-            return this.formats.putIfAbsent(locale, format) == null;
+        private boolean register(final Locale locale, final Localization format) {
+            return this.localizations.putIfAbsent(locale, format) == null;
         }
 
-        private @Nullable MessageFormat localize(final Locale locale) {
-            var format = this.formats.get(locale);
+        private @Nullable Localization localize(final Locale locale) {
+            var format = this.localizations.get(locale);
             if (format == null) {
                 // try without the country
-                format = this.formats.get(new Locale(locale.getLanguage()));
+                format = this.localizations.get(new Locale(locale.getLanguage()));
             }
             if (format == null) {
                 // try with default locale of this registry
-                format = this.formats.get(LocalizationSourceRegistryImpl.this.defaultLocale);
+                format = this.localizations.get(LocalizationSourceRegistryImpl.this.defaultLocale);
             }
             if (format == null) {
                 // try local default locale of this JVM
-                format = this.formats.get(Locale.getDefault());
+                format = this.localizations.get(Locale.getDefault());
             }
             return format;
         }

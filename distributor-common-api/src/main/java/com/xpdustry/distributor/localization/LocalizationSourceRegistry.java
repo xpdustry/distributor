@@ -61,7 +61,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param formats the map of localized strings
      * @throws IllegalArgumentException if a key is already registered
      */
-    default void registerAll(final Locale locale, final Map<String, MessageFormat> formats) {
+    default void registerAll(final Locale locale, final Map<String, Localization> formats) {
         this.registerAll(locale, formats.keySet(), formats::get);
     }
 
@@ -73,7 +73,8 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final ResourceBundle bundle) {
-        this.registerAll(locale, bundle.keySet(), key -> new MessageFormat(bundle.getString(key), locale));
+        this.registerAll(
+                locale, bundle.keySet(), key -> Localization.message(new MessageFormat(bundle.getString(key), locale)));
     }
 
     /**
@@ -124,7 +125,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @throws IllegalArgumentException if the key is already registered
      */
     default void registerAll(
-            final Locale locale, final Set<String> keys, final Function<String, MessageFormat> function) {
+            final Locale locale, final Set<String> keys, final Function<String, Localization> function) {
         for (final var key : keys) {
             this.register(key, locale, function.apply(key));
         }
@@ -138,7 +139,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param format the localized string
      * @throws IllegalArgumentException if the key is already registered
      */
-    void register(final String key, final Locale locale, final MessageFormat format);
+    void register(final String key, final Locale locale, final Localization format);
 
     /**
      * Checks if a key is already registered, for any locale.

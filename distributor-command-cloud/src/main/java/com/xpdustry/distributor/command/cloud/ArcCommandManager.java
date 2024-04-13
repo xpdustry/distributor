@@ -28,6 +28,7 @@ import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.content.TypedContentType;
+import com.xpdustry.distributor.localization.LocalizationSource;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
 import com.xpdustry.distributor.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
@@ -73,8 +74,8 @@ public class ArcCommandManager<C> extends CommandManager<C>
         this.captionRegistry().registerProvider((caption, sender) -> {
             final var source = DistributorProvider.get().getGlobalLocalizationSource();
             final var locale = this.senderMapper().reverse(sender).getLocale();
-            final var format = source.localize(caption.key(), locale);
-            return format != null ? format.toPattern() : "???" + caption.key() + "???";
+            return source.getLocalization(caption.key(), locale, LocalizationSource.DEFAULT_FALLBACK)
+                    .formatEmpty();
         });
 
         this.captionFormatter((key, recipient, caption, variables) -> {

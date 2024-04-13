@@ -18,31 +18,22 @@
  */
 package com.xpdustry.distributor.localization;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Locale;
-import org.jspecify.annotations.Nullable;
+import java.text.MessageFormat;
+import java.util.Map;
 
-final class ListLocalizationSourceImpl implements ListLocalizationSource {
+public interface Localization {
 
-    private final Deque<LocalizationSource> sources = new ArrayDeque<>();
-
-    @Override
-    public void addLocalizationSource(final LocalizationSource source) {
-        this.sources.add(source);
+    static Localization text(final String text) {
+        return new TextLocalization(text);
     }
 
-    @Override
-    public @Nullable Localization getLocalization(final String key, final Locale locale) {
-        final var iterator = this.sources.descendingIterator();
-
-        while (iterator.hasNext()) {
-            final var translation = iterator.next().getLocalization(key, locale);
-            if (translation != null) {
-                return translation;
-            }
-        }
-
-        return null;
+    static Localization message(final MessageFormat message) {
+        return new MessageFormatLocalization(message);
     }
+
+    String formatArray(final Object... args);
+
+    String formatNamed(final Map<String, Object> args);
+
+    String formatEmpty();
 }

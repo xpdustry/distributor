@@ -27,13 +27,14 @@ final class RouterLocalizationSource implements LocalizationSource {
     static final RouterLocalizationSource INSTANCE = new RouterLocalizationSource();
 
     static final Locale ROUTER_LOCALE = new Locale("router");
-    private static final MessageFormat ROUTER_FORMAT = new MessageFormat("router", ROUTER_LOCALE);
+    private static final Localization ROUTER_LOCALIZATION =
+            Localization.message(new MessageFormat("router", ROUTER_LOCALE));
 
     private RouterLocalizationSource() {}
 
     @Override
-    public @Nullable MessageFormat localize(final String key, final Locale locale) {
-        return locale.equals(ROUTER_LOCALE) ? ROUTER_FORMAT : null;
+    public @Nullable Localization getLocalization(final String key, final Locale locale) {
+        return locale.equals(ROUTER_LOCALE) ? ROUTER_LOCALIZATION : null;
     }
 
     @Override

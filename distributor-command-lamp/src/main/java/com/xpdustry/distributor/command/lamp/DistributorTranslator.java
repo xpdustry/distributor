@@ -20,6 +20,7 @@ package com.xpdustry.distributor.command.lamp;
 
 import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.localization.ListLocalizationSource;
+import com.xpdustry.distributor.localization.Localization;
 import com.xpdustry.distributor.localization.LocalizationSource;
 import com.xpdustry.distributor.localization.LocalizationSourceRegistry;
 import java.text.MessageFormat;
@@ -45,12 +46,14 @@ public final class DistributorTranslator implements Translator {
 
     @Override
     public @NotNull String get(final String key) {
-        return source.format(key, locale);
+        return source.getLocalization(key, locale, LocalizationSource.DEFAULT_FALLBACK)
+                .formatEmpty();
     }
 
     @Override
     public @NotNull String get(final String key, final Locale locale) {
-        return source.format(key, locale);
+        return source.getLocalization(key, locale, LocalizationSource.DEFAULT_FALLBACK)
+                .formatEmpty();
     }
 
     @Override
@@ -99,9 +102,9 @@ public final class DistributorTranslator implements Translator {
     private record LocaleReaderSource(LocaleReader reader) implements LocalizationSource {
 
         @Override
-        public @Nullable MessageFormat localize(final String key, Locale locale) {
+        public @Nullable Localization getLocalization(final String key, Locale locale) {
             return reader.getLocale().equals(locale) && reader.containsKey(key)
-                    ? new MessageFormat(reader.get(key))
+                    ? Localization.message(new MessageFormat(reader.get(key)))
                     : null;
         }
     }
@@ -109,9 +112,9 @@ public final class DistributorTranslator implements Translator {
     private record TranslatorSource(Translator translator) implements LocalizationSource {
 
         @Override
-        public @Nullable MessageFormat localize(final String key, final Locale locale) {
+        public @Nullable Localization getLocalization(final String key, final Locale locale) {
             final var result = translator.get(key, locale);
-            return result.equals(key) ? null : new MessageFormat(key);
+            return result.equals(key) ? null : Localization.message(new MessageFormat(key));
         }
     }
 }

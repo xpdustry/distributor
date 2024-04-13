@@ -20,12 +20,15 @@ package com.xpdustry.distributor.localization;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 
 /**
  * A helper class for adding localization support to your plugin.
  */
 public interface LocalizationSource {
+
+    Function<String, Localization> DEFAULT_FALLBACK = key -> Localization.text("???" + key + "???");
 
     /**
      * Returns a {@code LocalizationSource} for the router language {@code :^)}.
@@ -50,27 +53,11 @@ public interface LocalizationSource {
      * @param key the key of the string to localize
      * @return the localized string contained in a {@link MessageFormat}, or {@code null} if no string was found.
      */
-    @Nullable MessageFormat localize(final String key, final Locale locale);
+    @Nullable Localization getLocalization(final String key, final Locale locale);
 
-    /**
-     * Shorthand method to directly format a localized string, with a failover to a default value {@code ???key???}.
-     *
-     * <pre> {@code
-     *      // Send a localized message to every player
-     *      final LocalizationSource source = ...;
-     *      Groups.player.each(player -> {
-     *          final var locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
-     *          player.sendMessage(source.format("example.key", locale));
-     *      }
-     * } </pre>
-     *
-     * @param key    the key of the string to localize
-     * @param locale the locale to use
-     * @param args   the arguments to pass to the {@link MessageFormat#format(Object)}
-     * @return the formatted string, or {@code ???key???} if no string was found.
-     */
-    default String format(final String key, final Locale locale, final Object... args) {
-        final var format = this.localize(key, locale);
-        return format == null ? "???" + key + "???" : format.format(args);
+    default Localization getLocalization(
+            final String key, final Locale locale, final Function<String, Localization> fallback) {
+        final var localization = getLocalization(key, locale);
+        return localization != null ? localization : fallback.apply(key);
     }
 }
