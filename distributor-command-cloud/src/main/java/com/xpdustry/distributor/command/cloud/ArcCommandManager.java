@@ -28,9 +28,9 @@ import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.content.TypedContentType;
-import com.xpdustry.distributor.localization.LocalizationSource;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
 import com.xpdustry.distributor.plugin.PluginAware;
+import com.xpdustry.distributor.translation.TranslationSource;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -72,9 +72,9 @@ public class ArcCommandManager<C> extends CommandManager<C>
         this.registerDefaultExceptionHandlers();
 
         this.captionRegistry().registerProvider((caption, sender) -> {
-            final var source = DistributorProvider.get().getGlobalLocalizationSource();
+            final var source = DistributorProvider.get().getGlobalTranslationSource();
             final var locale = this.senderMapper().reverse(sender).getLocale();
-            return source.getLocalization(caption.key(), locale, LocalizationSource.DEFAULT_FALLBACK)
+            return source.getTranslation(caption.key(), locale, TranslationSource.DEFAULT_FALLBACK)
                     .formatEmpty();
         });
 

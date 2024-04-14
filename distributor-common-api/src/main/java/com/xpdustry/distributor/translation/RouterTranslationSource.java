@@ -16,33 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
-final class ListLocalizationSourceImpl implements ListLocalizationSource {
+final class RouterTranslationSource implements TranslationSource {
 
-    private final Deque<LocalizationSource> sources = new ArrayDeque<>();
+    static final RouterTranslationSource INSTANCE = new RouterTranslationSource();
+
+    static final Locale ROUTER_LOCALE = new Locale("router");
+    private static final Translation ROUTER_TRANSLATION = TextTranslation.of("router");
+
+    private RouterTranslationSource() {}
 
     @Override
-    public void addLocalizationSource(final LocalizationSource source) {
-        this.sources.add(source);
+    public @Nullable Translation getTranslation(final String key, final Locale locale) {
+        return locale.getLanguage().equals(ROUTER_LOCALE.getLanguage()) ? ROUTER_TRANSLATION : null;
     }
 
     @Override
-    public @Nullable Localization getLocalization(final String key, final Locale locale) {
-        final var iterator = this.sources.descendingIterator();
-
-        while (iterator.hasNext()) {
-            final var translation = iterator.next().getLocalization(key, locale);
-            if (translation != null) {
-                return translation;
-            }
-        }
-
-        return null;
+    public String toString() {
+        return getClass().getSimpleName();
     }
 }

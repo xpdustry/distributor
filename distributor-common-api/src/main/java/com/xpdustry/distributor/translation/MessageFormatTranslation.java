@@ -16,25 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
+import com.xpdustry.distributor.internal.DistributorDataClass;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.immutables.value.Value;
 import org.jspecify.annotations.Nullable;
 
-record MessageFormatLocalization(MessageFormat message) implements Localization {
+@DistributorDataClass
+@Value.Immutable
+public sealed interface MessageFormatTranslation extends Translation permits MessageFormatTranslationImpl {
 
-    private static final int MAX_LENGTH = 64;
+    int MAX_NAMED_INDEX = 63;
+
+    static MessageFormatTranslation of(final MessageFormat format) {
+        return MessageFormatTranslationImpl.of(format);
+    }
+
+    MessageFormat getMessageFormat();
 
     @Override
-    public String formatArray(final Object... args) {
-        return this.message.format(args);
+    default String formatArray(final Object... args) {
+        return this.getMessageFormat().format(args);
     }
 
     @Override
-    public String formatNamed(final Map<String, Object> args) {
+    default String formatNamed(final Map<String, Object> args) {
         final List<@Nullable Object> entries = new ArrayList<>();
         for (final var entry : args.entrySet()) {
             final int index;
@@ -43,20 +53,20 @@ record MessageFormatLocalization(MessageFormat message) implements Localization 
             } catch (NumberFormatException ignored) {
                 continue;
             }
-            if (MAX_LENGTH > index) {
+            if (index > MAX_NAMED_INDEX) {
                 throw new IllegalArgumentException(
-                        "Max argument index exceeded, expected less than " + MAX_LENGTH + ", got " + index);
+                        "Max argument index exceeded, expected less than " + MAX_NAMED_INDEX + ", got " + index);
             }
-            for (int i = entries.size(); i < index; i++) {
+            for (int i = entries.size(); i <= index; i++) {
                 entries.add(null);
             }
             entries.set(index, entry.getValue());
         }
-        return this.message.format(entries.toArray());
+        return this.getMessageFormat().format(entries.toArray());
     }
 
     @Override
-    public String formatEmpty() {
-        return this.message.toPattern();
+    default String formatEmpty() {
+        return this.getMessageFormat().toPattern();
     }
 }

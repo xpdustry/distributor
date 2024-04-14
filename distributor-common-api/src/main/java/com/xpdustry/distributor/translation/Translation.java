@@ -16,24 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
 import java.util.Map;
 
-record TextLocalization(String text) implements Localization {
+public interface Translation {
 
-    @Override
-    public String formatArray(final Object... args) {
-        return this.text;
-    }
+    String formatArray(final Object... args);
 
-    @Override
-    public String formatNamed(final Map<String, Object> args) {
-        return this.text;
-    }
+    String formatNamed(final Map<String, Object> args);
 
-    @Override
-    public String formatEmpty() {
-        return this.text;
-    }
+    String formatEmpty();
 }

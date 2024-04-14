@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -26,15 +26,15 @@ import org.jspecify.annotations.Nullable;
 /**
  * A helper class for adding localization support to your plugin.
  */
-public interface LocalizationSource {
+public interface TranslationSource {
 
-    Function<String, Localization> DEFAULT_FALLBACK = key -> Localization.text("???" + key + "???");
+    Function<String, Translation> DEFAULT_FALLBACK = key -> TextTranslation.of("???" + key + "???");
 
     /**
      * Returns a {@code LocalizationSource} for the router language {@code :^)}.
      */
-    static LocalizationSource router() {
-        return RouterLocalizationSource.INSTANCE;
+    static TranslationSource router() {
+        return RouterTranslationSource.INSTANCE;
     }
 
     /**
@@ -53,11 +53,11 @@ public interface LocalizationSource {
      * @param key the key of the string to localize
      * @return the localized string contained in a {@link MessageFormat}, or {@code null} if no string was found.
      */
-    @Nullable Localization getLocalization(final String key, final Locale locale);
+    @Nullable Translation getTranslation(final String key, final Locale locale);
 
-    default Localization getLocalization(
-            final String key, final Locale locale, final Function<String, Localization> fallback) {
-        final var localization = getLocalization(key, locale);
-        return localization != null ? localization : fallback.apply(key);
+    default Translation getTranslation(
+            final String key, final Locale locale, final Function<String, Translation> fallback) {
+        final var translation = getTranslation(key, locale);
+        return translation != null ? translation : fallback.apply(key);
     }
 }

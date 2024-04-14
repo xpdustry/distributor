@@ -16,24 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
-import java.text.MessageFormat;
+import com.xpdustry.distributor.internal.DistributorDataClass;
 import java.util.Map;
+import org.immutables.value.Value;
 
-public interface Localization {
+@DistributorDataClass
+@Value.Immutable
+public sealed interface TextTranslation extends Translation permits TextTranslationImpl {
 
-    static Localization text(final String text) {
-        return new TextLocalization(text);
+    static TextTranslation of(final String text) {
+        return TextTranslationImpl.of(text);
     }
 
-    static Localization message(final MessageFormat message) {
-        return new MessageFormatLocalization(message);
+    String getText();
+
+    @Override
+    default String formatArray(final Object... args) {
+        return this.getText();
     }
 
-    String formatArray(final Object... args);
+    @Override
+    default String formatNamed(final Map<String, Object> args) {
+        return this.getText();
+    }
 
-    String formatNamed(final Map<String, Object> args);
-
-    String formatEmpty();
+    @Override
+    default String formatEmpty() {
+        return this.getText();
+    }
 }

@@ -19,10 +19,11 @@
 package com.xpdustry.distributor.command.lamp;
 
 import com.xpdustry.distributor.DistributorProvider;
-import com.xpdustry.distributor.localization.ListLocalizationSource;
-import com.xpdustry.distributor.localization.Localization;
-import com.xpdustry.distributor.localization.LocalizationSource;
-import com.xpdustry.distributor.localization.LocalizationSourceRegistry;
+import com.xpdustry.distributor.translation.MessageFormatTranslation;
+import com.xpdustry.distributor.translation.Translation;
+import com.xpdustry.distributor.translation.TranslationRegistry;
+import com.xpdustry.distributor.translation.TranslationSource;
+import com.xpdustry.distributor.translation.TranslationSourceRegistry;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -35,58 +36,58 @@ import revxrsal.commands.locales.Translator;
 
 public final class DistributorTranslator implements Translator {
 
-    private final ListLocalizationSource source = ListLocalizationSource.create();
+    private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private Locale locale;
 
     DistributorTranslator(final Translator parent) {
         this.locale = parent.getLocale();
-        source.addLocalizationSource(new TranslatorSource(parent));
-        source.addLocalizationSource(DistributorProvider.get().getGlobalLocalizationSource());
+        source.register(new TranslatorSource(parent));
+        source.register(DistributorProvider.get().getGlobalTranslationSource());
     }
 
     @Override
     public @NotNull String get(final String key) {
-        return source.getLocalization(key, locale, LocalizationSource.DEFAULT_FALLBACK)
+        return source.getTranslation(key, locale, TranslationSource.DEFAULT_FALLBACK)
                 .formatEmpty();
     }
 
     @Override
     public @NotNull String get(final String key, final Locale locale) {
-        return source.getLocalization(key, locale, LocalizationSource.DEFAULT_FALLBACK)
+        return source.getTranslation(key, locale, TranslationSource.DEFAULT_FALLBACK)
                 .formatEmpty();
     }
 
     @Override
     public void add(final LocaleReader reader) {
-        source.addLocalizationSource(new LocaleReaderSource(reader));
+        source.register(new LocaleReaderSource(reader));
     }
 
     @Override
     public void add(final ResourceBundle resourceBundle) {
-        final var registry = LocalizationSourceRegistry.create(resourceBundle.getLocale());
+        final var registry = TranslationRegistry.create(resourceBundle.getLocale());
         registry.registerAll(resourceBundle.getLocale(), resourceBundle);
-        source.addLocalizationSource(registry);
+        source.register(registry);
     }
 
     @Override
     public void addResourceBundle(final String resourceBundle, final Locale... locales) {
-        final var registry = LocalizationSourceRegistry.create(Locale.ROOT);
+        final var registry = TranslationRegistry.create(Locale.ROOT);
         for (final var locale : locales) {
             registry.registerAll(locale, resourceBundle, getClass().getClassLoader());
         }
-        source.addLocalizationSource(registry);
+        source.register(registry);
     }
 
     @Override
     public void addResourceBundle(final @NotNull String resourceBundle) {
-        final var registry = LocalizationSourceRegistry.create(Locale.ROOT);
+        final var registry = TranslationRegistry.create(Locale.ROOT);
         for (final var locale : Locales.getLocales()) {
             try {
                 registry.registerAll(locale, resourceBundle, getClass().getClassLoader());
             } catch (MissingResourceException ignored) {
             }
         }
-        source.addLocalizationSource(registry);
+        source.register(registry);
     }
 
     @Override
@@ -99,22 +100,22 @@ public final class DistributorTranslator implements Translator {
         this.locale = locale;
     }
 
-    private record LocaleReaderSource(LocaleReader reader) implements LocalizationSource {
+    private record LocaleReaderSource(LocaleReader reader) implements TranslationSource {
 
         @Override
-        public @Nullable Localization getLocalization(final String key, Locale locale) {
+        public @Nullable Translation getTranslation(final String key, Locale locale) {
             return reader.getLocale().equals(locale) && reader.containsKey(key)
-                    ? Localization.message(new MessageFormat(reader.get(key)))
+                    ? MessageFormatTranslation.of(new MessageFormat(reader.get(key)))
                     : null;
         }
     }
 
-    private record TranslatorSource(Translator translator) implements LocalizationSource {
+    private record TranslatorSource(Translator translator) implements TranslationSource {
 
         @Override
-        public @Nullable Localization getLocalization(final String key, final Locale locale) {
+        public @Nullable Translation getTranslation(final String key, final Locale locale) {
             final var result = translator.get(key, locale);
-            return result.equals(key) ? null : Localization.message(new MessageFormat(key));
+            return result.equals(key) ? null : MessageFormatTranslation.of(new MessageFormat(key));
         }
     }
 }

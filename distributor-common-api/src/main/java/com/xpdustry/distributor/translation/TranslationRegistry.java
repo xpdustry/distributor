@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import java.util.function.Function;
 /**
  * A mutable localization source that can register localized strings.
  */
-public interface LocalizationSourceRegistry extends LocalizationSource {
+public interface TranslationRegistry extends TranslationSource {
 
     /**
      * Creates a new {@code LocalizationSourceRegistry} instance.
@@ -43,8 +43,8 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param defaultLocale the default locale of the localization source
      * @return a new {@code LocalizationSourceRegistry} instance
      */
-    static LocalizationSourceRegistry create(final Locale defaultLocale) {
-        return new LocalizationSourceRegistryImpl(defaultLocale);
+    static TranslationRegistry create(final Locale defaultLocale) {
+        return new TranslationRegistryImpl(defaultLocale);
     }
 
     /**
@@ -61,7 +61,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param formats the map of localized strings
      * @throws IllegalArgumentException if a key is already registered
      */
-    default void registerAll(final Locale locale, final Map<String, Localization> formats) {
+    default void registerAll(final Locale locale, final Map<String, Translation> formats) {
         this.registerAll(locale, formats.keySet(), formats::get);
     }
 
@@ -74,7 +74,9 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      */
     default void registerAll(final Locale locale, final ResourceBundle bundle) {
         this.registerAll(
-                locale, bundle.keySet(), key -> Localization.message(new MessageFormat(bundle.getString(key), locale)));
+                locale,
+                bundle.keySet(),
+                key -> MessageFormatTranslation.of(new MessageFormat(bundle.getString(key), locale)));
     }
 
     /**
@@ -125,7 +127,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @throws IllegalArgumentException if the key is already registered
      */
     default void registerAll(
-            final Locale locale, final Set<String> keys, final Function<String, Localization> function) {
+            final Locale locale, final Set<String> keys, final Function<String, Translation> function) {
         for (final var key : keys) {
             this.register(key, locale, function.apply(key));
         }
@@ -139,7 +141,7 @@ public interface LocalizationSourceRegistry extends LocalizationSource {
      * @param format the localized string
      * @throws IllegalArgumentException if the key is already registered
      */
-    void register(final String key, final Locale locale, final Localization format);
+    void register(final String key, final Locale locale, final Translation format);
 
     /**
      * Checks if a key is already registered, for any locale.

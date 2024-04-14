@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
 /**
  * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
  */
-public interface ListLocalizationSource extends LocalizationSource {
+public interface TranslationSourceRegistry extends TranslationSource {
 
     /**
      * Creates a new {@code MultiLocalizationSource} instance.
      */
-    static ListLocalizationSource create() {
-        return new ListLocalizationSourceImpl();
+    static TranslationSourceRegistry create() {
+        return new TranslationSourceRegistryImpl();
     }
 
     /**
@@ -35,5 +35,5 @@ public interface ListLocalizationSource extends LocalizationSource {
      *
      * @param source the source to add
      */
-    void addLocalizationSource(final LocalizationSource source);
+    void register(final TranslationSource source);
 }

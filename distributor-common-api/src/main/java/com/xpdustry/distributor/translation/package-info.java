@@ -1,4 +1,4 @@
 @NullMarked
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
 import org.jspecify.annotations.NullMarked;

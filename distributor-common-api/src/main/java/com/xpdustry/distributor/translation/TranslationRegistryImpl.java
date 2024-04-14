@@ -16,32 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.localization;
+package com.xpdustry.distributor.translation;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
 
-final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry {
+final class TranslationRegistryImpl implements TranslationRegistry {
 
     private final Map<String, Entry> entries = new ConcurrentHashMap<>();
     private final Locale defaultLocale;
 
-    LocalizationSourceRegistryImpl(final Locale defaultLocale) {
+    TranslationRegistryImpl(final Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
 
     @Override
-    public @Nullable Localization getLocalization(final String key, final Locale locale) {
+    public @Nullable Translation getTranslation(final String key, final Locale locale) {
         return this.entries.containsKey(key) ? this.entries.get(key).localize(locale) : null;
     }
 
     @Override
-    public void register(final String key, final Locale locale, final Localization format) {
+    public void register(final String key, final Locale locale, final Translation format) {
         if (!this.entries.computeIfAbsent(key, k -> new Entry()).register(locale, format)) {
             throw new IllegalArgumentException(
-                    String.format("A localization is already present: %s for %s.", key, locale));
+                    String.format("A translation is already present: %s for %s.", key, locale));
         }
     }
 
@@ -58,7 +58,7 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
     @Override
     public boolean registered(final String key, final Locale locale) {
         return this.entries.containsKey(key)
-                && this.entries.get(key).localizations.containsKey(locale);
+                && this.entries.get(key).translations.containsKey(locale);
     }
 
     @Override
@@ -68,25 +68,25 @@ final class LocalizationSourceRegistryImpl implements LocalizationSourceRegistry
 
     private final class Entry {
 
-        private final Map<Locale, Localization> localizations = new ConcurrentHashMap<>();
+        private final Map<Locale, Translation> translations = new ConcurrentHashMap<>();
 
-        private boolean register(final Locale locale, final Localization format) {
-            return this.localizations.putIfAbsent(locale, format) == null;
+        private boolean register(final Locale locale, final Translation format) {
+            return this.translations.putIfAbsent(locale, format) == null;
         }
 
-        private @Nullable Localization localize(final Locale locale) {
-            var format = this.localizations.get(locale);
+        private @Nullable Translation localize(final Locale locale) {
+            var format = this.translations.get(locale);
             if (format == null) {
                 // try without the country
-                format = this.localizations.get(new Locale(locale.getLanguage()));
+                format = this.translations.get(Locale.forLanguageTag(locale.getLanguage()));
             }
             if (format == null) {
                 // try with default locale of this registry
-                format = this.localizations.get(LocalizationSourceRegistryImpl.this.defaultLocale);
+                format = this.translations.get(TranslationRegistryImpl.this.defaultLocale);
             }
             if (format == null) {
                 // try local default locale of this JVM
-                format = this.localizations.get(Locale.getDefault());
+                format = this.translations.get(Locale.getDefault());
             }
             return format;
         }

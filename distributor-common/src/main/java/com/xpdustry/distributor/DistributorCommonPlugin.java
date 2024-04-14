@@ -22,7 +22,6 @@ import arc.Core;
 import arc.util.OS;
 import com.xpdustry.distributor.event.EventBus;
 import com.xpdustry.distributor.event.EventBusImpl;
-import com.xpdustry.distributor.localization.ListLocalizationSource;
 import com.xpdustry.distributor.permission.PermissionManager;
 import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.scheduler.PluginScheduler;
@@ -30,13 +29,15 @@ import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
 import com.xpdustry.distributor.scheduler.PluginTimeSource;
 import com.xpdustry.distributor.service.ServiceManager;
 import com.xpdustry.distributor.service.ServiceManagerImpl;
+import com.xpdustry.distributor.translation.TranslationSource;
+import com.xpdustry.distributor.translation.TranslationSourceRegistry;
 import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
     private final ServiceManager services = new ServiceManagerImpl();
-    private final ListLocalizationSource source = ListLocalizationSource.create();
+    private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private final EventBus events = new EventBusImpl();
     private final PluginScheduler scheduler = new PluginSchedulerImpl(PluginTimeSource.arc(), Core.app::post, OS.cores);
     private @Nullable PermissionManager permissions = null;
@@ -57,7 +58,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public ListLocalizationSource getGlobalLocalizationSource() {
+    public TranslationSourceRegistry getGlobalTranslationSource() {
         return this.source;
     }
 
@@ -69,6 +70,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     @Override
     public void onInit() {
         DistributorProvider.set(this);
+        this.getGlobalTranslationSource().register(TranslationSource.router());
         this.addListener((PluginSchedulerImpl) this.scheduler);
     }
 
