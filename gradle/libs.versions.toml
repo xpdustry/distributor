@@ -12,7 +12,6 @@ slf4j = "2.0.12"
 
 # command
 cloud = "2.0.0-beta.4"
-lamp = "3.2.1"
 
 # utilities
 immutables = "2.10.1"
@@ -53,7 +52,6 @@ slf4j-from-jul = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
 
 # command
 cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
-lamp-common = { module = "com.github.Revxrsal.Lamp:common", version.ref = "lamp" }
 
 # utilities
 immutables-processor = { module = "org.immutables:value-processor", version.ref = "immutables" }
