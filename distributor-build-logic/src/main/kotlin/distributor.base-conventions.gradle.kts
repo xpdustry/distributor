@@ -62,9 +62,7 @@ tasks.withType<JavaCompile> {
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
         disable("MissingSummary", "FutureReturnValueIgnored", "InlineMeSuggester", "EmptyCatch")
-        if (!name.contains("test", true)) {
-            check("NullAway", CheckSeverity.ERROR)
-            option("NullAway:AnnotatedPackages", "com.xpdustry.distributor")
-        }
+        check("NullAway", if (name.contains("test", ignoreCase = true)) CheckSeverity.OFF else CheckSeverity.ERROR)
+        option("NullAway:AnnotatedPackages", "com.xpdustry.distributor")
     }
 }

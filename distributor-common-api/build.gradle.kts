@@ -8,4 +8,5 @@ dependencies {
     annotationProcessor(libs.immutables.processor)
     compileOnlyApi(libs.slf4j.api)
     compileOnlyApi(libs.bundles.mindustry)
+    testImplementation(libs.bundles.mindustry)
 }

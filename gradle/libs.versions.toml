@@ -20,6 +20,7 @@ configurate = "4.1.2"
 # testing
 junit = "5.10.2"
 assert4j = "3.25.3"
+guava-testlib = "33.1.0-jre"
 
 # static analysis
 jspecify = "0.3.0"
@@ -61,8 +62,10 @@ configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref 
 
 # testing
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-engine-jupiter = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-engine-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
 assert4j-core = { module = "org.assertj:assertj-core", version.ref = "assert4j" }
+guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava-testlib" }
 
 # static analysis
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
@@ -80,5 +83,5 @@ shadow = { module = "com.github.johnrengelman:shadow", version.ref = "shadow" }
 
 [bundles]
 indra = [ "indra-common", "indra-licenser-spotless" ]
-tests = [ "junit-api", "junit-engine", "assert4j-core" ]
+tests = [ "junit-api", "junit-engine-jupiter", "junit-engine-vintage", "assert4j-core", "guava-testlib" ]
 mindustry = [ "mindustry-core", "mindustry-server", "arc-core", "arc-backend-headless" ]
