@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.player;
 
 import arc.util.Strings;
-import com.xpdustry.distributor.internal.DistributorDataClass;
+import com.xpdustry.distributor.internal.DistributorDataClassWithBuilder;
 import java.text.Normalizer;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -47,8 +47,8 @@ public interface PlayerLookup {
 
     Collection<Player> findOnlinePlayers(final Query query);
 
-    @DistributorDataClass
-    @Value.Immutable(builder = true, copy = false)
+    @DistributorDataClassWithBuilder
+    @Value.Immutable
     sealed interface Query permits QueryImpl {
 
         static Query of(final String input) {

@@ -20,7 +20,7 @@ package com.xpdustry.distributor.plugin;
 
 import arc.util.serialization.Json;
 import com.xpdustry.distributor.collection.ArcCollections;
-import com.xpdustry.distributor.internal.DistributorDataClass;
+import com.xpdustry.distributor.internal.DistributorDataClassWithBuilder;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +28,8 @@ import mindustry.mod.Mods;
 import mindustry.mod.Plugin;
 import org.immutables.value.Value;
 
-@DistributorDataClass
-@Value.Immutable(builder = true, copy = false)
+@DistributorDataClassWithBuilder
+@Value.Immutable
 public sealed interface PluginMetadata permits PluginMetadataImpl {
 
     static PluginMetadata.Builder builder() {
