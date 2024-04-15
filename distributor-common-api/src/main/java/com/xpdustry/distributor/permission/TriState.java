@@ -21,21 +21,21 @@ package com.xpdustry.distributor.permission;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A ternary boolean type, used by the permission system.
+ * A ternary boolean type.
  */
 public enum TriState {
     FALSE(false),
     TRUE(true),
     UNDEFINED(false);
 
+    public static TriState of(final @Nullable Boolean state) {
+        return state == null ? UNDEFINED : state ? TRUE : FALSE;
+    }
+
     private final boolean value;
 
     TriState(final boolean value) {
         this.value = value;
-    }
-
-    public static TriState of(final @Nullable Boolean state) {
-        return state == null ? UNDEFINED : state ? TRUE : FALSE;
     }
 
     public boolean asBoolean() {
