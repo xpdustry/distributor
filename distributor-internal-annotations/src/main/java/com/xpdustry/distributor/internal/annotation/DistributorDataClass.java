@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.internal;
+package com.xpdustry.distributor.internal.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

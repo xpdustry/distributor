@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
 import com.xpdustry.distributor.api.translation.LocaleHolder;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Locale;
 import org.immutables.value.Value;
 

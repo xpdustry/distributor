@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.List;
 import org.immutables.value.Value;
 

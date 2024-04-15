@@ -18,9 +18,9 @@
  */
 package com.xpdustry.distributor.api.service;
 
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.List;
 import java.util.function.Supplier;
 import org.immutables.value.Value;

@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.player;
 
 import arc.util.Strings;
-import com.xpdustry.distributor.api.internal.DistributorDataClassWithBuilder;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuilder;
 import java.text.Normalizer;
 import java.util.Collection;
 import java.util.EnumSet;

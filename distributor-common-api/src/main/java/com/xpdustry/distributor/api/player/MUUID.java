@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.player;
 
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;

@@ -27,7 +27,7 @@ public final class TranslationSourceRegistryImplTest {
 
     @Test
     void test_lookup_order() {
-        final var registry = create();
+        final var registry = createSource();
         final var source1 = new TranslationRegistryImpl(Locale.FRENCH);
         source1.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour!"));
         final var source2 = RouterTranslationSource.INSTANCE;
@@ -48,7 +48,7 @@ public final class TranslationSourceRegistryImplTest {
                 .isEqualTo("router");
     }
 
-    private TranslationSourceRegistryImpl create() {
+    private TranslationSourceRegistryImpl createSource() {
         return new TranslationSourceRegistryImpl();
     }
 }

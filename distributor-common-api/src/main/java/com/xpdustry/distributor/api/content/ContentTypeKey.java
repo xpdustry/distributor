@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.content;
 
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.List;
 import mindustry.ctype.ContentType;
 import mindustry.ctype.MappableContent;

@@ -20,10 +20,10 @@ package com.xpdustry.distributor.api.annotation.method;
 
 import com.xpdustry.distributor.api.annotation.PluginAnnotationScanner;
 import com.xpdustry.distributor.api.event.EventSubscription;
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
 import com.xpdustry.distributor.api.scheduler.Cancellable;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;

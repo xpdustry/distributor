@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.plugin;
 
 import arc.util.serialization.Json;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
-import com.xpdustry.distributor.api.internal.DistributorDataClassWithBuilder;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuilder;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;

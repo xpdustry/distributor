@@ -90,11 +90,8 @@ final class PlayerLookupImpl implements PlayerLookup {
                 }
             }
 
-            if (matched == 1) {
-                if (query.isMatchExact()) {
-                    return List.of(match);
-                }
-                result.add(match);
+            if (matched == 1 && query.isMatchExact()) {
+                return List.of(match);
             } else {
                 result.addAll(matches);
             }

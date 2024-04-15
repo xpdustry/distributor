@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.api.internal.DistributorDataClass;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
