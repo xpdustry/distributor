@@ -27,7 +27,7 @@ jspecify = "0.3.0"
 errorprone-gradle = "3.1.0"
 errorprone-core = "2.26.1"
 nullaway = "0.10.24"
-jetbrains-annotations = "24.1.0"
+checker-qual = "3.42.0"
 
 # linting
 palantir = "2.42.0"
@@ -72,7 +72,7 @@ jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorprone-gradle" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker-qual" }
 
 # gradle
 toxopid = { module = "fr.xpdustry:toxopid", version.ref = "toxopid" }

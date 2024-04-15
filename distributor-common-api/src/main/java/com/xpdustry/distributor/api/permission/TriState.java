@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission;
 
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A ternary boolean type.

@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.command;
 
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface CommandFacade {
 

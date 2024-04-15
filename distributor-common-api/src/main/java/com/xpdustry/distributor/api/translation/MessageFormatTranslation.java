@@ -23,8 +23,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
-import org.jspecify.annotations.Nullable;
 
 @DistributorDataClass
 @Value.Immutable

@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.permission.rank;
 
 import java.util.function.Function;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 record LinearEnumRankNode<E extends Enum<E>>(E value, Function<E, String> nameProvider, boolean ascending)
         implements EnumRankNode<E> {

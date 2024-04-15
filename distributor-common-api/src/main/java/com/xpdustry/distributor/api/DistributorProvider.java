@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api;
 
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A holder for the global {@link Distributor} instance.

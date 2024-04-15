@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class PluginTaskImpl<V> extends FutureTask<V> implements PluginTask<V> {
 

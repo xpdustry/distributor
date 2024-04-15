@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.translation;
 
 import java.util.Locale;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class RouterTranslationSource implements TranslationSource {
 

@@ -33,6 +33,8 @@ import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.Objects;
 import mindustry.game.Team;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
@@ -42,8 +44,6 @@ import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.internal.CommandRegistrationHandler;
 import org.incendo.cloud.parser.ParserParameters;
 import org.incendo.cloud.state.RegistrationState;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface RankNode {
 

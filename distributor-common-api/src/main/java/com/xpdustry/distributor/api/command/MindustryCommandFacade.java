@@ -22,7 +22,7 @@ import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.util.Arrays;
 import java.util.List;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class MindustryCommandFacade implements CommandFacade {
 

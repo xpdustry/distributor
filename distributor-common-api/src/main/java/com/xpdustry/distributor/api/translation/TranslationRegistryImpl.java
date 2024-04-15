@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.translation;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class TranslationRegistryImpl implements TranslationRegistry {
 

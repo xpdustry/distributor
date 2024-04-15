@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.permission;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class PermissionTreeImpl implements PermissionTree {
 

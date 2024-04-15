@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.translation;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.function.Function;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A helper class for adding localization support to your plugin.

@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.logging.simple;
 
 import java.util.Objects;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.helpers.BasicMarkerFactory;

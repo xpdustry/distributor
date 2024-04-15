@@ -35,7 +35,7 @@ import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
 import com.xpdustry.distributor.scheduler.PluginTimeSource;
 import com.xpdustry.distributor.service.ServiceManagerImpl;
 import java.util.Objects;
-import org.jspecify.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
