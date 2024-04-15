@@ -56,6 +56,10 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
         return CommandComponent.<C, Team>builder().parser(teamParser());
     }
 
+    public static <C> CommandComponent.Builder<C, Team> teamComponent(final TeamMode teamMode) {
+        return CommandComponent.<C, Team>builder().parser(teamParser());
+    }
+
     private final TeamMode teamMode;
 
     public TeamParser(final TeamMode teamMode) {
