@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.permission.rank;
 
 import com.xpdustry.distributor.DistributorProvider;
-import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.permission.PermissionReader;
 import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.util.Priority;
 
@@ -29,12 +29,12 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
     public void onInit() {
         final var services = DistributorProvider.get().getServiceManager();
 
-        services.register(this, RankProvider.class, Priority.LOW, new MindustryRankProvider());
+        services.register(this, RankSource.class, Priority.LOW, new MindustryRankSource());
 
         final var source = new YamlRankPermissionSource(this.getDirectory().resolve("permissions.yaml"));
         this.addListener(source);
         services.register(this, RankPermissionSource.class, Priority.LOW, source);
 
-        services.register(this, PermissionManager.class, Priority.HIGH, new RankPermissionManager());
+        services.register(this, PermissionReader.class, Priority.HIGH, new RankPermissionReader());
     }
 }

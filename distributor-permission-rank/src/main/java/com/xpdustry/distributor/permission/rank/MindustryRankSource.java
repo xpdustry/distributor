@@ -16,18 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission;
+package com.xpdustry.distributor.permission.rank;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
 import mindustry.gen.Player;
 
-final class NoopPermissionManager implements PermissionManager {
-
-    static final NoopPermissionManager INSTANCE = new NoopPermissionManager();
-
-    private NoopPermissionManager() {}
+final class MindustryRankSource implements RankSource {
 
     @Override
-    public TriState getPermission(final Player player, final String permission) {
-        return TriState.UNDEFINED;
+    public Collection<RankNode> getRanks(final Player player) {
+        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
+        return Collections.singleton(
+                EnumRankNode.linear(rank, r -> "mindustry:" + r.name().toLowerCase(Locale.ROOT), true));
+    }
+
+    private enum MindustryRank {
+        PLAYER,
+        ADMIN
     }
 }

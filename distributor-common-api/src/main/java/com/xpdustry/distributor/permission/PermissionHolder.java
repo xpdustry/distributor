@@ -16,12 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.permission.rank;
+package com.xpdustry.distributor.permission;
 
-import java.util.Collection;
-import mindustry.gen.Player;
+public interface PermissionHolder {
 
-public interface RankProvider {
-
-    Collection<RankNode> getRanks(final Player player);
+    TriState getPermission(final String permission);
 }

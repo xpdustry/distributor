@@ -19,34 +19,34 @@
 package com.xpdustry.distributor.command;
 
 import com.xpdustry.distributor.DistributorProvider;
-import com.xpdustry.distributor.translation.TranslationSource;
+import com.xpdustry.distributor.translation.LocaleHolder;
 import java.util.Locale;
 
-record LocalizedDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
+record TranslationDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
 
     @Override
     public String getText() {
         return DistributorProvider.get()
                 .getGlobalTranslationSource()
-                .getTranslation(key, this.defaultLocale, TranslationSource.DEFAULT_FALLBACK)
+                .getTranslationOrDefault(key, this.defaultLocale)
                 .formatEmpty();
     }
 
     @Override
-    public String getText(final CommandSender sender) {
+    public String getText(final LocaleHolder holder) {
         return DistributorProvider.get()
                 .getGlobalTranslationSource()
-                .getTranslation(key, sender.getLocale(), TranslationSource.DEFAULT_FALLBACK)
+                .getTranslationOrDefault(key, holder.getLocale())
                 .formatEmpty();
     }
 
     @Override
     public boolean isEmpty() {
-        return DistributorProvider.get().getGlobalTranslationSource().getTranslation(key, this.defaultLocale) != null;
+        return DistributorProvider.get().getGlobalTranslationSource().getTranslation(key, this.defaultLocale) == null;
     }
 
     @Override
-    public boolean isEmpty(final CommandSender sender) {
-        return DistributorProvider.get().getGlobalTranslationSource().getTranslation(key, sender.getLocale()) != null;
+    public boolean isEmpty(final LocaleHolder holder) {
+        return DistributorProvider.get().getGlobalTranslationSource().getTranslation(key, holder.getLocale()) == null;
     }
 }

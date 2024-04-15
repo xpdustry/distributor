@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.command.cloud.parser;
 
 import com.xpdustry.distributor.command.cloud.ArcCaptionKeys;
-import com.xpdustry.distributor.content.TypedContentType;
+import com.xpdustry.distributor.content.ContentTypeKey;
 import java.util.Locale;
 import mindustry.Vars;
 import mindustry.ctype.MappableContent;
@@ -35,18 +35,18 @@ import org.incendo.cloud.parser.ParserDescriptor;
 public final class ContentParser<C, T extends MappableContent> implements ArgumentParser<C, T> {
 
     public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(
-            final TypedContentType<T> contentType) {
+            final ContentTypeKey<T> contentType) {
         return ParserDescriptor.of(new ContentParser<>(contentType), contentType.getContentTypeClass());
     }
 
     public static <C, T extends MappableContent> CommandComponent.Builder<C, T> contentComponent(
-            final TypedContentType<T> contentType) {
+            final ContentTypeKey<T> contentType) {
         return CommandComponent.<C, T>builder().parser(contentParser(contentType));
     }
 
-    private final TypedContentType<T> contentType;
+    private final ContentTypeKey<T> contentType;
 
-    public ContentParser(final TypedContentType<T> contentType) {
+    public ContentParser(final ContentTypeKey<T> contentType) {
         this.contentType = contentType;
     }
 
@@ -63,10 +63,10 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
     public static final class ContentParseException extends ParserException {
 
         private final String input;
-        private final TypedContentType<?> contentType;
+        private final ContentTypeKey<?> contentType;
 
         public ContentParseException(
-                final CommandContext<?> ctx, final String input, final TypedContentType<?> contentType) {
+                final CommandContext<?> ctx, final String input, final ContentTypeKey<?> contentType) {
             super(
                     ContentParser.class,
                     ctx,
@@ -81,7 +81,7 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
             return input;
         }
 
-        public TypedContentType<?> getContentType() {
+        public ContentTypeKey<?> getContentType() {
             return contentType;
         }
     }

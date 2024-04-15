@@ -39,7 +39,7 @@ final class PermissionTreeImpl implements PermissionTree {
 
     @Override
     public TriState getPermission(final String permission) {
-        if (!PermissionManager.PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!PermissionReader.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
         }
         var state = TriState.UNDEFINED;
@@ -60,7 +60,7 @@ final class PermissionTreeImpl implements PermissionTree {
 
     @Override
     public void setPermission(final String permission, final TriState state) {
-        if (!PermissionManager.PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!PermissionReader.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
         }
         final var parts = permission.split("\\.", -1);

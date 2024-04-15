@@ -16,31 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command;
+package com.xpdustry.distributor.permission;
 
-import com.xpdustry.distributor.permission.PermissionHolder;
-import com.xpdustry.distributor.translation.LocaleHolder;
 import mindustry.gen.Player;
 
-public interface CommandSender extends PermissionHolder, LocaleHolder {
+final class EmptyPermissionReader implements PermissionReader {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
+    static final EmptyPermissionReader INSTANCE = new EmptyPermissionReader();
+
+    private EmptyPermissionReader() {}
+
+    @Override
+    public TriState getPermission(final Player player, final String permission) {
+        return TriState.UNDEFINED;
     }
-
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
-    }
-
-    String getName();
-
-    void sendWarning(final String text);
-
-    void sendMessage(final String text);
-
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
 }

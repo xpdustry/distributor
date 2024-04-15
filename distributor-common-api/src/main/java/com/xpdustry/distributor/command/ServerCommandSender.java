@@ -69,7 +69,7 @@ final class ServerCommandSender implements CommandSender {
     }
 
     @Override
-    public TriState hasPermission(final String permission) {
+    public TriState getPermission(final String permission) {
         return TriState.TRUE;
     }
 }

@@ -20,13 +20,7 @@ package com.xpdustry.distributor.permission;
 
 import java.util.Map;
 
-final class ImmutablePermissionTree implements PermissionTree {
-
-    private final PermissionTree inner;
-
-    ImmutablePermissionTree(final PermissionTree inner) {
-        this.inner = inner;
-    }
+record ImmutablePermissionTree(PermissionTree inner) implements PermissionTree {
 
     @Override
     public TriState getPermission(final String permission) {

@@ -16,31 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command;
+package com.xpdustry.distributor.translation;
 
-import com.xpdustry.distributor.permission.PermissionHolder;
-import com.xpdustry.distributor.translation.LocaleHolder;
-import mindustry.gen.Player;
+import java.util.Locale;
 
-public interface CommandSender extends PermissionHolder, LocaleHolder {
+public interface LocaleHolder {
 
-    static CommandSender player(final Player player) {
-        return new PlayerCommandSender(player);
-    }
-
-    static CommandSender server() {
-        return ServerCommandSender.INSTANCE;
-    }
-
-    String getName();
-
-    void sendWarning(final String text);
-
-    void sendMessage(final String text);
-
-    boolean isPlayer();
-
-    boolean isServer();
-
-    Player getPlayer();
+    Locale getLocale();
 }

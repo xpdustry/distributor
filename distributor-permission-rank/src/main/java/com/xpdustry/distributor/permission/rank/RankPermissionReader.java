@@ -19,18 +19,18 @@
 package com.xpdustry.distributor.permission.rank;
 
 import com.xpdustry.distributor.DistributorProvider;
-import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.permission.PermissionReader;
 import com.xpdustry.distributor.permission.TriState;
 import java.util.HashSet;
 import mindustry.gen.Player;
 
-final class RankPermissionManager implements PermissionManager {
+final class RankPermissionReader implements PermissionReader {
 
     @Override
     public TriState getPermission(final Player player, final String permission) {
         final var services = DistributorProvider.get().getServiceManager();
         final var sources = services.getProviders(RankPermissionSource.class);
-        for (final var provider : services.getProviders(RankProvider.class)) {
+        for (final var provider : services.getProviders(RankSource.class)) {
             for (final var node : provider.getInstance().getRanks(player)) {
                 final var visited = new HashSet<RankNode>();
                 for (final var source : sources) {

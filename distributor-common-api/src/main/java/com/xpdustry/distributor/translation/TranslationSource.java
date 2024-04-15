@@ -55,9 +55,13 @@ public interface TranslationSource {
      */
     @Nullable Translation getTranslation(final String key, final Locale locale);
 
-    default Translation getTranslation(
+    default Translation getTranslationOrDefault(
             final String key, final Locale locale, final Function<String, Translation> fallback) {
         final var translation = getTranslation(key, locale);
         return translation != null ? translation : fallback.apply(key);
+    }
+
+    default Translation getTranslationOrDefault(final String key, final Locale locale) {
+        return getTranslationOrDefault(key, locale, DEFAULT_FALLBACK);
     }
 }

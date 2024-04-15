@@ -33,21 +33,16 @@ import org.immutables.value.Value;
 
 @DistributorDataClass
 @Value.Immutable
-public sealed interface TypedContentType<T extends MappableContent> permits TypedContentTypeImpl {
+public sealed interface ContentTypeKey<T extends MappableContent> permits ContentTypeKeyImpl {
 
-    TypedContentType<Block> BLOCK = TypedContentType.of(ContentType.block, Block.class);
-    TypedContentType<UnitType> UNIT = TypedContentType.of(ContentType.unit, UnitType.class);
-    TypedContentType<Item> ITEM = TypedContentType.of(ContentType.item, Item.class);
-    TypedContentType<Liquid> LIQUID = TypedContentType.of(ContentType.liquid, Liquid.class);
-    TypedContentType<Weather> WEATHER = TypedContentType.of(ContentType.weather, Weather.class);
-    TypedContentType<StatusEffect> STATUS = TypedContentType.of(ContentType.status, StatusEffect.class);
-    TypedContentType<Planet> PLANET = TypedContentType.of(ContentType.planet, Planet.class);
-    List<TypedContentType<?>> ALL = List.of(BLOCK, UNIT, ITEM, LIQUID, WEATHER, STATUS, PLANET);
-
-    // TODO Hide constructor to enforce type safety ?
-    static <T extends MappableContent> TypedContentType<T> of(final ContentType contentType, final Class<T> clazz) {
-        return TypedContentTypeImpl.of(contentType, clazz);
-    }
+    ContentTypeKey<Block> BLOCK = ContentTypeKeyImpl.of(ContentType.block, Block.class);
+    ContentTypeKey<UnitType> UNIT = ContentTypeKeyImpl.of(ContentType.unit, UnitType.class);
+    ContentTypeKey<Item> ITEM = ContentTypeKeyImpl.of(ContentType.item, Item.class);
+    ContentTypeKey<Liquid> LIQUID = ContentTypeKeyImpl.of(ContentType.liquid, Liquid.class);
+    ContentTypeKey<Weather> WEATHER = ContentTypeKeyImpl.of(ContentType.weather, Weather.class);
+    ContentTypeKey<StatusEffect> STATUS = ContentTypeKeyImpl.of(ContentType.status, StatusEffect.class);
+    ContentTypeKey<Planet> PLANET = ContentTypeKeyImpl.of(ContentType.planet, Planet.class);
+    List<ContentTypeKey<?>> ALL = List.of(BLOCK, UNIT, ITEM, LIQUID, WEATHER, STATUS, PLANET);
 
     ContentType getContentType();
 

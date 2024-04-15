@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.command;
 
 import com.xpdustry.distributor.internal.DistributorDataClass;
+import com.xpdustry.distributor.translation.LocaleHolder;
 import java.util.Locale;
 import org.immutables.value.Value;
 
@@ -32,13 +33,13 @@ public interface DescriptionFacade {
         return DescriptionFacadeImpl.of(text);
     }
 
-    static DescriptionFacade localized(final String key, final Locale defaultLocale) {
-        return new LocalizedDescriptionFacade(key, defaultLocale);
+    static DescriptionFacade translation(final String key, final Locale defaultLocale) {
+        return new TranslationDescriptionFacade(key, defaultLocale);
     }
 
     String getText();
 
-    default String getText(final CommandSender sender) {
+    default String getText(final LocaleHolder holder) {
         return this.getText();
     }
 
@@ -46,7 +47,7 @@ public interface DescriptionFacade {
         return this.getText().isEmpty();
     }
 
-    default boolean isEmpty(final CommandSender sender) {
-        return this.getText(sender).isEmpty();
+    default boolean isEmpty(final LocaleHolder holder) {
+        return this.getText(holder).isEmpty();
     }
 }

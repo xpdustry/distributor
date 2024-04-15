@@ -19,21 +19,9 @@
 package com.xpdustry.distributor.permission.rank;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Locale;
 import mindustry.gen.Player;
 
-final class MindustryRankProvider implements RankProvider {
+public interface RankSource {
 
-    @Override
-    public Collection<RankNode> getRanks(final Player player) {
-        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
-        return Collections.singleton(
-                EnumRankNode.linear(rank, r -> "mindustry:" + r.name().toLowerCase(Locale.ROOT), true));
-    }
-
-    private enum MindustryRank {
-        PLAYER,
-        ADMIN
-    }
+    Collection<RankNode> getRanks(final Player player);
 }

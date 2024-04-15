@@ -61,7 +61,7 @@ record PlayerCommandSender(Player player) implements CommandSender {
     }
 
     @Override
-    public TriState hasPermission(final String permission) {
-        return DistributorProvider.get().getPermissionManager().getPermission(this.player, permission);
+    public TriState getPermission(final String permission) {
+        return DistributorProvider.get().getPermissionReader().getPermission(this.player, permission);
     }
 }

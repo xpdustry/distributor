@@ -26,10 +26,9 @@ import com.xpdustry.distributor.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
-import com.xpdustry.distributor.content.TypedContentType;
+import com.xpdustry.distributor.content.ContentTypeKey;
 import com.xpdustry.distributor.plugin.MindustryPlugin;
 import com.xpdustry.distributor.plugin.PluginAware;
-import com.xpdustry.distributor.translation.TranslationSource;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -73,8 +72,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
         this.captionRegistry().registerProvider((caption, sender) -> {
             final var source = DistributorProvider.get().getGlobalTranslationSource();
             final var locale = this.senderMapper().reverse(sender).getLocale();
-            return source.getTranslation(caption.key(), locale, TranslationSource.DEFAULT_FALLBACK)
-                    .formatEmpty();
+            return source.getTranslationOrDefault(caption.key(), locale).formatEmpty();
         });
 
         this.captionFormatter((key, recipient, caption, variables) -> {
@@ -89,8 +87,8 @@ public class ArcCommandManager<C> extends CommandManager<C>
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());
 
-        TypedContentType.ALL.forEach(typedContentType ->
-                this.parserRegistry().registerParser(ContentParser.contentParser(typedContentType)));
+        ContentTypeKey.ALL.forEach(
+                contentType -> this.parserRegistry().registerParser(ContentParser.contentParser(contentType)));
 
         this.parserRegistry()
                 .registerAnnotationMapper(
@@ -141,7 +139,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
     @Override
     public boolean hasPermission(final @NonNull C sender, final String permission) {
         return permission.isEmpty()
-                || senderMapper().reverse(sender).hasPermission(permission).asBoolean();
+                || senderMapper().reverse(sender).getPermission(permission).asBoolean();
     }
 
     @Override

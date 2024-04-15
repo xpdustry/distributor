@@ -22,7 +22,7 @@ import arc.Core;
 import arc.util.OS;
 import com.xpdustry.distributor.event.EventBus;
 import com.xpdustry.distributor.event.EventBusImpl;
-import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.permission.PermissionReader;
 import com.xpdustry.distributor.player.PlayerLookup;
 import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.scheduler.PluginScheduler;
@@ -41,8 +41,8 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private final EventBus events = new EventBusImpl();
     private final PluginScheduler scheduler = new PluginSchedulerImpl(PluginTimeSource.arc(), Core.app::post, OS.cores);
-    private @Nullable PlayerLookup playerLookup = null;
-    private @Nullable PermissionManager permissions = null;
+    private @Nullable PlayerLookup lookup = null;
+    private @Nullable PermissionReader permissions = null;
 
     @Override
     public ServiceManager getServiceManager() {
@@ -55,7 +55,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public PermissionManager getPermissionManager() {
+    public PermissionReader getPermissionReader() {
         return ensureInitialized(this.permissions, "permission");
     }
 
@@ -66,7 +66,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public PlayerLookup getPlayerLookup() {
-        return ensureInitialized(this.playerLookup, "player-lookup");
+        return ensureInitialized(this.lookup, "player-lookup");
     }
 
     @Override
@@ -83,8 +83,8 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public void onLoad() {
-        this.playerLookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
-        this.permissions = services.provideOrDefault(PermissionManager.class, PermissionManager::noop);
+        this.lookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
+        this.permissions = services.provideOrDefault(PermissionReader.class, PermissionReader::empty);
     }
 
     private <T> T ensureInitialized(final @Nullable T instance, final String name) {

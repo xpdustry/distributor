@@ -21,10 +21,10 @@ package com.xpdustry.distributor.permission;
 import java.util.regex.Pattern;
 import mindustry.gen.Player;
 
-public interface PermissionManager {
+public interface PermissionReader {
 
-    static PermissionManager noop() {
-        return NoopPermissionManager.INSTANCE;
+    static PermissionReader empty() {
+        return EmptyPermissionReader.INSTANCE;
     }
 
     /**
