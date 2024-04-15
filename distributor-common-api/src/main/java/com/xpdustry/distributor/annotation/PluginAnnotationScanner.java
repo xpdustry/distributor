@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 @FunctionalInterface
 public interface PluginAnnotationScanner<R> {
 
-    static PluginAnnotationScanner<Void> consume(final Consumer<Object> consumer) {
+    static PluginAnnotationScanner<Void> consumer(final Consumer<Object> consumer) {
         return instance -> {
             consumer.accept(instance);
             return Optional.empty();
