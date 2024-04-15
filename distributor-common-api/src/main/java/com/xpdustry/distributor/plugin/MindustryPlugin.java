@@ -35,7 +35,7 @@ public interface MindustryPlugin {
      * @param plugin the plugin to wrap
      * @return the wrapped plugin
      */
-    static MindustryPlugin wrap(final Plugin plugin) {
+    static MindustryPlugin from(final Plugin plugin) {
         return plugin instanceof MindustryPlugin casted ? casted : new WrappingMindustryPlugin(plugin);
     }
 
@@ -97,11 +97,4 @@ public interface MindustryPlugin {
      * Returns the metadata of this plugin.
      */
     PluginMetadata getMetadata();
-
-    /**
-     * Adds a {@link PluginListener} to this plugin.
-     *
-     * @param listener the listener to add
-     */
-    void addListener(final PluginListener listener);
 }

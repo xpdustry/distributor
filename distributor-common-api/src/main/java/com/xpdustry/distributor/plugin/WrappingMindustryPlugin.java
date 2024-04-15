@@ -24,17 +24,7 @@ import mindustry.mod.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class WrappingMindustryPlugin implements MindustryPlugin {
-
-    private final Plugin plugin;
-    private final Logger logger;
-    private final PluginMetadata metadata;
-
-    public WrappingMindustryPlugin(final Plugin plugin) {
-        this.plugin = plugin;
-        this.logger = LoggerFactory.getLogger(plugin.getClass());
-        this.metadata = PluginMetadata.from(this.plugin);
-    }
+record WrappingMindustryPlugin(Plugin plugin) implements MindustryPlugin {
 
     @Override
     public void onInit() {
@@ -53,7 +43,7 @@ final class WrappingMindustryPlugin implements MindustryPlugin {
 
     @Override
     public Logger getLogger() {
-        return this.logger;
+        return LoggerFactory.getLogger(plugin.getClass());
     }
 
     @Override
@@ -63,11 +53,6 @@ final class WrappingMindustryPlugin implements MindustryPlugin {
 
     @Override
     public PluginMetadata getMetadata() {
-        return this.metadata;
-    }
-
-    @Override
-    public void addListener(final PluginListener listener) {
-        throw new UnsupportedOperationException();
+        return PluginMetadata.from(this.plugin);
     }
 }

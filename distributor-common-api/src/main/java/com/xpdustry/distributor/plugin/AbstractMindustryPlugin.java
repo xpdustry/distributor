@@ -80,8 +80,12 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         return this.logger;
     }
 
-    @Override
-    public void addListener(final PluginListener listener) {
+    /**
+     * Adds a {@link PluginListener} to this plugin.
+     *
+     * @param listener the listener to add
+     */
+    protected void addListener(final PluginListener listener) {
         if (this.listeners.contains(listener)) {
             throw new IllegalArgumentException("Listener already registered.");
         }
