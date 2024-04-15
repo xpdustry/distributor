@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.command.cloud.parser;
 
-import com.xpdustry.distributor.command.cloud.ArcCaptionKeys;
+import com.xpdustry.distributor.command.cloud.MindustryCaptionKeys;
 import com.xpdustry.distributor.content.ContentTypeKey;
 import java.util.Locale;
 import mindustry.Vars;
@@ -70,7 +70,7 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
             super(
                     ContentParser.class,
                     ctx,
-                    ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_CONTENT,
+                    MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_CONTENT,
                     CaptionVariable.of("input", input),
                     CaptionVariable.of("type", contentType.getContentType().name()));
             this.input = input;

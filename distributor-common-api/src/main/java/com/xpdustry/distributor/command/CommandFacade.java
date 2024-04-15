@@ -28,7 +28,7 @@ public interface CommandFacade {
         if (command instanceof CommandFacade facade) {
             return facade;
         } else {
-            return new ArcCommandFacade(command);
+            return new MindustryCommandFacade(command);
         }
     }
 

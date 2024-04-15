@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.plugin;
 
 import arc.util.serialization.Json;
-import com.xpdustry.distributor.collection.ArcCollections;
+import com.xpdustry.distributor.collection.MindustryCollections;
 import com.xpdustry.distributor.internal.DistributorDataClassWithBuilder;
 import java.io.IOException;
 import java.util.List;
@@ -56,8 +56,8 @@ public sealed interface PluginMetadata permits PluginMetadataImpl {
                 .setMainClass(Objects.requireNonNull(meta.main))
                 .setMinGameVersion(meta.getMinMajor())
                 .setRepository(Objects.requireNonNullElse(meta.repo, ""))
-                .setDependencies(ArcCollections.immutableList(meta.dependencies))
-                .setSoftDependencies(ArcCollections.immutableList(meta.softDependencies))
+                .setDependencies(MindustryCollections.immutableList(meta.dependencies))
+                .setSoftDependencies(MindustryCollections.immutableList(meta.softDependencies))
                 .build();
     }
 

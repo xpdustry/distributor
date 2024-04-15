@@ -29,11 +29,11 @@ import org.jspecify.annotations.Nullable;
  *
  * @param <E> the element type
  */
-final class ArcSet<E> extends AbstractSet<E> {
+final class MindustrySet<E> extends AbstractSet<E> {
 
     private final ObjectSet<E> set;
 
-    ArcSet(final ObjectSet<E> set) {
+    MindustrySet(final ObjectSet<E> set) {
         this.set = set;
     }
 

@@ -25,11 +25,11 @@ import org.incendo.cloud.caption.Caption;
 import org.incendo.cloud.caption.StandardCaptionKeys;
 
 /**
- * {@link Caption} instances for {@link ArcCommandManager} error messages.
+ * {@link Caption} instances for {@link MindustryCommandManager} error messages.
  *
  * @see StandardCaptionKeys
  */
-public final class ArcCaptionKeys {
+public final class MindustryCaptionKeys {
 
     private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(3);
 
@@ -53,7 +53,7 @@ public final class ArcCaptionKeys {
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_CONTENT = of("argument.parse.failure.content");
 
-    private ArcCaptionKeys() {}
+    private MindustryCaptionKeys() {}
 
     private static Caption of(final String key) {
         final var caption = Caption.of(key);
@@ -62,7 +62,7 @@ public final class ArcCaptionKeys {
     }
 
     /**
-     * Returns an unmodifiable view of all the captions used in the {@link ArcCommandManager}.
+     * Returns an unmodifiable view of all the captions used in the {@link MindustryCommandManager}.
      */
     public static Collection<Caption> getCaptionKeys() {
         return Collections.unmodifiableCollection(RECOGNIZED_CAPTIONS);

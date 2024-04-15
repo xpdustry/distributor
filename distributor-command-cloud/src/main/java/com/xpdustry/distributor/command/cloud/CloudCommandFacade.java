@@ -40,7 +40,7 @@ import org.incendo.cloud.help.result.VerboseCommandResult;
  */
 final class CloudCommandFacade<C> extends CommandHandler.Command implements CommandFacade {
 
-    final ArcCommandManager<C> manager;
+    final MindustryCommandManager<C> manager;
     private final boolean alias;
     private final boolean prefixed;
     private final String realName;
@@ -49,14 +49,14 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
     CloudCommandFacade(
             final String name,
             final Description description,
-            final ArcCommandManager<C> manager,
+            final MindustryCommandManager<C> manager,
             final boolean alias,
             final boolean prefixed) {
         super(
                 (prefixed ? manager.getPlugin().getMetadata().getName() + ":" : "") + name,
                 "[args...]",
                 description.textDescription(),
-                new ArcCommandRunner<>(name, manager));
+                new CloudCommandRunner<>(name, manager));
         this.manager = manager;
         this.alias = alias;
         this.prefixed = prefixed;
@@ -170,12 +170,12 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
     }
 
     @SuppressWarnings("ClassCanBeRecord")
-    private static final class ArcCommandRunner<C> implements CommandHandler.CommandRunner<Player> {
+    private static final class CloudCommandRunner<C> implements CommandHandler.CommandRunner<Player> {
 
         private final String name;
-        private final ArcCommandManager<C> manager;
+        private final MindustryCommandManager<C> manager;
 
-        private ArcCommandRunner(final String name, final ArcCommandManager<C> manager) {
+        private CloudCommandRunner(final String name, final MindustryCommandManager<C> manager) {
             this.name = name;
             this.manager = manager;
         }

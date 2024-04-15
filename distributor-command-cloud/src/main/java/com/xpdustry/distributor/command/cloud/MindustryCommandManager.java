@@ -47,7 +47,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ArcCommandManager<C> extends CommandManager<C>
+public class MindustryCommandManager<C> extends CommandManager<C>
         implements PluginAware, SenderMapperHolder<CommandSender, C> {
 
     private final MindustryPlugin plugin;
@@ -56,7 +56,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
     private DescriptionMapper<Description> descriptionMapper = DescriptionMapper.text(Description::textDescription);
     private @Nullable CommandHandler handler = null;
 
-    public ArcCommandManager(
+    public MindustryCommandManager(
             final MindustryPlugin plugin,
             final ExecutionCoordinator<C> coordinator,
             final SenderMapper<CommandSender, C> senderMapper) {
@@ -94,18 +94,18 @@ public class ArcCommandManager<C> extends CommandManager<C>
                 .registerAnnotationMapper(
                         AllTeams.class,
                         (annotation, typeToken) ->
-                                ParserParameters.single(ArcParserParameters.TEAM_MODE, TeamParser.TeamMode.ALL))
+                                ParserParameters.single(MindustryParserParameters.TEAM_MODE, TeamParser.TeamMode.ALL))
                 .registerParserSupplier(
                         TypeToken.get(Team.class),
-                        params ->
-                                new TeamParser<>(params.get(ArcParserParameters.TEAM_MODE, TeamParser.TeamMode.BASE)));
+                        params -> new TeamParser<>(
+                                params.get(MindustryParserParameters.TEAM_MODE, TeamParser.TeamMode.BASE)));
 
         this.registerCommandPreProcessor(ctx -> {
             final var reversed =
                     this.senderMapper().reverse(ctx.commandContext().sender());
             ctx.commandContext()
                     .store(
-                            ArcCommandContextKeys.MINDUSTRY_ADMIN,
+                            MindustryCommandContextKeys.ADMIN,
                             reversed.isServer() || reversed.getPlayer().admin());
         });
     }
@@ -116,13 +116,13 @@ public class ArcCommandManager<C> extends CommandManager<C>
      * @param handler the backing command handler
      */
     public final void initialize(final CommandHandler handler) {
-        this.commandRegistrationHandler(new ArcRegistrationHandler<>(this, handler));
+        this.commandRegistrationHandler(new MindustryRegistrationHandler<>(this, handler));
         this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
         this.handler = handler;
         this.parameterInjectorRegistry()
                 .registerInjector(
                         CommandHandler.class,
-                        (ctx, annotation) -> Objects.requireNonNull(ArcCommandManager.this.handler));
+                        (ctx, annotation) -> Objects.requireNonNull(MindustryCommandManager.this.handler));
     }
 
     /**

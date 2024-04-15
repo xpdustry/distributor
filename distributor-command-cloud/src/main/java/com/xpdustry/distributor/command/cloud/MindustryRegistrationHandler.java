@@ -20,7 +20,7 @@ package com.xpdustry.distributor.command.cloud;
 
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.collection.ArcCollections;
+import com.xpdustry.distributor.collection.MindustryCollections;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,10 +30,10 @@ import org.incendo.cloud.internal.CommandRegistrationHandler;
 import org.incendo.cloud.setting.ManagerSetting;
 
 /**
- * This class acts as a bridge between the {@link ArcCommandManager} and the {@link CommandHandler},
+ * This class acts as a bridge between the {@link MindustryCommandManager} and the {@link CommandHandler},
  * by registering cloud commands as arc commands.
  */
-final class ArcRegistrationHandler<C> implements CommandRegistrationHandler<C> {
+final class MindustryRegistrationHandler<C> implements CommandRegistrationHandler<C> {
 
     private static final Field COMMAND_MAP_ACCESSOR;
 
@@ -46,13 +46,13 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler<C> {
         }
     }
 
-    private final ArcCommandManager<C> manager;
+    private final MindustryCommandManager<C> manager;
     private final CommandHandler handler;
     private final ObjectMap<String, CommandHandler.Command> commands;
     private final Set<CommandComponent<?>> registered = new HashSet<>();
 
     @SuppressWarnings("unchecked")
-    ArcRegistrationHandler(final ArcCommandManager<C> manager, final CommandHandler handler) {
+    MindustryRegistrationHandler(final MindustryCommandManager<C> manager, final CommandHandler handler) {
         this.manager = manager;
         this.handler = handler;
         try {
@@ -97,7 +97,7 @@ final class ArcRegistrationHandler<C> implements CommandRegistrationHandler<C> {
     @Override
     public void unregisterRootCommand(final CommandComponent<C> root) {
         this.registered.remove(root);
-        for (final var command : ArcCollections.immutableList(this.handler.getCommandList())) {
+        for (final var command : MindustryCollections.immutableList(this.handler.getCommandList())) {
             if (command instanceof final CloudCommandFacade<?> cloud
                     && cloud.manager == this.manager
                     && root.aliases().contains(cloud.getRealName())) {

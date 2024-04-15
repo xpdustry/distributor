@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.player;
 
-import com.xpdustry.distributor.collection.ArcCollections;
+import com.xpdustry.distributor.collection.MindustryCollections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,7 @@ final class PlayerLookupImpl implements PlayerLookup {
 
     @Override
     public Collection<Player> findOnlinePlayers(final Query query) {
-        final var players = ArcCollections.immutableList(Groups.player);
+        final var players = MindustryCollections.immutableList(Groups.player);
         final List<Player> result = new ArrayList<>();
 
         if (query.getFields().contains(Field.ENTITY_ID) && query.getInput().startsWith("#")) {

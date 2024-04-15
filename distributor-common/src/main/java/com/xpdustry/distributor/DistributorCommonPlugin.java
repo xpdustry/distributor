@@ -40,7 +40,8 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private final ServiceManager services = new ServiceManagerImpl();
     private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private final EventBus events = new EventBusImpl();
-    private final PluginScheduler scheduler = new PluginSchedulerImpl(PluginTimeSource.arc(), Core.app::post, OS.cores);
+    private final PluginScheduler scheduler =
+            new PluginSchedulerImpl(PluginTimeSource.mindustry(), Core.app::post, OS.cores);
     private @Nullable PlayerLookup lookup = null;
     private @Nullable PermissionReader permissions = null;
 

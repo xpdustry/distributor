@@ -33,12 +33,12 @@ import org.jspecify.annotations.Nullable;
  * @param <K> the type of the keys
  * @param <V> the type of the values
  */
-final class ArcMap<K, V> extends AbstractMap<K, V> {
+final class MindustryMap<K, V> extends AbstractMap<K, V> {
 
     private final ObjectMap<K, V> map;
     private transient @Nullable EntrySet entries = null;
 
-    ArcMap(final ObjectMap<K, V> map) {
+    MindustryMap(final ObjectMap<K, V> map) {
         this.map = map;
     }
 
@@ -123,17 +123,17 @@ final class ArcMap<K, V> extends AbstractMap<K, V> {
                 return false;
             }
             final var entry = (Entry<?, ?>) o;
-            return ArcMap.this.remove(entry.getKey(), entry.getValue());
+            return MindustryMap.this.remove(entry.getKey(), entry.getValue());
         }
 
         @Override
         public int size() {
-            return ArcMap.this.map.size;
+            return MindustryMap.this.map.size;
         }
 
         @Override
         public void clear() {
-            ArcMap.this.map.clear();
+            MindustryMap.this.map.clear();
         }
 
         @Override
@@ -144,7 +144,7 @@ final class ArcMap<K, V> extends AbstractMap<K, V> {
 
     private final class EntryIterator implements Iterator<Entry<K, V>> {
 
-        private final ObjectMap.Entries<K, V> entries = new ObjectMap.Entries<>(ArcMap.this.map);
+        private final ObjectMap.Entries<K, V> entries = new ObjectMap.Entries<>(MindustryMap.this.map);
 
         @Override
         public boolean hasNext() {
@@ -158,15 +158,15 @@ final class ArcMap<K, V> extends AbstractMap<K, V> {
 
         @Override
         public Entry<K, V> next() {
-            return new ArcMapEntry(this.entries.next());
+            return new MindustryMapEntry(this.entries.next());
         }
     }
 
-    private final class ArcMapEntry implements Entry<K, V> {
+    private final class MindustryMapEntry implements Entry<K, V> {
 
         private final K key;
 
-        private ArcMapEntry(final ObjectMap.Entry<K, V> entry) {
+        private MindustryMapEntry(final ObjectMap.Entry<K, V> entry) {
             this.key = entry.key;
         }
 
@@ -179,13 +179,13 @@ final class ArcMap<K, V> extends AbstractMap<K, V> {
         @Override
         public V getValue() {
             this.checkPresent();
-            return ArcMap.this.map.get(this.key);
+            return MindustryMap.this.map.get(this.key);
         }
 
         @Override
         public V setValue(final V value) {
             this.checkPresent();
-            return ArcMap.this.map.put(this.key, value);
+            return MindustryMap.this.map.put(this.key, value);
         }
 
         @Override
@@ -206,7 +206,7 @@ final class ArcMap<K, V> extends AbstractMap<K, V> {
         }
 
         private void checkPresent() {
-            if (!ArcMap.this.map.containsKey(this.key)) {
+            if (!MindustryMap.this.map.containsKey(this.key)) {
                 throw new IllegalStateException("The entry is no longer in the map.");
             }
         }

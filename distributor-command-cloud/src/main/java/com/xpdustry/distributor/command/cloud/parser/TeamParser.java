@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.command.cloud.parser;
 
-import com.xpdustry.distributor.command.cloud.ArcCaptionKeys;
+import com.xpdustry.distributor.command.cloud.MindustryCaptionKeys;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -120,7 +120,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
             super(
                     TeamParser.class,
                     ctx,
-                    ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
+                    MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
                     CaptionVariable.of("input", input),
                     CaptionVariable.of("teamMode", teamMode.name()));
             this.input = input;

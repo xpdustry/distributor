@@ -29,7 +29,7 @@ public interface PluginTimeSource {
     /**
      * Returns a {@code PluginTimeSource} using {@link Time#globalTime} to provide the current time.
      */
-    static PluginTimeSource arc() {
+    static PluginTimeSource mindustry() {
         return () -> (long) Time.globalTime;
     }
 

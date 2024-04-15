@@ -24,12 +24,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 
-final class ArcCommandFacade implements CommandFacade {
+final class MindustryCommandFacade implements CommandFacade {
 
     private final CommandHandler.Command command;
     private final DescriptionFacade description;
 
-    ArcCommandFacade(final CommandHandler.Command command) {
+    MindustryCommandFacade(final CommandHandler.Command command) {
         this.command = command;
         this.description = DescriptionFacade.text(command.description);
     }

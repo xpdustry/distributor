@@ -20,9 +20,9 @@ package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.Core;
 import com.xpdustry.distributor.DistributorProvider;
-import com.xpdustry.distributor.collection.ArcCollections;
-import com.xpdustry.distributor.command.cloud.ArcCaptionKeys;
-import com.xpdustry.distributor.command.cloud.ArcCommandContextKeys;
+import com.xpdustry.distributor.collection.MindustryCollections;
+import com.xpdustry.distributor.command.cloud.MindustryCaptionKeys;
+import com.xpdustry.distributor.command.cloud.MindustryCommandContextKeys;
 import com.xpdustry.distributor.player.PlayerLookup;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
@@ -53,7 +53,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     @Override
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var queryBuilder = PlayerLookup.Query.builder().setInput(input.readString());
-        if (ctx.getOrDefault(ArcCommandContextKeys.MINDUSTRY_ADMIN, false)) {
+        if (ctx.getOrDefault(MindustryCommandContextKeys.ADMIN, false)) {
             queryBuilder.addField(PlayerLookup.Field.UUID);
         }
         final var query = queryBuilder.build();
@@ -76,7 +76,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     @Override
     public @NonNull SuggestionProvider<C> suggestionProvider() {
         return (ctx, input) -> CompletableFuture.supplyAsync(
-                () -> ArcCollections.immutableList(Groups.player).stream()
+                () -> MindustryCollections.immutableList(Groups.player).stream()
                         .map(Player::plainName)
                         .map(Suggestion::suggestion)
                         .toList(),
@@ -121,7 +121,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
              * @param ctx   the command context
              */
             public TooManyPlayers(final String input, final CommandContext<?> ctx) {
-                super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
+                super(input, ctx, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
             }
         }
 
@@ -137,7 +137,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
              * @param ctx   the command context
              */
             public PlayerNotFound(final String input, final CommandContext<?> ctx) {
-                super(input, ctx, ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
+                super(input, ctx, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
             }
         }
     }

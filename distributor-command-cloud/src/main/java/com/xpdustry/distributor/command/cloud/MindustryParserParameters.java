@@ -18,13 +18,21 @@
  */
 package com.xpdustry.distributor.command.cloud;
 
+import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import io.leangen.geantyref.TypeToken;
-import org.incendo.cloud.key.CloudKey;
+import org.incendo.cloud.parser.ParserParameter;
 
-public final class ArcCommandContextKeys {
+/**
+ * A collection of {@link ParserParameter} used by Distributor to resolve Mindustry types in the
+ * {@link org.incendo.cloud.parser.ParserRegistry}.
+ */
+public final class MindustryParserParameters {
 
-    public static final CloudKey<Boolean> MINDUSTRY_ADMIN =
-            CloudKey.of("mindustry:admin", TypeToken.get(Boolean.class));
+    /**
+     * Whether a {@link mindustry.game.Team} argument should include all the teams or only the base ones.
+     */
+    public static final ParserParameter<TeamParser.TeamMode> TEAM_MODE =
+            new ParserParameter<>("team_mode", TypeToken.get(TeamParser.TeamMode.class));
 
-    private ArcCommandContextKeys() {}
+    private MindustryParserParameters() {}
 }

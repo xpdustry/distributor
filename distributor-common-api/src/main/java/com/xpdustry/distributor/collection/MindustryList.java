@@ -31,11 +31,11 @@ import java.util.function.UnaryOperator;
  *
  * @param <E> the element type
  */
-final class ArcList<E> extends AbstractList<E> implements RandomAccess {
+final class MindustryList<E> extends AbstractList<E> implements RandomAccess {
 
     private final Seq<E> seq;
 
-    ArcList(final Seq<E> seq) {
+    MindustryList(final Seq<E> seq) {
         this.seq = seq;
     }
 

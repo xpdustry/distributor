@@ -32,7 +32,7 @@ import mindustry.gen.Entityc;
 /**
  * A utility class for wrapping arc collections into standard java collections.
  */
-public final class ArcCollections {
+public final class MindustryCollections {
 
     private static final Field ENTITY_GROUP_ARRAY_ACCESSOR;
 
@@ -45,7 +45,7 @@ public final class ArcCollections {
         }
     }
 
-    private ArcCollections() {}
+    private MindustryCollections() {}
 
     /**
      * Wraps an {@link ObjectSet} into a {@link Set}.
@@ -55,7 +55,7 @@ public final class ArcCollections {
      * @return the wrapped set
      */
     public static <E> Set<E> mutableSet(final ObjectSet<E> seq) {
-        return new ArcSet<>(seq);
+        return new MindustrySet<>(seq);
     }
 
     /**
@@ -66,7 +66,7 @@ public final class ArcCollections {
      * @return the wrapped {@link ObjectSet}
      */
     public static <E> Set<E> immutableSet(final ObjectSet<E> seq) {
-        return Collections.unmodifiableSet(new ArcSet<>(seq));
+        return Collections.unmodifiableSet(new MindustrySet<>(seq));
     }
 
     /**
@@ -77,7 +77,7 @@ public final class ArcCollections {
      * @return the wrapped {@link Seq}
      */
     public static <E> List<E> mutableList(final Seq<E> seq) {
-        return new ArcList<>(seq);
+        return new MindustryList<>(seq);
     }
 
     /**
@@ -88,7 +88,7 @@ public final class ArcCollections {
      * @return the wrapped {@link Seq}
      */
     public static <E> List<E> immutableList(final Seq<E> seq) {
-        return Collections.unmodifiableList(new ArcList<>(seq));
+        return Collections.unmodifiableList(new MindustryList<>(seq));
     }
 
     /**
@@ -99,7 +99,7 @@ public final class ArcCollections {
      * @return the wrapped {@link EntityGroup}
      */
     public static <E extends Entityc> List<E> mutableList(final EntityGroup<E> group) {
-        return ArcCollections.mutableList(getArray(group));
+        return MindustryCollections.mutableList(getArray(group));
     }
 
     /**
@@ -110,7 +110,7 @@ public final class ArcCollections {
      * @return the wrapped {@link EntityGroup}
      */
     public static <E extends Entityc> List<E> immutableList(final EntityGroup<E> group) {
-        return ArcCollections.immutableList(getArray(group));
+        return MindustryCollections.immutableList(getArray(group));
     }
 
     /**
@@ -122,7 +122,7 @@ public final class ArcCollections {
      * @return the wrapped {@link ObjectMap}
      */
     public static <K, V> Map<K, V> mutableMap(final ObjectMap<K, V> map) {
-        return new ArcMap<>(map);
+        return new MindustryMap<>(map);
     }
 
     /**
@@ -134,7 +134,7 @@ public final class ArcCollections {
      * @return the wrapped {@link ObjectMap}
      */
     public static <K, V> Map<K, V> immutableMap(final ObjectMap<K, V> map) {
-        return Collections.unmodifiableMap(new ArcMap<>(map));
+        return Collections.unmodifiableMap(new MindustryMap<>(map));
     }
 
     @SuppressWarnings("unchecked")
