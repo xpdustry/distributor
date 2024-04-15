@@ -19,11 +19,11 @@
 package com.xpdustry.distributor.command.cloud.parser;
 
 import arc.Core;
-import com.xpdustry.distributor.DistributorProvider;
-import com.xpdustry.distributor.collection.MindustryCollections;
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.collection.MindustryCollections;
+import com.xpdustry.distributor.api.player.PlayerLookup;
 import com.xpdustry.distributor.command.cloud.MindustryCaptionKeys;
 import com.xpdustry.distributor.command.cloud.MindustryCommandContextKeys;
-import com.xpdustry.distributor.player.PlayerLookup;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;

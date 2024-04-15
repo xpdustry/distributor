@@ -19,12 +19,12 @@
 package com.xpdustry.distributor.command.cloud;
 
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.command.CommandElement;
-import com.xpdustry.distributor.command.CommandFacade;
-import com.xpdustry.distributor.command.CommandHelp;
-import com.xpdustry.distributor.command.CommandSender;
-import com.xpdustry.distributor.command.DescriptionFacade;
-import com.xpdustry.distributor.plugin.MindustryPlugin;
+import com.xpdustry.distributor.api.command.CommandElement;
+import com.xpdustry.distributor.api.command.CommandFacade;
+import com.xpdustry.distributor.api.command.CommandHelp;
+import com.xpdustry.distributor.api.command.CommandSender;
+import com.xpdustry.distributor.api.command.DescriptionFacade;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import mindustry.gen.Player;

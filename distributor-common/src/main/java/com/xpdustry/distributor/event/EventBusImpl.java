@@ -22,9 +22,11 @@ import arc.Events;
 import arc.func.Cons;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.plugin.PluginAware;
-import com.xpdustry.distributor.util.Priority;
+import com.xpdustry.distributor.api.event.EventBus;
+import com.xpdustry.distributor.api.event.EventSubscription;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
+import com.xpdustry.distributor.api.plugin.PluginAware;
+import com.xpdustry.distributor.api.util.Priority;
 import java.util.Comparator;
 import java.util.function.Consumer;
 

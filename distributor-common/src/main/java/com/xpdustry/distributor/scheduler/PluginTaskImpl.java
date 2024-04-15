@@ -18,7 +18,10 @@
  */
 package com.xpdustry.distributor.scheduler;
 
-import com.xpdustry.distributor.plugin.MindustryPlugin;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
+import com.xpdustry.distributor.api.scheduler.Cancellable;
+import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
+import com.xpdustry.distributor.api.scheduler.PluginTask;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;

@@ -20,18 +20,20 @@ package com.xpdustry.distributor;
 
 import arc.Core;
 import arc.util.OS;
-import com.xpdustry.distributor.event.EventBus;
+import com.xpdustry.distributor.api.Distributor;
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.event.EventBus;
+import com.xpdustry.distributor.api.permission.PermissionReader;
+import com.xpdustry.distributor.api.player.PlayerLookup;
+import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
+import com.xpdustry.distributor.api.scheduler.PluginScheduler;
+import com.xpdustry.distributor.api.service.ServiceManager;
+import com.xpdustry.distributor.api.translation.TranslationSource;
+import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
 import com.xpdustry.distributor.event.EventBusImpl;
-import com.xpdustry.distributor.permission.PermissionReader;
-import com.xpdustry.distributor.player.PlayerLookup;
-import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
-import com.xpdustry.distributor.scheduler.PluginScheduler;
 import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
 import com.xpdustry.distributor.scheduler.PluginTimeSource;
-import com.xpdustry.distributor.service.ServiceManager;
 import com.xpdustry.distributor.service.ServiceManagerImpl;
-import com.xpdustry.distributor.translation.TranslationSource;
-import com.xpdustry.distributor.translation.TranslationSourceRegistry;
 import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 

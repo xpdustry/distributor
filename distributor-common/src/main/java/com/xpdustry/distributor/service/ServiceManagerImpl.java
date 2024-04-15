@@ -18,8 +18,9 @@
  */
 package com.xpdustry.distributor.service;
 
-import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.util.Priority;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
+import com.xpdustry.distributor.api.service.ServiceManager;
+import com.xpdustry.distributor.api.util.Priority;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;

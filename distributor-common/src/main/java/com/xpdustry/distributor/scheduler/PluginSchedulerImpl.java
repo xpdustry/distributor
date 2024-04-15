@@ -18,8 +18,10 @@
  */
 package com.xpdustry.distributor.scheduler;
 
-import com.xpdustry.distributor.plugin.MindustryPlugin;
-import com.xpdustry.distributor.plugin.PluginListener;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
+import com.xpdustry.distributor.api.plugin.PluginListener;
+import com.xpdustry.distributor.api.scheduler.PluginScheduler;
+import com.xpdustry.distributor.api.scheduler.PluginTask;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Queue;
