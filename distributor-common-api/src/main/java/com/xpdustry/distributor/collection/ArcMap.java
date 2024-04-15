@@ -19,8 +19,6 @@
 package com.xpdustry.distributor.collection;
 
 import arc.struct.ObjectMap;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
@@ -35,10 +33,7 @@ import org.jspecify.annotations.Nullable;
  * @param <K> the type of the keys
  * @param <V> the type of the values
  */
-final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1261308433311045675L;
+final class ArcMap<K, V> extends AbstractMap<K, V> {
 
     private final ObjectMap<K, V> map;
     private transient @Nullable EntrySet entries = null;
@@ -167,10 +162,7 @@ final class ArcMap<K, V> extends AbstractMap<K, V> implements Serializable {
         }
     }
 
-    private final class ArcMapEntry implements Entry<K, V>, Serializable {
-
-        @Serial
-        private static final long serialVersionUID = -2069200917533589764L;
+    private final class ArcMapEntry implements Entry<K, V> {
 
         private final K key;
 

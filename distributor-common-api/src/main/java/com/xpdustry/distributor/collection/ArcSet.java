@@ -19,8 +19,6 @@
 package com.xpdustry.distributor.collection;
 
 import arc.struct.ObjectSet;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,10 +29,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @param <E> the element type
  */
-final class ArcSet<E> extends AbstractSet<E> implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -3011659975952643135L;
+final class ArcSet<E> extends AbstractSet<E> {
 
     private final ObjectSet<E> set;
 

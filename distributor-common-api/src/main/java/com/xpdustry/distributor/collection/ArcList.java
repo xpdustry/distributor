@@ -19,8 +19,6 @@
 package com.xpdustry.distributor.collection;
 
 import arc.struct.Seq;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,10 +31,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <E> the element type
  */
-final class ArcList<E> extends AbstractList<E> implements Serializable, RandomAccess {
-
-    @Serial
-    private static final long serialVersionUID = 7102237478555006892L;
+final class ArcList<E> extends AbstractList<E> implements RandomAccess {
 
     private final Seq<E> seq;
 

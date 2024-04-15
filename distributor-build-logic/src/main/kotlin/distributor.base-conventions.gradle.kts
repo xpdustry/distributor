@@ -58,15 +58,10 @@ spotless {
 }
 
 tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:-serial")
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
-        disable(
-            "MissingSummary",
-            "BadImport",
-            "FutureReturnValueIgnored",
-            "InlineMeSuggester",
-            "EmptyCatch",
-        )
+        disable("MissingSummary", "FutureReturnValueIgnored", "InlineMeSuggester", "EmptyCatch")
         if (!name.contains("test", true)) {
             check("NullAway", CheckSeverity.ERROR)
             option("NullAway:AnnotatedPackages", "com.xpdustry.distributor")
