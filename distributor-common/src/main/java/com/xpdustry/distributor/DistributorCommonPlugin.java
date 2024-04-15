@@ -23,6 +23,7 @@ import arc.util.OS;
 import com.xpdustry.distributor.event.EventBus;
 import com.xpdustry.distributor.event.EventBusImpl;
 import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.player.PlayerLookup;
 import com.xpdustry.distributor.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.scheduler.PluginScheduler;
 import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
@@ -40,6 +41,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private final EventBus events = new EventBusImpl();
     private final PluginScheduler scheduler = new PluginSchedulerImpl(PluginTimeSource.arc(), Core.app::post, OS.cores);
+    private @Nullable PlayerLookup playerLookup = null;
     private @Nullable PermissionManager permissions = null;
 
     @Override
@@ -63,6 +65,11 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
+    public PlayerLookup getPlayerLookup() {
+        return ensureInitialized(this.playerLookup, "player-lookup");
+    }
+
+    @Override
     public PluginScheduler getPluginScheduler() {
         return this.scheduler;
     }
@@ -76,6 +83,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public void onLoad() {
+        this.playerLookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
         this.permissions = services.provideOrDefault(PermissionManager.class, PermissionManager::noop);
     }
 

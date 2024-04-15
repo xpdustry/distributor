@@ -23,7 +23,6 @@ import com.xpdustry.distributor.DistributorProvider;
 import com.xpdustry.distributor.command.CommandSender;
 import com.xpdustry.distributor.command.DescriptionMapper;
 import com.xpdustry.distributor.command.cloud.parser.ContentParser;
-import com.xpdustry.distributor.command.cloud.parser.PlayerInfoParser;
 import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
@@ -88,9 +87,7 @@ public class ArcCommandManager<C> extends CommandManager<C>
             }
         });
 
-        this.parserRegistry()
-                .registerParser(PlayerParser.playerParser())
-                .registerParser(PlayerInfoParser.playerInfoParser());
+        this.parserRegistry().registerParser(PlayerParser.playerParser());
 
         TypedContentType.ALL.forEach(typedContentType ->
                 this.parserRegistry().registerParser(ContentParser.contentParser(typedContentType)));

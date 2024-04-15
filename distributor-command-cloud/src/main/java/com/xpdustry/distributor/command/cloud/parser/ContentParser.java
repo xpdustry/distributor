@@ -56,24 +56,19 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
         final var name = input.readString().toLowerCase(Locale.ROOT);
         final var content = Vars.content.getByName(contentType.getContentType(), name);
         return (content == null)
-                ? ArgumentParseResult.failure(new ContentParseException(this.getClass(), ctx, name, contentType))
+                ? ArgumentParseResult.failure(new ContentParseException(ctx, name, contentType))
                 : ArgumentParseResult.success((T) content);
     }
 
-    @SuppressWarnings("serial")
     public static final class ContentParseException extends ParserException {
 
         private final String input;
         private final TypedContentType<?> contentType;
 
-        @SuppressWarnings("rawtypes")
         public ContentParseException(
-                final Class<? extends ContentParser> clazz,
-                final CommandContext<?> ctx,
-                final String input,
-                final TypedContentType<?> contentType) {
+                final CommandContext<?> ctx, final String input, final TypedContentType<?> contentType) {
             super(
-                    clazz,
+                    ContentParser.class,
                     ctx,
                     ArcCaptionKeys.ARGUMENT_PARSE_FAILURE_CONTENT,
                     CaptionVariable.of("input", input),

@@ -21,7 +21,7 @@ package com.xpdustry.distributor;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A holder for the global {@link Distributor} factory.
+ * A holder for the global {@link Distributor} instance.
  */
 public final class DistributorProvider {
 

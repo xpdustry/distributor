@@ -20,6 +20,7 @@ package com.xpdustry.distributor;
 
 import com.xpdustry.distributor.event.EventBus;
 import com.xpdustry.distributor.permission.PermissionManager;
+import com.xpdustry.distributor.player.PlayerLookup;
 import com.xpdustry.distributor.scheduler.PluginScheduler;
 import com.xpdustry.distributor.service.ServiceManager;
 import com.xpdustry.distributor.translation.TranslationSourceRegistry;
@@ -33,6 +34,8 @@ public interface Distributor {
     EventBus getEventBus();
 
     PermissionManager getPermissionManager();
+
+    PlayerLookup getPlayerLookup();
 
     PluginScheduler getPluginScheduler();
 }

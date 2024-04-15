@@ -61,7 +61,6 @@ public final class EventBusImpl implements EventBus {
         return this.subscribe(event, new ConsumerCons<>(e -> listener.run(), priority, plugin));
     }
 
-    @SuppressWarnings("ConstantValue") // <- intellij thinks ObjectMap.get never return null, cringe...
     private <E> EventSubscription subscribe(final Object event, final ConsumerCons<E> subscriber) {
         this.events.get(event, () -> new Seq<>(Cons.class)).add(subscriber).sort(COMPARATOR);
         return () -> {
