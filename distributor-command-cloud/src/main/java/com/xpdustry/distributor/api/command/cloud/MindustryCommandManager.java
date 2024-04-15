@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud;
+package com.xpdustry.distributor.api.command.cloud;
 
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.command.CommandSender;
 import com.xpdustry.distributor.api.command.DescriptionMapper;
+import com.xpdustry.distributor.api.command.cloud.parser.ContentParser;
+import com.xpdustry.distributor.api.command.cloud.parser.PlayerParser;
+import com.xpdustry.distributor.api.command.cloud.parser.TeamParser;
+import com.xpdustry.distributor.api.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.api.content.ContentTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
-import com.xpdustry.distributor.command.cloud.parser.ContentParser;
-import com.xpdustry.distributor.command.cloud.parser.PlayerParser;
-import com.xpdustry.distributor.command.cloud.parser.TeamParser;
-import com.xpdustry.distributor.command.cloud.specifier.AllTeams;
 import io.leangen.geantyref.TypeToken;
 import java.text.MessageFormat;
 import java.util.Objects;

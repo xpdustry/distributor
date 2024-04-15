@@ -16,19 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud.specifier;
+package com.xpdustry.distributor.api.command.cloud;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.leangen.geantyref.TypeToken;
+import org.incendo.cloud.key.CloudKey;
 
-/**
- * Annotation used to specify that a {@link mindustry.game.Team} command argument can represent all the teams instead of the 6 base
- * teams.
- *
- * @see com.xpdustry.distributor.command.cloud.parser.TeamParser.TeamMode#ALL
- */
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AllTeams {}
+public final class MindustryCommandContextKeys {
+
+    public static final CloudKey<Boolean> ADMIN = CloudKey.of("mindustry:admin", TypeToken.get(Boolean.class));
+
+    private MindustryCommandContextKeys() {}
+}

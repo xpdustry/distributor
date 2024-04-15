@@ -16,23 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud;
+package com.xpdustry.distributor.api.command.cloud.specifier;
 
-import com.xpdustry.distributor.command.cloud.parser.TeamParser;
-import io.leangen.geantyref.TypeToken;
-import org.incendo.cloud.parser.ParserParameter;
+import com.xpdustry.distributor.api.command.cloud.parser.TeamParser;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A collection of {@link ParserParameter} used by Distributor to resolve Mindustry types in the
- * {@link org.incendo.cloud.parser.ParserRegistry}.
+ * Annotation used to specify that a {@link mindustry.game.Team} command argument can represent all the teams instead of the 6 base
+ * teams.
+ *
+ * @see TeamParser.TeamMode#ALL
  */
-public final class MindustryParserParameters {
-
-    /**
-     * Whether a {@link mindustry.game.Team} argument should include all the teams or only the base ones.
-     */
-    public static final ParserParameter<TeamParser.TeamMode> TEAM_MODE =
-            new ParserParameter<>("team_mode", TypeToken.get(TeamParser.TeamMode.class));
-
-    private MindustryParserParameters() {}
-}
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AllTeams {}

@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud.parser;
+package com.xpdustry.distributor.api.command.cloud.parser;
 
+import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
 import com.xpdustry.distributor.api.content.ContentTypeKey;
-import com.xpdustry.distributor.command.cloud.MindustryCaptionKeys;
 import java.util.Locale;
 import mindustry.Vars;
 import mindustry.ctype.MappableContent;

@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.command.cloud.parser;
+package com.xpdustry.distributor.api.command.cloud.parser;
 
 import arc.Core;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
+import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
+import com.xpdustry.distributor.api.command.cloud.MindustryCommandContextKeys;
 import com.xpdustry.distributor.api.player.PlayerLookup;
-import com.xpdustry.distributor.command.cloud.MindustryCaptionKeys;
-import com.xpdustry.distributor.command.cloud.MindustryCommandContextKeys;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
