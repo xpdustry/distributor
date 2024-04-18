@@ -38,12 +38,6 @@ import org.incendo.cloud.suggestion.SuggestionProvider;
 
 public final class TeamParser<C> implements ArgumentParser<C, Team> {
 
-    private static final Map<String, Team> BASE_TEAMS = Arrays.stream(Team.baseTeams)
-            .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
-
-    private static final Map<String, Team> ALL_TEAMS = Arrays.stream(Team.all)
-            .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
-
     public static <C> ParserDescriptor<C, Team> teamParser() {
         return teamParser(TeamMode.BASE);
     }
@@ -83,7 +77,12 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
     }
 
     private Map<String, Team> getTeamIndex() {
-        return this.teamMode == TeamMode.ALL ? ALL_TEAMS : BASE_TEAMS;
+        return Arrays.stream(
+                        switch (this.teamMode) {
+                            case BASE -> Team.baseTeams;
+                            case ALL -> Team.all;
+                        })
+                .collect(Collectors.toUnmodifiableMap(t -> t.name.toLowerCase(Locale.ROOT), Function.identity()));
     }
 
     /**
