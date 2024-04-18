@@ -30,7 +30,6 @@ import com.xpdustry.distributor.api.content.ContentTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;
-import java.text.MessageFormat;
 import java.util.Objects;
 import mindustry.game.Team;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -69,24 +68,17 @@ public class MindustryCommandManager<C> extends CommandManager<C>
 
         this.registerDefaultExceptionHandlers();
 
-        this.captionRegistry().registerProvider((caption, sender) -> {
-            final var source = DistributorProvider.get().getGlobalTranslationSource();
-            final var locale = this.senderMapper().reverse(sender).getLocale();
-            return source.getTranslationOrDefault(caption.key(), locale).formatEmpty();
-        });
-
-        this.captionFormatter((key, recipient, caption, variables) -> {
-            final var arguments = variables.toArray();
-            try {
-                return MessageFormat.format(caption, arguments);
-            } catch (final IllegalArgumentException e) {
-                this.plugin.getLogger().error("Failed to format {}.", caption, e);
-                return "???" + caption + "???";
-            }
-        });
+        this.captionRegistry()
+                .registerProvider(new MindustryDefaultCaptionProvider<>())
+                .registerProvider((caption, sender) -> {
+                    final var source = DistributorProvider.get().getGlobalTranslationSource();
+                    final var locale = this.senderMapper().reverse(sender).getLocale();
+                    final var translation = source.getTranslation(caption.key(), locale);
+                    return translation == null ? null : translation.formatEmpty();
+                });
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());
-
+        this.parserRegistry().registerParser(TeamParser.teamParser());
         ContentTypeKey.ALL.forEach(
                 contentType -> this.parserRegistry().registerParser(ContentParser.contentParser(contentType)));
 

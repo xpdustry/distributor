@@ -34,22 +34,22 @@ public final class MindustryCaptionKeys {
     private static final Collection<Caption> RECOGNIZED_CAPTIONS = new ArrayList<>(3);
 
     /**
-     * Variables: {@code {input}}.
+     * Variables: {@code <input>}.
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND = of("argument.parse.failure.player.not_found");
 
     /**
-     * Variables: {@code {input}}.
+     * Variables: {@code <input>}.
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY = of("argument.parse.failure.player.too_many");
 
     /**
-     * Variables: {@code {input}}, {@code {teamMode}}.
+     * Variables: {@code <input>}, {@code <teamMode>}.
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_TEAM = of("argument.parse.failure.team");
 
     /**
-     * Variables: {@code {input}}, {@code {type}}.
+     * Variables: {@code <input>}, {@code <type>}.
      */
     public static final Caption ARGUMENT_PARSE_FAILURE_CONTENT = of("argument.parse.failure.content");
 
