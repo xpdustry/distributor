@@ -7,7 +7,7 @@ plugins {
 distributorModule {
     identifier = "distributor-permission-rank"
     display = "DistributorPermissionRank"
-    main = "com.xpdustry.distributor.permission.rank.DistributorPermissionRankPlugin"
+    main = "com.xpdustry.distributor.api.permission.rank.DistributorPermissionRankPlugin"
     description = "Simple permission system based on ranks."
     dependencies = listOf("distributor-common")
 }
