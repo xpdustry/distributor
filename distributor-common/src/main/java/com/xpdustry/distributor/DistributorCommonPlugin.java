@@ -79,6 +79,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public void onInit() {
+        this.getLogger().info("Loading distributor api");
         DistributorProvider.set(this);
         this.getGlobalTranslationSource().register(TranslationSource.router());
         this.addListener((PluginSchedulerImpl) this.scheduler);
@@ -88,6 +89,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     public void onLoad() {
         this.lookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
         this.permissions = services.provideOrDefault(PermissionReader.class, PermissionReader::empty);
+        this.getLogger().info("Loaded distributor api");
     }
 
     private <T> T ensureInitialized(final @Nullable T instance, final String name) {

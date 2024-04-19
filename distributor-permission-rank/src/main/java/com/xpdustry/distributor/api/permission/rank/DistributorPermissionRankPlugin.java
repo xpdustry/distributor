@@ -36,5 +36,7 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
         services.register(this, RankPermissionSource.class, Priority.LOW, source);
 
         services.register(this, PermissionReader.class, Priority.HIGH, new RankPermissionReader());
+
+        this.getLogger().info("Initialized distributor permission rank plugin");
     }
 }
