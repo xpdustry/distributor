@@ -37,33 +37,11 @@ import org.slf4j.LoggerFactory;
 /**
  * An abstract implementation of {@link MindustryPlugin}, without the quirks of {@link Plugin} (like the fact that
  * {@link #registerServerCommands(CommandHandler)} is called before {@link #init()}).
- * <br>
- * It also registers the annotated methods of this plugin and its listeners in the event bus and the plugin scheduler
- * automatically.
  */
 public abstract class AbstractMindustryPlugin extends Plugin implements MindustryPlugin {
 
     static {
-        // This little trick makes sure dependent plugins are exited before their dependencies.
-        Core.app.addListener(new ApplicationListener() {
-            @Override
-            public void dispose() {
-                Seq.with(Vars.mods.orderedMods()).reverse().forEach(mod -> {
-                    if (mod.enabled() && mod.main instanceof final AbstractMindustryPlugin plugin) {
-                        try {
-                            plugin.onExit();
-                            plugin.forEachListener(PluginListener::onPluginExit);
-                        } catch (final Throwable exception) {
-                            plugin.getLogger()
-                                    .error(
-                                            "An error occurred while exiting plugin {}.",
-                                            plugin.getMetadata().getName(),
-                                            exception);
-                        }
-                    }
-                });
-            }
-        });
+        Core.app.addListener(new MindustryPluginShutdownHook());
     }
 
     private final PluginMetadata metadata = PluginMetadata.from(this);
@@ -114,7 +92,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         this.onServerCommandsRegistration(handler);
         this.forEachListener(listener -> listener.onPluginServerCommandsRegistration(handler));
 
-        Core.app.addListener(new PluginApplicationListener());
+        Core.app.addListener(new PluginApplicationListener(this));
     }
 
     @Deprecated
@@ -138,25 +116,70 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
         return new Fi(this.getDirectory().resolve("config.json").toFile());
     }
 
-    @SuppressWarnings("ForLoopReplaceableByForEach")
     private void forEachListener(final Consumer<PluginListener> consumer) {
-        for (int i = 0; i < this.listeners.size(); i++) {
-            consumer.accept(this.listeners.get(i));
+        forEachListener(consumer, true);
+    }
+
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    private void forEachListener(final Consumer<PluginListener> consumer, final boolean ascending) {
+        if (ascending) {
+            for (int i = 0; i < this.listeners.size(); i++) {
+                consumer.accept(this.listeners.get(i));
+            }
+        } else {
+            for (int i = this.listeners.size() - 1; i >= 0; i--) {
+                consumer.accept(this.listeners.get(i));
+            }
         }
     }
 
-    private final class PluginApplicationListener implements ApplicationListener {
+    private record PluginApplicationListener(AbstractMindustryPlugin plugin) implements ApplicationListener {
 
         @Override
         public void init() {
-            AbstractMindustryPlugin.this.onLoad();
-            AbstractMindustryPlugin.this.forEachListener(PluginListener::onPluginLoad);
+            this.plugin.onLoad();
+            this.plugin.forEachListener(PluginListener::onPluginLoad);
         }
 
         @Override
         public void update() {
-            AbstractMindustryPlugin.this.onUpdate();
-            AbstractMindustryPlugin.this.forEachListener(PluginListener::onPluginUpdate);
+            this.plugin.onUpdate();
+            this.plugin.forEachListener(PluginListener::onPluginUpdate);
+        }
+
+        @Override
+        public String toString() {
+            return "PluginApplicationListener{plugin=" + plugin.getMetadata().getName() + "}";
+        }
+    }
+
+    // This listener ensures dependent plugins are exited before their dependencies.
+    private static final class MindustryPluginShutdownHook implements ApplicationListener {
+
+        @Override
+        public void dispose() {
+            Seq.with(Vars.mods.orderedMods()).reverse().forEach(mod -> {
+                if (mod.enabled() && mod.main instanceof final MindustryPlugin plugin) {
+                    try {
+                        plugin.onExit();
+                        if (plugin instanceof AbstractMindustryPlugin abs) {
+                            abs.forEachListener(PluginListener::onPluginExit, false);
+                        }
+                    } catch (final Throwable throwable) {
+                        plugin.getLogger()
+                                .atError()
+                                .setMessage("An error occurred while exiting plugin {}.")
+                                .addArgument(plugin.getMetadata().getName())
+                                .setCause(throwable)
+                                .log();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public String toString() {
+            return "MindustryPluginShutdownHook";
         }
     }
 }
