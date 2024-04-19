@@ -18,12 +18,11 @@
  */
 package com.xpdustry.distributor.api.player;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Random;
-import mindustry.gen.Groups;
 import mindustry.gen.Player;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -31,9 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class PlayerLookupImplTest {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
     private static int counter = 1;
 
+    private static final List<Player> PLAYERS = new ArrayList<>();
     private static final Player PLAYER_1 = createPlayer("deez");
     private static final Player PLAYER_2 = createPlayer("deez nuts");
     private static final Player PLAYER_3 = createPlayer("phinner");
@@ -41,23 +41,6 @@ public final class PlayerLookupImplTest {
     private static final Player PLAYER_5 = createPlayer("[cyan]zeta");
     private static final Player PLAYER_6 = createPlayer(PLAYER_1.uuid());
     private static final Player PLAYER_7 = createPlayer("#" + PLAYER_4.id());
-
-    @BeforeEach
-    void addAllPlayers() {
-        Groups.init();
-        Groups.player.add(PLAYER_1);
-        Groups.player.add(PLAYER_2);
-        Groups.player.add(PLAYER_3);
-        Groups.player.add(PLAYER_4);
-        Groups.player.add(PLAYER_5);
-        Groups.player.add(PLAYER_6);
-        Groups.player.add(PLAYER_7);
-    }
-
-    @AfterEach
-    void clearPlayers() {
-        Groups.clear();
-    }
 
     @Test
     void find_by_name_simple() {
@@ -122,18 +105,31 @@ public final class PlayerLookupImplTest {
                 PLAYER_3);
     }
 
+    @Test
+    void find_by_uuid_with_all() {
+        assertQueryResult(
+                PlayerLookup.Query.builder()
+                        .setInput(PLAYER_1.uuid())
+                        .addField(PlayerLookup.Field.UUID)
+                        .setMatchExact(false)
+                        .build(),
+                PLAYER_1,
+                PLAYER_6);
+    }
+
     private void assertQueryResult(final PlayerLookup.Query query, final Player... result) {
-        final var lookup = new PlayerLookupImpl(PlayerLookup.DEFAULT_NORMALIZER);
+        final var lookup = new PlayerLookupImpl(() -> PLAYERS, PlayerLookup.DEFAULT_NORMALIZER);
         assertThat(lookup.findOnlinePlayers(query)).containsExactlyInAnyOrder(result);
     }
 
     private static Player createPlayer(final String name) {
         final var uuid = new byte[16];
-        random.nextBytes(uuid);
+        RANDOM.nextBytes(uuid);
         final var player = Mockito.mock(Player.class);
         Mockito.when(player.name()).thenReturn(name);
         Mockito.when(player.uuid()).thenReturn(Base64.getEncoder().encodeToString(uuid));
         Mockito.when(player.id()).thenReturn(counter++);
+        PLAYERS.add(player);
         return player;
     }
 }

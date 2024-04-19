@@ -18,27 +18,29 @@
  */
 package com.xpdustry.distributor.api.player;
 
-import com.xpdustry.distributor.api.collection.MindustryCollections;
+import arc.Core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import mindustry.gen.Groups;
+import java.util.function.Supplier;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
 
 final class PlayerLookupImpl implements PlayerLookup {
 
+    private final Supplier<Collection<Player>> provider;
     private final Function<String, String> normalizer;
 
-    PlayerLookupImpl(final Function<String, String> normalizer) {
+    PlayerLookupImpl(final Supplier<Collection<Player>> provider, final Function<String, String> normalizer) {
+        this.provider = provider;
         this.normalizer = normalizer;
     }
 
     @Override
     public Collection<Player> findOnlinePlayers(final Query query) {
-        final var players = MindustryCollections.immutableList(Groups.player);
+        final var players = this.provider.get();
         final List<Player> result = new ArrayList<>();
 
         if (query.getFields().contains(Field.ENTITY_ID) && query.getInput().startsWith("#")) {
@@ -66,7 +68,7 @@ final class PlayerLookupImpl implements PlayerLookup {
                     return List.of(player);
                 }
                 result.add(player);
-                if (Administration.Config.strict.bool()) {
+                if (Core.settings != null && Administration.Config.strict.bool()) {
                     break;
                 }
             }
@@ -79,7 +81,7 @@ final class PlayerLookupImpl implements PlayerLookup {
             Player match = null;
             int matched = 0;
 
-            for (final var player : Groups.player) {
+            for (final var player : players) {
                 final var playerName = this.normalizer.apply(player.name());
                 if (playerName.equalsIgnoreCase(normalized)) {
                     match = player;

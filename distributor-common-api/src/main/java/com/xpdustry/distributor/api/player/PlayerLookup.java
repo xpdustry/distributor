@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.player;
 
 import arc.util.Strings;
+import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuilder;
 import java.text.Normalizer;
 import java.util.Collection;
@@ -26,10 +27,14 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
 
 public interface PlayerLookup {
+
+    Supplier<Collection<Player>> DEFAULT_PROVIDER = () -> MindustryCollections.immutableList(Groups.player);
 
     // https://stackoverflow.com/a/4122200
     Function<String, String> DEFAULT_NORMALIZER =
@@ -38,11 +43,11 @@ public interface PlayerLookup {
                     .toLowerCase(Locale.ROOT);
 
     static PlayerLookup create() {
-        return new PlayerLookupImpl(DEFAULT_NORMALIZER);
+        return new PlayerLookupImpl(DEFAULT_PROVIDER, DEFAULT_NORMALIZER);
     }
 
-    static PlayerLookup create(final Function<String, String> normalizer) {
-        return new PlayerLookupImpl(normalizer);
+    static PlayerLookup create(final Supplier<Collection<Player>> provider, final Function<String, String> normalizer) {
+        return new PlayerLookupImpl(provider, normalizer);
     }
 
     Collection<Player> findOnlinePlayers(final Query query);
