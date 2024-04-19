@@ -169,16 +169,8 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
         return this.manager.getPlugin();
     }
 
-    @SuppressWarnings("ClassCanBeRecord")
-    private static final class CloudCommandRunner<C> implements CommandHandler.CommandRunner<Player> {
-
-        private final String name;
-        private final MindustryCommandManager<C> manager;
-
-        private CloudCommandRunner(final String name, final MindustryCommandManager<C> manager) {
-            this.name = name;
-            this.manager = manager;
-        }
+    private record CloudCommandRunner<C>(String name, MindustryCommandManager<C> manager)
+            implements CommandHandler.CommandRunner<Player> {
 
         @SuppressWarnings("FutureReturnValueIgnored")
         @Override

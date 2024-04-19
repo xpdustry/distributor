@@ -40,16 +40,7 @@ final class EventHandlerProcessor implements MethodAnnotationScanner.Processor<E
                 .subscribe(handler.getEventType(), context.getAnnotation().priority(), context.getPlugin(), handler));
     }
 
-    @SuppressWarnings("ClassCanBeRecord")
-    private static final class MethodEventHandler<E> implements Consumer<E> {
-
-        private final Object target;
-        private final Method method;
-
-        private MethodEventHandler(final Object target, final Method method) {
-            this.target = target;
-            this.method = method;
-        }
+    private record MethodEventHandler<E>(Object target, Method method) implements Consumer<E> {
 
         @Override
         public void accept(final E event) {

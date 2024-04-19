@@ -91,18 +91,8 @@ public final class EventBusImpl implements EventBus {
         Events.fire(event);
     }
 
-    @SuppressWarnings("ClassCanBeRecord")
-    private static final class ConsumerCons<T> implements Cons<T>, PluginAware {
-
-        private final Consumer<T> consumer;
-        private final Priority priority;
-        private final MindustryPlugin plugin;
-
-        private ConsumerCons(final Consumer<T> consumer, final Priority priority, final MindustryPlugin plugin) {
-            this.consumer = consumer;
-            this.priority = priority;
-            this.plugin = plugin;
-        }
+    private record ConsumerCons<T>(Consumer<T> consumer, Priority priority, MindustryPlugin plugin)
+            implements Cons<T>, PluginAware {
 
         @Override
         public void get(final T event) {

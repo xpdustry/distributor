@@ -56,16 +56,7 @@ final class TaskHandlerProcessor implements MethodAnnotationScanner.Processor<Ta
         return Optional.of(builder.execute(new MethodTaskHandler(context.getInstance(), context.getMethod())));
     }
 
-    @SuppressWarnings("ClassCanBeRecord")
-    private static final class MethodTaskHandler implements Consumer<Cancellable> {
-
-        private final Object object;
-        private final Method method;
-
-        private MethodTaskHandler(final Object object, final Method method) {
-            this.object = object;
-            this.method = method;
-        }
+    private record MethodTaskHandler(Object object, Method method) implements Consumer<Cancellable> {
 
         @Override
         public void accept(final Cancellable cancellable) {
