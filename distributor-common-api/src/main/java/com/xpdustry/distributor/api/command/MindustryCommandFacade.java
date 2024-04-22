@@ -67,7 +67,7 @@ final class MindustryCommandFacade implements CommandFacade {
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
         return CommandHelp.Entry.of(
-                command.paramText,
+                command.params.length == 0 ? command.text : command.text + " " + command.paramText,
                 getDescription(),
                 DescriptionFacade.EMPTY,
                 Arrays.stream(command.params)
