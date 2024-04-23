@@ -18,10 +18,19 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import java.util.Collection;
+import java.util.List;
 import mindustry.gen.Player;
 
+/**
+ * Manages the retrieval of ranks for players.
+ */
 public interface RankSource {
 
-    Collection<RankNode> getRanks(final Player player);
+    /**
+     * Returns the ranks for the given player.
+     *
+     * @param player the player
+     * @return the ranks of the player
+     */
+    List<RankNode> getRanks(final Player player);
 }

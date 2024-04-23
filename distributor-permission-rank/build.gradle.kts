@@ -16,6 +16,9 @@ dependencies {
     compileOnlyApi(projects.distributorCommonApi)
     implementation(libs.configurate.core)
     implementation(libs.configurate.yaml)
+    testImplementation(projects.distributorCommon)
+    testImplementation(libs.slf4j.api)
+    testImplementation(libs.slf4j.simple)
 }
 
 tasks.shadowJar {

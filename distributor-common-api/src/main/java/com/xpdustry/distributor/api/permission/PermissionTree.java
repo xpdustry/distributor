@@ -22,21 +22,24 @@ import java.util.Map;
 
 public interface PermissionTree {
 
-    static PermissionTree create() {
-        return new PermissionTreeImpl();
-    }
-
     static PermissionTree empty() {
         return EmptyPermissionTree.INSTANCE;
     }
 
+    static PermissionTree all() {
+        final var tree = MutablePermissionTree.create();
+        tree.setPermission("*", true);
+        return new ImmutablePermissionTree(tree);
+    }
+
     static PermissionTree immutable(final PermissionTree tree) {
-        return (tree instanceof ImmutablePermissionTree) ? tree : new ImmutablePermissionTree(tree);
+        if (tree instanceof ImmutablePermissionTree || tree instanceof EmptyPermissionTree) {
+            return tree;
+        }
+        return new ImmutablePermissionTree(MutablePermissionTree.from(tree));
     }
 
     TriState getPermission(final String permission);
-
-    void setPermission(final String permission, final TriState state);
 
     Map<String, Boolean> getPermissions();
 }

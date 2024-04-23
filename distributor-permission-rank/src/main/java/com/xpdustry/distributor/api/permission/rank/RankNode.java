@@ -18,11 +18,23 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
+import java.util.regex.Pattern;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Represents a node in a rank based permission system.
+ */
 public interface RankNode {
 
+    Pattern NAME_PATTERN = Pattern.compile("^\\w+$");
+
+    /**
+     * Returns the name of this rank node.
+     */
     String getName();
 
+    /**
+     * Returns the previous rank node in the hierarchy.
+     */
     @Nullable RankNode getPrevious();
 }

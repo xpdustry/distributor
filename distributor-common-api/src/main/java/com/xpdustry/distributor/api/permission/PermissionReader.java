@@ -23,10 +23,6 @@ import mindustry.gen.Player;
 
 public interface PermissionReader {
 
-    static PermissionReader empty() {
-        return EmptyPermissionReader.INSTANCE;
-    }
-
     /**
      * Regex pattern used to validate permission strings.
      * <p>
@@ -43,9 +39,11 @@ public interface PermissionReader {
      * allows you to set a default value for all permissions.
      * </blockquote>
      */
-    String PERMISSION_REGEX = "^(\\*|[\\w\\-]+)(\\.(\\*|[\\w\\-]+))*$";
+    Pattern PERMISSION_PATTERN = Pattern.compile("^(\\*|\\w+)(\\.(\\*|\\w+))*$");
 
-    Pattern PERMISSION_PATTERN = Pattern.compile(PERMISSION_REGEX);
+    static PermissionReader empty() {
+        return EmptyPermissionReader.INSTANCE;
+    }
 
     TriState getPermission(final Player player, final String permission);
 }

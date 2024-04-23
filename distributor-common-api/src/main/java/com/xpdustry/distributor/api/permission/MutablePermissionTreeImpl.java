@@ -21,32 +21,32 @@ package com.xpdustry.distributor.api.permission;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class PermissionTreeImpl implements PermissionTree {
+final class MutablePermissionTreeImpl implements MutablePermissionTree {
 
-    private final @Nullable PermissionTreeImpl parent;
-    private final Map<String, PermissionTreeImpl> children = new HashMap<>();
+    private final @Nullable MutablePermissionTreeImpl parent;
+    private final Map<String, MutablePermissionTreeImpl> children = new HashMap<>();
     private TriState value = TriState.UNDEFINED;
 
-    PermissionTreeImpl() {
+    MutablePermissionTreeImpl() {
         this.parent = null;
     }
 
-    private PermissionTreeImpl(final @Nullable PermissionTreeImpl parent) {
+    private MutablePermissionTreeImpl(final @Nullable MutablePermissionTreeImpl parent) {
         this.parent = parent;
     }
 
     @Override
     public TriState getPermission(final String permission) {
-        if (!PermissionReader.PERMISSION_PATTERN.matcher(permission).matches()) {
-            throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
-        }
+        checkPermission(permission);
         var state = TriState.UNDEFINED;
         var node = this;
         for (final var part : permission.split("\\.", -1)) {
-            if (node.children.containsKey("*") && node.children.get("*").value != TriState.UNDEFINED) {
-                state = node.children.get("*").value;
+            final var wildcard = node.children.get("*");
+            if (wildcard != null && wildcard.value != TriState.UNDEFINED) {
+                state = wildcard.value;
             }
             node = node.children.get(part);
             if (node == null) {
@@ -56,35 +56,6 @@ final class PermissionTreeImpl implements PermissionTree {
             }
         }
         return state;
-    }
-
-    @Override
-    public void setPermission(final String permission, final TriState state) {
-        if (!PermissionReader.PERMISSION_PATTERN.matcher(permission).matches()) {
-            throw new IllegalArgumentException("The permission doesn't match the regex: " + permission);
-        }
-        final var parts = permission.split("\\.", -1);
-        var node = this;
-        if (state != TriState.UNDEFINED) {
-            for (final var part : parts) {
-                final var parent = node;
-                node = node.children.computeIfAbsent(part, k -> new PermissionTreeImpl(parent));
-            }
-            node.value = state;
-        } else {
-            for (final var part : parts) {
-                node = node.children.get(part);
-                if (node == null) {
-                    return;
-                }
-            }
-            node.value = state;
-            var index = parts.length - 1;
-            while (node.parent != null && node.children.isEmpty()) {
-                node = node.parent;
-                node.children.remove(parts[index--]);
-            }
-        }
     }
 
     @Override
@@ -102,11 +73,50 @@ final class PermissionTreeImpl implements PermissionTree {
     }
 
     @Override
+    public void setPermission(final String permission, final boolean state, final boolean override) {
+        checkPermission(permission);
+        final var parts = permission.split("\\.", -1);
+        var node = this;
+        for (final var part : parts) {
+            final var parent = node;
+            node = node.children.computeIfAbsent(part, k -> new MutablePermissionTreeImpl(parent));
+        }
+        node.value = TriState.of(state);
+        if (override) {
+            node.children.clear();
+        }
+    }
+
+    @Override
+    public void removePermission(final String permission) {
+        checkPermission(permission);
+        final var parts = permission.split("\\.", -1);
+        var node = this;
+        for (final var part : parts) {
+            node = node.children.get(part);
+            if (node == null) {
+                return;
+            }
+        }
+        node.value = TriState.UNDEFINED;
+        var index = parts.length - 1;
+        while (node.parent != null && node.children.isEmpty()) {
+            node = node.parent;
+            node.children.remove(parts[index--]);
+        }
+    }
+
+    @Override
+    public void clearPermissions() {
+        this.children.clear();
+    }
+
+    @Override
     public boolean equals(final @Nullable Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof final PermissionTreeImpl that)) {
+        if (!(o instanceof final MutablePermissionTreeImpl that)) {
             return false;
         }
         if (!this.children.equals(that.children)) {
@@ -117,8 +127,12 @@ final class PermissionTreeImpl implements PermissionTree {
 
     @Override
     public int hashCode() {
-        int result = this.children.hashCode();
-        result = 31 * result + this.value.hashCode();
-        return result;
+        return Objects.hash(this.children, this.value);
+    }
+
+    private void checkPermission(final String permission) {
+        if (!PermissionReader.PERMISSION_PATTERN.matcher(permission).matches()) {
+            throw new IllegalArgumentException("The permission is not valid: " + permission);
+        }
     }
 }

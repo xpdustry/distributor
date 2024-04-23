@@ -18,15 +18,16 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import java.util.List;
-import java.util.Locale;
-import mindustry.gen.Player;
+import com.xpdustry.distributor.api.permission.PermissionTree;
 
-final class MindustryRankSource implements RankSource {
+final class MindustryRankPermissionSource implements RankPermissionSource {
 
     @Override
-    public List<RankNode> getRanks(final Player player) {
-        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
-        return List.of(EnumRankNode.linear(rank, r -> "mindustry_" + r.name().toLowerCase(Locale.ROOT), true));
+    public PermissionTree getRankPermissions(final RankNode node) {
+        if (node instanceof EnumRankNode<?> rank && rank.getValue() == MindustryRank.ADMIN) {
+            return PermissionTree.all();
+        } else {
+            return PermissionTree.empty();
+        }
     }
 }

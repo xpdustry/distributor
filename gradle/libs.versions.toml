@@ -51,6 +51,7 @@ arc-backend-headless = { module = "com.github.Anuken.Arc:backend-headless", vers
 # logging
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-from-jul = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # command
 cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
@@ -69,6 +70,7 @@ junit-engine-vintage = { module = "org.junit.vintage:junit-vintage-engine", vers
 assert4j-core = { module = "org.assertj:assertj-core", version.ref = "assert4j" }
 guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava-testlib" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 
 # static analysis
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
@@ -86,5 +88,7 @@ shadow = { module = "com.github.johnrengelman:shadow", version.ref = "shadow" }
 
 [bundles]
 indra = [ "indra-common", "indra-licenser-spotless" ]
-tests = [ "junit-api", "junit-params", "junit-engine-jupiter", "junit-engine-vintage", "assert4j-core", "guava-testlib", "mockito-core" ]
 mindustry = [ "mindustry-core", "mindustry-server", "arc-core", "arc-backend-headless" ]
+tests = [
+    "junit-api", "junit-params", "junit-engine-jupiter", "junit-engine-vintage",
+    "assert4j-core", "guava-testlib", "mockito-core", "mockito-junit-jupiter" ]

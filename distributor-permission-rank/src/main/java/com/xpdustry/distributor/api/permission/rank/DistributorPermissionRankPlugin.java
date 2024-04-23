@@ -22,6 +22,10 @@ import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.permission.PermissionReader;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 
 public final class DistributorPermissionRankPlugin extends AbstractMindustryPlugin {
 
@@ -29,14 +33,27 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
     public void onInit() {
         final var services = DistributorProvider.get().getServiceManager();
 
-        services.register(this, RankSource.class, Priority.LOW, new MindustryRankSource());
-
-        final var source = new YamlRankPermissionSource(this.getDirectory().resolve("permissions.yaml"));
-        this.addListener(source);
-        services.register(this, RankPermissionSource.class, Priority.LOW, source);
-
         services.register(this, PermissionReader.class, Priority.HIGH, new RankPermissionReader());
+        services.register(this, RankSource.class, Priority.LOW, new MindustryRankSource());
+        final var source = new YamlRankPermissionSource(() -> Files.newBufferedReader(this.getConfigFile()));
+        this.addListener(source);
+        services.register(this, RankPermissionSource.class, Priority.NORMAL, source);
+        services.register(this, RankPermissionSource.class, Priority.LOW, new MindustryRankPermissionSource());
 
         this.getLogger().info("Initialized distributor permission rank plugin");
+    }
+
+    private Path getConfigFile() throws IOException {
+        final var path = this.getDirectory().resolve("permissions.yaml");
+        if (Files.notExists(path)) {
+            try (final var stream = Objects.requireNonNull(this.getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("com/xpdustry/distributor/api/permission/rank/default.yaml"))) {
+                Files.copy(stream, path);
+            } catch (final IOException error) {
+                throw new IOException("Failed to create the default permission file.", error);
+            }
+        }
+        return path;
     }
 }

@@ -18,16 +18,42 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
+import java.util.Locale;
 import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Represents a rank backed by an enum.
+ */
 public interface EnumRankNode<E extends Enum<E>> extends RankNode {
 
+    /**
+     * Creates a {@code EnumRankNode} with a linear hierarchy.
+     * This means the rank nodes are ordered by the enum ordinal.
+     * It can be either:
+     * <ul>
+     *     <li>ascending, where the lower ordinal is the lower rank</li>
+     *     <li>descending, where the higher ordinal is the lower rank</li>
+     * </ul>
+     *
+     * @param value         the rank value
+     * @param nameExtractor the extractor for the rank name
+     * @param ascending     whether the enum ranks are in ascending order
+     * @param <E>           the enum type
+     * @return the created enum rank node
+     */
     static <E extends Enum<E>> RankNode linear(
-            final E value, final Function<E, String> nameProvider, boolean ascending) {
-        return new LinearEnumRankNode<>(value, nameProvider, ascending);
+            final E value, final Function<E, String> nameExtractor, boolean ascending) {
+        return new LinearEnumRankNode<>(value, nameExtractor, ascending);
     }
 
+    static <E extends Enum<E>> RankNode linear(final E value, boolean ascending) {
+        return linear(value, e -> e.name().toLowerCase(Locale.ROOT), ascending);
+    }
+
+    /**
+     * Returns the enum value of this rank node.
+     */
     E getValue();
 
     @Override

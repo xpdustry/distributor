@@ -22,8 +22,9 @@ import arc.Core;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
-import com.xpdustry.distributor.api.command.cloud.MindustryCommandContextKeys;
 import com.xpdustry.distributor.api.player.PlayerLookup;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
@@ -53,10 +54,14 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     @Override
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var queryBuilder = PlayerLookup.Query.builder().setInput(input.readString());
-        if (ctx.getOrDefault(MindustryCommandContextKeys.ADMIN, false)) {
-            queryBuilder.addField(PlayerLookup.Field.UUID);
+        final var fields = new ArrayList<PlayerLookup.Field>();
+        for (final var field : PlayerLookup.Field.values()) {
+            if (ctx.hasPermission("distributor.player.lookup." + field.name().toLowerCase(Locale.ROOT))) {
+                fields.add(field);
+            }
         }
-        final var query = queryBuilder.build();
+        ;
+        final var query = queryBuilder.setFields(fields).build();
         final var players = DistributorProvider.get().getPlayerLookup().findOnlinePlayers(query);
         if (players.isEmpty()) {
             return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(query.getInput(), ctx));

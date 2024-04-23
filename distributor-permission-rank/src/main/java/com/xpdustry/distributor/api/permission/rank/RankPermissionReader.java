@@ -21,7 +21,6 @@ package com.xpdustry.distributor.api.permission.rank;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.permission.PermissionReader;
 import com.xpdustry.distributor.api.permission.TriState;
-import java.util.HashSet;
 import mindustry.gen.Player;
 
 final class RankPermissionReader implements PermissionReader {
@@ -29,20 +28,14 @@ final class RankPermissionReader implements PermissionReader {
     @Override
     public TriState getPermission(final Player player, final String permission) {
         final var services = DistributorProvider.get().getServiceManager();
-        final var sources = services.getProviders(RankPermissionSource.class);
-        for (final var provider : services.getProviders(RankSource.class)) {
-            for (final var node : provider.getInstance().getRanks(player)) {
-                final var visited = new HashSet<RankNode>();
-                for (final var source : sources) {
-                    RankNode current = node;
-                    while (current != null && visited.add(current)) {
-                        final var state =
-                                source.getInstance().getRankPermissions(current).getPermission(permission);
-                        if (state != TriState.UNDEFINED) {
-                            return state;
-                        }
-                        current = node.getPrevious();
-                    }
+        final var permissionSources = services.getProviders(RankPermissionSource.class);
+        final var rankSource = services.provide(RankSource.class);
+        for (final var rank : rankSource.getRanks(player)) {
+            for (final var permissionSource : permissionSources) {
+                final var value =
+                        permissionSource.getInstance().getRankPermissions(rank).getPermission(permission);
+                if (value != TriState.UNDEFINED) {
+                    return value;
                 }
             }
         }

@@ -1,0 +1,9 @@
+version: 1
+ranks:
+  mindustry_player:
+    distributor.player.lookup.name: true
+    distributor.player.lookup.entity_id: true
+    distributor.player.lookup.uuid: false
+
+  mindustry_admin:
+    distributor.player.lookup.uuid: true

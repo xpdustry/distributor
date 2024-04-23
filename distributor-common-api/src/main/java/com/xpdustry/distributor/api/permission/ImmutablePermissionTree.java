@@ -28,11 +28,6 @@ record ImmutablePermissionTree(PermissionTree inner) implements PermissionTree {
     }
 
     @Override
-    public void setPermission(final String permission, final TriState state) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Map<String, Boolean> getPermissions() {
         return inner.getPermissions();
     }

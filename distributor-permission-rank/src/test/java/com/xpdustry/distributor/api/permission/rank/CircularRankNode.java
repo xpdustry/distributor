@@ -18,15 +18,29 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import java.util.List;
-import java.util.Locale;
-import mindustry.gen.Player;
+public final class CircularRankNode implements RankNode {
 
-final class MindustryRankSource implements RankSource {
+    private static final CircularRankNode[] NODES = {
+        new CircularRankNode(0), new CircularRankNode(1), new CircularRankNode(2), new CircularRankNode(3)
+    };
+
+    private final int index;
+
+    public static CircularRankNode of(final int index) {
+        return NODES[index % NODES.length];
+    }
+
+    private CircularRankNode(int index) {
+        this.index = index;
+    }
 
     @Override
-    public List<RankNode> getRanks(final Player player) {
-        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
-        return List.of(EnumRankNode.linear(rank, r -> "mindustry_" + r.name().toLowerCase(Locale.ROOT), true));
+    public String getName() {
+        return "circular" + index;
+    }
+
+    @Override
+    public RankNode getPrevious() {
+        return NODES[(index - 1 + NODES.length) % NODES.length];
     }
 }

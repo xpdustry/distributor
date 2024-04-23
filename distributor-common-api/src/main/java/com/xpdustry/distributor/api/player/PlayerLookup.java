@@ -76,6 +76,10 @@ public interface PlayerLookup {
 
             Builder setInput(final String queryInput);
 
+            default Builder setFields(final Field... fields) {
+                return setFields(Set.of(fields));
+            }
+
             Builder setFields(final Iterable<Field> fields);
 
             Builder addField(final Field field);

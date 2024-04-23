@@ -33,12 +33,12 @@ final class EmptyPermissionTree implements PermissionTree {
     }
 
     @Override
-    public void setPermission(final String permission, final TriState state) {
-        throw new UnsupportedOperationException();
+    public Map<String, Boolean> getPermissions() {
+        return Collections.emptyMap();
     }
 
     @Override
-    public Map<String, Boolean> getPermissions() {
-        return Collections.emptyMap();
+    public String toString() {
+        return this.getClass().getSimpleName();
     }
 }

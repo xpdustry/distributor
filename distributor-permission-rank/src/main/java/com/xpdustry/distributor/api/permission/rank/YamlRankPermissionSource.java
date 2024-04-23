@@ -19,15 +19,17 @@
 package com.xpdustry.distributor.api.permission.rank;
 
 import arc.util.CommandHandler;
+import com.xpdustry.distributor.api.permission.MutablePermissionTree;
 import com.xpdustry.distributor.api.permission.PermissionTree;
-import com.xpdustry.distributor.api.permission.TriState;
 import com.xpdustry.distributor.api.plugin.PluginListener;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -39,12 +41,13 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlRankPermissionSource.class);
 
     private Map<String, PermissionTree> permissions = Collections.emptyMap();
+    private final Map<String, PermissionTree> cache = new HashMap<>();
     private final Object lock = new Object();
     private final YamlConfigurationLoader loader;
 
-    YamlRankPermissionSource(final Path file) {
+    YamlRankPermissionSource(final Callable<BufferedReader> source) {
         this.loader = YamlConfigurationLoader.builder()
-                .path(file)
+                .source(source)
                 .nodeStyle(NodeStyle.BLOCK)
                 .build();
     }
@@ -73,31 +76,58 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     @Override
     public PermissionTree getRankPermissions(final RankNode node) {
         synchronized (this.lock) {
-            return this.permissions.getOrDefault(node.getName().toLowerCase(Locale.ROOT), PermissionTree.empty());
+            return getRankPermissions0(node, new HashSet<>());
         }
     }
 
-    private void reload() throws IOException {
+    private PermissionTree getRankPermissions0(final RankNode node, final Set<RankNode> visited) {
+        if (!RankNode.NAME_PATTERN.matcher(node.getName()).matches()) {
+            return PermissionTree.empty();
+        }
+        final var cached = this.cache.get(node.getName());
+        if (cached != null) {
+            return cached;
+        }
+        final var tree = MutablePermissionTree.create();
+        final var previous = node.getPrevious();
+        if (previous != null) {
+            if (!visited.add(node)) {
+                throw new IllegalStateException("Circular rank node: " + node.getName());
+            }
+            tree.setPermissions(getRankPermissions0(previous, visited));
+        }
+        final var permissions = this.permissions.get(node.getName());
+        if (permissions != null) {
+            tree.setPermissions(permissions, true);
+        }
+        final var immutable = PermissionTree.immutable(tree);
+        this.cache.put(node.getName(), immutable);
+        return immutable;
+    }
+
+    void reload() throws IOException {
         final Map<String, PermissionTree> map = new HashMap<>();
-        final var root = loader.load();
+        final var root = this.loader.load();
         final var version = root.node("version").getInt(FILE_FORMAT_VERSION);
         if (version != FILE_FORMAT_VERSION) {
             throw new IOException("Unsupported rank file version: " + version);
         }
-        for (final var node : root.node("ranks").childrenList()) {
-            final var name = node.node("name").getString();
-            if (name == null || name.isBlank()) {
-                throw new IOException("Invalid rank name.");
+
+        for (final var rank : root.node("ranks").childrenMap().entrySet()) {
+            final var name = (String) rank.getKey();
+            if (name.isBlank() || !RankNode.NAME_PATTERN.matcher(name).matches()) {
+                throw new IOException("Invalid rank name: " + name);
             }
-            final var tree = PermissionTree.create();
-            for (final var entry : node.node("permissions").childrenMap().entrySet()) {
+            final var tree = MutablePermissionTree.create();
+            for (final var permission : rank.getValue().childrenMap().entrySet()) {
                 tree.setPermission(
-                        (String) entry.getKey(), TriState.of(entry.getValue().getBoolean()));
+                        (String) permission.getKey(), permission.getValue().getBoolean());
             }
             map.put(name, PermissionTree.immutable(tree));
         }
         synchronized (this.lock) {
             this.permissions = map;
+            this.cache.clear();
         }
     }
 }
