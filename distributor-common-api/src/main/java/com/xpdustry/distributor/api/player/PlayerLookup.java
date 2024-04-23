@@ -61,16 +61,20 @@ public interface PlayerLookup {
         }
 
         static Query.Builder builder() {
-            return QueryImpl.builder()
-                    .setFields(EnumSet.of(Field.NAME, Field.ENTITY_ID))
-                    .setMatchExact(true);
+            return QueryImpl.builder();
         }
 
         String getInput();
 
-        Set<Field> getFields();
+        @Value.Default
+        default Set<Field> getFields() {
+            return EnumSet.of(Field.NAME, Field.ENTITY_ID);
+        }
 
-        boolean isMatchExact();
+        @Value.Default
+        default boolean isMatchExact() {
+            return true;
+        }
 
         sealed interface Builder permits QueryImpl.Builder {
 
