@@ -71,7 +71,7 @@ public interface PluginAnnotationProcessor<R> {
      * @param processors the processors
      * @return the composed processor
      */
-    static PluginAnnotationProcessor<List<?>> compose(final PluginAnnotationProcessor<?>... processors) {
+    static PluginAnnotationProcessor<List<Object>> compose(final PluginAnnotationProcessor<?>... processors) {
         return compose(Arrays.asList(processors));
     }
 
@@ -85,7 +85,7 @@ public interface PluginAnnotationProcessor<R> {
      * @param processors the processors
      * @return the composed processor
      */
-    static PluginAnnotationProcessor<List<?>> compose(final Collection<PluginAnnotationProcessor<?>> processors) {
+    static PluginAnnotationProcessor<List<Object>> compose(final Collection<PluginAnnotationProcessor<?>> processors) {
         return new CompositeAnnotationProcessor(processors.stream()
                 .flatMap(processor -> processor instanceof CompositeAnnotationProcessor composite
                         ? composite.processors().stream()
