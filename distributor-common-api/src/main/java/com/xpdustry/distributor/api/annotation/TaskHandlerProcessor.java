@@ -40,10 +40,11 @@ final class TaskHandlerProcessor extends MethodAnnotationProcessor<TaskHandler, 
     protected Cancellable process(final Object instance, final Method method, final TaskHandler annotation) {
         if (method.getParameterCount() > 1) {
             throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
-        } else if (!method.canAccess(instance)) {
-            method.setAccessible(true);
         } else if (method.getParameterCount() == 1 && !Cancellable.class.equals(method.getParameterTypes()[0])) {
             throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter type.");
+        }
+        if (!method.canAccess(instance)) {
+            method.setAccessible(true);
         }
 
         final var builder = DistributorProvider.get()
