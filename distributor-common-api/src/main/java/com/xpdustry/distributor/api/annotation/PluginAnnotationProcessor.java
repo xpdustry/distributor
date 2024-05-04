@@ -38,6 +38,8 @@ public interface PluginAnnotationProcessor<R> {
     /**
      * Processes the {@link EventHandler} method annotations of a given object to create event listeners.
      * The result is an {@link EventSubscription} tied to all created event listeners. If none, an empty result is returned.
+     * <br>
+     * This processor supports the {@link Async} annotation. Event handler methods will be executed asynchronously if present.
      *
      * @param plugin the owning plugin
      * @return a new event handler processor
@@ -49,6 +51,8 @@ public interface PluginAnnotationProcessor<R> {
     /**
      * Processes the {@link TaskHandler} method annotations of a given object to create tasks.
      * The result is a {@link Cancellable} tied to all created tasks. If none, an empty result is returned.
+     * <br>
+     * This processor supports the {@link Async} annotation. Task handler methods will be executed asynchronously if present.
      *
      * @param plugin the owning plugin
      * @return a new task handler processor

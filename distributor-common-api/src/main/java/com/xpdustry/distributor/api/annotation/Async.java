@@ -18,38 +18,15 @@
  */
 package com.xpdustry.distributor.api.annotation;
 
-import com.xpdustry.distributor.api.scheduler.Cancellable;
-import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
-import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a task handler, meaning it will be registered and called as a scheduled task in the
- * {@link PluginScheduler}.
- * <br>
- * The method can have one {@link Cancellable} parameter to allow the task to cancel itself.
+ * Marks a method as asynchronous, meaning it will be executed outside the main thread.
+ * Keep in mind that not all {@link PluginAnnotationProcessor} support this annotation so make sure to check the documentation.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface TaskHandler {
-
-    /**
-     * The interval between each execution of the task.
-     * The task will be executed once if the interval is set to a value below -1.
-     */
-    long interval() default -1;
-
-    /**
-     * The initial delay before the first execution of the task.
-     * The task will be executed immediately if the delay is set to a value below -1.
-     */
-    long delay() default -1;
-
-    /**
-     * The time unit of the interval and initial delay.
-     */
-    MindustryTimeUnit unit() default MindustryTimeUnit.SECONDS;
-}
+public @interface Async {}

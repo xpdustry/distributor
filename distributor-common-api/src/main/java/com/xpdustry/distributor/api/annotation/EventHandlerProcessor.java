@@ -44,7 +44,8 @@ final class EventHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
-        final var handler = new MethodEventHandler<>(instance, method);
+        final var handler =
+                new MethodEventHandler<>(instance, method, method.isAnnotationPresent(Async.class), this.plugin);
         return DistributorProvider.get()
                 .getEventBus()
                 .subscribe(handler.getEventType(), annotation.priority(), this.plugin, handler);
@@ -57,10 +58,23 @@ final class EventHandlerProcessor
                 : Optional.of(() -> results.forEach(EventSubscription::unsubscribe));
     }
 
-    private record MethodEventHandler<E>(Object target, Method method) implements Consumer<E> {
+    private record MethodEventHandler<E>(Object target, Method method, boolean async, MindustryPlugin plugin)
+            implements Consumer<E> {
 
         @Override
         public void accept(final E event) {
+            if (this.async) {
+                DistributorProvider.get()
+                        .getPluginScheduler()
+                        .schedule(this.plugin)
+                        .async(true)
+                        .execute(() -> this.invoke(event));
+            } else {
+                this.invoke(event);
+            }
+        }
+
+        private void invoke(final E event) {
             try {
                 this.method.invoke(this.target, event);
             } catch (final ReflectiveOperationException e) {
