@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public final class PluginSchedulerImpl implements PluginScheduler, PluginListener {
 
-    static final String DISTRIBUTOR_WORKER_BASE_NAME = "distributor-worker-";
+    public static final String DISTRIBUTOR_WORKER_BASE_NAME = "distributor-worker-";
     private static final Logger logger = LoggerFactory.getLogger("PluginScheduler");
 
     private final Queue<PluginTaskImpl<?>> tasks =

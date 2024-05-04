@@ -118,21 +118,34 @@ public sealed interface PluginMetadata permits PluginMetadataImpl {
     /**
      * Returns the display name of the plugin.
      */
-    String getDisplayName();
+    @Value.Default
+    default String getDisplayName() {
+        return this.getName();
+    }
+
     /**
      * Returns the author of the plugin.
      */
-    String getAuthor();
+    @Value.Default
+    default String getAuthor() {
+        return "Unknown";
+    }
 
     /**
      * Returns the description of the plugin.
      */
-    String getDescription();
+    @Value.Default
+    default String getDescription() {
+        return "";
+    }
 
     /**
      * Returns the version of the plugin.
      */
-    String getVersion();
+    @Value.Default
+    default String getVersion() {
+        return "1.0.0";
+    }
 
     /**
      * Returns the main class of the plugin.
@@ -142,22 +155,34 @@ public sealed interface PluginMetadata permits PluginMetadataImpl {
     /**
      * Returns the minimum game version required by the plugin.
      */
-    int getMinGameVersion();
+    @Value.Default
+    default int getMinGameVersion() {
+        return 146;
+    }
 
     /**
      * Returns the GitHub repository of the plugin. Empty if not specified.
      */
-    String getRepository();
+    @Value.Default
+    default String getRepository() {
+        return "";
+    }
 
     /**
      * Returns the dependencies of the plugin.
      */
-    List<String> getDependencies();
+    @Value.Default
+    default List<String> getDependencies() {
+        return List.of();
+    }
 
     /**
      * Returns the soft dependencies of the plugin.
      */
-    List<String> getSoftDependencies();
+    @Value.Default
+    default List<String> getSoftDependencies() {
+        return List.of();
+    }
 
     sealed interface Builder permits PluginMetadataImpl.Builder {
 
