@@ -16,28 +16,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.annotation.method;
+package com.xpdustry.distributor.api.annotation;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventSubscription;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-final class EventHandlerProcessor implements MethodAnnotationScanner.Processor<EventHandler, EventSubscription> {
+final class EventHandlerProcessor
+        extends MethodAnnotationProcessor<EventHandler, EventSubscription, EventSubscription> {
+
+    private final MindustryPlugin plugin;
+
+    EventHandlerProcessor(final MindustryPlugin plugin) {
+        super(EventHandler.class);
+        this.plugin = plugin;
+    }
 
     @Override
-    public Optional<EventSubscription> process(final MethodAnnotationScanner.Context<EventHandler> context) {
-        if (context.getMethod().getParameterCount() != 1) {
-            throw new IllegalArgumentException(
-                    "The event handler on " + context.getMethod() + " hasn't the right parameter count.");
-        } else if (!context.getMethod().canAccess(context.getInstance())) {
-            context.getMethod().setAccessible(true);
+    protected EventSubscription process(final Object instance, final Method method, final EventHandler annotation) {
+        if (method.getParameterCount() != 1) {
+            throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
         }
-        final var handler = new MethodEventHandler<>(context.getInstance(), context.getMethod());
-        return Optional.of(DistributorProvider.get()
+        if (!method.canAccess(instance)) {
+            method.setAccessible(true);
+        }
+        final var handler = new MethodEventHandler<>(instance, method);
+        return DistributorProvider.get()
                 .getEventBus()
-                .subscribe(handler.getEventType(), context.getAnnotation().priority(), context.getPlugin(), handler));
+                .subscribe(handler.getEventType(), annotation.priority(), this.plugin, handler);
+    }
+
+    @Override
+    protected Optional<EventSubscription> reduce(final List<EventSubscription> results) {
+        return results.isEmpty()
+                ? Optional.empty()
+                : Optional.of(() -> results.forEach(EventSubscription::unsubscribe));
     }
 
     private record MethodEventHandler<E>(Object target, Method method) implements Consumer<E> {

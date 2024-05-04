@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.annotation.method;
+package com.xpdustry.distributor.api.annotation;
 
 import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.util.Priority;
@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as an event handler, meaning it will be called by a {@link EventBus} when its corresponding event is
+ * Marks a method as an event handler, meaning it will be called by the {@link EventBus} when its corresponding event is
  * posted.
  * <br>
  * The annotated method must have exactly one parameter, which is the event class.

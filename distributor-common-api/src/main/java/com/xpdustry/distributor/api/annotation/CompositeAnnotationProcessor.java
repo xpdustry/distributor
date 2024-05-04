@@ -18,28 +18,18 @@
  */
 package com.xpdustry.distributor.api.annotation;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
-@FunctionalInterface
-public interface PluginAnnotationScanner<R> {
+record CompositeAnnotationProcessor(List<PluginAnnotationProcessor<?>> processors)
+        implements PluginAnnotationProcessor<List<?>> {
 
-    static PluginAnnotationScanner<Void> consumer(final Consumer<Object> consumer) {
-        return instance -> {
-            consumer.accept(instance);
-            return Optional.empty();
-        };
+    @Override
+    public Optional<List<?>> process(final Object instance) {
+        return Optional.of(this.processors.stream()
+                .map(processor -> processor.process(instance))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList());
     }
-
-    static PluginAnnotationScanner<List<?>> list(final PluginAnnotationScanner<?>... scanners) {
-        return new ListPluginAnnotationScanner(List.of(scanners));
-    }
-
-    static PluginAnnotationScanner<List<?>> list(final Collection<PluginAnnotationScanner<?>> scanners) {
-        return new ListPluginAnnotationScanner(List.copyOf(scanners));
-    }
-
-    Optional<R> scan(final Object instance);
 }

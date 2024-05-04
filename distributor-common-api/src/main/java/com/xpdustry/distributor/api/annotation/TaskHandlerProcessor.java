@@ -16,44 +16,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.annotation.method;
+package com.xpdustry.distributor.api.annotation;
 
 import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.scheduler.Cancellable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-final class TaskHandlerProcessor implements MethodAnnotationScanner.Processor<TaskHandler, Cancellable> {
+final class TaskHandlerProcessor extends MethodAnnotationProcessor<TaskHandler, Cancellable, Cancellable> {
+
+    private final MindustryPlugin plugin;
+
+    TaskHandlerProcessor(final MindustryPlugin plugin) {
+        super(TaskHandler.class);
+        this.plugin = plugin;
+    }
 
     @Override
-    public Optional<Cancellable> process(final MethodAnnotationScanner.Context<TaskHandler> context) {
-        if (context.getMethod().getParameterCount() > 1) {
-            throw new IllegalArgumentException(
-                    "The event handler on " + context.getMethod() + " hasn't the right parameter count.");
-        } else if (!context.getMethod().canAccess(context.getInstance())) {
-            context.getMethod().setAccessible(true);
-        } else if (context.getMethod().getParameterCount() == 1
-                && !Cancellable.class.equals(context.getMethod().getParameterTypes()[0])) {
-            throw new IllegalArgumentException(
-                    "The event handler on " + context.getMethod() + " hasn't the right parameter type.");
+    protected Cancellable process(final Object instance, final Method method, final TaskHandler annotation) {
+        if (method.getParameterCount() > 1) {
+            throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter count.");
+        } else if (!method.canAccess(instance)) {
+            method.setAccessible(true);
+        } else if (method.getParameterCount() == 1 && !Cancellable.class.equals(method.getParameterTypes()[0])) {
+            throw new IllegalArgumentException("The event handler on " + method + " hasn't the right parameter type.");
         }
 
         final var builder = DistributorProvider.get()
                 .getPluginScheduler()
-                .schedule(context.getPlugin())
-                .async(context.getAnnotation().async());
-        if (context.getAnnotation().delay() > -1) {
-            builder.delay(
-                    context.getAnnotation().delay(), context.getAnnotation().unit());
+                .schedule(this.plugin)
+                .async(annotation.async());
+        if (annotation.delay() > -1) {
+            builder.delay(annotation.delay(), annotation.unit());
         }
-        if (context.getAnnotation().interval() > -1) {
-            builder.repeat(
-                    context.getAnnotation().interval(), context.getAnnotation().unit());
+        if (annotation.interval() > -1) {
+            builder.repeat(annotation.interval(), annotation.unit());
         }
 
-        return Optional.of(builder.execute(new MethodTaskHandler(context.getInstance(), context.getMethod())));
+        return builder.execute(new MethodTaskHandler(instance, method));
+    }
+
+    @Override
+    protected Optional<Cancellable> reduce(final List<Cancellable> results) {
+        return results.isEmpty() ? Optional.empty() : Optional.of(() -> results.forEach(Cancellable::cancel));
     }
 
     private record MethodTaskHandler(Object object, Method method) implements Consumer<Cancellable> {
