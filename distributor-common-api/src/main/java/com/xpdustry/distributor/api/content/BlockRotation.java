@@ -24,11 +24,11 @@ public enum BlockRotation {
     LEFT,
     BOTTOM;
 
-    static BlockRotation from(final int rotation) {
+    public static BlockRotation from(final int rotation) {
         return values()[rotation % 4];
     }
 
-    static BlockRotation from(final byte rotation) {
+    public static BlockRotation from(final byte rotation) {
         return values()[rotation % 4];
     }
 }
