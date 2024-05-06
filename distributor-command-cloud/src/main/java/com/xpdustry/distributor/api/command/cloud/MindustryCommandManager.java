@@ -91,15 +91,6 @@ public class MindustryCommandManager<C> extends CommandManager<C>
                         TypeToken.get(Team.class),
                         params -> new TeamParser<>(
                                 params.get(MindustryParserParameters.TEAM_MODE, TeamParser.TeamMode.BASE)));
-
-        this.registerCommandPreProcessor(ctx -> {
-            final var reversed =
-                    this.senderMapper().reverse(ctx.commandContext().sender());
-            ctx.commandContext()
-                    .store(
-                            MindustryCommandContextKeys.ADMIN,
-                            reversed.isServer() || reversed.getPlayer().admin());
-        });
     }
 
     /**
