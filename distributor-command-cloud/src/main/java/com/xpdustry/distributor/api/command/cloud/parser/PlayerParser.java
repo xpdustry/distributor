@@ -60,7 +60,6 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
                 fields.add(field);
             }
         }
-        ;
         final var query = queryBuilder.setFields(fields).build();
         final var players = DistributorProvider.get().getPlayerLookup().findOnlinePlayers(query);
         if (players.isEmpty()) {
