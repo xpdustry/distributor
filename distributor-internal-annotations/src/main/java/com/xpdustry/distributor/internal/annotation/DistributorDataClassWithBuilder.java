@@ -34,5 +34,7 @@ import org.immutables.value.Value;
         visibility = Value.Style.ImplementationVisibility.PACKAGE,
         builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
         defaults = @Value.Immutable(copy = false, builder = true),
-        depluralize = true)
+        depluralize = true,
+        jdkOnly = true,
+        jdk9Collections = true)
 public @interface DistributorDataClassWithBuilder {}
