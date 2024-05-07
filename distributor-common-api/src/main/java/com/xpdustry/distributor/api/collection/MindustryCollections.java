@@ -21,11 +21,14 @@ package com.xpdustry.distributor.api.collection;
 import arc.struct.ObjectMap;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
+import arc.struct.StringMap;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import mindustry.entities.EntityGroup;
 import mindustry.gen.Entityc;
 
@@ -135,6 +138,39 @@ public final class MindustryCollections {
      */
     public static <K, V> Map<K, V> immutableMap(final ObjectMap<K, V> map) {
         return Collections.unmodifiableMap(new MindustryMap<>(map));
+    }
+
+    public static <T> Collector<T, ?, Seq<T>> collectToSeq() {
+        return Collector.of(Seq::new, Seq::add, Seq::addAll);
+    }
+
+    public static <T, K, V> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
+            final Function<? super T, ? extends K> keyMapper, final Function<? super T, ? extends V> valueMapper) {
+        return Collector.of(
+                ObjectMap::new,
+                (map, element) -> map.put(keyMapper.apply(element), valueMapper.apply(element)),
+                (map1, map2) -> {
+                    map1.putAll(map2);
+                    return map1;
+                });
+    }
+
+    public static <T> Collector<T, ?, ObjectSet<T>> collectToObjectSet() {
+        return Collector.of(ObjectSet::new, ObjectSet::add, (set1, set2) -> {
+            set1.addAll(set2);
+            return set1;
+        });
+    }
+
+    public static <T> Collector<T, ?, StringMap> collectToStringMap(
+            final Function<? super T, String> keyMapper, final Function<? super T, String> valueMapper) {
+        return Collector.of(
+                StringMap::new,
+                (map, element) -> map.put(keyMapper.apply(element), valueMapper.apply(element)),
+                (map1, map2) -> {
+                    map1.putAll(map2);
+                    return map1;
+                });
     }
 
     @SuppressWarnings("unchecked")
