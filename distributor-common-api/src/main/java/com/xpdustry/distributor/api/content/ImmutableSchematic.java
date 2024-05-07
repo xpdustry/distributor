@@ -18,11 +18,16 @@
  */
 package com.xpdustry.distributor.api.content;
 
+import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuilder;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import mindustry.game.Schematic;
+import mindustry.type.Item;
 import mindustry.world.Block;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
@@ -34,6 +39,31 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
     String NAME_TAG = "name";
 
     String DESCRIPTION_TAG = "description";
+
+    static Schematic toSchematic(final ImmutableSchematic schematic) {
+        final var copy = new Schematic(
+                schematic.getTiles().stream().map(Tile::toStile).collect(MindustryCollections.collectToSeq()),
+                schematic.getTags().entrySet().stream()
+                        .collect(MindustryCollections.collectToStringMap(Map.Entry::getKey, Map.Entry::getValue)),
+                schematic.getWidth(),
+                schematic.getHeight());
+        copy.labels.addAll(schematic.getLabels());
+        return copy;
+    }
+
+    static ImmutableSchematic from(final Schematic schematic) {
+        return ImmutableSchematic.builder()
+                .setTiles(MindustryCollections.immutableList(schematic.tiles).stream()
+                        .map(Tile::from)
+                        .toList())
+                .setTags(MindustryCollections.immutableMap(schematic.tags))
+                .setLabels(MindustryCollections.immutableList(schematic.labels))
+                .build();
+    }
+
+    static Builder builder(final ImmutableSchematic schematic) {
+        return ImmutableSchematicImpl.builder().from(schematic);
+    }
 
     static Builder builder() {
         return ImmutableSchematicImpl.builder();
@@ -51,7 +81,7 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
 
     List<Tile> getTiles();
 
-    @Value.Default
+    @Value.Lazy
     default int getWidth() {
         return getTiles().stream()
                 .mapToInt(tile -> tile.getX() + tile.getBlock().size)
@@ -59,7 +89,7 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
                 .orElse(0);
     }
 
-    @Value.Default
+    @Value.Lazy
     default int getHeight() {
         return getTiles().stream()
                 .mapToInt(tile -> tile.getY() + tile.getBlock().size)
@@ -70,6 +100,18 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
     Set<String> getLabels();
 
     Map<String, String> getTags();
+
+    @Value.Lazy
+    default Map<Item, Integer> getRequirements() {
+        final Map<Item, Integer> requirements = new HashMap<>();
+        for (final var tile : getTiles()) {
+            for (final var stack : tile.getBlock().requirements) {
+                requirements.compute(
+                        stack.item, (item, amount) -> amount == null ? stack.amount : amount + stack.amount);
+            }
+        }
+        return Collections.unmodifiableMap(requirements);
+    }
 
     interface Builder {
 
@@ -86,10 +128,6 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
         Builder addTile(final Tile tile);
 
         Builder addAllTiles(final Iterable<? extends Tile> tiles);
-
-        Builder setWidth(final int width);
-
-        Builder setHeight(final int height);
 
         Builder setLabels(final Iterable<String> labels);
 
@@ -110,12 +148,24 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
     @Value.Immutable
     sealed interface Tile permits TileImpl {
 
+        static Schematic.Stile toStile(final Tile tile) {
+            return new Schematic.Stile(tile.getBlock(), tile.getX(), tile.getY(), tile.getConfig(), (byte)
+                    tile.getRotation().ordinal());
+        }
+
+        static Tile from(final Schematic.Stile stile) {
+            return Tile.of(stile.x, stile.y, stile.block, BlockRotation.from(stile.rotation), stile.config);
+        }
+
         static Tile of(
                 final int x,
                 final int y,
                 final Block block,
                 final BlockRotation rotation,
                 final @Nullable Object config) {
+            if (x < 0 || y < 0) {
+                throw new IllegalArgumentException("Tile coordinates must be non-negative.");
+            }
             return TileImpl.of(x, y, block, rotation, config);
         }
 
