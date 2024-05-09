@@ -26,7 +26,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface RankNode {
 
-    Pattern NAME_PATTERN = Pattern.compile("^\\w+$");
+    Pattern NAME_PATTERN = Pattern.compile("^[\\w:]+$");
 
     /**
      * Returns the name of this rank node.
