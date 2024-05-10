@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.window.input;
 
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.AbstractTransformerWindowFactory;
+import com.xpdustry.distributor.api.window.transform.AbstractTransformerWindowFactory;
 import java.util.HashSet;
 import java.util.Set;
 import mindustry.gen.Call;
@@ -53,12 +53,18 @@ final class TextInputWindowFactoryImpl extends AbstractTransformerWindowFactory<
     }
 
     @Override
-    protected TextInputWindow createElement() {
+    protected TextInputWindow createWindow() {
         return new TextInputWindowImpl();
     }
 
     private void handle(final Player player, final @Nullable String input) {
         if (isDisposed()) {
+            this.getPlugin()
+                    .getLogger()
+                    .debug(
+                            "Received text input from player {} (uuid: {}) but the factory is disposed",
+                            player.plainName(),
+                            player.uuid());
             return;
         }
         final var context = getContexts().get(MUUID.from(player));

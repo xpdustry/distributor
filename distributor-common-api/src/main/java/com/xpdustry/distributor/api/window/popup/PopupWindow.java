@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.window.popup;
 
+import com.xpdustry.distributor.api.window.DisplayUnit;
 import com.xpdustry.distributor.api.window.Window;
 
 public interface PopupWindow extends Window {
@@ -30,13 +31,13 @@ public interface PopupWindow extends Window {
 
     void setContent(final String content);
 
-    int getShiftX();
+    DisplayUnit getShiftX();
 
-    void setShiftX(final int shiftX);
+    void setShiftX(final DisplayUnit shiftX);
 
-    int getShiftY();
+    DisplayUnit getShiftY();
 
-    void setShiftY(final int shiftY);
+    void setShiftY(final DisplayUnit shiftY);
 
     AlignementX getAlignementX();
 

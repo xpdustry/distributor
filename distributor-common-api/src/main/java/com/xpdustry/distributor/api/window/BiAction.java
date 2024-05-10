@@ -24,5 +24,14 @@ public interface BiAction<T> {
         return (context, value) -> action.act(context);
     }
 
+    @SafeVarargs
+    static <T> BiAction<T> of(final BiAction<T>... actions) {
+        return (context, value) -> {
+            for (final var action : actions) {
+                action.act(context, value);
+            }
+        };
+    }
+
     void act(final Window.Context context, final T value);
 }

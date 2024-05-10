@@ -25,8 +25,9 @@ import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
-import com.xpdustry.distributor.api.window.AbstractTransformerWindowFactory;
+import com.xpdustry.distributor.api.window.DisplayUnit;
 import com.xpdustry.distributor.api.window.Window;
+import com.xpdustry.distributor.api.window.transform.AbstractTransformerWindowFactory;
 import java.time.Duration;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
@@ -67,14 +68,14 @@ final class PopupWindowFactoryImpl extends AbstractTransformerWindowFactory<Popu
                 context.getWindow().getContent(),
                 (Time.delta / 60F) * tickUpdateInterval,
                 align,
+                context.getWindow().getShiftY().asPixels(context.getViewer(), DisplayUnit.Axis.Y),
+                context.getWindow().getShiftX().asPixels(context.getViewer(), DisplayUnit.Axis.X),
                 0,
-                0,
-                context.getWindow().getShiftX(),
-                context.getWindow().getShiftY());
+                0);
     }
 
     @Override
-    protected PopupWindow createElement() {
+    protected PopupWindow createWindow() {
         return new PopupWindowImpl();
     }
 

@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.window.transform;
+
+import com.xpdustry.distributor.api.window.Window;
 
 public interface TransformerWindowFactory<E extends Window> extends Window.Factory {
 

@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.window.input;
 
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.TransformerWindowFactory;
+import com.xpdustry.distributor.api.window.transform.TransformerWindowFactory;
 
 public interface TextInputWindowFactory extends TransformerWindowFactory<TextInputWindow> {
 

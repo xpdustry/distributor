@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.window.popup;
 
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.TransformerWindowFactory;
+import com.xpdustry.distributor.api.window.transform.TransformerWindowFactory;
 import java.time.Duration;
 
 public interface PopupWindowFactory extends TransformerWindowFactory<PopupWindow> {

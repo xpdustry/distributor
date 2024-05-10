@@ -18,11 +18,13 @@
  */
 package com.xpdustry.distributor.api.window.popup;
 
+import com.xpdustry.distributor.api.window.DisplayUnit;
+
 final class PopupWindowImpl implements PopupWindow {
 
     private String content = "";
-    private int shiftX = 0;
-    private int shiftY = 0;
+    private DisplayUnit shiftX = DisplayUnit.Pixel.ZERO;
+    private DisplayUnit shiftY = DisplayUnit.Pixel.ZERO;
     private AlignementX alignementX = AlignementX.CENTER;
     private AlignementY alignementY = AlignementY.CENTER;
 
@@ -37,22 +39,22 @@ final class PopupWindowImpl implements PopupWindow {
     }
 
     @Override
-    public int getShiftX() {
+    public DisplayUnit getShiftX() {
         return this.shiftX;
     }
 
     @Override
-    public void setShiftX(final int shiftX) {
+    public void setShiftX(final DisplayUnit shiftX) {
         this.shiftX = shiftX;
     }
 
     @Override
-    public int getShiftY() {
+    public DisplayUnit getShiftY() {
         return this.shiftY;
     }
 
     @Override
-    public void setShiftY(final int shiftY) {
+    public void setShiftY(final DisplayUnit shiftY) {
         this.shiftY = shiftY;
     }
 

@@ -21,8 +21,8 @@ package com.xpdustry.distributor.api.window.menu;
 import com.xpdustry.distributor.api.window.Action;
 import com.xpdustry.distributor.api.window.BiAction;
 import com.xpdustry.distributor.api.window.State;
-import com.xpdustry.distributor.api.window.Transformer;
 import com.xpdustry.distributor.api.window.Window;
+import com.xpdustry.distributor.api.window.transform.Transformer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -36,6 +36,7 @@ public final class ListTransformer<E> implements Transformer<MenuWindow> {
     private int height = 5;
     private int width = 1;
     private boolean fillEmptySpace = false;
+    private boolean renderNavigation = true;
     private State.Key<Integer> pageKey = State.Key.of(Integer.class);
 
     public Function<Window.Context, List<E>> getProvider() {
@@ -96,6 +97,15 @@ public final class ListTransformer<E> implements Transformer<MenuWindow> {
         return this;
     }
 
+    public boolean isRenderNavigation() {
+        return renderNavigation;
+    }
+
+    public ListTransformer<E> setRenderNavigation(final boolean renderNavigation) {
+        this.renderNavigation = renderNavigation;
+        return this;
+    }
+
     public State.Key<Integer> getPageKey() {
         return pageKey;
     }
@@ -131,6 +141,10 @@ public final class ListTransformer<E> implements Transformer<MenuWindow> {
             if (cursor >= elements.size() && !fillEmptySpace) {
                 break;
             }
+        }
+
+        if (!renderNavigation) {
+            return;
         }
 
         window.getGrid()

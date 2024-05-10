@@ -18,8 +18,34 @@
  */
 package com.xpdustry.distributor.api.window;
 
-@FunctionalInterface
-public interface Transformer<W extends Window> {
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import mindustry.gen.Player;
+import org.immutables.value.Value;
 
-    void transform(final W window, final Window.Context context);
+public sealed interface DisplayUnit {
+
+    int asPixels(final Player player, final Axis axis);
+
+    enum Axis {
+        X,
+        Y
+    }
+
+    @DistributorDataClass
+    @Value.Immutable
+    sealed interface Pixel extends DisplayUnit permits PixelImpl {
+
+        Pixel ZERO = Pixel.of(0);
+
+        static Pixel of(final int value) {
+            return PixelImpl.of(value);
+        }
+
+        int getValue();
+
+        @Override
+        default int asPixels(final Player player, final Axis axis) {
+            return getValue();
+        }
+    }
 }

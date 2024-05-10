@@ -27,7 +27,7 @@ public interface Window {
 
         Context create(final Player viewer);
 
-        Context create(final Window.Context parent);
+        Context create(final Context parent);
 
         default void dispose() {}
     }

@@ -18,14 +18,11 @@
  */
 package com.xpdustry.distributor.api.window;
 
-import java.util.List;
-
 public interface Action {
 
     static Action of(final Action... actions) {
-        final var list = List.of(actions);
         return (context) -> {
-            for (final var action : list) {
+            for (final var action : actions) {
                 action.act(context);
             }
         };

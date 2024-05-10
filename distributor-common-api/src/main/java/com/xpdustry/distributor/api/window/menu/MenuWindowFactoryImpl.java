@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.window.menu;
 
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.AbstractTransformerWindowFactory;
+import com.xpdustry.distributor.api.window.transform.AbstractTransformerWindowFactory;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.ui.Menus;
@@ -52,12 +52,18 @@ final class MenuWindowFactoryImpl extends AbstractTransformerWindowFactory<MenuW
     }
 
     @Override
-    protected MenuWindow createElement() {
+    protected MenuWindow createWindow() {
         return new MenuWindowImpl();
     }
 
     private void handle(final Player player, final int option) {
         if (isDisposed()) {
+            this.getPlugin()
+                    .getLogger()
+                    .debug(
+                            "Received menu response from player {} (uuid: {}) but the factory is disposed",
+                            player.plainName(),
+                            player.uuid());
             return;
         }
         final var context = getContexts().get(MUUID.from(player));

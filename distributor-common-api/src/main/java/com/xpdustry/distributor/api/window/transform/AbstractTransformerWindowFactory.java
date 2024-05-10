@@ -16,13 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.window.transform;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
+import com.xpdustry.distributor.api.window.State;
+import com.xpdustry.distributor.api.window.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,14 +40,14 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
         implements TransformerWindowFactory<W>, PluginAware {
 
     private final MindustryPlugin plugin;
-    private final EventSubscription playerLeaveCleanup;
+    private final EventSubscription playerLeaveListener;
     private final Map<MUUID, SimpleContext> contexts = new HashMap<>();
     private final List<Transformer<W>> transformers = new ArrayList<>();
     private boolean disposed = false;
 
     protected AbstractTransformerWindowFactory(final MindustryPlugin plugin) {
         this.plugin = plugin;
-        this.playerLeaveCleanup = DistributorProvider.get()
+        this.playerLeaveListener = DistributorProvider.get()
                 .getEventBus()
                 .subscribe(EventType.PlayerLeave.class, plugin, event -> {
                     final var context = contexts.get(MUUID.from(event.player));
@@ -58,10 +60,10 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
     protected void onWindowClose(final SimpleContext context) {}
 
     protected void onFactoryDispose() {
-        playerLeaveCleanup.unsubscribe();
+        playerLeaveListener.unsubscribe();
     }
 
-    protected abstract W createElement();
+    protected abstract W createWindow();
 
     @Override
     public final Window.Context create(final Window.Context parent) {
@@ -128,7 +130,7 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
 
             try {
                 this.transforming = true;
-                this.window = AbstractTransformerWindowFactory.this.createElement();
+                this.window = AbstractTransformerWindowFactory.this.createWindow();
                 for (final var transform : transformers) {
                     transform.transform(this.window, this);
                 }
