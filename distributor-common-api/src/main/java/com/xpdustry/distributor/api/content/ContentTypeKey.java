@@ -31,6 +31,11 @@ import mindustry.type.Weather;
 import mindustry.world.Block;
 import org.immutables.value.Value;
 
+/**
+ * Typesafe {@link ContentType} providing the concrete class of a content type.
+ *
+ * @param <T> the content type
+ */
 @DistributorDataClass
 @Value.Immutable
 public sealed interface ContentTypeKey<T extends MappableContent> permits ContentTypeKeyImpl {

@@ -22,7 +22,7 @@ import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.translation.LocaleHolder;
 import java.util.Locale;
 
-record TranslationDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
+record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
 
     @Override
     public String getText() {

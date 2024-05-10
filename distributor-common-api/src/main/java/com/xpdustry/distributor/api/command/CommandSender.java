@@ -22,25 +22,62 @@ import com.xpdustry.distributor.api.permission.PermissionHolder;
 import com.xpdustry.distributor.api.translation.LocaleHolder;
 import mindustry.gen.Player;
 
+/**
+ * Represents an entity that can send commands.
+ */
 public interface CommandSender extends PermissionHolder, LocaleHolder {
 
+    /**
+     * Wraps a player into a command sender.
+     *
+     * @param player the player to wrap
+     * @return the player command sender
+     */
     static CommandSender player(final Player player) {
         return new PlayerCommandSender(player);
     }
 
+    /**
+     * Returns the server itself as a command sender.
+     */
     static CommandSender server() {
         return ServerCommandSender.INSTANCE;
     }
 
+    /**
+     * Returns the name of this command sender.
+     */
     String getName();
 
-    void sendWarning(final String text);
-
+    /**
+     * Sends a simple message to the sender.
+     *
+     * @param text the message to send
+     */
     void sendMessage(final String text);
 
+    /**
+     * Sends a warning message to the sender.
+     *
+     * @param text the message to send
+     */
+    void sendWarning(final String text);
+
+    /**
+     * Returns whether this sender is a player.
+     */
     boolean isPlayer();
 
+    /**
+     * Returns whether this sender is the server.
+     */
     boolean isServer();
 
+    /**
+     * Returns the player of this command sender.
+     *
+     * @return the player of this command sender
+     * @throws UnsupportedOperationException if this sender is not a player
+     */
     Player getPlayer();
 }

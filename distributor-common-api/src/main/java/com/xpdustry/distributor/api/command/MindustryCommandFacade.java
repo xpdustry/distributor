@@ -22,6 +22,7 @@ import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class MindustryCommandFacade implements CommandFacade {
@@ -55,11 +56,6 @@ final class MindustryCommandFacade implements CommandFacade {
     }
 
     @Override
-    public boolean isPrefixed() {
-        return false;
-    }
-
-    @Override
     public boolean isVisible(final CommandSender sender) {
         return true;
     }
@@ -74,7 +70,7 @@ final class MindustryCommandFacade implements CommandFacade {
                         .map(p -> CommandElement.Argument.of(
                                 p.name,
                                 DescriptionFacade.EMPTY,
-                                List.of(),
+                                Set.of(),
                                 p.optional
                                         ? CommandElement.Argument.Kind.OPTIONAL
                                         : CommandElement.Argument.Kind.REQUIRED))

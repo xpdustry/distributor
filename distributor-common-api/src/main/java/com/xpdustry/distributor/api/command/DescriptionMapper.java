@@ -20,12 +20,29 @@ package com.xpdustry.distributor.api.command;
 
 import java.util.function.Function;
 
+/**
+ * Some command systems already provide some kind of abstraction for descriptions.
+ * So this interface is used to map these descriptions to the common {@link DescriptionFacade}.
+ */
 @FunctionalInterface
 public interface DescriptionMapper<T> {
 
+    /**
+     * Maps a describable object to a text description by extracting the text from it.
+     *
+     * @param extractor the function to extract the text from the describable object
+     * @param <T> the type of the describable object
+     * @return the created description mapper
+     */
     static <T> DescriptionMapper<T> text(final Function<T, String> extractor) {
         return describable -> DescriptionFacade.text(extractor.apply(describable));
     }
 
+    /**
+     * Maps a describable object to a description facade.
+     *
+     * @param describable the describable object
+     * @return the created description facade
+     */
     DescriptionFacade map(final T describable);
 }
