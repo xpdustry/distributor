@@ -22,12 +22,27 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.List;
 import org.immutables.value.Value;
 
+/**
+ * Helper class for creating help commands that can work with any command system.
+ */
 public sealed interface CommandHelp {
 
+    /**
+     * Represents a specific command entry.
+     */
     @DistributorDataClass
     @Value.Immutable
     sealed interface Entry extends CommandHelp permits EntryImpl {
 
+        /**
+         * Creates a new command entry.
+         *
+         * @param syntax the syntax of the command
+         * @param description the description of the command
+         * @param verboseDescription the verbose description of the command
+         * @param arguments the arguments of the command
+         * @param flags the flags of the command
+         */
         static Entry of(
                 final String syntax,
                 final DescriptionFacade description,
@@ -37,38 +52,64 @@ public sealed interface CommandHelp {
             return EntryImpl.of(syntax, description, verboseDescription, arguments, flags);
         }
 
+        /**
+         * Returns the syntax of the command.
+         */
         String getSyntax();
 
+        /**
+         * Returns the description of the command.
+         */
         DescriptionFacade getDescription();
 
+        /**
+         * Returns the verbose description of the command.
+         */
         DescriptionFacade getVerboseDescription();
 
+        /**
+         * Returns the arguments of the command.
+         */
         List<CommandElement.Argument> getArguments();
 
+        /**
+         * Returns the flags of the command.
+         */
         List<CommandElement.Flag> getFlags();
     }
 
+    /**
+     * Represents a list of available commands, as suggestions.
+     */
     @DistributorDataClass
     @Value.Immutable
     sealed interface Suggestion extends CommandHelp permits SuggestionImpl {
 
+        /**
+         * Creates a new command suggestion.
+         *
+         * @param longestSharedPath the longest shared path of the suggestions
+         * @param childSuggestions the child suggestions
+         */
         static Suggestion of(final String longestSharedPath, final List<String> childSuggestions) {
             return SuggestionImpl.of(longestSharedPath, childSuggestions);
         }
 
+        /**
+         * Returns the longest shared path of the suggestions. This means for the commands {@code a b c} and {@code a b d},
+         * the longest shared path would be {@code a b}.
+         */
         String getLongestSharedPath();
 
+        /**
+         * Returns the child suggestions.
+         */
         List<String> getChildSuggestions();
     }
 
     final class Empty implements CommandHelp {
-
-        private static final Empty INSTANCE = new Empty();
+        public static final Empty INSTANCE = new Empty();
 
         private Empty() {}
-
-        public static Empty getInstance() {
-            return INSTANCE;
-        }
     }
 }

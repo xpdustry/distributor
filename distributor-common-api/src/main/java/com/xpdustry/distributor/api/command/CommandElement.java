@@ -19,32 +19,63 @@
 package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
-import java.util.Collection;
+import java.util.Set;
 import org.immutables.value.Value;
 
+/**
+ * A {@code CommandElement} represents a part of a given command chain.
+ * Allowing the user to read basic information about the internals of a command without having to interact with the underlying command system.
+ */
 public sealed interface CommandElement {
 
+    /**
+     * Returns the name of this command element.
+     */
     String getName();
 
+    /**
+     * Returns the description of this command element.
+     */
     DescriptionFacade getDescription();
 
-    Collection<String> getAliases();
+    /**
+     * Returns the aliases of this command element.
+     */
+    Set<String> getAliases();
 
+    /**
+     * Represents a command argument.
+     */
     @SuppressWarnings("immutables:subtype")
     @DistributorDataClass
     @Value.Immutable
     sealed interface Argument extends CommandElement permits ArgumentImpl {
 
+        /**
+         * Creates a new command argument.
+         *
+         * @param name the name of the argument
+         * @param description the description of the argument
+         * @param aliases the aliases of the argument
+         * @param kind the kind of the argument
+         * @return the created argument
+         */
         static Argument of(
                 final String name,
                 final DescriptionFacade description,
-                final Collection<String> aliases,
+                final Set<String> aliases,
                 final Argument.Kind kind) {
             return ArgumentImpl.of(name, description, aliases, kind);
         }
 
+        /**
+         * Returns the kind of this argument.
+         */
         Argument.Kind getKind();
 
+        /**
+         * Determines how an argument is parsed on a high level.
+         */
         enum Kind {
             LITERAL,
             REQUIRED,
@@ -52,29 +83,56 @@ public sealed interface CommandElement {
         }
     }
 
+    /**
+     * Represents a command flag, usually an optional named argument.
+     */
     @SuppressWarnings("immutables:subtype")
     @DistributorDataClass
     @Value.Immutable
     sealed interface Flag extends CommandElement permits FlagImpl {
 
+        /**
+         * Creates a new command flag.
+         *
+         * @param name the name of the flag
+         * @param description the description of the flag
+         * @param aliases the aliases of the flag
+         * @param kind the kind of the flag
+         * @param mode the mode of the flag
+         * @return the created flag
+         */
         static Flag of(
                 final String name,
                 final DescriptionFacade description,
-                final Collection<String> aliases,
+                final Set<String> aliases,
                 final Flag.Kind kind,
-                final Mode mode) {
+                final Flag.Mode mode) {
             return FlagImpl.of(name, description, aliases, kind, mode);
         }
 
+        /**
+         * Returns the kind of this flag.
+         */
         Flag.Kind getKind();
 
-        Mode getMode();
+        /**
+         * Returns the mode of this flag.
+         */
+        Flag.Mode getMode();
 
+        /**
+         * Determines how a flag is parsed on a high level.
+         * <p>
+         * Note that most command systems treat flags as optional arguments.
+         */
         enum Kind {
             OPTIONAL,
             REQUIRED
         }
 
+        /**
+         * Determines how many times a flag can be used.
+         */
         enum Mode {
             SINGLE,
             REPEATABLE

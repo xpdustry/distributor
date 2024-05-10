@@ -27,6 +27,7 @@ import com.xpdustry.distributor.api.command.DescriptionFacade;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.incendo.cloud.Command;
@@ -42,7 +43,6 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
 
     final MindustryCommandManager<C> manager;
     private final boolean alias;
-    private final boolean prefixed;
     private final String realName;
     private final Description cloudDescription;
 
@@ -59,7 +59,6 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
                 new CloudCommandRunner<>(name, manager));
         this.manager = manager;
         this.alias = alias;
-        this.prefixed = prefixed;
         this.realName = name;
         this.cloudDescription = description;
     }
@@ -88,14 +87,6 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
     @Override
     public boolean isAlias() {
         return this.alias;
-    }
-
-    /**
-     * Returns whether this command is prefixed with the plugin name.
-     */
-    @Override
-    public boolean isPrefixed() {
-        return this.prefixed;
     }
 
     @Override
@@ -135,7 +126,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
                 .map(component -> CommandElement.Argument.of(
                         component.name(),
                         this.manager.descriptionMapper().map(component.description()),
-                        component.alternativeAliases(),
+                        Set.copyOf(component.alternativeAliases()),
                         switch (component.type()) {
                             case LITERAL -> CommandElement.Argument.Kind.LITERAL;
                             case REQUIRED_VARIABLE -> CommandElement.Argument.Kind.REQUIRED;
@@ -153,7 +144,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
                 flags.add(CommandElement.Flag.of(
                         flag.name(),
                         this.manager.descriptionMapper().map(flag.description()),
-                        flag.aliases(),
+                        Set.copyOf(flag.aliases()),
                         CommandElement.Flag.Kind.OPTIONAL,
                         switch (flag.mode()) {
                             case SINGLE -> CommandElement.Flag.Mode.SINGLE;

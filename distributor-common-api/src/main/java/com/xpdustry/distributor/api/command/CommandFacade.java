@@ -22,8 +22,18 @@ import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A {@code CommandFacade} is a simple abstraction for advanced command systems in Mindustry.
+ * It is typically implemented by a {@link CommandHandler.Command}.
+ */
 public interface CommandFacade {
 
+    /**
+     * Extracts a {@code CommandFacade} from a native command.
+     *
+     * @param command the command to extract from
+     * @return the facade of the native command
+     */
     static CommandFacade from(final CommandHandler.Command command) {
         if (command instanceof CommandFacade facade) {
             return facade;
@@ -32,19 +42,48 @@ public interface CommandFacade {
         }
     }
 
+    /**
+     * Returns the real name of this command.
+     */
     String getRealName();
 
+    /**
+     * Returns the name of this command.
+     * Usually returns {@link #getRealName()}, but if another command with the same name was registered before,
+     * the owning plugin identifier will be prefixed to the name. Such as {@code plugin:name}.
+     */
     String getName();
 
+    /**
+     * Returns the description of the root command node or the command itself.
+     */
     DescriptionFacade getDescription();
 
+    /**
+     * Returns whether this command is an alias of another command.
+     */
     boolean isAlias();
 
-    boolean isPrefixed();
-
+    /**
+     * Returns whether this command is visible at all to the given sender.
+     *
+     * @param sender the sender to check visibility for
+     * @return whether this command is visible to the given sender
+     */
     boolean isVisible(final CommandSender sender);
 
+    /**
+     * Returns the help information for this command.
+     * The result is affected by the permissions of the sender.
+     *
+     * @param sender the sender to get the help for
+     * @param query the query to get the help for
+     * @return the help information for this command
+     */
     CommandHelp getHelp(final CommandSender sender, final String query);
 
+    /**
+     * Returns the plugin that owns this command.
+     */
     @Nullable MindustryPlugin getPlugin();
 }
