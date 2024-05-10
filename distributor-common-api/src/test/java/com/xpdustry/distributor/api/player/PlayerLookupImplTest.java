@@ -110,7 +110,7 @@ public final class PlayerLookupImplTest {
         assertQueryResult(
                 PlayerLookup.Query.builder()
                         .setInput(PLAYER_1.uuid())
-                        .addField(PlayerLookup.Field.UUID)
+                        .setFields(PlayerLookup.Field.values())
                         .setMatchExact(false)
                         .build(),
                 PLAYER_1,
