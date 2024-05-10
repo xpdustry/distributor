@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.content;
 
+import arc.struct.StringMap;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuilder;
@@ -44,7 +45,8 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
         final var copy = new Schematic(
                 schematic.getTiles().stream().map(Tile::toStile).collect(MindustryCollections.collectToSeq()),
                 schematic.getTags().entrySet().stream()
-                        .collect(MindustryCollections.collectToStringMap(Map.Entry::getKey, Map.Entry::getValue)),
+                        .collect(MindustryCollections.collectToObjectMap(
+                                Map.Entry::getKey, Map.Entry::getValue, StringMap::new)),
                 schematic.getWidth(),
                 schematic.getHeight());
         copy.labels.addAll(schematic.getLabels());

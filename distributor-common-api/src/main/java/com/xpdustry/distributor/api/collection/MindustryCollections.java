@@ -21,13 +21,14 @@ package com.xpdustry.distributor.api.collection;
 import arc.struct.ObjectMap;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
-import arc.struct.StringMap;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import mindustry.entities.EntityGroup;
 import mindustry.gen.Entityc;
@@ -98,7 +99,7 @@ public final class MindustryCollections {
      * Wraps an {@link EntityGroup} into a {@link List}.
      *
      * @param group the entity group
-     * @param <E> the entity type
+     * @param <E>   the entity type
      * @return the wrapped {@link EntityGroup}
      */
     public static <E extends Entityc> List<E> mutableList(final EntityGroup<E> group) {
@@ -109,7 +110,7 @@ public final class MindustryCollections {
      * Wraps an {@link EntityGroup} into an immutable {@link List}.
      *
      * @param group the entity group
-     * @param <E> the entity type
+     * @param <E>   the entity type
      * @return the wrapped {@link EntityGroup}
      */
     public static <E extends Entityc> List<E> immutableList(final EntityGroup<E> group) {
@@ -140,37 +141,157 @@ public final class MindustryCollections {
         return Collections.unmodifiableMap(new MindustryMap<>(map));
     }
 
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link Seq}.
+     *
+     * @param <T> the element type
+     * @return the seq collector
+     */
     public static <T> Collector<T, ?, Seq<T>> collectToSeq() {
-        return Collector.of(Seq::new, Seq::add, Seq::addAll);
+        return collectToSeq(Seq::new);
     }
 
-    public static <T, K, V> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
-            final Function<? super T, ? extends K> keyMapper, final Function<? super T, ? extends V> valueMapper) {
-        return Collector.of(
-                ObjectMap::new,
-                (map, element) -> map.put(keyMapper.apply(element), valueMapper.apply(element)),
-                (map1, map2) -> {
-                    map1.putAll(map2);
-                    return map1;
-                });
-    }
-
-    public static <T> Collector<T, ?, ObjectSet<T>> collectToObjectSet() {
-        return Collector.of(ObjectSet::new, ObjectSet::add, (set1, set2) -> {
-            set1.addAll(set2);
-            return set1;
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link Seq}.
+     *
+     * @param seqFactory the seq factory
+     * @param <T>        the element type
+     * @param <S>        the seq type
+     * @return the seq collector
+     */
+    public static <T, S extends Seq<T>> Collector<T, ?, S> collectToSeq(final Supplier<S> seqFactory) {
+        return Collector.of(seqFactory, Seq::add, (seq1, seq2) -> {
+            seq1.addAll(seq2);
+            return seq1;
         });
     }
 
-    public static <T> Collector<T, ?, StringMap> collectToStringMap(
-            final Function<? super T, String> keyMapper, final Function<? super T, String> valueMapper) {
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link ObjectMap}.
+     * Using the provided key and value mapping function.
+     * The collector will throw an {@link IllegalStateException} if duplicate keys are encountered.
+     *
+     * @param keyMapper the key mapping function
+     * @param valMapper the value mapping function
+     * @param <T>       the element type
+     * @return the object map collector
+     */
+    public static <T, K, V> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
+            final Function<? super T, ? extends K> keyMapper, final Function<? super T, ? extends V> valMapper) {
+        return collectToObjectMap0(keyMapper, valMapper, (a, b) -> a, ObjectMap::new, true);
+    }
+
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link ObjectMap}.
+     * Using the provided key and value mapping function.
+     * The collector will throw an {@link IllegalStateException} if duplicate keys are encountered.
+     *
+     * @param keyMapper        the key mapping function
+     * @param valMapper        the value mapping function
+     * @param objectMapFactory the object map factory
+     * @param <T>              the element type
+     * @param <K>              the key type
+     * @param <V>              the value type
+     * @param <M>              the object map type
+     * @return the object map collector
+     */
+    public static <T, K, V, M extends ObjectMap<K, V>> Collector<T, ?, M> collectToObjectMap(
+            final Function<? super T, ? extends K> keyMapper,
+            final Function<? super T, ? extends V> valMapper,
+            final Supplier<M> objectMapFactory) {
+        return collectToObjectMap0(keyMapper, valMapper, (a, b) -> a, objectMapFactory, true);
+    }
+
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link ObjectMap}.
+     * Using the provided key and value mapping function.
+     *
+     * @param keyMapper the key mapping function
+     * @param valMapper the value mapping function
+     * @param valMerger the value merger function, in case of duplicate keys
+     * @param <T>       the element type
+     * @param <K>       the key type
+     * @param <V>       the value type
+     * @return the object map collector
+     */
+    public static <T, K, V> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
+            final Function<? super T, ? extends K> keyMapper,
+            final Function<? super T, ? extends V> valMapper,
+            final BinaryOperator<V> valMerger) {
+        return collectToObjectMap0(keyMapper, valMapper, valMerger, ObjectMap::new, false);
+    }
+
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link ObjectMap}.
+     * Using the provided key and value mapping function.
+     *
+     * @param keyMapper        the key mapping function
+     * @param valMapper        the value mapping function
+     * @param valMerger        the value merger function, in case of duplicate keys
+     * @param objectMapFactory the object map factory
+     * @param <T>              the element type
+     * @param <K>              the key type
+     * @param <V>              the value type
+     * @param <M>              the object map type
+     * @return the object map collector
+     */
+    public static <T, K, V, M extends ObjectMap<K, V>> Collector<T, ?, M> collectToObjectMap(
+            final Function<? super T, ? extends K> keyMapper,
+            final Function<? super T, ? extends V> valMapper,
+            final BinaryOperator<V> valMerger,
+            final Supplier<M> objectMapFactory) {
+        return collectToObjectMap0(keyMapper, valMapper, valMerger, objectMapFactory, false);
+    }
+
+    private static <T, K, V, M extends ObjectMap<K, V>> Collector<T, ?, M> collectToObjectMap0(
+            final Function<? super T, ? extends K> keyMapper,
+            final Function<? super T, ? extends V> valMapper,
+            final BinaryOperator<V> valMerger,
+            final Supplier<M> supplier,
+            final boolean unique) {
         return Collector.of(
-                StringMap::new,
-                (map, element) -> map.put(keyMapper.apply(element), valueMapper.apply(element)),
+                supplier,
+                (map, element) -> {
+                    final var key = keyMapper.apply(element);
+                    final var val = valMapper.apply(element);
+                    final var previous = map.get(key);
+                    if (previous != null) {
+                        if (unique) throw new IllegalStateException("Duplicate key: " + key);
+                        map.put(key, valMerger.apply(previous, val));
+                    } else {
+                        map.put(key, val);
+                    }
+                },
                 (map1, map2) -> {
                     map1.putAll(map2);
                     return map1;
                 });
+    }
+
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link ObjectSet}.
+     *
+     * @param <T> the element type
+     * @return the object set collector
+     */
+    public static <T> Collector<T, ?, ObjectSet<T>> collectToObjectSet() {
+        return collectToObjectSet(ObjectSet::new);
+    }
+
+    /**
+     * Creates a {@link Collector} that accumulates the elements of a stream into a {@link ObjectSet}.
+     *
+     * @param objectSetFactory the object set factory
+     * @param <T>              the element type
+     * @param <S>              the object set type
+     * @return the object set collector
+     */
+    public static <T, S extends ObjectSet<T>> Collector<T, ?, S> collectToObjectSet(
+            final Supplier<S> objectSetFactory) {
+        return Collector.of(objectSetFactory, ObjectSet::add, (set1, set2) -> {
+            set1.addAll(set2);
+            return set1;
+        });
     }
 
     @SuppressWarnings("unchecked")
