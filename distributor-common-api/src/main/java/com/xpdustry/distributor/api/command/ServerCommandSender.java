@@ -35,14 +35,14 @@ final class ServerCommandSender implements CommandSender {
     }
 
     @Override
-    public void sendMessage(final String text) {
+    public void reply(final String text) {
         for (final var line : text.split("\n", -1)) {
             Log.info(line);
         }
     }
 
     @Override
-    public void sendWarning(final String text) {
+    public void error(final String text) {
         for (final var line : text.split("\n", -1)) {
             Log.warn(line);
         }
@@ -60,7 +60,7 @@ final class ServerCommandSender implements CommandSender {
 
     @Override
     public Player getPlayer() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Cannot get player from server command sender");
     }
 
     @Override

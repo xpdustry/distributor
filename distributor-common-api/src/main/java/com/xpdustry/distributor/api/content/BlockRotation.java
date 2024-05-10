@@ -18,17 +18,35 @@
  */
 package com.xpdustry.distributor.api.content;
 
+import java.util.stream.Stream;
+
+/**
+ * Represents the rotation of a block.
+ */
 public enum BlockRotation {
     RIGHT,
     TOP,
     LEFT,
     BOTTOM;
 
-    public static BlockRotation from(final int rotation) {
-        return values()[rotation % 4];
+    /**
+     * Returns the serializable integer representation of this rotation.
+     */
+    @SuppressWarnings("EnumOrdinal")
+    public int asInt() {
+        return ordinal();
     }
 
-    public static BlockRotation from(final byte rotation) {
-        return values()[rotation % 4];
+    /**
+     * Returns the rotation from the given integer.
+     *
+     * @param rotation the integer to convert
+     * @return the rotation
+     */
+    public static BlockRotation from(final int rotation) {
+        return Stream.of(values())
+                .filter(value -> value.asInt() == (rotation % 4))
+                .findFirst()
+                .orElseThrow();
     }
 }

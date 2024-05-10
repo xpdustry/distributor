@@ -36,6 +36,11 @@ import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
+/**
+ * A parser for {@link Team} arguments.
+ *
+ * @param <C> the command sender type
+ */
 public final class TeamParser<C> implements ArgumentParser<C, Team> {
 
     public static <C> ParserDescriptor<C, Team> teamParser() {
@@ -66,7 +71,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
         if (this.getTeamIndex().containsKey(name)) {
             return ArgumentParseResult.success(this.getTeamIndex().get(name));
         } else {
-            return ArgumentParseResult.failure(new TeamParseException(name, ctx, this.teamMode));
+            return ArgumentParseResult.failure(new TeamParseException(ctx, name, this.teamMode));
         }
     }
 
@@ -114,11 +119,11 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
         /**
          * Creates a new {@link TeamParseException}.
          *
-         * @param input    the input string
          * @param ctx      the command context
+         * @param input    the input string
          * @param teamMode the team mode
          */
-        public TeamParseException(final String input, final CommandContext<?> ctx, final TeamMode teamMode) {
+        public TeamParseException(final CommandContext<?> ctx, final String input, final TeamMode teamMode) {
             super(
                     TeamParser.class,
                     ctx,

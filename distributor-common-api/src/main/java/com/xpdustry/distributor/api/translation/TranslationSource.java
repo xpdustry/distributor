@@ -24,14 +24,12 @@ import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A helper class for adding localization support to your plugin.
+ * A helper class for adding translation support to your plugin.
  */
 public interface TranslationSource {
 
-    Function<String, Translation> DEFAULT_FALLBACK = key -> TextTranslation.of("???" + key + "???");
-
     /**
-     * Returns a {@code LocalizationSource} for the router language {@code :^)}.
+     * Returns a {@code TranslationSource} for the router language {@code :^)}.
      */
     static TranslationSource router() {
         return RouterTranslationSource.INSTANCE;
@@ -42,11 +40,11 @@ public interface TranslationSource {
      *
      * <pre> {@code
      *      // Send a localized message to every player
-     *      final LocalizationSource source = ...;
+     *      final TranslationSource source = ...;
      *      Groups.player.each(player -> {
      *          final var locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
-     *          final var message = source.localize("example.key", locale);
-     *          player.sendMessage(message == null ? "???example.key???" : message);
+     *          final var message = source.getTranslationOrMissing("example.key", locale);
+     *          player.sendMessage(message.formatArray("Hello"));
      *      }
      * } </pre>
      *
@@ -55,13 +53,13 @@ public interface TranslationSource {
      */
     @Nullable Translation getTranslation(final String key, final Locale locale);
 
-    default Translation getTranslationOrDefault(
+    default Translation getTranslationOrMissing(
             final String key, final Locale locale, final Function<String, Translation> fallback) {
         final var translation = getTranslation(key, locale);
         return translation != null ? translation : fallback.apply(key);
     }
 
-    default Translation getTranslationOrDefault(final String key, final Locale locale) {
-        return getTranslationOrDefault(key, locale, DEFAULT_FALLBACK);
+    default Translation getTranslationOrMissing(final String key, final Locale locale) {
+        return getTranslationOrMissing(key, locale, k -> TextTranslation.of("???" + k + "???"));
     }
 }

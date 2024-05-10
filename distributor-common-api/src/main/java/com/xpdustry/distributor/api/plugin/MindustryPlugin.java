@@ -64,7 +64,7 @@ public interface MindustryPlugin {
     default void onClientCommandsRegistration(final CommandHandler handler) {}
 
     /**
-     * Called after {@link #onClientCommandsRegistration(CommandHandler)} just before
+     * Called after {@link #onClientCommandsRegistration(CommandHandler)} just after
      * {@link mindustry.game.EventType.ServerLoadEvent}.
      * Hook into other plugins here since this method technically replaces {@link Plugin#init()}.
      */

@@ -18,7 +18,6 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.translation.LocaleHolder;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Locale;
 import org.immutables.value.Value;
@@ -62,10 +61,10 @@ public interface DescriptionFacade {
     /**
      * Returns the description text for the given locale holder.
      *
-     * @param holder the locale holder
+     * @param sender the command sender
      * @return the description text
      */
-    default String getText(final LocaleHolder holder) {
+    default String getText(final CommandSender sender) {
         return this.getText();
     }
 
@@ -79,10 +78,10 @@ public interface DescriptionFacade {
     /**
      * Returns whether this description is empty for the given locale holder.
      *
-     * @param holder the locale holder
+     * @param sender the command sender
      * @return whether this description is empty
      */
-    default boolean isEmpty(final LocaleHolder holder) {
-        return this.getText(holder).isEmpty();
+    default boolean isEmpty(final CommandSender sender) {
+        return this.getText(sender).isEmpty();
     }
 }

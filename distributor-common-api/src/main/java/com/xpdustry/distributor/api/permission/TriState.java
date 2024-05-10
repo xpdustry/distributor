@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.permission;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A ternary boolean type.
+ * A ternary boolean type. Equivalent to {@code @Nullable Boolean}, but safer.
  */
 public enum TriState {
     FALSE(false),

@@ -18,32 +18,27 @@
  */
 package com.xpdustry.distributor.api.permission;
 
-import java.util.regex.Pattern;
 import mindustry.gen.Player;
 
+/**
+ * A simple interface for getting the permissions of online players.
+ */
+@FunctionalInterface
 public interface PermissionReader {
 
     /**
-     * Regex pattern used to validate permission strings.
-     * <p>
-     * <strong>Notes:</strong>
-     * <blockquote>
-     * Permission strings are composed of a series of nodes separated by dots with alphanumeric characters and minus
-     * signs, such as {@code "plugin.command"}.
-     * <br>
-     * A parent node is always overridden by a child node, such as {@code "plugin.command"} overriding {@code "plugin"}.
-     * <br>
-     * Wildcards are also allowed, but they currently have the same effect as a normal node, such as {@code "plugin.command.*"} equals {@code "plugin.command"}.
-     * <br>
-     * The only relevant use of wildcards is the root permission {@code "*"} permission. It
-     * allows you to set a default value for all permissions.
-     * </blockquote>
+     * Returns an empty permission reader.
      */
-    Pattern PERMISSION_PATTERN = Pattern.compile("^(\\*|\\w+)(\\.(\\*|\\w+))*$");
-
     static PermissionReader empty() {
         return EmptyPermissionReader.INSTANCE;
     }
 
+    /**
+     * Gets the permission of the given player.
+     *
+     * @param player the player
+     * @param permission the permission
+     * @return the permission
+     */
     TriState getPermission(final Player player, final String permission);
 }

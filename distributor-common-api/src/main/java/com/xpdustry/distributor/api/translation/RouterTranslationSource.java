@@ -21,14 +21,11 @@ package com.xpdustry.distributor.api.translation;
 import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class RouterTranslationSource implements TranslationSource {
-
-    static final RouterTranslationSource INSTANCE = new RouterTranslationSource();
+enum RouterTranslationSource implements TranslationSource {
+    INSTANCE;
 
     static final Locale ROUTER_LOCALE = new Locale("router");
     private static final Translation ROUTER_TRANSLATION = TextTranslation.of("router");
-
-    private RouterTranslationSource() {}
 
     @Override
     public @Nullable Translation getTranslation(final String key, final Locale locale) {

@@ -49,7 +49,7 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
      *      // Warn the players the server is close in 5 minutes.
      *      Groups.player.each(p -> p.sendMessage("The server will restart in 5 minutes."));
      *      // Now schedule the closing task.
-     *      scheduler.scheduleSync(plugin).delay(5L, MindustryTimeUnit.MINUTES).execute(() -> Core.app.exit());
+     *      scheduler.schedule(plugin).delay(5L, MindustryTimeUnit.MINUTES).execute(() -> Core.app.exit());
      * } </pre>
      */
     interface Builder {

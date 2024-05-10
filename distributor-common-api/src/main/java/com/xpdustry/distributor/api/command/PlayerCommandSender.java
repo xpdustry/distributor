@@ -27,16 +27,16 @@ record PlayerCommandSender(Player player) implements CommandSender {
 
     @Override
     public String getName() {
-        return this.player.name();
+        return this.player.coloredName();
     }
 
     @Override
-    public void sendMessage(final String text) {
+    public void reply(final String text) {
         this.player.sendMessage(text);
     }
 
     @Override
-    public void sendWarning(final String text) {
+    public void error(final String text) {
         this.player.sendMessage("[red]" + text);
     }
 

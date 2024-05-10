@@ -18,14 +18,14 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.permission.PermissionHolder;
-import com.xpdustry.distributor.api.translation.LocaleHolder;
+import com.xpdustry.distributor.api.permission.TriState;
+import java.util.Locale;
 import mindustry.gen.Player;
 
 /**
  * Represents an entity that can send commands.
  */
-public interface CommandSender extends PermissionHolder, LocaleHolder {
+public interface CommandSender {
 
     /**
      * Wraps a player into a command sender.
@@ -54,14 +54,14 @@ public interface CommandSender extends PermissionHolder, LocaleHolder {
      *
      * @param text the message to send
      */
-    void sendMessage(final String text);
+    void reply(final String text);
 
     /**
-     * Sends a warning message to the sender.
+     * Sends a error message to the sender.
      *
      * @param text the message to send
      */
-    void sendWarning(final String text);
+    void error(final String text);
 
     /**
      * Returns whether this sender is a player.
@@ -80,4 +80,17 @@ public interface CommandSender extends PermissionHolder, LocaleHolder {
      * @throws UnsupportedOperationException if this sender is not a player
      */
     Player getPlayer();
+
+    /**
+     * Returns the permission state of the given permission.
+     *
+     * @param permission the permission to check
+     * @return the permission state
+     */
+    TriState getPermission(final String permission);
+
+    /**
+     * Returns the locale of this command sender.
+     */
+    Locale getLocale();
 }

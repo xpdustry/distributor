@@ -46,6 +46,11 @@ import org.incendo.cloud.state.RegistrationState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A command manager for Mindustry plugins.
+ *
+ * @param <C> the command sender type
+ */
 public class MindustryCommandManager<C> extends CommandManager<C>
         implements PluginAware, SenderMapperHolder<CommandSender, C> {
 
@@ -55,6 +60,14 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     private DescriptionMapper<Description> descriptionMapper = DescriptionMapper.text(Description::textDescription);
     private @Nullable CommandHandler handler = null;
 
+    /**
+     * Constructs a new {@link MindustryCommandManager}.
+     *
+     * @param plugin the owning plugin
+     * @param coordinator the execution coordinator
+     * @param senderMapper the sender mapper
+     * @see CommandManager#CommandManager(ExecutionCoordinator, CommandRegistrationHandler)
+     */
     public MindustryCommandManager(
             final MindustryPlugin plugin,
             final ExecutionCoordinator<C> coordinator,
@@ -109,12 +122,17 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     }
 
     /**
-     * Returns the {@code DescriptionMapper} of this command manager.
+     * Returns the {@link DescriptionMapper} of this command manager.
      */
     public final DescriptionMapper<Description> descriptionMapper() {
         return this.descriptionMapper;
     }
 
+    /**
+     * Sets the {@link DescriptionMapper} of this command manager.
+     *
+     * @param descriptionMapper the new description mapper
+     */
     public final void descriptionMapper(final DescriptionMapper<Description> descriptionMapper) {
         this.descriptionMapper = descriptionMapper;
     }
@@ -135,13 +153,16 @@ public class MindustryCommandManager<C> extends CommandManager<C>
         return this.senderMapper;
     }
 
+    /**
+     * Registers the default exception handlers for this command manager.
+     */
     protected void registerDefaultExceptionHandlers() {
         this.registerDefaultExceptionHandlers(
                 triplet -> {
                     final var context = triplet.first();
                     senderMapper()
                             .reverse(context.sender())
-                            .sendWarning(context.formatCaption(triplet.second(), triplet.third()));
+                            .error(context.formatCaption(triplet.second(), triplet.third()));
                 },
                 pair -> logger.error(pair.first(), pair.second()));
     }

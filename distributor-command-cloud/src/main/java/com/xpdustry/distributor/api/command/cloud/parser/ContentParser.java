@@ -32,6 +32,13 @@ import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 
+/**
+ * A parser for {@link MappableContent content} arguments.
+ * Will only succeed on exact matches.
+ *
+ * @param <C> the command sender type
+ * @param <T> the content type
+ */
 public final class ContentParser<C, T extends MappableContent> implements ArgumentParser<C, T> {
 
     public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(
@@ -60,11 +67,21 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
                 : ArgumentParseResult.success((T) content);
     }
 
+    /**
+     * An exception thrown when a content argument could not be parsed.
+     */
     public static final class ContentParseException extends ParserException {
 
         private final String input;
         private final ContentTypeKey<?> contentType;
 
+        /**
+         * Creates a new {@link ContentParseException}.
+         *
+         * @param input   the input string
+         * @param ctx     the command context
+         * @param contentType the content type
+         */
         public ContentParseException(
                 final CommandContext<?> ctx, final String input, final ContentTypeKey<?> contentType) {
             super(

@@ -88,7 +88,7 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     }
 
     @Override
-    public void removePermission(final String permission) {
+    public void removePermission(final String permission, final boolean all) {
         checkPermission(permission);
         final var parts = permission.split("\\.", -1);
         var node = this;
@@ -99,6 +99,9 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
             }
         }
         node.value = TriState.UNDEFINED;
+        if (all) {
+            node.children.clear();
+        }
         var index = parts.length - 1;
         while (node.parent != null && node.children.isEmpty()) {
             node = node.parent;
@@ -131,7 +134,7 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     }
 
     private void checkPermission(final String permission) {
-        if (!PermissionReader.PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!PermissionTree.PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission is not valid: " + permission);
         }
     }

@@ -139,7 +139,7 @@ public sealed interface MUUID permits MUUIDImpl {
     }
 
     /**
-     * TODO important doc
+     * Converts the uuid of this muuid into a real {@link UUID}, version 8.
      * @see <a href="https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-11.html#name-uuid-version-8">UUID v8 spec</a>
      */
     default UUID toRealUUID() {

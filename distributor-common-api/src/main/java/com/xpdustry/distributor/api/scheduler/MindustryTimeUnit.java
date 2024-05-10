@@ -70,7 +70,7 @@ public enum MindustryTimeUnit {
      * <ul>
      *     <li>If it overflows, the result will be {@link Long#MAX_VALUE} if the duration is positive,
      *     or {@link Long#MIN_VALUE} if it is negative.</li>
-     *     <li>Conversions are floored so converting 999 milliseconds to seconds results in 0.</li>
+     *     <li>Conversions are rounded so converting 999 milliseconds to seconds results in 0.</li>
      * </ul>
      *
      * @param sourceDuration the duration to convert

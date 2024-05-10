@@ -24,6 +24,7 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuil
 import java.text.Normalizer;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
@@ -32,6 +33,9 @@ import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
 
+/**
+ * A simple interface for looking up online players.
+ */
 public interface PlayerLookup {
 
     Supplier<Collection<Player>> DEFAULT_PROVIDER = () -> MindustryCollections.immutableList(Groups.player);
@@ -42,35 +46,71 @@ public interface PlayerLookup {
                     .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
                     .toLowerCase(Locale.ROOT);
 
+    /**
+     * Creates a new player lookup with the default provider and normalizer.
+     */
     static PlayerLookup create() {
         return new PlayerLookupImpl(DEFAULT_PROVIDER, DEFAULT_NORMALIZER);
     }
 
+    /**
+     * Creates a new player lookup with the given provider and normalizer.
+     *
+     * @param provider the player provider
+     * @param normalizer the normalizer
+     * @return the player lookup
+     */
     static PlayerLookup create(final Supplier<Collection<Player>> provider, final Function<String, String> normalizer) {
         return new PlayerLookupImpl(provider, normalizer);
     }
 
-    Collection<Player> findOnlinePlayers(final Query query);
+    /**
+     * Finds online players matching the given query.
+     *
+     * @param query the query
+     * @return the matching players
+     */
+    List<Player> findOnlinePlayers(final Query query);
 
+    /**
+     * A query for looking up players.
+     */
     @DistributorDataClassWithBuilder
     @Value.Immutable
     sealed interface Query permits QueryImpl {
 
+        /**
+         * Creates a simple query with the given input.
+         *
+         * @param input the input
+         * @return the created query
+         */
         static Query of(final String input) {
             return builder().setInput(input).build();
         }
 
+        /**
+         * Creates a new query builder.
+         */
         static Query.Builder builder() {
             return QueryImpl.builder();
         }
 
         String getInput();
 
+        /**
+         * The fields to take into account when searching.
+         * Defaults to {@link Field#NAME} and {@link Field#ENTITY_ID}.
+         */
         @Value.Default
         default Set<Field> getFields() {
             return EnumSet.of(Field.NAME, Field.ENTITY_ID);
         }
 
+        /**
+         * Whether to return a singular result if a exact match is found.
+         * Defaults to {@code true}.
+         */
         @Value.Default
         default boolean isMatchExact() {
             return true;
@@ -96,6 +136,9 @@ public interface PlayerLookup {
         }
     }
 
+    /**
+     * The fields to take into account when searching.
+     */
     enum Field {
         NAME,
         UUID,

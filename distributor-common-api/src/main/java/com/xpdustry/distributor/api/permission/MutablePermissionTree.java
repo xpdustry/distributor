@@ -18,35 +18,73 @@
  */
 package com.xpdustry.distributor.api.permission;
 
+/**
+ * A mutable permission tree.
+ */
 public interface MutablePermissionTree extends PermissionTree {
 
+    /**
+     * Creates a new mutable permission tree.
+     */
     static MutablePermissionTree create() {
         return new MutablePermissionTreeImpl();
     }
 
-    static MutablePermissionTree from(final PermissionTree tree) {
-        final var mutable = create();
-        mutable.setPermissions(tree);
-        return mutable;
-    }
-
+    /**
+     * Sets the permission with the given state.
+     *
+     * @param permission the permission
+     * @param state the state
+     */
     default void setPermission(final String permission, final boolean state) {
         setPermission(permission, state, false);
     }
 
+    /**
+     * Sets the permission with the given state.
+     *
+     * @param permission the permission
+     * @param state the state
+     * @param override whether to override the child permissions with the new state
+     */
     void setPermission(final String permission, final boolean state, final boolean override);
 
+    /**
+     * Sets the permissions from the given permission tree.
+     *
+     * @param tree the permission tree
+     */
     default void setPermissions(final PermissionTree tree) {
         setPermissions(tree, false);
     }
 
+    /**
+     * Sets the permissions from the given permission tree.
+     *
+     * @param tree the permission tree
+     * @param override whether to override the child permissions with the new state
+     */
     default void setPermissions(final PermissionTree tree, final boolean override) {
         for (final var entry : tree.getPermissions().entrySet()) {
             setPermission(entry.getKey(), entry.getValue(), override);
         }
     }
 
-    void clearPermissions();
+    /**
+     * Removes the given permission from the tree. Essentially making it {@link TriState#UNDEFINED}.
+     *
+     * @param permission the permission
+     */
+    default void removePermission(final String permission) {
+        removePermission(permission, false);
+    }
 
-    void removePermission(final String permission);
+    void removePermission(final String permission, final boolean all);
+
+    /**
+     * Clears all permissions.
+     */
+    default void clearPermissions() {
+        removePermission("*", true);
+    }
 }

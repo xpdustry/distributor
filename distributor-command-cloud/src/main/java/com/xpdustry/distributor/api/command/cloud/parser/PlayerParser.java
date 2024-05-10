@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.command.cloud.parser;
 
 import arc.Core;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
@@ -41,6 +42,12 @@ import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
+/**
+ * A parser for {@link Player} arguments.
+ * Uses {@link Distributor#getPlayerLookup()} to find players.
+ *
+ * @param <C> the command sender type
+ */
 public final class PlayerParser<C> implements ArgumentParser<C, Player> {
 
     public static <C> ParserDescriptor<C, Player> playerParser() {
@@ -63,9 +70,9 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
         final var query = queryBuilder.setFields(fields).build();
         final var players = DistributorProvider.get().getPlayerLookup().findOnlinePlayers(query);
         if (players.isEmpty()) {
-            return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(query.getInput(), ctx));
+            return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(ctx, query.getInput()));
         } else if (players.size() > 1) {
-            return ArgumentParseResult.failure(new PlayerParseException.TooManyPlayers(query.getInput(), ctx));
+            return ArgumentParseResult.failure(new PlayerParseException.TooManyPlayers(ctx, query.getInput()));
         } else {
             return ArgumentParseResult.success(players.iterator().next());
         }
@@ -97,11 +104,11 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
         /**
          * Creates a new {@link PlayerParseException}.
          *
-         * @param input   the input string
          * @param ctx     the command context
+         * @param input   the input string
          * @param caption the error caption of this exception
          */
-        public PlayerParseException(final String input, final CommandContext<?> ctx, final Caption caption) {
+        public PlayerParseException(final CommandContext<?> ctx, final String input, final Caption caption) {
             super(PlayerParser.class, ctx, caption, CaptionVariable.of("input", input));
             this.input = input;
         }
@@ -121,11 +128,11 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
             /**
              * Creates a new {@link TooManyPlayers}.
              *
-             * @param input the input string
              * @param ctx   the command context
+             * @param input the input string
              */
-            public TooManyPlayers(final String input, final CommandContext<?> ctx) {
-                super(input, ctx, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
+            public TooManyPlayers(final CommandContext<?> ctx, final String input) {
+                super(ctx, input, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_TOO_MANY);
             }
         }
 
@@ -137,11 +144,11 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
             /**
              * Creates a new {@link PlayerNotFound}.
              *
-             * @param input the input string
              * @param ctx   the command context
+             * @param input the input string
              */
-            public PlayerNotFound(final String input, final CommandContext<?> ctx) {
-                super(input, ctx, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
+            public PlayerNotFound(final CommandContext<?> ctx, final String input) {
+                super(ctx, input, MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND);
             }
         }
     }

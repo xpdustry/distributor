@@ -39,7 +39,7 @@ final class PlayerLookupImpl implements PlayerLookup {
     }
 
     @Override
-    public Collection<Player> findOnlinePlayers(final Query query) {
+    public List<Player> findOnlinePlayers(final Query query) {
         final var players = this.provider.get();
         final List<Player> result = new ArrayList<>();
 

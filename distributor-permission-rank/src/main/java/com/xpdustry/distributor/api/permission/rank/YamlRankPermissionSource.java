@@ -100,7 +100,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
         if (permissions != null) {
             tree.setPermissions(permissions, true);
         }
-        final var immutable = PermissionTree.immutable(tree);
+        final var immutable = PermissionTree.from(tree);
         this.cache.put(node.getName(), immutable);
         return immutable;
     }
@@ -123,7 +123,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
                 tree.setPermission(
                         (String) permission.getKey(), permission.getValue().getBoolean());
             }
-            map.put(name, PermissionTree.immutable(tree));
+            map.put(name, PermissionTree.from(tree));
         }
         synchronized (this.lock) {
             this.permissions = map;

@@ -63,9 +63,6 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
         this.cloudDescription = description;
     }
 
-    /**
-     * Returns the real name of the command, without the prefix.
-     */
     @Override
     public String getRealName() {
         return this.realName;
@@ -81,9 +78,6 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
         return this.manager.descriptionMapper().map(this.cloudDescription);
     }
 
-    /**
-     * Returns whether this command is an alias.
-     */
     @Override
     public boolean isAlias() {
         return this.alias;

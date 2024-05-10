@@ -33,6 +33,9 @@ import mindustry.world.Block;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
 
+/**
+ * Immutable and safe representation of a {@link Schematic}.
+ */
 @DistributorDataClassWithBuilder
 @Value.Immutable
 public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
@@ -152,7 +155,7 @@ public sealed interface ImmutableSchematic permits ImmutableSchematicImpl {
 
         static Schematic.Stile toStile(final Tile tile) {
             return new Schematic.Stile(tile.getBlock(), tile.getX(), tile.getY(), tile.getConfig(), (byte)
-                    tile.getRotation().ordinal());
+                    tile.getRotation().asInt());
         }
 
         static Tile from(final Schematic.Stile stile) {
