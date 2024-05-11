@@ -16,72 +16,72 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.popup;
+package com.xpdustry.distributor.api.gui.popup;
 
 import arc.util.Align;
 import arc.util.Interval;
 import arc.util.Time;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventSubscription;
+import com.xpdustry.distributor.api.gui.DisplayUnit;
+import com.xpdustry.distributor.api.gui.Window;
+import com.xpdustry.distributor.api.gui.transform.AbstractTransformerWindowManager;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
-import com.xpdustry.distributor.api.window.DisplayUnit;
-import com.xpdustry.distributor.api.window.Window;
-import com.xpdustry.distributor.api.window.transform.AbstractTransformerWindowFactory;
 import java.time.Duration;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 
-final class PopupWindowFactoryImpl extends AbstractTransformerWindowFactory<PopupWindow> implements PopupWindowFactory {
+final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane> implements PopupManager {
 
     private final Interval interval = new Interval();
     private Duration updateInterval = Duration.ZERO;
     private float tickUpdateInterval = 0F;
     private final EventSubscription updater;
 
-    PopupWindowFactoryImpl(final MindustryPlugin plugin) {
+    PopupManagerImpl(final MindustryPlugin plugin) {
         super(plugin);
         interval.reset(0, Float.MAX_VALUE);
         setUpdateInterval(Duration.ofSeconds(1L));
         updater = DistributorProvider.get().getEventBus().subscribe(EventType.Trigger.update, plugin, () -> {
             if (interval.get(tickUpdateInterval)) {
-                getContexts().values().forEach(Window.Context::open);
+                getWindows().values().forEach(Window::open);
             }
         });
     }
 
     @Override
-    protected void onWindowOpen(final SimpleContext context) {
+    protected void onWindowOpen(final SimpleWindow window) {
         int align =
-                switch (context.getWindow().getAlignementX()) {
+                switch (window.getWindow().getAlignementX()) {
                     case LEFT -> Align.left;
                     case CENTER -> Align.center;
                     case RIGHT -> Align.right;
                 };
-        align |= switch (context.getWindow().getAlignementY()) {
+        align |= switch (window.getWindow().getAlignementY()) {
             case TOP -> Align.top;
             case CENTER -> Align.center;
             case BOTTOM -> Align.bottom;
         };
         Call.infoPopup(
-                context.getViewer().con(),
-                context.getWindow().getContent(),
+                window.getViewer().con(),
+                window.getWindow().getContent(),
                 (Time.delta / 60F) * tickUpdateInterval,
                 align,
-                context.getWindow().getShiftY().asPixels(context.getViewer(), DisplayUnit.Axis.Y),
-                context.getWindow().getShiftX().asPixels(context.getViewer(), DisplayUnit.Axis.X),
+                window.getWindow().getShiftY().asPixels(window.getViewer(), DisplayUnit.Axis.Y),
+                window.getWindow().getShiftX().asPixels(window.getViewer(), DisplayUnit.Axis.X),
                 0,
                 0);
     }
 
     @Override
-    protected PopupWindow createWindow() {
-        return new PopupWindowImpl();
+    protected PopupPane createPane() {
+        return PopupPane.create();
     }
 
     @Override
-    protected void onFactoryDispose() {
-        super.onFactoryDispose();
+    protected void onDispose() {
+        super.onDispose();
         updater.unsubscribe();
     }
 

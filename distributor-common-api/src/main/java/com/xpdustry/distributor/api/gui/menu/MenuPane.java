@@ -16,22 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.gui.menu;
 
-public interface BiAction<T> {
+import com.xpdustry.distributor.api.gui.Action;
+import com.xpdustry.distributor.api.gui.Pane;
 
-    static <T> BiAction<T> from(final Action action) {
-        return (context, value) -> action.act(context);
+public interface MenuPane extends Pane {
+
+    static MenuPane create() {
+        return new MenuPaneImpl();
     }
 
-    @SafeVarargs
-    static <T> BiAction<T> of(final BiAction<T>... actions) {
-        return (context, value) -> {
-            for (final var action : actions) {
-                action.act(context, value);
-            }
-        };
-    }
+    String getTitle();
 
-    void act(final Window.Context context, final T value);
+    void setTitle(final String title);
+
+    String getContent();
+
+    void setContent(final String content);
+
+    Action getExitAction();
+
+    void setExitAction(final Action action);
+
+    MenuGrid getGrid();
+
+    void setGrid(final MenuGrid grid);
 }

@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.menu;
+package com.xpdustry.distributor.api.gui.input;
 
+import com.xpdustry.distributor.api.gui.transform.TransformerWindowManager;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.transform.TransformerWindowFactory;
 
-public interface MenuWindowFactory extends TransformerWindowFactory<MenuWindow> {
+public interface TextInputManager extends TransformerWindowManager<TextInputPane> {
 
-    static MenuWindowFactory create(final MindustryPlugin plugin) {
-        return new MenuWindowFactoryImpl(plugin);
+    static TextInputManager create(final MindustryPlugin plugin) {
+        return new TextInputManagerImpl(plugin);
     }
 }

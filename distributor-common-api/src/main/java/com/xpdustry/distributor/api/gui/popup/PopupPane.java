@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.popup;
+package com.xpdustry.distributor.api.gui.popup;
 
-import com.xpdustry.distributor.api.window.DisplayUnit;
-import com.xpdustry.distributor.api.window.Window;
+import com.xpdustry.distributor.api.gui.DisplayUnit;
+import com.xpdustry.distributor.api.gui.Pane;
 
-public interface PopupWindow extends Window {
+public interface PopupPane extends Pane {
 
-    static PopupWindow create() {
-        return new PopupWindowImpl();
+    static PopupPane create() {
+        return new PopupPaneImpl();
     }
 
     String getContent();

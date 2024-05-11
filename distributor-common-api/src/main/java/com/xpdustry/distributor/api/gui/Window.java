@@ -16,14 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.input;
+package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.transform.TransformerWindowFactory;
+import java.util.Optional;
+import mindustry.gen.Player;
 
-public interface TextInputWindowFactory extends TransformerWindowFactory<TextInputWindow> {
+public interface Window {
 
-    static TextInputWindowFactory create(final MindustryPlugin plugin) {
-        return new TextInputWindowFactoryImpl(plugin);
-    }
+    Player getViewer();
+
+    State getState();
+
+    Optional<Window> getParent();
+
+    boolean isOpen();
+
+    void open();
+
+    void close();
 }

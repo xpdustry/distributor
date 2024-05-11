@@ -16,34 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.gui.menu;
 
-import java.util.Optional;
-import mindustry.gen.Player;
+import com.xpdustry.distributor.api.gui.Action;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import org.immutables.value.Value;
 
-public interface Window {
+@DistributorDataClass
+@Value.Immutable
+public interface MenuOption {
 
-    interface Factory {
-
-        Context create(final Player viewer);
-
-        Context create(final Context parent);
-
-        default void dispose() {}
+    static MenuOption of(final String content, final Action action) {
+        return MenuOptionImpl.of(content, action);
     }
 
-    interface Context {
+    String getContent();
 
-        Player getViewer();
-
-        State getState();
-
-        Optional<Context> getParent();
-
-        boolean isOpen();
-
-        void open();
-
-        void close();
-    }
+    Action getAction();
 }

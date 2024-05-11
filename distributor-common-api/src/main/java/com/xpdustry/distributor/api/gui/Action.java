@@ -16,28 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.gui;
 
 public interface Action {
 
     static Action of(final Action... actions) {
-        return (context) -> {
+        return (window) -> {
             for (final var action : actions) {
-                action.act(context);
+                action.act(window);
             }
         };
     }
 
     static Action none() {
-        return context -> {};
+        return window -> {};
     }
 
     static <T> Action with(final State.Key<T> key, final T value) {
-        return context -> context.getState().put(key, value);
+        return window -> window.getState().put(key, value);
     }
 
     static Action without(final State.Key<?> key) {
-        return context -> context.getState().remove(key);
+        return window -> window.getState().remove(key);
     }
 
     static Action back() {
@@ -45,8 +45,8 @@ public interface Action {
     }
 
     static Action back(final int depth) {
-        return context -> {
-            var current = context;
+        return window -> {
+            var current = window;
             var i = depth;
             while (current != null && i-- > 0) {
                 current.close();
@@ -59,8 +59,8 @@ public interface Action {
     }
 
     static Action closeAll() {
-        return context -> {
-            var current = context;
+        return window -> {
+            var current = window;
             while (current != null) {
                 current.close();
                 current = current.getParent().orElse(null);
@@ -68,5 +68,5 @@ public interface Action {
         };
     }
 
-    void act(final Window.Context context);
+    void act(final Window window);
 }

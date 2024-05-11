@@ -16,34 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.gui;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.immutables.value.Value;
 
-final class StateImpl implements State {
+public interface State {
 
-    private final Map<Key<?>, Object> data = new HashMap<>();
-
-    @Override
-    public <T> Optional<T> get(final Key<T> key) {
-        return Optional.ofNullable(key.getValueType().cast(data.get(key)));
+    static State create() {
+        return new StateImpl();
     }
 
-    @Override
-    public <T> @Nullable T put(final Key<T> key, final T value) {
-        return key.getValueType().cast(data.put(key, value));
-    }
+    <T> Optional<T> get(final Key<T> key);
 
-    @Override
-    public <T> T remove(final Key<T> key) {
-        return key.getValueType().cast(data.remove(key));
-    }
+    <T> @Nullable T put(final Key<T> key, final T value);
 
-    @Override
-    public boolean contains(final Key<?> key) {
-        return data.containsKey(key);
+    <T> @Nullable T remove(final Key<T> key);
+
+    boolean contains(final Key<?> key);
+
+    @DistributorDataClass
+    @Value.Immutable
+    interface Key<T> {
+
+        static <T> Key<T> of(final Class<T> valueType) {
+            return KeyImpl.of("distributor:generated_" + System.nanoTime(), valueType);
+        }
+
+        static <T> Key<T> of(final String name, final Class<T> valueType) {
+            return KeyImpl.of(name, valueType);
+        }
+
+        String getName();
+
+        Class<T> getValueType();
     }
 }

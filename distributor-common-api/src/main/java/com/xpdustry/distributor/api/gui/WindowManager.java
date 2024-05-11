@@ -16,36 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window;
+package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import java.util.Collection;
 import mindustry.gen.Player;
-import org.immutables.value.Value;
 
-public sealed interface DisplayUnit {
+public interface WindowManager {
 
-    int asPixels(final Player player, final Axis axis);
+    Window create(final Player viewer);
 
-    enum Axis {
-        X,
-        Y
-    }
+    Window create(final Window parent);
 
-    @DistributorDataClass
-    @Value.Immutable
-    sealed interface Pixel extends DisplayUnit permits PixelImpl {
+    Collection<Window> getActiveWindows();
 
-        Pixel ZERO = Pixel.of(0);
-
-        static Pixel of(final int value) {
-            return PixelImpl.of(value);
-        }
-
-        int getValue();
-
-        @Override
-        default int asPixels(final Player player, final Axis axis) {
-            return getValue();
-        }
-    }
+    default void dispose() {}
 }

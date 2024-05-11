@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.input;
+package com.xpdustry.distributor.api.gui.input;
 
+import com.xpdustry.distributor.api.gui.transform.AbstractTransformerWindowManager;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.transform.AbstractTransformerWindowFactory;
 import java.util.HashSet;
 import java.util.Set;
 import mindustry.gen.Call;
@@ -28,33 +28,32 @@ import mindustry.gen.Player;
 import mindustry.ui.Menus;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class TextInputWindowFactoryImpl extends AbstractTransformerWindowFactory<TextInputWindow>
-        implements TextInputWindowFactory {
+final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextInputPane> implements TextInputManager {
 
     private final int id = Menus.registerTextInput(this::handle);
     private final Set<MUUID> visible = new HashSet<>();
 
-    TextInputWindowFactoryImpl(final MindustryPlugin plugin) {
+    TextInputManagerImpl(final MindustryPlugin plugin) {
         super(plugin);
     }
 
     @Override
-    protected void onWindowOpen(final SimpleContext context) {
-        if (this.visible.add(MUUID.from(context.getViewer()))) {
+    protected void onWindowOpen(final SimpleWindow window) {
+        if (this.visible.add(MUUID.from(window.getViewer()))) {
             Call.textInput(
-                    context.getViewer().con(),
+                    window.getViewer().con(),
                     this.id,
-                    context.getWindow().getTitle(),
-                    context.getWindow().getDescription(),
-                    context.getWindow().getMaxLength(),
-                    context.getWindow().getPlaceholder(),
+                    window.getWindow().getTitle(),
+                    window.getWindow().getDescription(),
+                    window.getWindow().getMaxLength(),
+                    window.getWindow().getPlaceholder(),
                     false);
         }
     }
 
     @Override
-    protected TextInputWindow createWindow() {
-        return new TextInputWindowImpl();
+    protected TextInputPane createPane() {
+        return TextInputPane.create();
     }
 
     private void handle(final Player player, final @Nullable String input) {
@@ -67,12 +66,12 @@ final class TextInputWindowFactoryImpl extends AbstractTransformerWindowFactory<
                             player.uuid());
             return;
         }
-        final var context = getContexts().get(MUUID.from(player));
-        if (context == null) {
+        final var window = getWindows().get(MUUID.from(player));
+        if (window == null) {
             this.getPlugin()
                     .getLogger()
                     .debug(
-                            "Received text input from player {} (uuid: {}) but no context was found",
+                            "Received text input from player {} (uuid: {}) but no window was found",
                             player.plainName(),
                             player.uuid());
             return;
@@ -81,8 +80,8 @@ final class TextInputWindowFactoryImpl extends AbstractTransformerWindowFactory<
         // Simple trick to not reopen an interface when an action already does it.
         visible.remove(MUUID.from(player));
         if (input == null) {
-            context.getWindow().getExitAction().act(context);
-        } else if (input.length() > context.getWindow().getMaxLength()) {
+            window.getWindow().getExitAction().act(window);
+        } else if (input.length() > window.getWindow().getMaxLength()) {
             this.getPlugin()
                     .getLogger()
                     .warn(
@@ -90,15 +89,15 @@ final class TextInputWindowFactoryImpl extends AbstractTransformerWindowFactory<
                             player.plainName(),
                             player.uuid(),
                             input.length(),
-                            context.getWindow().getMaxLength());
-            context.close();
+                            window.getWindow().getMaxLength());
+            window.close();
         } else {
-            context.getWindow().getInputAction().act(context, input);
+            window.getWindow().getInputAction().act(window, input);
         }
         // The text input closes automatically when the player presses enter,
         // so reopen if it was not explicitly closed by the server.
-        if (context.isOpen() && !visible.contains(MUUID.from(player))) {
-            context.open();
+        if (window.isOpen() && !visible.contains(MUUID.from(player))) {
+            window.open();
         }
     }
 }

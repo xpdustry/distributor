@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.popup;
+package com.xpdustry.distributor.api.gui.popup;
 
-import com.xpdustry.distributor.api.window.DisplayUnit;
+import com.xpdustry.distributor.api.gui.DisplayUnit;
+import java.util.Objects;
+import java.util.StringJoiner;
 
-final class PopupWindowImpl implements PopupWindow {
+final class PopupPaneImpl implements PopupPane {
 
     private String content = "";
     private DisplayUnit shiftX = DisplayUnit.Pixel.ZERO;
@@ -76,5 +78,32 @@ final class PopupWindowImpl implements PopupWindow {
     @Override
     public void setAlignementY(final AlignementY alignementY) {
         this.alignementY = alignementY;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        return (this == o)
+                || (o instanceof PopupPaneImpl other
+                        && this.content.equals(other.content)
+                        && this.shiftX.equals(other.shiftX)
+                        && this.shiftY.equals(other.shiftY)
+                        && this.alignementX == other.alignementX
+                        && this.alignementY == other.alignementY);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.content, this.shiftX, this.shiftY, this.alignementX, this.alignementY);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PopupPaneImpl.class.getSimpleName() + "{", "}")
+                .add("content='" + content + "'")
+                .add("shiftX=" + shiftX)
+                .add("shiftY=" + shiftY)
+                .add("alignementX=" + alignementX)
+                .add("alignementY=" + alignementY)
+                .toString();
     }
 }

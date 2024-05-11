@@ -16,11 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.transform;
+package com.xpdustry.distributor.api.gui.menu;
 
-import com.xpdustry.distributor.api.window.Window;
+import com.xpdustry.distributor.api.gui.transform.TransformerWindowManager;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 
-public interface TransformerWindowFactory<E extends Window> extends Window.Factory {
+public interface MenuManager extends TransformerWindowManager<MenuPane> {
 
-    void addTransformer(final Transformer<E> transformer);
+    static MenuManager create(final MindustryPlugin plugin) {
+        return new MenuManagerImpl(plugin);
+    }
 }

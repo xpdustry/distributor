@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.input;
+package com.xpdustry.distributor.api.gui.input;
 
-import com.xpdustry.distributor.api.window.Action;
-import com.xpdustry.distributor.api.window.BiAction;
-import com.xpdustry.distributor.api.window.Window;
+import com.xpdustry.distributor.api.gui.Action;
+import com.xpdustry.distributor.api.gui.BiAction;
+import com.xpdustry.distributor.api.gui.Pane;
 
-public interface TextInputWindow extends Window {
+public interface TextInputPane extends Pane {
 
-    static TextInputWindow create() {
-        return new TextInputWindowImpl();
+    static TextInputPane create() {
+        return new TextInputPaneImpl();
     }
 
     String getTitle();

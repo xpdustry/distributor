@@ -16,44 +16,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.menu;
+package com.xpdustry.distributor.api.gui.menu;
 
+import com.xpdustry.distributor.api.gui.transform.AbstractTransformerWindowManager;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.transform.AbstractTransformerWindowFactory;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.ui.Menus;
 
-final class MenuWindowFactoryImpl extends AbstractTransformerWindowFactory<MenuWindow> implements MenuWindowFactory {
+final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> implements MenuManager {
 
     private final int id = Menus.registerMenu(this::handle);
 
-    MenuWindowFactoryImpl(final MindustryPlugin plugin) {
+    MenuManagerImpl(final MindustryPlugin plugin) {
         super(plugin);
     }
 
     @Override
-    protected void onWindowOpen(final SimpleContext context) {
+    protected void onWindowOpen(final SimpleWindow window) {
         Call.followUpMenu(
-                context.getViewer().con(),
+                window.getViewer().con(),
                 id,
-                context.getWindow().getTitle(),
-                context.getWindow().getContent(),
-                context.getWindow().getGrid().getOptions().stream()
-                        .map(row ->
-                                row.stream().map(MenuWindow.Option::getContent).toArray(String[]::new))
+                window.getWindow().getTitle(),
+                window.getWindow().getContent(),
+                window.getWindow().getGrid().getOptions().stream()
+                        .map(row -> row.stream().map(MenuOption::getContent).toArray(String[]::new))
                         .toArray(String[][]::new));
     }
 
     @Override
-    protected void onWindowClose(final SimpleContext context) {
-        Call.hideFollowUpMenu(context.getViewer().con(), id);
+    protected void onWindowClose(final SimpleWindow window) {
+        Call.hideFollowUpMenu(window.getViewer().con(), id);
     }
 
     @Override
-    protected MenuWindow createWindow() {
-        return new MenuWindowImpl();
+    protected MenuPane createPane() {
+        return MenuPane.create();
     }
 
     private void handle(final Player player, final int option) {
@@ -66,18 +65,18 @@ final class MenuWindowFactoryImpl extends AbstractTransformerWindowFactory<MenuW
                             player.uuid());
             return;
         }
-        final var context = getContexts().get(MUUID.from(player));
-        if (context == null) {
+        final var window = getWindows().get(MUUID.from(player));
+        if (window == null) {
             this.getPlugin()
                     .getLogger()
                     .debug(
-                            "Received menu response from player {} (uuid: {}) but no context was found",
+                            "Received menu response from player {} (uuid: {}) but no window was found",
                             player.plainName(),
                             player.uuid());
         } else if (option == -1) {
-            context.getWindow().getExitAction().act(context);
+            window.getWindow().getExitAction().act(window);
         } else {
-            final var choice = context.getWindow().getGrid().getOption(option);
+            final var choice = window.getWindow().getGrid().getOption(option);
             if (choice == null) {
                 getPlugin()
                         .getLogger()
@@ -87,7 +86,7 @@ final class MenuWindowFactoryImpl extends AbstractTransformerWindowFactory<MenuW
                                 player.name(),
                                 player.uuid());
             } else {
-                choice.getAction().act(context);
+                choice.getAction().act(window);
             }
         }
     }

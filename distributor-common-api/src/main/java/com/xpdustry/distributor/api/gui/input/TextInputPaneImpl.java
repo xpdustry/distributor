@@ -16,18 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.input;
+package com.xpdustry.distributor.api.gui.input;
 
-import com.xpdustry.distributor.api.window.Action;
-import com.xpdustry.distributor.api.window.BiAction;
+import com.xpdustry.distributor.api.gui.Action;
+import com.xpdustry.distributor.api.gui.BiAction;
+import java.util.Objects;
+import java.util.StringJoiner;
 
-final class TextInputWindowImpl implements TextInputWindow {
+final class TextInputPaneImpl implements TextInputPane {
 
     private String title = "";
     private String description = "";
     private String placeholder = "";
     private int maxLength = 0;
-    private BiAction<String> inputAction = BiAction.from(Action.none());
+    private BiAction<String> inputAction = BiAction.from(Action.back());
     private Action exitAction = Action.back();
 
     @Override
@@ -88,5 +90,34 @@ final class TextInputWindowImpl implements TextInputWindow {
     @Override
     public void setExitAction(final Action exitAction) {
         this.exitAction = exitAction;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        return (this == o)
+                || (o instanceof TextInputPaneImpl other
+                        && maxLength == other.maxLength
+                        && Objects.equals(title, other.title)
+                        && Objects.equals(description, other.description)
+                        && Objects.equals(placeholder, other.placeholder)
+                        && Objects.equals(inputAction, other.inputAction)
+                        && Objects.equals(exitAction, other.exitAction));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, placeholder, maxLength, inputAction, exitAction);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TextInputPaneImpl.class.getSimpleName() + "{", "}")
+                .add("title='" + title + "'")
+                .add("description='" + description + "'")
+                .add("placeholder='" + placeholder + "'")
+                .add("maxLength=" + maxLength)
+                .add("inputAction=" + inputAction)
+                .add("exitAction=" + exitAction)
+                .toString();
     }
 }

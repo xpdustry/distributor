@@ -16,19 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.popup;
+package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.window.transform.TransformerWindowFactory;
-import java.time.Duration;
-
-public interface PopupWindowFactory extends TransformerWindowFactory<PopupWindow> {
-
-    static PopupWindowFactory create(final MindustryPlugin plugin) {
-        return new PopupWindowFactoryImpl(plugin);
-    }
-
-    Duration getUpdateInterval();
-
-    void setUpdateInterval(final Duration updateInterval);
-}
+public interface Pane {}

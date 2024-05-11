@@ -16,12 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.transform;
+package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.api.window.Window;
+public interface BiAction<T> {
 
-@FunctionalInterface
-public interface Transformer<W extends Window> {
+    static <T> BiAction<T> from(final Action action) {
+        return (window, value) -> action.act(window);
+    }
 
-    void transform(final W window, final Window.Context context);
+    @SafeVarargs
+    static <T> BiAction<T> of(final BiAction<T>... actions) {
+        return (window, value) -> {
+            for (final var action : actions) {
+                action.act(window, value);
+            }
+        };
+    }
+
+    void act(final Window window, final T value);
 }

@@ -16,68 +16,76 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.window.transform;
+package com.xpdustry.distributor.api.gui.transform;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventSubscription;
+import com.xpdustry.distributor.api.gui.Pane;
+import com.xpdustry.distributor.api.gui.State;
+import com.xpdustry.distributor.api.gui.Window;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
-import com.xpdustry.distributor.api.window.State;
-import com.xpdustry.distributor.api.window.Window;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import mindustry.game.EventType;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public abstract class AbstractTransformerWindowFactory<W extends Window>
-        implements TransformerWindowFactory<W>, PluginAware {
+public abstract class AbstractTransformerWindowManager<P extends Pane>
+        implements TransformerWindowManager<P>, PluginAware {
 
     private final MindustryPlugin plugin;
     private final EventSubscription playerLeaveListener;
-    private final Map<MUUID, SimpleContext> contexts = new HashMap<>();
-    private final List<Transformer<W>> transformers = new ArrayList<>();
+    private final Map<MUUID, SimpleWindow> windows = new HashMap<>();
+    private final List<Transformer<P>> transformers = new ArrayList<>();
     private boolean disposed = false;
 
-    protected AbstractTransformerWindowFactory(final MindustryPlugin plugin) {
+    protected AbstractTransformerWindowManager(final MindustryPlugin plugin) {
         this.plugin = plugin;
         this.playerLeaveListener = DistributorProvider.get()
                 .getEventBus()
                 .subscribe(EventType.PlayerLeave.class, plugin, event -> {
-                    final var context = contexts.get(MUUID.from(event.player));
-                    if (context != null) context.close();
+                    final var window = windows.get(MUUID.from(event.player));
+                    if (window != null) window.close();
                 });
     }
 
-    protected abstract void onWindowOpen(final SimpleContext context);
+    protected abstract void onWindowOpen(final SimpleWindow window);
 
-    protected void onWindowClose(final SimpleContext context) {}
+    protected void onWindowClose(final SimpleWindow window) {}
 
-    protected void onFactoryDispose() {
+    protected void onDispose() {
         playerLeaveListener.unsubscribe();
     }
 
-    protected abstract W createWindow();
+    protected abstract P createPane();
 
     @Override
-    public final Window.Context create(final Window.Context parent) {
-        return new SimpleContext(parent.getViewer(), parent);
+    public final Window create(final Window parent) {
+        return new SimpleWindow(parent.getViewer(), parent);
     }
 
     @Override
-    public final Window.Context create(final Player viewer) {
-        return new SimpleContext(viewer, null);
+    public final Window create(final Player viewer) {
+        return new SimpleWindow(viewer, null);
     }
 
     @Override
-    public final void addTransformer(final Transformer<W> transformer) {
-        transformers.add(transformer);
+    public Collection<Window> getActiveWindows() {
+        return Collections.unmodifiableCollection(this.windows.values());
+    }
+
+    @Override
+    public final void addTransformer(final Transformer<P> transformer) {
+        transformers.add(Objects.requireNonNull(transformer));
     }
 
     @Override
@@ -89,28 +97,28 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
     public final void dispose() {
         if (!disposed) {
             disposed = true;
-            contexts.values().forEach(Window.Context::close);
-            onFactoryDispose();
+            getActiveWindows().forEach(Window::close);
+            onDispose();
         }
     }
 
-    protected Map<MUUID, SimpleContext> getContexts() {
-        return Collections.unmodifiableMap(contexts);
+    protected Map<MUUID, SimpleWindow> getWindows() {
+        return Collections.unmodifiableMap(windows);
     }
 
     protected boolean isDisposed() {
         return disposed;
     }
 
-    protected final class SimpleContext implements Window.Context {
+    protected final class SimpleWindow implements Window {
 
         private final Player viewer;
-        private final Window.@Nullable Context parent;
+        private final @Nullable Window parent;
         private final State state;
-        private @MonotonicNonNull W window = null;
+        private @MonotonicNonNull P window = null;
         private boolean transforming = false;
 
-        private SimpleContext(final Player viewer, final Window.@Nullable Context parent) {
+        private SimpleWindow(final Player viewer, final @Nullable Window parent) {
             this.viewer = viewer;
             this.parent = parent;
             this.state = parent != null ? parent.getState() : State.create();
@@ -118,19 +126,19 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
 
         @Override
         public void open() {
-            if (AbstractTransformerWindowFactory.this.disposed) {
+            if (AbstractTransformerWindowManager.this.disposed) {
                 return;
             }
 
             checkNotTransforming();
-            final var previous = AbstractTransformerWindowFactory.this.contexts.put(MUUID.from(viewer), this);
+            final var previous = AbstractTransformerWindowManager.this.windows.put(MUUID.from(viewer), this);
             if (previous != null && previous != this) {
                 previous.close();
             }
 
             try {
                 this.transforming = true;
-                this.window = AbstractTransformerWindowFactory.this.createWindow();
+                this.window = AbstractTransformerWindowManager.this.createPane();
                 for (final var transform : transformers) {
                     transform.transform(this.window, this);
                 }
@@ -138,20 +146,20 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
                 this.transforming = false;
             }
 
-            AbstractTransformerWindowFactory.this.onWindowOpen(this);
+            AbstractTransformerWindowManager.this.onWindowOpen(this);
         }
 
         @Override
         public void close() {
             checkNotTransforming();
-            if (AbstractTransformerWindowFactory.this.contexts.remove(MUUID.from(viewer), this)) {
-                AbstractTransformerWindowFactory.this.onWindowClose(this);
+            if (AbstractTransformerWindowManager.this.windows.remove(MUUID.from(viewer), this)) {
+                AbstractTransformerWindowManager.this.onWindowClose(this);
             }
         }
 
         @Override
         public boolean isOpen() {
-            return AbstractTransformerWindowFactory.this.contexts.containsKey(MUUID.from(viewer));
+            return AbstractTransformerWindowManager.this.windows.containsKey(MUUID.from(viewer));
         }
 
         @Override
@@ -165,11 +173,11 @@ public abstract class AbstractTransformerWindowFactory<W extends Window>
         }
 
         @Override
-        public Optional<Window.Context> getParent() {
+        public Optional<Window> getParent() {
             return Optional.ofNullable(parent);
         }
 
-        public W getWindow() {
+        public P getWindow() {
             return this.window;
         }
 
