@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import mindustry.game.EventType;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -54,7 +53,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
                 .getEventBus()
                 .subscribe(EventType.PlayerLeave.class, plugin, event -> {
                     final var window = windows.get(MUUID.from(event.player));
-                    if (window != null) window.close();
+                    if (window != null) window.hide();
                 });
     }
 
@@ -97,7 +96,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
     public final void dispose() {
         if (!disposed) {
             disposed = true;
-            getActiveWindows().forEach(Window::close);
+            getActiveWindows().forEach(Window::hide);
             onDispose();
         }
     }
@@ -115,7 +114,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         private final Player viewer;
         private final @Nullable Window parent;
         private final State state;
-        private @MonotonicNonNull P window = null;
+        private @MonotonicNonNull P pane = null;
         private boolean transforming = false;
 
         private SimpleWindow(final Player viewer, final @Nullable Window parent) {
@@ -125,7 +124,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         @Override
-        public void open() {
+        public void show() {
             if (AbstractTransformerWindowManager.this.disposed) {
                 return;
             }
@@ -133,14 +132,15 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
             checkNotTransforming();
             final var previous = AbstractTransformerWindowManager.this.windows.put(MUUID.from(viewer), this);
             if (previous != null && previous != this) {
-                previous.close();
+                previous.hide();
             }
 
             try {
                 this.transforming = true;
-                this.window = AbstractTransformerWindowManager.this.createPane();
+                this.pane = AbstractTransformerWindowManager.this.createPane();
+                final var context = Transformer.Context.of(this.pane, this.state, this.viewer);
                 for (final var transform : transformers) {
-                    transform.transform(this.window, this);
+                    transform.transform(context);
                 }
             } finally {
                 this.transforming = false;
@@ -150,7 +150,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         @Override
-        public void close() {
+        public void hide() {
             checkNotTransforming();
             if (AbstractTransformerWindowManager.this.windows.remove(MUUID.from(viewer), this)) {
                 AbstractTransformerWindowManager.this.onWindowClose(this);
@@ -158,7 +158,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         @Override
-        public boolean isOpen() {
+        public boolean isActive() {
             return AbstractTransformerWindowManager.this.windows.containsKey(MUUID.from(viewer));
         }
 
@@ -173,12 +173,12 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         @Override
-        public Optional<Window> getParent() {
-            return Optional.ofNullable(parent);
+        public @Nullable Window getParent() {
+            return parent;
         }
 
-        public P getWindow() {
-            return this.window;
+        public P getPane() {
+            return this.pane;
         }
 
         private void checkNotTransforming() {

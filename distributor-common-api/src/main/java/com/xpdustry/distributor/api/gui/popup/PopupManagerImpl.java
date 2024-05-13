@@ -45,7 +45,7 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
         setUpdateInterval(Duration.ofSeconds(1L));
         updater = DistributorProvider.get().getEventBus().subscribe(EventType.Trigger.update, plugin, () -> {
             if (interval.get(tickUpdateInterval)) {
-                getWindows().values().forEach(Window::open);
+                getWindows().values().forEach(Window::show);
             }
         });
     }
@@ -53,23 +53,23 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
     @Override
     protected void onWindowOpen(final SimpleWindow window) {
         int align =
-                switch (window.getWindow().getAlignementX()) {
+                switch (window.getPane().getAlignementX()) {
                     case LEFT -> Align.left;
                     case CENTER -> Align.center;
                     case RIGHT -> Align.right;
                 };
-        align |= switch (window.getWindow().getAlignementY()) {
+        align |= switch (window.getPane().getAlignementY()) {
             case TOP -> Align.top;
             case CENTER -> Align.center;
             case BOTTOM -> Align.bottom;
         };
         Call.infoPopup(
                 window.getViewer().con(),
-                window.getWindow().getContent(),
+                window.getPane().getContent(),
                 (Time.delta / 60F) * tickUpdateInterval,
                 align,
-                window.getWindow().getShiftY().asPixels(window.getViewer(), DisplayUnit.Axis.Y),
-                window.getWindow().getShiftX().asPixels(window.getViewer(), DisplayUnit.Axis.X),
+                window.getPane().getShiftY().asPixels(window.getViewer(), DisplayUnit.Axis.Y),
+                window.getPane().getShiftX().asPixels(window.getViewer(), DisplayUnit.Axis.X),
                 0,
                 0);
     }

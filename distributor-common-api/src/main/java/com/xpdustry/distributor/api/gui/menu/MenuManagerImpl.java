@@ -38,9 +38,9 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
         Call.followUpMenu(
                 window.getViewer().con(),
                 id,
-                window.getWindow().getTitle(),
-                window.getWindow().getContent(),
-                window.getWindow().getGrid().getOptions().stream()
+                window.getPane().getTitle(),
+                window.getPane().getContent(),
+                window.getPane().getGrid().getOptions().stream()
                         .map(row -> row.stream().map(MenuOption::getContent).toArray(String[]::new))
                         .toArray(String[][]::new));
     }
@@ -74,9 +74,9 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
                             player.plainName(),
                             player.uuid());
         } else if (option == -1) {
-            window.getWindow().getExitAction().act(window);
+            window.getPane().getExitAction().act(window);
         } else {
-            final var choice = window.getWindow().getGrid().getOption(option);
+            final var choice = window.getPane().getGrid().getOption(option);
             if (choice == null) {
                 getPlugin()
                         .getLogger()

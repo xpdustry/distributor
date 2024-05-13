@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+@FunctionalInterface
 public interface Action {
 
     static Action of(final Action... actions) {
@@ -49,21 +50,21 @@ public interface Action {
             var current = window;
             var i = depth;
             while (current != null && i-- > 0) {
-                current.close();
-                current = current.getParent().orElse(null);
+                current.hide();
+                current = current.getParent();
             }
             if (current != null) {
-                current.open();
+                current.show();
             }
         };
     }
 
-    static Action closeAll() {
+    static Action hideAll() {
         return window -> {
             var current = window;
             while (current != null) {
-                current.close();
-                current = current.getParent().orElse(null);
+                current.hide();
+                current = current.getParent();
             }
         };
     }

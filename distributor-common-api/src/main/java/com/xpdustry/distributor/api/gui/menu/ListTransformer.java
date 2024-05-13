@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import arc.math.Mathf;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
 import com.xpdustry.distributor.api.gui.State;
@@ -31,20 +32,20 @@ import mindustry.gen.Iconc;
 
 public final class ListTransformer<E> implements Transformer<MenuPane> {
 
-    private Function<Window, List<E>> provider = window -> List.of();
+    private Function<Context<MenuPane>, List<E>> provider = context -> List.of();
     private Function<E, String> renderer = Object::toString;
     private BiAction<E> choiceAction = BiAction.from(Action.none());
     private int height = 5;
     private int width = 1;
     private boolean fillEmptySpace = false;
     private boolean renderNavigation = true;
-    private State.Key<Integer> pageKey = State.Key.of(Integer.class);
+    private State.Key<Integer> pageKey = State.Key.generated("page", Integer.class);
 
-    public Function<Window, List<E>> getProvider() {
+    public Function<Context<MenuPane>, List<E>> getProvider() {
         return provider;
     }
 
-    public ListTransformer<E> setProvider(final Function<Window, List<E>> provider) {
+    public ListTransformer<E> setProvider(final Function<Context<MenuPane>, List<E>> provider) {
         this.provider = Objects.requireNonNull(provider);
         return this;
     }
@@ -119,10 +120,11 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
     }
 
     @Override
-    public void transform(final MenuPane pane, final Window window) {
-        final var elements = provider.apply(window);
-        final int page = Math.floorDiv(window.getState().getOptional(pageKey).orElse(0), getPageSize());
-        window.getState().set(pageKey, page);
+    public void transform(final Context<MenuPane> context) {
+        final var elements = provider.apply(context);
+        final int pages =
+                Math.floorDiv(elements.size(), getPageSize()) + (elements.size() % getPageSize() == 0 ? 0 : 1);
+        final int page = context.getState().getOptional(pageKey).orElse(0);
 
         int cursor = 0;
         for (int i = 0; i < height; i++) {
@@ -139,7 +141,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
                 }
             }
             if (!options.isEmpty()) {
-                pane.getGrid().addRow(options);
+                context.getPane().getGrid().addRow(options);
             }
             if (cursor >= elements.size() && !fillEmptySpace) {
                 break;
@@ -147,17 +149,19 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
         }
 
         if (renderNavigation) {
-            pane.getGrid()
+            context.getPane()
+                    .getGrid()
                     .addRow(
                             createConditionalOption(
                                     page > 0,
                                     String.valueOf(Iconc.left),
-                                    Action.of(Action.with(pageKey, page - 1), Window::open)),
+                                    Action.of(Action.with(pageKey, page - 1), Window::show)),
+                            MenuOption.of("page " + Mathf.clamp(page + 1, 0, pages) + " / " + pages, Action.none()),
                             MenuOption.of(String.valueOf(Iconc.cancel), Action.back()),
                             createConditionalOption(
                                     cursor + 1 < elements.size(),
                                     String.valueOf(Iconc.right),
-                                    Action.of(Action.with(pageKey, page + 1), Window::open)));
+                                    Action.of(Action.with(pageKey, page + 1), Window::show)));
         }
     }
 

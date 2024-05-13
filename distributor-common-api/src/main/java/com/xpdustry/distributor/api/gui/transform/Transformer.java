@@ -19,10 +19,28 @@
 package com.xpdustry.distributor.api.gui.transform;
 
 import com.xpdustry.distributor.api.gui.Pane;
-import com.xpdustry.distributor.api.gui.Window;
+import com.xpdustry.distributor.api.gui.State;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import mindustry.gen.Player;
+import org.immutables.value.Value;
 
 @FunctionalInterface
 public interface Transformer<P extends Pane> {
 
-    void transform(final P pane, final Window window);
+    void transform(final Context<P> context);
+
+    @DistributorDataClass
+    @Value.Immutable
+    interface Context<P extends Pane> {
+
+        static <P extends Pane> Context<P> of(final P pane, final State state, final Player viewer) {
+            return ContextImpl.of(pane, state, viewer);
+        }
+
+        P getPane();
+
+        State getState();
+
+        Player getViewer();
+    }
 }

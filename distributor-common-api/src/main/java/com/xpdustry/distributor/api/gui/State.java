@@ -20,6 +20,7 @@ package com.xpdustry.distributor.api.gui;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Optional;
+import java.util.Random;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
 
@@ -45,8 +46,8 @@ public interface State {
     @Value.Immutable
     interface Key<T> {
 
-        static <T> Key<T> of(final Class<T> valueType) {
-            return KeyImpl.of("distributor:generated_" + System.nanoTime(), valueType);
+        static <T> Key<T> generated(final String name, final Class<T> valueType) {
+            return KeyImpl.of(name + "_generated_" + new Random().nextInt(1000, 9999), valueType);
         }
 
         static <T> Key<T> of(final String name, final Class<T> valueType) {

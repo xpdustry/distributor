@@ -43,10 +43,10 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
             Call.textInput(
                     window.getViewer().con(),
                     this.id,
-                    window.getWindow().getTitle(),
-                    window.getWindow().getDescription(),
-                    window.getWindow().getMaxLength(),
-                    window.getWindow().getPlaceholder(),
+                    window.getPane().getTitle(),
+                    window.getPane().getDescription(),
+                    window.getPane().getMaxLength(),
+                    window.getPane().getPlaceholder(),
                     false);
         }
     }
@@ -80,8 +80,8 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
         // Simple trick to not reopen an interface when an action already does it.
         visible.remove(MUUID.from(player));
         if (input == null) {
-            window.getWindow().getExitAction().act(window);
-        } else if (input.length() > window.getWindow().getMaxLength()) {
+            window.getPane().getExitAction().act(window);
+        } else if (input.length() > window.getPane().getMaxLength()) {
             this.getPlugin()
                     .getLogger()
                     .warn(
@@ -89,15 +89,15 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
                             player.plainName(),
                             player.uuid(),
                             input.length(),
-                            window.getWindow().getMaxLength());
-            window.close();
+                            window.getPane().getMaxLength());
+            window.hide();
         } else {
-            window.getWindow().getInputAction().act(window, input);
+            window.getPane().getInputAction().act(window, input);
         }
         // The text input closes automatically when the player presses enter,
         // so reopen if it was not explicitly closed by the server.
-        if (window.isOpen() && !visible.contains(MUUID.from(player))) {
-            window.open();
+        if (window.isActive() && !visible.contains(MUUID.from(player))) {
+            window.show();
         }
     }
 }

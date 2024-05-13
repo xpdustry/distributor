@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+@FunctionalInterface
 public interface BiAction<T> {
 
     static <T> BiAction<T> from(final Action action) {

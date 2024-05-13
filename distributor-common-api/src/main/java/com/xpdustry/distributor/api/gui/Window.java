@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.api.gui;
 
-import java.util.Optional;
 import mindustry.gen.Player;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface Window {
 
@@ -27,11 +27,11 @@ public interface Window {
 
     State getState();
 
-    Optional<Window> getParent();
+    @Nullable Window getParent();
 
-    boolean isOpen();
+    boolean isActive();
 
-    void open();
+    void show();
 
-    void close();
+    void hide();
 }
