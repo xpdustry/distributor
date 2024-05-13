@@ -33,7 +33,7 @@ public interface Action {
     }
 
     static <T> Action with(final State.Key<T> key, final T value) {
-        return window -> window.getState().put(key, value);
+        return window -> window.getState().set(key, value);
     }
 
     static Action without(final State.Key<?> key) {

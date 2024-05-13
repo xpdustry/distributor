@@ -121,8 +121,8 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
     @Override
     public void transform(final MenuPane pane, final Window window) {
         final var elements = provider.apply(window);
-        final int page = Math.floorDiv(window.getState().get(pageKey).orElse(0), getPageSize());
-        window.getState().put(pageKey, page);
+        final int page = Math.floorDiv(window.getState().getOptional(pageKey).orElse(0), getPageSize());
+        window.getState().set(pageKey, page);
 
         int cursor = 0;
         for (int i = 0; i < height; i++) {

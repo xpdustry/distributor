@@ -29,9 +29,13 @@ public interface State {
         return new StateImpl();
     }
 
-    <T> Optional<T> get(final Key<T> key);
+    <T> Optional<T> getOptional(final Key<T> key);
 
-    <T> @Nullable T put(final Key<T> key, final T value);
+    default <T> @Nullable T get(final Key<T> key) {
+        return getOptional(key).orElse(null);
+    }
+
+    <T> @Nullable T set(final Key<T> key, final T value);
 
     <T> @Nullable T remove(final Key<T> key);
 

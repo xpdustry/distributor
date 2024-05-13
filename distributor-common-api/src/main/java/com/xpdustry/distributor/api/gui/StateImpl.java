@@ -28,12 +28,12 @@ final class StateImpl implements State {
     private final Map<Key<?>, Object> data = new HashMap<>();
 
     @Override
-    public <T> Optional<T> get(final Key<T> key) {
+    public <T> Optional<T> getOptional(final Key<T> key) {
         return Optional.ofNullable(key.getValueType().cast(data.get(key)));
     }
 
     @Override
-    public <T> @Nullable T put(final Key<T> key, final T value) {
+    public <T> @Nullable T set(final Key<T> key, final T value) {
         return key.getValueType().cast(data.put(key, value));
     }
 
