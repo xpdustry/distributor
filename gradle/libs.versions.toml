@@ -8,10 +8,10 @@ java = "17"
 mindustry = "v146"
 
 # logging
-slf4j = "2.0.12"
+slf4j = "2.0.13"
 
 # command
-cloud = "2.0.0-beta.4"
+cloud = "2.0.0-beta.5"
 
 # utilities
 immutables = "2.10.1"
@@ -19,25 +19,24 @@ configurate = "4.1.2"
 
 # testing
 junit = "5.10.2"
-assert4j = "3.25.3"
-guava-testlib = "33.1.0-jre"
-mockito = "5.11.0"
+assertj = "3.25.3"
+guava-testlib = "33.2.0-jre"
+mockito = "5.12.0"
 
 # static analysis
-jspecify = "0.3.0"
 errorprone-gradle = "3.1.0"
-errorprone-core = "2.26.1"
-nullaway = "0.10.24"
-checker-qual = "3.42.0"
+errorprone-core = "2.27.1"
+nullaway = "0.10.26"
+checker-qual = "3.43.0"
 
 # linting
-palantir = "2.42.0"
+palantir = "2.46.0"
 ktlint = "0.51.0-FINAL"
 
 # gradle
 toxopid = "3.2.0"
 indra = "3.1.3"
-spotless = "6.24.0"
+spotless = "6.25.0"
 shadow = "8.1.1"
 
 [libraries]
@@ -67,13 +66,12 @@ junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jun
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-engine-jupiter = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-engine-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
-assert4j-core = { module = "org.assertj:assertj-core", version.ref = "assert4j" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava-testlib" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 
 # static analysis
-jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorprone-gradle" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
@@ -91,4 +89,4 @@ indra = [ "indra-common", "indra-licenser-spotless" ]
 mindustry = [ "mindustry-core", "mindustry-server", "arc-core", "arc-backend-headless" ]
 tests = [
     "junit-api", "junit-params", "junit-engine-jupiter", "junit-engine-vintage",
-    "assert4j-core", "guava-testlib", "mockito-core", "mockito-junit-jupiter" ]
+    "assertj-core", "guava-testlib", "mockito-core", "mockito-junit-jupiter" ]
