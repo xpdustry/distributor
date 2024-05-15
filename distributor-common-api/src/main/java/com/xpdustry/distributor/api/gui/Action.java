@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+import com.xpdustry.distributor.api.key.TypedKey;
+
 @FunctionalInterface
 public interface Action {
 
@@ -33,11 +35,11 @@ public interface Action {
         return window -> {};
     }
 
-    static <T> Action with(final State.Key<T> key, final T value) {
+    static <T> Action with(final TypedKey<T> key, final T value) {
         return window -> window.getState().set(key, value);
     }
 
-    static Action without(final State.Key<?> key) {
+    static Action without(final TypedKey<?> key) {
         return window -> window.getState().remove(key);
     }
 

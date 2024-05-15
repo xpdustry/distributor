@@ -16,27 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.gui;
+package com.xpdustry.distributor.api.key;
 
-import com.xpdustry.distributor.api.key.TypedKey;
-import java.util.Optional;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import org.immutables.value.Value;
 
-public interface State {
+@DistributorDataClass
+@Value.Immutable
+public interface Key {
 
-    static State create() {
-        return new StateImpl();
+    String DEFAULT_NAMESPACE = "mindustry";
+
+    static Key of(final String name) {
+        return KeyImpl.of(name, DEFAULT_NAMESPACE);
     }
 
-    <T> Optional<T> getOptional(final TypedKey<T> key);
-
-    default <T> @Nullable T get(final TypedKey<T> key) {
-        return getOptional(key).orElse(null);
+    static Key of(final String name, final String namespace) {
+        return KeyImpl.of(name, namespace);
     }
 
-    <T> @Nullable T set(final TypedKey<T> key, final T value);
+    String getName();
 
-    <T> @Nullable T remove(final TypedKey<T> key);
-
-    boolean contains(final TypedKey<?> key);
+    String getNamespace();
 }

@@ -21,9 +21,9 @@ package com.xpdustry.distributor.api.gui.menu;
 import arc.math.Mathf;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
-import com.xpdustry.distributor.api.gui.State;
 import com.xpdustry.distributor.api.gui.Window;
 import com.xpdustry.distributor.api.gui.transform.Transformer;
+import com.xpdustry.distributor.api.key.TypedKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +39,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
     private int width = 1;
     private boolean fillEmptySpace = false;
     private boolean renderNavigation = true;
-    private State.Key<Integer> pageKey = State.Key.generated("page", Integer.class);
+    private TypedKey<Integer> pageKey = TypedKey.generated(Integer.class);
 
     public Function<Context<MenuPane>, List<E>> getProvider() {
         return provider;
@@ -110,11 +110,11 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
         return this;
     }
 
-    public State.Key<Integer> getPageKey() {
+    public TypedKey<Integer> getPageKey() {
         return pageKey;
     }
 
-    public ListTransformer<E> setPageKey(final State.Key<Integer> pageKey) {
+    public ListTransformer<E> setPageKey(final TypedKey<Integer> pageKey) {
         this.pageKey = Objects.requireNonNull(pageKey);
         return this;
     }

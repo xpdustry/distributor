@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+import com.xpdustry.distributor.api.key.TypedKey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,25 +26,25 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class StateImpl implements State {
 
-    private final Map<Key<?>, Object> data = new HashMap<>();
+    private final Map<TypedKey<?>, Object> data = new HashMap<>();
 
     @Override
-    public <T> Optional<T> getOptional(final Key<T> key) {
-        return Optional.ofNullable(key.getValueType().cast(data.get(key)));
+    public <T> Optional<T> getOptional(final TypedKey<T> key) {
+        return Optional.ofNullable(key.getType().cast(data.get(key)));
     }
 
     @Override
-    public <T> @Nullable T set(final Key<T> key, final T value) {
-        return key.getValueType().cast(data.put(key, value));
+    public <T> @Nullable T set(final TypedKey<T> key, final T value) {
+        return key.getType().cast(data.put(key, value));
     }
 
     @Override
-    public <T> T remove(final Key<T> key) {
-        return key.getValueType().cast(data.remove(key));
+    public <T> T remove(final TypedKey<T> key) {
+        return key.getType().cast(data.remove(key));
     }
 
     @Override
-    public boolean contains(final Key<?> key) {
+    public boolean contains(final TypedKey<?> key) {
         return data.containsKey(key);
     }
 }

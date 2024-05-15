@@ -16,27 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.gui;
+package com.xpdustry.distributor.api.key;
 
-import com.xpdustry.distributor.api.key.TypedKey;
-import java.util.Optional;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import java.util.UUID;
+import org.immutables.value.Value;
 
-public interface State {
+@SuppressWarnings("immutables:subtype")
+@DistributorDataClass
+@Value.Immutable
+public interface TypedKey<V> extends Key {
 
-    static State create() {
-        return new StateImpl();
+    static <T> TypedKey<T> of(final String name, final Class<T> type) {
+        return TypedKeyImpl.of(name, Key.DEFAULT_NAMESPACE, type);
     }
 
-    <T> Optional<T> getOptional(final TypedKey<T> key);
-
-    default <T> @Nullable T get(final TypedKey<T> key) {
-        return getOptional(key).orElse(null);
+    static <T> TypedKey<T> of(final String name, final String namespace, final Class<T> type) {
+        return TypedKeyImpl.of(namespace, name, type);
     }
 
-    <T> @Nullable T set(final TypedKey<T> key, final T value);
+    static <T> TypedKey<T> generated(final Class<T> type) {
+        return TypedKeyImpl.of(UUID.randomUUID().toString(), "generated", type);
+    }
 
-    <T> @Nullable T remove(final TypedKey<T> key);
-
-    boolean contains(final TypedKey<?> key);
+    Class<V> getType();
 }
