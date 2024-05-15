@@ -27,4 +27,17 @@ public interface Translation {
     String formatNamed(final Map<String, Object> args);
 
     String formatEmpty();
+
+    default String format(final TranslationParameters parameters) {
+        if (parameters instanceof TranslationParameters.Array array) {
+            return this.formatArray(array.getValues().toArray());
+        } else if (parameters instanceof TranslationParameters.Named named) {
+            return this.formatNamed(named.getValues());
+        } else if (parameters instanceof TranslationParameters.Empty) {
+            return this.formatEmpty();
+        } else {
+            throw new IllegalStateException(
+                    "Unknown parameters type: " + parameters.getClass().getName());
+        }
+    }
 }

@@ -111,7 +111,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
                     getArguments(command),
                     getFlags(command));
         } else {
-            return CommandHelp.Empty.INSTANCE;
+            return CommandHelp.Empty.of();
         }
     }
 

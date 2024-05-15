@@ -23,7 +23,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
 
 @DistributorDataClass
@@ -45,7 +44,7 @@ public sealed interface MessageFormatTranslation extends Translation permits Mes
 
     @Override
     default String formatNamed(final Map<String, Object> args) {
-        final List<@Nullable Object> entries = new ArrayList<>();
+        final List<Object> entries = new ArrayList<>();
         for (final var entry : args.entrySet()) {
             final int index;
             try {

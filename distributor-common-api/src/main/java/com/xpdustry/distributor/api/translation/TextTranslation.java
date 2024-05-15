@@ -46,4 +46,9 @@ public sealed interface TextTranslation extends Translation permits TextTranslat
     default String formatEmpty() {
         return this.getText();
     }
+
+    @Override
+    default String format(final TranslationParameters parameters) {
+        return this.getText();
+    }
 }

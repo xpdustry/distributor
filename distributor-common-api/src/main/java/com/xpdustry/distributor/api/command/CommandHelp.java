@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClassSingleton;
 import java.util.List;
 import org.immutables.value.Value;
 
@@ -32,7 +33,7 @@ public sealed interface CommandHelp {
      */
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Entry extends CommandHelp permits EntryImpl {
+    non-sealed interface Entry extends CommandHelp {
 
         /**
          * Creates a new command entry.
@@ -83,7 +84,7 @@ public sealed interface CommandHelp {
      */
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Suggestion extends CommandHelp permits SuggestionImpl {
+    non-sealed interface Suggestion extends CommandHelp {
 
         /**
          * Creates a new command suggestion.
@@ -107,9 +108,12 @@ public sealed interface CommandHelp {
         List<String> getChildSuggestions();
     }
 
-    final class Empty implements CommandHelp {
-        public static final Empty INSTANCE = new Empty();
+    @DistributorDataClassSingleton
+    @Value.Immutable
+    non-sealed interface Empty extends CommandHelp {
 
-        private Empty() {}
+        static Empty of() {
+            return EmptyImpl.of();
+        }
     }
 }
