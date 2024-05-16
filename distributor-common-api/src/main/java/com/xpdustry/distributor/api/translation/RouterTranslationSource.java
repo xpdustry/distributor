@@ -25,7 +25,7 @@ enum RouterTranslationSource implements TranslationSource {
     INSTANCE;
 
     static final Locale ROUTER_LOCALE = new Locale("router");
-    private static final Translation ROUTER_TRANSLATION = TextTranslation.of("router");
+    private static final Translation ROUTER_TRANSLATION = Translation.text("router");
 
     @Override
     public @Nullable Translation getTranslation(final String key, final Locale locale) {

@@ -28,8 +28,8 @@ public final class TranslationSourceRegistryImplTest {
     @Test
     void test_lookup_order() {
         final var registry = createSource();
-        final var source1 = new TranslationRegistryImpl(Locale.FRENCH);
-        source1.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour!"));
+        final var source1 = new ResourceTranslationSourceImpl(Locale.FRENCH);
+        source1.register("greeting", Locale.FRENCH, Translation.text("Bonjour!"));
         final var source2 = RouterTranslationSource.INSTANCE;
 
         assertThat(registry.getTranslation("greeting", RouterTranslationSource.ROUTER_LOCALE))

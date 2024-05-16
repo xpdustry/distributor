@@ -24,13 +24,13 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public final class TranslationRegistryImplTest {
+public final class ResourceTranslationSourceImplTest {
 
     @Test
     void test_simple_localize() {
         final var registry = createSource(Locale.ENGLISH);
-        registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
-        registry.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
+        registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
+        registry.register("greeting", Locale.ENGLISH, Translation.text("Hello"));
 
         assertThat(registry.getTranslation("greeting", Locale.FRENCH))
                 .isNotNull()
@@ -52,8 +52,8 @@ public final class TranslationRegistryImplTest {
     void test_unregister() {
         final var registry = createSource(Locale.ENGLISH);
 
-        registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
-        registry.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
+        registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
+        registry.register("greeting", Locale.ENGLISH, Translation.text("Hello"));
 
         assertThat(registry.getTranslation("greeting", Locale.ENGLISH)).isNotNull();
         assertThat(registry.getTranslation("greeting", Locale.FRENCH)).isNotNull();
@@ -77,12 +77,12 @@ public final class TranslationRegistryImplTest {
     @Test
     void test_illegal_register() {
         final var registry = createSource(Locale.ENGLISH);
-        registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
-        assertThatThrownBy(() -> registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour")))
+        registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
+        assertThatThrownBy(() -> registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    private TranslationRegistryImpl createSource(final Locale locale) {
-        return new TranslationRegistryImpl(locale);
+    private ResourceTranslationSourceImpl createSource(final Locale locale) {
+        return new ResourceTranslationSourceImpl(locale);
     }
 }

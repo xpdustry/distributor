@@ -18,9 +18,21 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 public interface Translation {
+
+    static Translation text(final String text) {
+        return new TextTranslation(text);
+    }
+
+    static Translation format(final MessageFormat format) {
+        return new MessageFormatTranslation(format);
+    }
+
+    String formatArray(final List<Object> args);
 
     String formatArray(final Object... args);
 
@@ -30,7 +42,7 @@ public interface Translation {
 
     default String format(final TranslationParameters parameters) {
         if (parameters instanceof TranslationParameters.Array array) {
-            return this.formatArray(array.getValues().toArray());
+            return this.formatArray(array.getValues());
         } else if (parameters instanceof TranslationParameters.Named named) {
             return this.formatNamed(named.getValues());
         } else if (parameters instanceof TranslationParameters.Empty) {

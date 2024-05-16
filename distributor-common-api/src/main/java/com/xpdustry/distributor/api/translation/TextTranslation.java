@@ -18,37 +18,33 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import java.util.List;
 import java.util.Map;
-import org.immutables.value.Value;
 
-@DistributorDataClass
-@Value.Immutable
-public sealed interface TextTranslation extends Translation permits TextTranslationImpl {
-
-    static TextTranslation of(final String text) {
-        return TextTranslationImpl.of(text);
-    }
-
-    String getText();
+record TextTranslation(String text) implements Translation {
 
     @Override
-    default String formatArray(final Object... args) {
-        return this.getText();
+    public String formatArray(final List<Object> args) {
+        return text;
     }
 
     @Override
-    default String formatNamed(final Map<String, Object> args) {
-        return this.getText();
+    public String formatArray(final Object... args) {
+        return text;
     }
 
     @Override
-    default String formatEmpty() {
-        return this.getText();
+    public String formatNamed(final Map<String, Object> args) {
+        return text;
     }
 
     @Override
-    default String format(final TranslationParameters parameters) {
-        return this.getText();
+    public String formatEmpty() {
+        return text;
+    }
+
+    @Override
+    public String format(final TranslationParameters parameters) {
+        return text;
     }
 }

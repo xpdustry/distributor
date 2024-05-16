@@ -18,32 +18,27 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.immutables.value.Value;
 
-@DistributorDataClass
-@Value.Immutable
-public sealed interface MessageFormatTranslation extends Translation permits MessageFormatTranslationImpl {
+record MessageFormatTranslation(MessageFormat format) implements Translation {
 
-    int MAX_NAMED_INDEX = 63;
-
-    static MessageFormatTranslation of(final MessageFormat format) {
-        return MessageFormatTranslationImpl.of(format);
-    }
-
-    MessageFormat getMessageFormat();
+    private static final int MAX_NAMED_INDEX = 63;
 
     @Override
-    default String formatArray(final Object... args) {
-        return this.getMessageFormat().format(args);
+    public String formatArray(final List<Object> args) {
+        return format.format(args.toArray());
     }
 
     @Override
-    default String formatNamed(final Map<String, Object> args) {
+    public String formatArray(Object... args) {
+        return format.format(args);
+    }
+
+    @Override
+    public String formatNamed(final Map<String, Object> args) {
         final List<Object> entries = new ArrayList<>();
         for (final var entry : args.entrySet()) {
             final int index;
@@ -61,11 +56,11 @@ public sealed interface MessageFormatTranslation extends Translation permits Mes
             }
             entries.set(index, entry.getValue());
         }
-        return this.getMessageFormat().format(entries.toArray());
+        return format.format(entries.toArray());
     }
 
     @Override
-    default String formatEmpty() {
-        return this.getMessageFormat().toPattern();
+    public String formatEmpty() {
+        return format.toPattern();
     }
 }

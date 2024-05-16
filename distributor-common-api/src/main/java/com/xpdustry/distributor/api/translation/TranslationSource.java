@@ -60,6 +60,6 @@ public interface TranslationSource {
     }
 
     default Translation getTranslationOrMissing(final String key, final Locale locale) {
-        return getTranslationOrDefault(key, locale, k -> TextTranslation.of("???" + k + "???"));
+        return getTranslationOrDefault(key, locale, k -> Translation.text("???" + k + "???"));
     }
 }

@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class TranslationRegistryImpl implements TranslationRegistry {
+final class ResourceTranslationSourceImpl implements ResourceTranslationSource {
 
     private final Map<String, Entry> entries = new ConcurrentHashMap<>();
     private final Locale defaultLocale;
 
-    TranslationRegistryImpl(final Locale defaultLocale) {
+    ResourceTranslationSourceImpl(final Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
 
@@ -82,7 +82,7 @@ final class TranslationRegistryImpl implements TranslationRegistry {
             }
             if (format == null) {
                 // try with default locale of this registry
-                format = this.translations.get(TranslationRegistryImpl.this.defaultLocale);
+                format = this.translations.get(ResourceTranslationSourceImpl.this.defaultLocale);
             }
             if (format == null) {
                 // try local default locale of this JVM

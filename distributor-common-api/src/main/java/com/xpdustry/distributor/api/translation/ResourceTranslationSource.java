@@ -33,9 +33,9 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * A mutable localization source that can register localized strings.
+ * A translation source that can register strings from resource bundles, files and others.
  */
-public interface TranslationRegistry extends TranslationSource {
+public interface ResourceTranslationSource extends TranslationSource {
 
     /**
      * Creates a new {@code LocalizationSourceRegistry} instance.
@@ -43,8 +43,8 @@ public interface TranslationRegistry extends TranslationSource {
      * @param defaultLocale the default locale of the localization source
      * @return a new {@code LocalizationSourceRegistry} instance
      */
-    static TranslationRegistry create(final Locale defaultLocale) {
-        return new TranslationRegistryImpl(defaultLocale);
+    static ResourceTranslationSource create(final Locale defaultLocale) {
+        return new ResourceTranslationSourceImpl(defaultLocale);
     }
 
     /**
@@ -74,9 +74,7 @@ public interface TranslationRegistry extends TranslationSource {
      */
     default void registerAll(final Locale locale, final ResourceBundle bundle) {
         this.registerAll(
-                locale,
-                bundle.keySet(),
-                key -> MessageFormatTranslation.of(new MessageFormat(bundle.getString(key), locale)));
+                locale, bundle.keySet(), key -> Translation.format(new MessageFormat(bundle.getString(key), locale)));
     }
 
     /**
