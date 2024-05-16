@@ -129,6 +129,7 @@ public final class PlayerLookupImplTest {
         Mockito.when(player.name()).thenReturn(name);
         Mockito.when(player.uuid()).thenReturn(Base64.getEncoder().encodeToString(uuid));
         Mockito.when(player.id()).thenReturn(counter++);
+        Mockito.when(player.toString()).thenReturn(name);
         PLAYERS.add(player);
         return player;
     }
