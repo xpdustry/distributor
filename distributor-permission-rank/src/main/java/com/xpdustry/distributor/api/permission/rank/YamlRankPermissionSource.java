@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -81,10 +82,11 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     }
 
     private PermissionTree getRankPermissions0(final RankNode node, final Set<RankNode> visited) {
-        if (!RankNode.NAME_PATTERN.matcher(node.getName()).matches()) {
+        final var name = node.getName().toLowerCase(Locale.ROOT);
+        if (!RankNode.NAME_PATTERN.matcher(name).matches()) {
             return PermissionTree.empty();
         }
-        final var cached = this.cache.get(node.getName());
+        final var cached = this.cache.get(name);
         if (cached != null) {
             return cached;
         }
@@ -92,16 +94,16 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
         final var previous = node.getPrevious();
         if (previous != null) {
             if (!visited.add(node)) {
-                throw new IllegalStateException("Circular rank node: " + node.getName());
+                throw new IllegalStateException("Circular rank node: " + name);
             }
             tree.setPermissions(getRankPermissions0(previous, visited));
         }
-        final var permissions = this.permissions.get(node.getName());
+        final var permissions = this.permissions.get(name);
         if (permissions != null) {
             tree.setPermissions(permissions, true);
         }
         final var immutable = PermissionTree.from(tree);
-        this.cache.put(node.getName(), immutable);
+        this.cache.put(name, immutable);
         return immutable;
     }
 

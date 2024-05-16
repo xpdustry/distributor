@@ -33,12 +33,12 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
     public void onInit() {
         final var services = DistributorProvider.get().getServiceManager();
 
-        services.register(this, PermissionReader.class, Priority.HIGH, new RankPermissionReader());
-        services.register(this, RankSource.class, Priority.LOW, new MindustryRankSource());
+        services.register(this, PermissionReader.class, new RankPermissionReader(), Priority.HIGH);
+        services.register(this, RankSource.class, new MindustryRankSource(), Priority.LOW);
         final var source = new YamlRankPermissionSource(() -> Files.newBufferedReader(this.getConfigFile()));
         this.addListener(source);
-        services.register(this, RankPermissionSource.class, Priority.NORMAL, source);
-        services.register(this, RankPermissionSource.class, Priority.LOW, new MindustryRankPermissionSource());
+        services.register(this, RankPermissionSource.class, source);
+        services.register(this, RankPermissionSource.class, new MindustryRankPermissionSource(), Priority.LOW);
 
         this.getLogger().info("Initialized distributor permission rank plugin");
     }
@@ -51,7 +51,7 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
                     .getResourceAsStream("com/xpdustry/distributor/api/permission/rank/default.yaml"))) {
                 Files.copy(stream, path);
             } catch (final IOException error) {
-                throw new IOException("Failed to create the default permission file.", error);
+                throw new IOException("Failed to create the default permission file", error);
             }
         }
         return path;

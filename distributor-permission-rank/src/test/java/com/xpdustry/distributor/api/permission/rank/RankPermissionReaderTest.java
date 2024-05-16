@@ -53,7 +53,7 @@ public final class RankPermissionReaderTest {
     void setup() {
         this.reader = new RankPermissionReader();
         this.services = new ServiceManagerImpl();
-        this.services.register(plugin, RankSource.class, Priority.NORMAL, rankSource);
+        this.services.register(plugin, RankSource.class, rankSource, Priority.NORMAL);
         final var distributor = Mockito.mock(Distributor.class);
         Mockito.when(distributor.getServiceManager()).thenReturn(this.services);
         DistributorProvider.set(distributor);
@@ -79,7 +79,7 @@ public final class RankPermissionReaderTest {
         final var permissionSource = Mockito.mock(RankPermissionSource.class);
         Mockito.when(permissionSource.getRankPermissions(rank1)).thenReturn(permissions1);
         Mockito.when(permissionSource.getRankPermissions(rank2)).thenReturn(permissions2);
-        this.services.register(this.plugin, RankPermissionSource.class, Priority.NORMAL, permissionSource);
+        this.services.register(this.plugin, RankPermissionSource.class, permissionSource, Priority.NORMAL);
 
         assertThat(this.reader.getPermission(this.player1, "test")).isEqualTo(TriState.FALSE);
         assertThat(this.reader.getPermission(this.player1, "unknown")).isEqualTo(TriState.UNDEFINED);

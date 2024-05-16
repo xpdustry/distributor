@@ -27,36 +27,40 @@ import org.immutables.value.Value;
 
 public interface ServiceManager {
 
-    <T> void register(final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance);
+    <T> void register(final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority);
 
-    default <T> T provide(final Class<T> clazz) {
-        return provideOrDefault(clazz, () -> {
-            throw new IllegalStateException("Expected provider for " + clazz.getCanonicalName() + ", got nothing.");
+    default <T> void register(final MindustryPlugin plugin, final Class<T> service, final T instance) {
+        this.register(plugin, service, instance, Priority.NORMAL);
+    }
+
+    default <T> T provide(final Class<T> service) {
+        return provideOrDefault(service, () -> {
+            throw new IllegalStateException("Expected provider for " + service.getCanonicalName() + ", got nothing.");
         });
     }
 
-    default <T> T provideOrDefault(final Class<T> clazz, final Supplier<T> factory) {
-        final var providers = this.getProviders(clazz);
+    default <T> T provideOrDefault(final Class<T> service, final Supplier<T> factory) {
+        final var providers = this.getProviders(service);
         return providers.isEmpty() ? factory.get() : providers.get(0).getInstance();
     }
 
-    <T> List<Provider<T>> getProviders(final Class<T> clazz);
+    <T> List<Provider<T>> getProviders(final Class<T> service);
 
     @DistributorDataClass
     @Value.Immutable
     sealed interface Provider<T> permits ProviderImpl {
 
         static <T> Provider<T> of(
-                final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance) {
-            return ProviderImpl.of(plugin, clazz, priority, instance);
+                final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
+            return ProviderImpl.of(plugin, service, instance, priority);
         }
 
         MindustryPlugin getPlugin();
 
-        Class<T> getClazz();
-
-        Priority getPriority();
+        Class<T> getService();
 
         T getInstance();
+
+        Priority getPriority();
     }
 }

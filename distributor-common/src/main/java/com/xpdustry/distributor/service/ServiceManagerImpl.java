@@ -37,20 +37,20 @@ public final class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public <T> void register(
-            final MindustryPlugin plugin, final Class<T> clazz, final Priority priority, final T instance) {
+            final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
         synchronized (this.lock) {
             this.services
                     .computeIfAbsent(
-                            clazz, k -> new PriorityQueue<Provider<?>>(Comparator.comparing(Provider::getPriority)))
-                    .add(Provider.of(plugin, clazz, priority, instance));
+                            service, k -> new PriorityQueue<Provider<?>>(Comparator.comparing(Provider::getPriority)))
+                    .add(Provider.of(plugin, service, instance, priority));
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<Provider<T>> getProviders(final Class<T> clazz) {
+    public <T> List<Provider<T>> getProviders(final Class<T> service) {
         synchronized (this.lock) {
-            final Object implementation = this.services.get(clazz);
+            final Object implementation = this.services.get(service);
             return implementation != null
                     ? List.copyOf((Collection<? extends Provider<T>>) implementation)
                     : Collections.emptyList();
