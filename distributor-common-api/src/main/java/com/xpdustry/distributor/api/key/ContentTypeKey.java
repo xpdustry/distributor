@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.content;
+package com.xpdustry.distributor.api.key;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.List;
@@ -36,20 +36,31 @@ import org.immutables.value.Value;
  *
  * @param <T> the content type
  */
+@SuppressWarnings("immutables:subtype")
 @DistributorDataClass
 @Value.Immutable
-public sealed interface ContentTypeKey<T extends MappableContent> permits ContentTypeKeyImpl {
+public interface ContentTypeKey<T extends MappableContent> extends TypedKey<T> {
 
-    ContentTypeKey<Block> BLOCK = ContentTypeKeyImpl.of(ContentType.block, Block.class);
-    ContentTypeKey<UnitType> UNIT = ContentTypeKeyImpl.of(ContentType.unit, UnitType.class);
-    ContentTypeKey<Item> ITEM = ContentTypeKeyImpl.of(ContentType.item, Item.class);
-    ContentTypeKey<Liquid> LIQUID = ContentTypeKeyImpl.of(ContentType.liquid, Liquid.class);
-    ContentTypeKey<Weather> WEATHER = ContentTypeKeyImpl.of(ContentType.weather, Weather.class);
-    ContentTypeKey<StatusEffect> STATUS = ContentTypeKeyImpl.of(ContentType.status, StatusEffect.class);
-    ContentTypeKey<Planet> PLANET = ContentTypeKeyImpl.of(ContentType.planet, Planet.class);
+    ContentTypeKey<Block> BLOCK = ContentTypeKeyImpl.of("block", MINDUSTRY_NAMESPACE, Block.class, ContentType.block);
+
+    ContentTypeKey<UnitType> UNIT =
+            ContentTypeKeyImpl.of("unit", MINDUSTRY_NAMESPACE, UnitType.class, ContentType.unit);
+
+    ContentTypeKey<Item> ITEM = ContentTypeKeyImpl.of("item", MINDUSTRY_NAMESPACE, Item.class, ContentType.item);
+
+    ContentTypeKey<Liquid> LIQUID =
+            ContentTypeKeyImpl.of("liquid", MINDUSTRY_NAMESPACE, Liquid.class, ContentType.liquid);
+
+    ContentTypeKey<Weather> WEATHER =
+            ContentTypeKeyImpl.of("weather", MINDUSTRY_NAMESPACE, Weather.class, ContentType.weather);
+
+    ContentTypeKey<StatusEffect> STATUS =
+            ContentTypeKeyImpl.of("status", MINDUSTRY_NAMESPACE, StatusEffect.class, ContentType.status);
+
+    ContentTypeKey<Planet> PLANET =
+            ContentTypeKeyImpl.of("planet", MINDUSTRY_NAMESPACE, Planet.class, ContentType.planet);
+
     List<ContentTypeKey<?>> ALL = List.of(BLOCK, UNIT, ITEM, LIQUID, WEATHER, STATUS, PLANET);
 
     ContentType getContentType();
-
-    Class<T> getContentTypeClass();
 }

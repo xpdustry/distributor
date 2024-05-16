@@ -26,7 +26,7 @@ import com.xpdustry.distributor.api.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.api.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.api.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.api.command.cloud.specifier.AllTeams;
-import com.xpdustry.distributor.api.content.ContentTypeKey;
+import com.xpdustry.distributor.api.key.ContentTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
 import io.leangen.geantyref.TypeToken;

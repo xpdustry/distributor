@@ -28,7 +28,7 @@ import org.immutables.value.Value;
 public interface TypedKey<V> extends Key {
 
     static <T> TypedKey<T> of(final String name, final Class<T> type) {
-        return TypedKeyImpl.of(name, Key.DEFAULT_NAMESPACE, type);
+        return TypedKeyImpl.of(name, Key.MINDUSTRY_NAMESPACE, type);
     }
 
     static <T> TypedKey<T> of(final String name, final String namespace, final Class<T> type) {

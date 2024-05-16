@@ -25,10 +25,10 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface Key {
 
-    String DEFAULT_NAMESPACE = "mindustry";
+    String MINDUSTRY_NAMESPACE = "mindustry";
 
     static Key of(final String name) {
-        return KeyImpl.of(name, DEFAULT_NAMESPACE);
+        return KeyImpl.of(name, MINDUSTRY_NAMESPACE);
     }
 
     static Key of(final String name, final String namespace) {

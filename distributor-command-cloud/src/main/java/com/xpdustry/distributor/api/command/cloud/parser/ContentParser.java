@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.command.cloud.parser;
 
 import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
-import com.xpdustry.distributor.api.content.ContentTypeKey;
+import com.xpdustry.distributor.api.key.ContentTypeKey;
 import java.util.Locale;
 import mindustry.Vars;
 import mindustry.ctype.MappableContent;
@@ -43,7 +43,7 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
 
     public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(
             final ContentTypeKey<T> contentType) {
-        return ParserDescriptor.of(new ContentParser<>(contentType), contentType.getContentTypeClass());
+        return ParserDescriptor.of(new ContentParser<>(contentType), contentType.getType());
     }
 
     public static <C, T extends MappableContent> CommandComponent.Builder<C, T> contentComponent(
