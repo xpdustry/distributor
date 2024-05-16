@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -73,8 +72,7 @@ public interface ResourceTranslationSource extends TranslationSource {
      * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final ResourceBundle bundle) {
-        this.registerAll(
-                locale, bundle.keySet(), key -> Translation.format(new MessageFormat(bundle.getString(key), locale)));
+        this.registerAll(locale, bundle.keySet(), key -> Translation.format(bundle.getString(key), locale));
     }
 
     /**

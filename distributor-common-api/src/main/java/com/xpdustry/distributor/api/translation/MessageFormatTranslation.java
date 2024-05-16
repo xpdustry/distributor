@@ -21,20 +21,21 @@ package com.xpdustry.distributor.api.translation;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-record MessageFormatTranslation(MessageFormat format) implements Translation {
+record MessageFormatTranslation(String pattern, Locale locale) implements Translation {
 
     private static final int MAX_NAMED_INDEX = 63;
 
     @Override
     public String formatArray(final List<Object> args) {
-        return format.format(args.toArray());
+        return createFormat().format(args.toArray());
     }
 
     @Override
     public String formatArray(Object... args) {
-        return format.format(args);
+        return createFormat().format(args);
     }
 
     @Override
@@ -56,11 +57,15 @@ record MessageFormatTranslation(MessageFormat format) implements Translation {
             }
             entries.set(index, entry.getValue());
         }
-        return format.format(entries.toArray());
+        return createFormat().format(entries.toArray());
     }
 
     @Override
     public String formatEmpty() {
-        return format.toPattern();
+        return createFormat().toPattern();
+    }
+
+    private MessageFormat createFormat() {
+        return new MessageFormat(pattern, locale);
     }
 }

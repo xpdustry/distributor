@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.text.MessageFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public interface Translation {
@@ -28,8 +28,8 @@ public interface Translation {
         return new TextTranslation(text);
     }
 
-    static Translation format(final MessageFormat format) {
-        return new MessageFormatTranslation(format);
+    static Translation format(final String pattern, final Locale locale) {
+        return new MessageFormatTranslation(pattern, locale);
     }
 
     String formatArray(final List<Object> args);
