@@ -34,17 +34,17 @@ public final class ResourceTranslationSourceImplTest {
 
         assertThat(registry.getTranslation("greeting", Locale.FRENCH))
                 .isNotNull()
-                .extracting(Translation::formatEmpty)
+                .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("Bonjour");
 
         assertThat(registry.getTranslation("greeting", Locale.ENGLISH))
                 .isNotNull()
-                .extracting(Translation::formatEmpty)
+                .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("Hello");
 
         assertThat(registry.getTranslation("greeting", Locale.CHINESE))
                 .isNotNull()
-                .extracting(Translation::formatEmpty)
+                .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("Hello");
     }
 

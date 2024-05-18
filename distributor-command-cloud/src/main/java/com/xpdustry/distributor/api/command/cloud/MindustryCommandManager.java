@@ -29,6 +29,7 @@ import com.xpdustry.distributor.api.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.api.key.ContentTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
+import com.xpdustry.distributor.api.translation.TranslationArguments;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import mindustry.game.Team;
@@ -87,7 +88,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
                     final var source = DistributorProvider.get().getGlobalTranslationSource();
                     final var locale = this.senderMapper().reverse(sender).getLocale();
                     final var translation = source.getTranslation(caption.key(), locale);
-                    return translation == null ? null : translation.formatEmpty();
+                    return translation == null ? null : translation.format(TranslationArguments.empty());
                 });
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());
@@ -140,7 +141,11 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     @Override
     public boolean hasPermission(final @NonNull C sender, final String permission) {
         return permission.isEmpty()
-                || senderMapper().reverse(sender).getPermission(permission).asBoolean();
+                || senderMapper()
+                        .reverse(sender)
+                        .getPermissions()
+                        .getPermission(permission)
+                        .asBoolean();
     }
 
     @Override

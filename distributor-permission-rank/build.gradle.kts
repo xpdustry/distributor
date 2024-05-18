@@ -22,8 +22,9 @@ dependencies {
 }
 
 tasks.shadowJar {
-    isEnableRelocation = true
-    relocationPrefix = "com.xpdustry.distributor.api.permission.rank.shadow"
+    val relocationPackage = "com.xpdustry.distributor.api.permission.rank.shadow"
+    relocate("org.yaml.snakeyaml", "$relocationPackage.snakeyaml")
+    relocate("org.spongepowered.configurate", "$relocationPackage.configurate")
     minimize()
 }
 

@@ -19,7 +19,8 @@
 package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -61,7 +62,12 @@ record PlayerCommandSender(Player player) implements CommandSender {
     }
 
     @Override
-    public TriState getPermission(final String permission) {
-        return DistributorProvider.get().getPermissionReader().getPermission(this.player, permission);
+    public Audience getAudience() {
+        return DistributorProvider.get().getAudienceProvider().getPlayer(this.player);
+    }
+
+    @Override
+    public PermissionProvider getPermissions() {
+        return PermissionProvider.from(this.player);
     }
 }

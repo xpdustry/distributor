@@ -16,19 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.permission;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.DistributorProvider;
+import mindustry.gen.Player;
 
-public interface Translation {
+record PlayerPermissionProvider(Player player) implements PermissionProvider {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    @Override
+    public TriState getPermission(final String permission) {
+        return DistributorProvider.get().getPermissionReader().getPermission(player, permission);
     }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
 }

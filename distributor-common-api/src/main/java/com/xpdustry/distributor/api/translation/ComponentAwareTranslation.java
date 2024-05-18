@@ -18,17 +18,23 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.component.style.ComponentStyle;
 
-public interface Translation {
+public interface ComponentAwareTranslation extends Translation {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    @Override
+    default String format(final TranslationArguments parameters) {
+        return format(parameters, Processor.noop());
     }
 
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
+    String format(final TranslationArguments parameters, final Processor processor);
 
-    String format(final TranslationArguments parameters);
+    interface Processor {
+
+        static Processor noop() {
+            return NoopProcessor.INSTANCE;
+        }
+
+        String process(final String value, final ComponentStyle style);
+    }
 }

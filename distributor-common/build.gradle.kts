@@ -14,6 +14,15 @@ distributorModule {
 
 dependencies {
     implementation(projects.distributorCommonApi)
+    implementation(libs.jansi)
+}
+
+tasks.shadowJar {
+    val relocationPackage = "com.xpdustry.distributor.vanilla.shadow"
+    relocate("org.fusesource.jansi", "$relocationPackage.jansi")
+    minimize {
+        exclude(dependency(projects.distributorCommonApi))
+    }
 }
 
 tasks.runMindustryServer {

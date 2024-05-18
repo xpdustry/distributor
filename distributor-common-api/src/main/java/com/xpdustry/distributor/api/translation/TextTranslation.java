@@ -18,33 +18,10 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.util.List;
-import java.util.Map;
-
 record TextTranslation(String text) implements Translation {
 
     @Override
-    public String formatArray(final List<Object> args) {
-        return text;
-    }
-
-    @Override
-    public String formatArray(final Object... args) {
-        return text;
-    }
-
-    @Override
-    public String formatNamed(final Map<String, Object> args) {
-        return text;
-    }
-
-    @Override
-    public String formatEmpty() {
-        return text;
-    }
-
-    @Override
-    public String format(final TranslationParameters parameters) {
+    public String format(final TranslationArguments parameters) {
         return text;
     }
 }

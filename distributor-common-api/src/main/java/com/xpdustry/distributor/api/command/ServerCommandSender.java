@@ -19,7 +19,9 @@
 package com.xpdustry.distributor.api.command;
 
 import arc.util.Log;
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -69,7 +71,12 @@ final class ServerCommandSender implements CommandSender {
     }
 
     @Override
-    public TriState getPermission(final String permission) {
-        return TriState.TRUE;
+    public PermissionProvider getPermissions() {
+        return PermissionProvider.all();
+    }
+
+    @Override
+    public Audience getAudience() {
+        return DistributorProvider.get().getAudienceProvider().getServer();
     }
 }

@@ -18,7 +18,8 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -82,15 +83,17 @@ public interface CommandSender {
     Player getPlayer();
 
     /**
-     * Returns the permission state of the given permission.
-     *
-     * @param permission the permission to check
-     * @return the permission state
+     * Returns the permissions of this command sender.
      */
-    TriState getPermission(final String permission);
+    PermissionProvider getPermissions();
 
     /**
      * Returns the locale of this command sender.
      */
     Locale getLocale();
+
+    /**
+     * Returns the audience of this command sender.
+     */
+    Audience getAudience();
 }

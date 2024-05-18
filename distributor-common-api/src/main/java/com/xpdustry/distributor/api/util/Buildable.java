@@ -16,19 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.util;
 
-import java.util.Locale;
+import java.util.function.Consumer;
 
-public interface Translation {
+public interface Buildable<T, B extends Buildable.Builder<T, B>> {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    B toBuilder();
+
+    interface Builder<T, B extends Builder<T, B>> {
+
+        @SuppressWarnings("unchecked")
+        default B modify(final Consumer<B> modifier) {
+            modifier.accept((B) this);
+            return (B) this;
+        }
+
+        T build();
     }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
 }

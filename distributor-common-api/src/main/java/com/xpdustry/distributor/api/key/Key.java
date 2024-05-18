@@ -25,6 +25,8 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface Key {
 
+    String DISTRIBUTOR_NAMESPACE = "distributor";
+
     String MINDUSTRY_NAMESPACE = "mindustry";
 
     static Key of(final String name) {

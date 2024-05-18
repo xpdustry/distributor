@@ -16,19 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.component.codec;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.component.Component;
 
-public interface Translation {
+public interface ComponentDecoder<C, T> {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
-    }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
+    Component decode(final T input, final C context);
 }

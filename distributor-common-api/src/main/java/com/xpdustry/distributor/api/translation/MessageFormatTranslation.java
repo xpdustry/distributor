@@ -18,54 +18,113 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.ValueComponent;
+import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-record MessageFormatTranslation(String pattern, Locale locale) implements Translation {
+record MessageFormatTranslation(String pattern, Locale locale) implements ComponentAwareTranslation {
 
     private static final int MAX_NAMED_INDEX = 63;
 
-    @Override
-    public String formatArray(final List<Object> args) {
-        return createFormat().format(args.toArray());
-    }
-
-    @Override
-    public String formatArray(Object... args) {
-        return createFormat().format(args);
-    }
-
-    @Override
-    public String formatNamed(final Map<String, Object> args) {
-        final List<Object> entries = new ArrayList<>();
-        for (final var entry : args.entrySet()) {
-            final int index;
-            try {
-                index = Integer.parseInt(entry.getKey());
-            } catch (NumberFormatException ignored) {
-                continue;
-            }
-            if (index > MAX_NAMED_INDEX) {
-                throw new IllegalArgumentException(
-                        "Max argument index exceeded, expected less than " + MAX_NAMED_INDEX + ", got " + index);
-            }
-            for (int i = entries.size(); i <= index; i++) {
-                entries.add(null);
-            }
-            entries.set(index, entry.getValue());
+    MessageFormatTranslation {
+        try {
+            new MessageFormat(pattern, locale);
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Invalid pattern: " + pattern, e);
         }
-        return createFormat().format(entries.toArray());
     }
 
     @Override
-    public String formatEmpty() {
-        return createFormat().toPattern();
+    public String format(final TranslationArguments parameters, final Processor processor) {
+        if (parameters instanceof TranslationArguments.Empty) {
+            return format(List.of(), processor);
+        } else if (parameters instanceof TranslationArguments.Array array) {
+            return format(array.getArguments(), processor);
+        } else if (parameters instanceof TranslationArguments.Named named) {
+            final List<Object> entries = new ArrayList<>();
+            for (final var entry : named.getArguments().entrySet()) {
+                final int index;
+                try {
+                    index = Integer.parseInt(entry.getKey());
+                } catch (NumberFormatException ignored) {
+                    continue;
+                }
+                if (index > MAX_NAMED_INDEX) {
+                    throw new IllegalArgumentException(
+                            "Max argument index exceeded, expected less than " + MAX_NAMED_INDEX + ", got " + index);
+                }
+                for (int i = entries.size(); i <= index; i++) {
+                    entries.add(null);
+                }
+                entries.set(index, entry.getValue());
+            }
+            return format(entries, processor);
+        } else {
+            throw new IllegalArgumentException("Unsupported arguments type: " + parameters.getClass());
+        }
     }
 
-    private MessageFormat createFormat() {
-        return new MessageFormat(pattern, locale);
+    @SuppressWarnings("JdkObsolete")
+    private String format(final List<Object> arguments, final Processor processor) {
+        final var format = new MessageFormat(pattern, locale);
+        if (arguments.isEmpty()) {
+            return format.format(null);
+        }
+
+        final var builder = new StringBuilder();
+        final var empty = new Object[arguments.size()];
+        final var buffer = format.format(empty, new StringBuffer(), null);
+        final var iterator = format.formatToCharacterIterator(empty);
+
+        while (iterator.getIndex() < iterator.getEndIndex()) {
+            final int end = iterator.getRunLimit();
+            final var index = (Integer) iterator.getAttribute(MessageFormat.Field.ARGUMENT);
+            if (index != null) {
+                var style = ComponentStyle.empty();
+                var argument = arguments.get(index);
+                if (argument instanceof ComponentLike like) {
+                    final var component = like.asComponent();
+                    style = component.getStyle();
+                    if (component instanceof ValueComponent<?> value) {
+                        argument = value.getValue();
+                    } else {
+                        argument = DistributorProvider.get()
+                                .getPlainTextEncoder()
+                                .encode(
+                                        component,
+                                        MetadataContainer.builder()
+                                                .putConstant(Audience.LOCALE, locale)
+                                                .build());
+                    }
+                }
+                final var subformat = format.getFormatsByArgumentIndex()[index];
+                if (subformat == null) {
+                    builder.append(processor.process(argument.toString(), ComponentStyle.empty()));
+                } else {
+                    String result;
+                    try {
+                        result = subformat
+                                .format(argument, new StringBuffer(), new FieldPosition(iterator.getIndex()))
+                                .toString();
+                    } catch (final IllegalArgumentException e) {
+                        result = argument.toString();
+                    }
+                    builder.append(processor.process(result, style));
+                }
+            } else {
+                builder.append(processor.process(buffer.substring(iterator.getIndex(), end), ComponentStyle.empty()));
+            }
+            iterator.setIndex(end);
+        }
+
+        return builder.toString();
     }
 }

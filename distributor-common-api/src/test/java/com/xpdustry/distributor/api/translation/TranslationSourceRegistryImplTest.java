@@ -38,13 +38,13 @@ public final class TranslationSourceRegistryImplTest {
         registry.register(source1);
         assertThat(registry.getTranslation("greeting", RouterTranslationSource.ROUTER_LOCALE))
                 .isNotNull()
-                .extracting(Translation::formatEmpty)
+                .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("Bonjour!");
 
         registry.register(source2);
         assertThat(registry.getTranslation("greeting", RouterTranslationSource.ROUTER_LOCALE))
                 .isNotNull()
-                .extracting(Translation::formatEmpty)
+                .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("router");
     }
 

@@ -16,19 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.audience;
 
-import java.util.Locale;
+import java.util.stream.Stream;
 
-public interface Translation {
+final class EmptyAudience implements Audience {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    static final Audience INSTANCE = new EmptyAudience();
+
+    private EmptyAudience() {}
+
+    @Override
+    public Stream<Audience> getAudiences() {
+        return Stream.empty();
     }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
 }

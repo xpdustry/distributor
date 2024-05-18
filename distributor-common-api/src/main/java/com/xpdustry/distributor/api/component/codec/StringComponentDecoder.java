@@ -16,19 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.component.codec;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.key.Key;
+import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
-public interface Translation {
+public interface StringComponentDecoder extends ComponentDecoder<MetadataContainer, String> {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
-    }
+    Key MINDUSTRY_DECODER = Key.of("mindustry-decoder", Key.DISTRIBUTOR_NAMESPACE);
 
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
+    Key getKey();
 }

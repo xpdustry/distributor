@@ -16,19 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.component.codec;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.key.Key;
+import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
-public interface Translation {
+public interface StringComponentEncoder extends ComponentEncoder<MetadataContainer, String> {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
-    }
+    Key MINDUSTRY_ENCODER = Key.of("mindustry-encoder", Key.DISTRIBUTOR_NAMESPACE);
 
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
+    Key ANSI_ENCODER = Key.of("ansi-encoder", Key.DISTRIBUTOR_NAMESPACE);
 
-    String format(final TranslationArguments parameters);
+    Key PLAINTEXT_ENCODER = Key.of("plaintext-encoder", Key.DISTRIBUTOR_NAMESPACE);
+
+    Key getKey();
 }

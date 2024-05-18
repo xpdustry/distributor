@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api;
 
+import com.xpdustry.distributor.api.audience.AudienceProvider;
+import com.xpdustry.distributor.api.component.codec.StringComponentDecoder;
+import com.xpdustry.distributor.api.component.codec.StringComponentEncoder;
 import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.permission.PermissionReader;
 import com.xpdustry.distributor.api.player.PlayerLookup;
@@ -38,4 +41,14 @@ public interface Distributor {
     PlayerLookup getPlayerLookup();
 
     PluginScheduler getPluginScheduler();
+
+    StringComponentEncoder getMindustryEncoder();
+
+    StringComponentEncoder getAnsiEncoder();
+
+    StringComponentEncoder getPlainTextEncoder();
+
+    StringComponentDecoder getMindustryDecoder();
+
+    AudienceProvider getAudienceProvider();
 }

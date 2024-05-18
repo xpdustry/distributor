@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.translation.TranslationArguments;
 import java.util.Locale;
 
 record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
@@ -28,7 +29,7 @@ record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements 
         return DistributorProvider.get()
                 .getGlobalTranslationSource()
                 .getTranslationOrMissing(key, this.defaultLocale)
-                .formatEmpty();
+                .format(TranslationArguments.empty());
     }
 
     @Override
@@ -36,7 +37,7 @@ record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements 
         return DistributorProvider.get()
                 .getGlobalTranslationSource()
                 .getTranslationOrMissing(key, sender.getLocale())
-                .formatEmpty();
+                .format(TranslationArguments.empty());
     }
 
     @Override

@@ -16,19 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.component;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.component.style.ComponentStyle;
 
-public interface Translation {
+public interface Component extends ComponentLike {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    ComponentStyle getStyle();
+
+    default ListComponent append(final ComponentLike component) {
+        return ListComponent.components()
+                .append(this)
+                .append(component.asComponent())
+                .build();
     }
 
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
+    default Component compress() {
+        return this;
     }
 
-    String format(final TranslationArguments parameters);
+    @Override
+    default Component asComponent() {
+        return this;
+    }
 }

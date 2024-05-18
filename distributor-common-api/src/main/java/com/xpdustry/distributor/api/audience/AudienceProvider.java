@@ -16,19 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.audience;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.player.MUUID;
+import mindustry.game.Team;
+import mindustry.gen.Player;
 
-public interface Translation {
+public interface AudienceProvider {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    Audience getPlayer(final MUUID muuid);
+
+    Audience getPlayer(final Player player);
+
+    Audience getServer();
+
+    Audience getPlayers();
+
+    default Audience getTeam(final Team team) {
+        return getPlayers()
+                .getAudiences()
+                .filter(audience ->
+                        audience.getMetadata().getMetadata(Audience.TEAM).orElse(null) == team)
+                .collect(Audience.collectToAudience());
     }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
 }

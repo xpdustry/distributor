@@ -16,19 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.component;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.util.Buildable;
 
-public interface Translation {
+public interface BuildableComponent<C extends BuildableComponent<C, B>, B extends BuildableComponent.Builder<C, B>>
+        extends Component {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    B toBuilder();
+
+    interface Builder<C extends BuildableComponent<C, B>, B extends Builder<C, B>>
+            extends ComponentLike, ComponentStyle.Setter<B>, Buildable.Builder<C, B> {
+
+        B setStyle(final ComponentStyle style);
+
+        @Override
+        default Component asComponent() {
+            return this.build();
+        }
     }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
 }

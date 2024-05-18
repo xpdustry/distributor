@@ -18,17 +18,14 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.util.Locale;
+import com.xpdustry.distributor.api.component.style.ComponentStyle;
 
-public interface Translation {
+final class NoopProcessor implements ComponentAwareTranslation.Processor {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
+    static final NoopProcessor INSTANCE = new NoopProcessor();
+
+    @Override
+    public String process(final String value, final ComponentStyle component) {
+        return value;
     }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
-    String format(final TranslationArguments parameters);
 }

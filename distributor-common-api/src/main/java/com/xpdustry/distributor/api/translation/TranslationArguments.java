@@ -24,39 +24,39 @@ import java.util.List;
 import java.util.Map;
 import org.immutables.value.Value;
 
-public sealed interface TranslationParameters {
+public sealed interface TranslationArguments {
 
-    static TranslationParameters.Array array(final List<Object> values) {
+    static TranslationArguments.Array array(final List<Object> values) {
         return ArrayImpl.of(values);
     }
 
-    static TranslationParameters.Array array(final Object... values) {
+    static TranslationArguments.Array array(final Object... values) {
         return ArrayImpl.of(List.of(values));
     }
 
-    static TranslationParameters.Named named(final Map<String, Object> values) {
+    static TranslationArguments.Named named(final Map<String, Object> values) {
         return NamedImpl.of(values);
     }
 
-    static TranslationParameters.Empty empty() {
+    static TranslationArguments.Empty empty() {
         return EmptyImpl.of();
     }
 
     @DistributorDataClass
     @Value.Immutable
-    non-sealed interface Array extends TranslationParameters {
+    non-sealed interface Array extends TranslationArguments {
 
-        List<Object> getValues();
+        List<Object> getArguments();
     }
 
     @DistributorDataClass
     @Value.Immutable
-    non-sealed interface Named extends TranslationParameters {
+    non-sealed interface Named extends TranslationArguments {
 
-        Map<String, Object> getValues();
+        Map<String, Object> getArguments();
     }
 
     @DistributorDataClassSingleton
     @Value.Immutable
-    non-sealed interface Empty extends TranslationParameters {}
+    non-sealed interface Empty extends TranslationArguments {}
 }
