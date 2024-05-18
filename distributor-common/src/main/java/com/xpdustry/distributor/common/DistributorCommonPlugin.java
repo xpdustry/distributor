@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor;
+package com.xpdustry.distributor.common;
 
 import arc.Core;
 import com.xpdustry.distributor.api.Distributor;
@@ -33,15 +33,15 @@ import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
-import com.xpdustry.distributor.audience.AudienceProviderImpl;
-import com.xpdustry.distributor.component.codec.AnsiEncoderImpl;
-import com.xpdustry.distributor.component.codec.MindustryDecoderImpl;
-import com.xpdustry.distributor.component.codec.MindustryEncoderImpl;
-import com.xpdustry.distributor.component.codec.PlainTextEncoderImpl;
-import com.xpdustry.distributor.event.EventBusImpl;
-import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
-import com.xpdustry.distributor.scheduler.PluginTimeSource;
-import com.xpdustry.distributor.service.ServiceManagerImpl;
+import com.xpdustry.distributor.common.audience.AudienceProviderImpl;
+import com.xpdustry.distributor.common.component.codec.AnsiEncoderImpl;
+import com.xpdustry.distributor.common.component.codec.MindustryDecoderImpl;
+import com.xpdustry.distributor.common.component.codec.MindustryEncoderImpl;
+import com.xpdustry.distributor.common.component.codec.PlainTextEncoderImpl;
+import com.xpdustry.distributor.common.event.EventBusImpl;
+import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
+import com.xpdustry.distributor.common.scheduler.PluginTimeSource;
+import com.xpdustry.distributor.common.service.ServiceManagerImpl;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;

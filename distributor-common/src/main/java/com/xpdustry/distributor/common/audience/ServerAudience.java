@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.audience;
+package com.xpdustry.distributor.common.audience;
 
 import arc.util.Log;
 import com.xpdustry.distributor.api.DistributorProvider;

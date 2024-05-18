@@ -19,8 +19,8 @@
 package com.xpdustry.distributor.api.test;
 
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
-import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
-import com.xpdustry.distributor.scheduler.PluginTimeSource;
+import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
+import com.xpdustry.distributor.common.scheduler.PluginTimeSource;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Objects;

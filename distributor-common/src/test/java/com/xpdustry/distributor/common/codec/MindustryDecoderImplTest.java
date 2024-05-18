@@ -16,11 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.component.codec;
+package com.xpdustry.distributor.common.codec;
 
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.common.component.codec.MindustryDecoderImpl;
 import org.junit.jupiter.api.Test;
 
 import static com.xpdustry.distributor.api.component.TextComponent.text;

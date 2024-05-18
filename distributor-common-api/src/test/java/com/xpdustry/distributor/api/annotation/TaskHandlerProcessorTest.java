@@ -26,7 +26,7 @@ import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.test.ManageSchedulerExtension;
 import com.xpdustry.distributor.api.test.TestScheduler;
-import com.xpdustry.distributor.scheduler.PluginSchedulerImpl;
+import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -25,7 +25,7 @@ import com.xpdustry.distributor.api.permission.TriState;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.util.Priority;
-import com.xpdustry.distributor.service.ServiceManagerImpl;
+import com.xpdustry.distributor.common.service.ServiceManagerImpl;
 import java.util.List;
 import mindustry.gen.Player;
 import org.junit.jupiter.api.AfterEach;

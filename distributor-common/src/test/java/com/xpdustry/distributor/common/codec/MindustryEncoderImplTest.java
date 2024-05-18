@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.component.codec;
+package com.xpdustry.distributor.common.codec;
 
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
@@ -28,6 +28,7 @@ import com.xpdustry.distributor.api.translation.ResourceTranslationSource;
 import com.xpdustry.distributor.api.translation.Translation;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
+import com.xpdustry.distributor.common.component.codec.MindustryEncoderImpl;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
