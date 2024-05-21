@@ -57,9 +57,9 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private @Nullable PlayerLookup lookup = null;
     private @Nullable PermissionReader permissions = null;
     private @Nullable StringComponentEncoder mindustryEncoder = null;
+    private @Nullable StringComponentDecoder mindustryDecoder = null;
     private @Nullable StringComponentEncoder ansiEncoder = null;
     private @Nullable StringComponentEncoder plainTextEncoder = null;
-    private @Nullable StringComponentDecoder mindustryDecoder = null;
     private @Nullable AudienceProvider audienceProvider = null;
 
     @Override
@@ -98,6 +98,11 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
+    public StringComponentDecoder getMindustryDecoder() {
+        return ensureInitialized(this.mindustryDecoder, "mindustry-string-decoder");
+    }
+
+    @Override
     public StringComponentEncoder getPlainTextEncoder() {
         return ensureInitialized(this.plainTextEncoder, "plaintext-string-encoder");
     }
@@ -105,11 +110,6 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     @Override
     public StringComponentEncoder getAnsiEncoder() {
         return ensureInitialized(this.ansiEncoder, "ansi-string-encoder");
-    }
-
-    @Override
-    public StringComponentDecoder getMindustryDecoder() {
-        return ensureInitialized(this.mindustryDecoder, "mindustry-string-decoder");
     }
 
     @Override
@@ -136,6 +136,12 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
                 StringComponentEncoder.MINDUSTRY_ENCODER,
                 MindustryEncoderImpl::new);
 
+        this.mindustryDecoder = findNamedService(
+                StringComponentDecoder.class,
+                StringComponentDecoder::getKey,
+                MindustryDecoderImpl.MINDUSTRY_DECODER,
+                MindustryDecoderImpl::new);
+
         this.ansiEncoder = findNamedService(
                 StringComponentEncoder.class,
                 StringComponentEncoder::getKey,
@@ -147,12 +153,6 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
                 StringComponentEncoder::getKey,
                 StringComponentEncoder.PLAINTEXT_ENCODER,
                 PlainTextEncoderImpl::new);
-
-        this.mindustryDecoder = findNamedService(
-                StringComponentDecoder.class,
-                StringComponentDecoder::getKey,
-                MindustryDecoderImpl.MINDUSTRY_DECODER,
-                MindustryDecoderImpl::new);
 
         this.audienceProvider = services.provideOrDefault(AudienceProvider.class, () -> new AudienceProviderImpl(this));
 

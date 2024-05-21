@@ -29,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class MindustryEncoderImpl extends AbstractStringComponentEncoder {
 
     @Override
-    public Key getKey() {
+    public Key<Void> getKey() {
         return MINDUSTRY_ENCODER;
     }
 

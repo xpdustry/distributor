@@ -31,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class AnsiEncoderImpl extends AbstractStringComponentEncoder {
 
     @Override
-    public Key getKey() {
+    public Key<Void> getKey() {
         return ANSI_ENCODER;
     }
 

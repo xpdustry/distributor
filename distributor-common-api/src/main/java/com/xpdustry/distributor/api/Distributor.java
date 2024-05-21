@@ -44,11 +44,11 @@ public interface Distributor {
 
     StringComponentEncoder getMindustryEncoder();
 
+    StringComponentDecoder getMindustryDecoder();
+
     StringComponentEncoder getAnsiEncoder();
 
     StringComponentEncoder getPlainTextEncoder();
-
-    StringComponentDecoder getMindustryDecoder();
 
     AudienceProvider getAudienceProvider();
 }

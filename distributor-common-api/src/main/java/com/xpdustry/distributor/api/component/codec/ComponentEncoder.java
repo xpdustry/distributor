@@ -19,8 +19,11 @@
 package com.xpdustry.distributor.api.component.codec;
 
 import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.key.Key;
 
 public interface ComponentEncoder<C, T> {
 
     T encode(final Component input, final C context);
+
+    Key<Void> getKey();
 }

@@ -28,6 +28,4 @@ public interface StringComponentEncoder extends ComponentEncoder<MetadataContain
     Key<Void> ANSI_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "ansi-encoder");
 
     Key<Void> PLAINTEXT_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "plaintext-encoder");
-
-    Key<Void> getKey();
 }

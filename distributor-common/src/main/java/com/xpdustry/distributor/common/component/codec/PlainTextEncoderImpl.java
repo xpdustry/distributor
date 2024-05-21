@@ -25,7 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class PlainTextEncoderImpl extends AbstractStringComponentEncoder {
 
     @Override
-    public Key getKey() {
+    public Key<Void> getKey() {
         return PLAINTEXT_ENCODER;
     }
 
