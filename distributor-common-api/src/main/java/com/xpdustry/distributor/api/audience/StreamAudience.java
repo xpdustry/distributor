@@ -20,6 +20,7 @@ package com.xpdustry.distributor.api.audience;
 
 import com.xpdustry.distributor.api.component.Component;
 import java.net.URI;
+import java.time.Duration;
 import java.util.stream.Stream;
 
 @FunctionalInterface
@@ -96,5 +97,15 @@ public interface StreamAudience extends Audience {
     @Override
     default void openURI(final URI uri) {
         getAudiences().forEach(audience -> audience.openURI(uri));
+    }
+
+    @Override
+    default void showLabel(final String label, final float x, final float y, final Duration duration) {
+        getAudiences().forEach(audience -> audience.showLabel(label, x, y, duration));
+    }
+
+    @Override
+    default void showLabel(final Component label, final float x, final float y, final Duration duration) {
+        getAudiences().forEach(audience -> audience.showLabel(label, x, y, duration));
     }
 }
