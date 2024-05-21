@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.component.style;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import mindustry.graphics.Pal;
 import org.immutables.value.Value;
 
 @DistributorDataClass
@@ -33,6 +34,7 @@ public interface ComponentColor {
     ComponentColor MAGENTA = rgb(0xFF00FF);
     ComponentColor WHITE = rgb(0xFFFFFF);
     ComponentColor BLACK = rgb(0x000000);
+    ComponentColor ACCENT = from(Pal.accent);
 
     static ComponentColor rgb(final int rgb) {
         return ComponentColorImpl.of(rgb & 0xFFFFFF);

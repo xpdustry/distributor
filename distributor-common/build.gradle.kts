@@ -14,12 +14,10 @@ distributorModule {
 
 dependencies {
     implementation(projects.distributorCommonApi)
-    implementation(libs.jansi)
 }
 
 tasks.shadowJar {
-    val relocationPackage = "com.xpdustry.distributor.common.shadow"
-    relocate("org.fusesource.jansi", "$relocationPackage.jansi")
+    // val relocationPackage = "com.xpdustry.distributor.common.shadow"
     minimize {
         exclude(dependency(projects.distributorCommonApi))
     }

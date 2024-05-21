@@ -16,7 +16,6 @@ cloud = "2.0.0-beta.5"
 # utilities
 immutables = "2.10.1"
 configurate = "4.1.2"
-jansi = "2.4.1"
 
 # testing
 junit = "5.10.2"
@@ -61,7 +60,6 @@ immutables-processor = { module = "org.immutables:value-processor", version.ref 
 immutables-annotations = { module = "org.immutables:value-annotations", version.ref = "immutables" }
 configurate-core = { module = "org.spongepowered:configurate-core", version.ref = "configurate" }
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
-jansi = { module = "org.fusesource.jansi:jansi", version.ref = "jansi" }
 
 # testing
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }

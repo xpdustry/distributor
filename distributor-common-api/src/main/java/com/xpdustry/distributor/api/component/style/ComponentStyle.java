@@ -22,6 +22,7 @@ import com.xpdustry.distributor.api.permission.TriState;
 import com.xpdustry.distributor.api.util.Buildable;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,7 +89,9 @@ public interface ComponentStyle extends Buildable<ComponentStyle, ComponentStyle
         if (override.getBackColor() != null) {
             builder.setBackColor(override.getBackColor());
         }
-        builder.setDecorations(override.getDecorations());
+        final var decorations = new HashMap<>(getDecorations());
+        decorations.putAll(override.getDecorations());
+        builder.setDecorations(decorations);
         return builder.build();
     }
 
