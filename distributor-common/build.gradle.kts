@@ -17,7 +17,8 @@ dependencies {
 }
 
 tasks.shadowJar {
-    // val relocationPackage = "com.xpdustry.distributor.common.shadow"
+    val relocationPackage = "com.xpdustry.distributor.common.shadow"
+    relocate("io.leangen.geantyref", "$relocationPackage.geantyref")
     minimize {
         exclude(dependency(projects.distributorCommonApi))
     }

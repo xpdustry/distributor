@@ -23,7 +23,7 @@ import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
 public interface StringComponentDecoder extends ComponentDecoder<MetadataContainer, String> {
 
-    Key MINDUSTRY_DECODER = Key.of("mindustry-decoder", Key.DISTRIBUTOR_NAMESPACE);
+    Key<Void> MINDUSTRY_DECODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "mindustry-decoder");
 
-    Key getKey();
+    Key<Void> getKey();
 }

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.api.key.TypedKey;
+import com.xpdustry.distributor.api.key.Key;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -28,15 +28,15 @@ public interface State {
         return new StateImpl();
     }
 
-    <T> Optional<T> getOptional(final TypedKey<T> key);
+    <T> Optional<T> getOptional(final Key<T> key);
 
-    default <T> @Nullable T get(final TypedKey<T> key) {
+    default <T> @Nullable T get(final Key<T> key) {
         return getOptional(key).orElse(null);
     }
 
-    <T> @Nullable T set(final TypedKey<T> key, final T value);
+    <T> @Nullable T set(final Key<T> key, final T value);
 
-    <T> @Nullable T remove(final TypedKey<T> key);
+    <T> @Nullable T remove(final Key<T> key);
 
-    boolean contains(final TypedKey<?> key);
+    boolean contains(final Key<?> key);
 }

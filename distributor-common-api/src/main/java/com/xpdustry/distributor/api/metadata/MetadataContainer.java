@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.metadata;
 
-import com.xpdustry.distributor.api.key.TypedKey;
+import com.xpdustry.distributor.api.key.Key;
 import com.xpdustry.distributor.api.util.Buildable;
 import java.util.Map;
 import java.util.Optional;
@@ -38,17 +38,17 @@ public interface MetadataContainer extends Buildable<MetadataContainer, Metadata
         return MetadataContainerImpl.EMPTY;
     }
 
-    <V> Optional<V> getMetadata(final TypedKey<V> key);
+    <V> Optional<V> getMetadata(final Key<V> key);
 
-    Map<TypedKey<?>, Supplier<?>> getAllMetadata();
+    Map<Key<?>, Supplier<?>> getAllMetadata();
 
     interface Builder extends Buildable.Builder<MetadataContainer, Builder> {
 
-        <V> Builder putConstant(final TypedKey<V> key, final V value);
+        <V> Builder putConstant(final Key<V> key, final V value);
 
-        <V> Builder putSupplier(final TypedKey<V> key, final Supplier<V> value);
+        <V> Builder putSupplier(final Key<V> key, final Supplier<V> value);
 
-        Builder removeMetadata(final TypedKey<?> key);
+        Builder removeMetadata(final Key<?> key);
 
         Builder putAllMetadata(final MetadataContainer metadata);
     }

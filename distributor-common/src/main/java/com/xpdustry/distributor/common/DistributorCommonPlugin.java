@@ -160,7 +160,10 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     private <T> T findNamedService(
-            final Class<T> service, final Function<T, Key> extractor, final Key key, final Supplier<T> def) {
+            final Class<T> service,
+            final Function<T, Key<Void>> extractor,
+            final Key<Void> key,
+            final Supplier<T> def) {
         return services.getProviders(service).stream()
                 .map(ServiceManager.Provider::getInstance)
                 .filter(encoder -> extractor.apply(encoder).getName().equals(key.getName()))

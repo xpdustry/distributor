@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.metadata;
 
-import com.xpdustry.distributor.api.key.TypedKey;
+import com.xpdustry.distributor.api.key.Key;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,22 +28,22 @@ final class MetadataContainerImpl implements MetadataContainer {
 
     static MetadataContainerImpl EMPTY = new MetadataContainerImpl(Map.of());
 
-    private final Map<TypedKey<?>, Supplier<?>> metas;
+    private final Map<Key<?>, Supplier<?>> metas;
 
-    MetadataContainerImpl(final Map<TypedKey<?>, Supplier<?>> metas) {
+    MetadataContainerImpl(final Map<Key<?>, Supplier<?>> metas) {
         this.metas = Map.copyOf(metas);
     }
 
     @Override
-    public <V> Optional<V> getMetadata(final TypedKey<V> key) {
+    public <V> Optional<V> getMetadata(final Key<V> key) {
         final var supplier = metas.get(key);
         return supplier == null
                 ? Optional.empty()
-                : Optional.ofNullable(key.getType().cast(supplier.get()));
+                : Optional.ofNullable(key.getToken().getRawType().cast(supplier.get()));
     }
 
     @Override
-    public Map<TypedKey<?>, Supplier<?>> getAllMetadata() {
+    public Map<Key<?>, Supplier<?>> getAllMetadata() {
         return metas;
     }
 
@@ -54,26 +54,26 @@ final class MetadataContainerImpl implements MetadataContainer {
 
     static final class Builder implements MetadataContainer.Builder {
 
-        private final Map<TypedKey<?>, Supplier<?>> metas;
+        private final Map<Key<?>, Supplier<?>> metas;
 
-        Builder(final Map<TypedKey<?>, Supplier<?>> metas) {
+        Builder(final Map<Key<?>, Supplier<?>> metas) {
             this.metas = new HashMap<>(metas);
         }
 
         @Override
-        public <T> Builder putConstant(final TypedKey<T> key, final T value) {
+        public <T> Builder putConstant(final Key<T> key, final T value) {
             this.metas.put(key, new StaticSupplier<>(value));
             return this;
         }
 
         @Override
-        public <V> Builder putSupplier(TypedKey<V> key, Supplier<V> value) {
+        public <V> Builder putSupplier(Key<V> key, Supplier<V> value) {
             this.metas.put(key, value);
             return this;
         }
 
         @Override
-        public Builder removeMetadata(final TypedKey<?> key) {
+        public Builder removeMetadata(final Key<?> key) {
             this.metas.remove(key);
             return this;
         }

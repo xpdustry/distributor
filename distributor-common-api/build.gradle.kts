@@ -11,4 +11,5 @@ dependencies {
     testImplementation(libs.slf4j.simple)
     compileOnlyApi(libs.bundles.mindustry)
     testImplementation(libs.bundles.mindustry)
+    implementation(libs.geantyref)
 }

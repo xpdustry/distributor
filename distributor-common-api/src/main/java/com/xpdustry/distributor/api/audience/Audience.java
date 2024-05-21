@@ -23,7 +23,6 @@ import arc.struct.Seq;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.key.Key;
-import com.xpdustry.distributor.api.key.TypedKey;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import com.xpdustry.distributor.api.player.MUUID;
@@ -39,15 +38,15 @@ import mindustry.game.Team;
 
 public interface Audience {
 
-    TypedKey<String> NAME = TypedKey.of("name", Key.DISTRIBUTOR_NAMESPACE, String.class);
+    Key<String> NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "name", String.class);
 
-    TypedKey<String> DISPLAY_NAME = TypedKey.of("display-name", Key.DISTRIBUTOR_NAMESPACE, String.class);
+    Key<String> DISPLAY_NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "display-name", String.class);
 
-    TypedKey<MUUID> MUUID = TypedKey.of("muuid", Key.DISTRIBUTOR_NAMESPACE, MUUID.class);
+    Key<MUUID> MUUID = Key.of(Key.DISTRIBUTOR_NAMESPACE, "muuid", MUUID.class);
 
-    TypedKey<Locale> LOCALE = TypedKey.of("locale", Key.DISTRIBUTOR_NAMESPACE, Locale.class);
+    Key<Locale> LOCALE = Key.of(Key.DISTRIBUTOR_NAMESPACE, "locale", Locale.class);
 
-    TypedKey<Team> TEAM = TypedKey.of("team", Key.DISTRIBUTOR_NAMESPACE, Team.class);
+    Key<Team> TEAM = Key.of(Key.DISTRIBUTOR_NAMESPACE, "team", Team.class);
 
     static Audience of(final Audience... audiences) {
         if (audiences.length == 0) {

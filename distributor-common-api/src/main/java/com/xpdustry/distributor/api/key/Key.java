@@ -18,26 +18,56 @@
  */
 package com.xpdustry.distributor.api.key;
 
+import com.xpdustry.distributor.api.util.TypeToken;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import java.util.UUID;
 import org.immutables.value.Value;
 
 @DistributorDataClass
 @Value.Immutable
-public interface Key {
-
-    String DISTRIBUTOR_NAMESPACE = "distributor";
+public interface Key<V> {
 
     String MINDUSTRY_NAMESPACE = "mindustry";
 
-    static Key of(final String name) {
-        return KeyImpl.of(name, MINDUSTRY_NAMESPACE);
+    String DISTRIBUTOR_NAMESPACE = "distributor";
+
+    String GENERATED_NAMESPACE = "generated";
+
+    static Key<Void> of(final String name) {
+        return KeyImpl.of(MINDUSTRY_NAMESPACE, name, TypeToken.of(Void.class));
     }
 
-    static Key of(final String name, final String namespace) {
-        return KeyImpl.of(name, namespace);
+    static Key<Void> of(final String namespace, final String name) {
+        return KeyImpl.of(namespace, name, TypeToken.of(Void.class));
     }
+
+    static <T> Key<T> of(final String name, final Class<T> type) {
+        return KeyImpl.of(MINDUSTRY_NAMESPACE, name, TypeToken.of(type));
+    }
+
+    static <T> Key<T> of(final String name, final TypeToken<T> type) {
+        return KeyImpl.of(MINDUSTRY_NAMESPACE, name, type);
+    }
+
+    static <T> Key<T> of(final String namespace, final String name, final TypeToken<T> type) {
+        return KeyImpl.of(namespace, name, type);
+    }
+
+    static <T> Key<T> of(final String namespace, final String name, final Class<T> type) {
+        return KeyImpl.of(namespace, name, TypeToken.of(type));
+    }
+
+    static <T> Key<T> generated(final Class<T> type) {
+        return KeyImpl.of(GENERATED_NAMESPACE, UUID.randomUUID().toString(), TypeToken.of(type));
+    }
+
+    static <T> Key<T> generated(final TypeToken<T> type) {
+        return KeyImpl.of(GENERATED_NAMESPACE, UUID.randomUUID().toString(), type);
+    }
+
+    String getNamespace();
 
     String getName();
 
-    String getNamespace();
+    TypeToken<V> getToken();
 }

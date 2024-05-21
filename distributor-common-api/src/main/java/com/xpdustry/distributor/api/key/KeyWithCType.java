@@ -36,31 +36,34 @@ import org.immutables.value.Value;
  *
  * @param <T> the content type
  */
-@SuppressWarnings("immutables:subtype")
 @DistributorDataClass
 @Value.Immutable
-public interface ContentTypeKey<T extends MappableContent> extends TypedKey<T> {
+public interface KeyWithCType<T extends MappableContent> {
 
-    ContentTypeKey<Block> BLOCK = ContentTypeKeyImpl.of("block", MINDUSTRY_NAMESPACE, Block.class, ContentType.block);
+    KeyWithCType<Block> BLOCK =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "block", Block.class), ContentType.block);
 
-    ContentTypeKey<UnitType> UNIT =
-            ContentTypeKeyImpl.of("unit", MINDUSTRY_NAMESPACE, UnitType.class, ContentType.unit);
+    KeyWithCType<UnitType> UNIT =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "unit", UnitType.class), ContentType.unit);
 
-    ContentTypeKey<Item> ITEM = ContentTypeKeyImpl.of("item", MINDUSTRY_NAMESPACE, Item.class, ContentType.item);
+    KeyWithCType<Item> ITEM =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "item", Item.class), ContentType.item);
 
-    ContentTypeKey<Liquid> LIQUID =
-            ContentTypeKeyImpl.of("liquid", MINDUSTRY_NAMESPACE, Liquid.class, ContentType.liquid);
+    KeyWithCType<Liquid> LIQUID =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "liquid", Liquid.class), ContentType.liquid);
 
-    ContentTypeKey<Weather> WEATHER =
-            ContentTypeKeyImpl.of("weather", MINDUSTRY_NAMESPACE, Weather.class, ContentType.weather);
+    KeyWithCType<Weather> WEATHER =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "weather", Weather.class), ContentType.weather);
 
-    ContentTypeKey<StatusEffect> STATUS =
-            ContentTypeKeyImpl.of("status", MINDUSTRY_NAMESPACE, StatusEffect.class, ContentType.status);
+    KeyWithCType<StatusEffect> STATUS =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "status", StatusEffect.class), ContentType.status);
 
-    ContentTypeKey<Planet> PLANET =
-            ContentTypeKeyImpl.of("planet", MINDUSTRY_NAMESPACE, Planet.class, ContentType.planet);
+    KeyWithCType<Planet> PLANET =
+            KeyWithCTypeImpl.of(Key.of(Key.MINDUSTRY_NAMESPACE, "planet", Planet.class), ContentType.planet);
 
-    List<ContentTypeKey<?>> ALL = List.of(BLOCK, UNIT, ITEM, LIQUID, WEATHER, STATUS, PLANET);
+    List<KeyWithCType<?>> ALL = List.of(BLOCK, UNIT, ITEM, LIQUID, WEATHER, STATUS, PLANET);
+
+    Key<T> getKey();
 
     ContentType getContentType();
 }

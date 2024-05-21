@@ -23,11 +23,11 @@ import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
 public interface StringComponentEncoder extends ComponentEncoder<MetadataContainer, String> {
 
-    Key MINDUSTRY_ENCODER = Key.of("mindustry-encoder", Key.DISTRIBUTOR_NAMESPACE);
+    Key<Void> MINDUSTRY_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "mindustry-encoder");
 
-    Key ANSI_ENCODER = Key.of("ansi-encoder", Key.DISTRIBUTOR_NAMESPACE);
+    Key<Void> ANSI_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "ansi-encoder");
 
-    Key PLAINTEXT_ENCODER = Key.of("plaintext-encoder", Key.DISTRIBUTOR_NAMESPACE);
+    Key<Void> PLAINTEXT_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "plaintext-encoder");
 
-    Key getKey();
+    Key<Void> getKey();
 }

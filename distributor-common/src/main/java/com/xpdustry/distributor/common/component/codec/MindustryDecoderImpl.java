@@ -32,7 +32,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class MindustryDecoderImpl implements StringComponentDecoder {
 
     @Override
-    public Key getKey() {
+    public Key<Void> getKey() {
         return MINDUSTRY_DECODER;
     }
 
