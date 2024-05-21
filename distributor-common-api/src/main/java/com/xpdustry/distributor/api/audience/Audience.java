@@ -28,6 +28,7 @@ import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import com.xpdustry.distributor.api.player.MUUID;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.stream.Collector;
@@ -110,6 +111,10 @@ public interface Audience {
     default void sendAnnouncement(final Component component) {}
 
     default void openURI(final URI uri) {}
+
+    default void showLabel(final String label, final float x, final float y, final Duration duration) {}
+
+    default void showLabel(final Component label, final float x, final float y, final Duration duration) {}
 
     default MetadataContainer getMetadata() {
         return MetadataContainer.empty();

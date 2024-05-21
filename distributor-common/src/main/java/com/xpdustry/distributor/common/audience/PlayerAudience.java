@@ -24,6 +24,7 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Locale;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
@@ -122,6 +123,21 @@ final class PlayerAudience implements Audience {
     @Override
     public void openURI(final URI uri) {
         Call.openURI(player.con(), uri.toString());
+    }
+
+    @Override
+    public void showLabel(final String label, final float x, final float y, final Duration duration) {
+        Call.label(player.con(), label, duration.toMillis() / 1000F, x, y);
+    }
+
+    @Override
+    public void showLabel(final Component label, final float x, final float y, final Duration duration) {
+        Call.label(
+                player.con(),
+                DistributorProvider.get().getMindustryEncoder().encode(label, getMetadata()),
+                duration.toMillis() / 1000F,
+                x,
+                y);
     }
 
     @Override
