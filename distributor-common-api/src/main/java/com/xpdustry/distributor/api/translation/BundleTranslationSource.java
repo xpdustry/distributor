@@ -18,23 +18,15 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
 
 /**
  * A translation source that can register strings from resource bundles, files and others.
  */
-public interface ResourceTranslationSource extends TranslationSource {
+public interface BundleTranslationSource extends TranslationSource {
 
     /**
      * Creates a new {@code LocalizationSourceRegistry} instance.
@@ -42,8 +34,8 @@ public interface ResourceTranslationSource extends TranslationSource {
      * @param defaultLocale the default locale of the localization source
      * @return a new {@code LocalizationSourceRegistry} instance
      */
-    static ResourceTranslationSource create(final Locale defaultLocale) {
-        return new ResourceTranslationSourceImpl(defaultLocale);
+    static BundleTranslationSource create(final Locale defaultLocale) {
+        return new BundleTranslationSourceImpl(defaultLocale);
     }
 
     /**
@@ -57,61 +49,15 @@ public interface ResourceTranslationSource extends TranslationSource {
      * } </pre>
      *
      * @param locale  the locale to register the strings to
-     * @param formats the map of localized strings
+     * @param translations the map of localized strings
      * @throws IllegalArgumentException if a key is already registered
      */
-    default void registerAll(final Locale locale, final Map<String, Translation> formats) {
-        this.registerAll(locale, formats.keySet(), formats::get);
+    default void registerAll(final Locale locale, final Map<String, Translation> translations) {
+        this.registerAll(locale, translations.keySet(), translations::get);
     }
 
-    /**
-     * Registers a resource bundle of localized strings.
-     *
-     * @param locale the locale to register the strings to
-     * @param bundle the resource bundle to use
-     * @throws IllegalArgumentException if a key is already registered
-     */
-    default void registerAll(final Locale locale, final ResourceBundle bundle) {
-        this.registerAll(locale, bundle.keySet(), key -> Translation.format(bundle.getString(key), locale));
-    }
-
-    /**
-     * Registers a resource bundle of localized strings via the classpath.
-     *
-     * <pre> {@code
-     *      final Plugin plugin = ...;
-     *      registry.registerAll(Locale.ENGLISH, "bundle", plugin.getClass().getClassLoader());
-     *      registry.registerAll(Locale.FRENCH, "bundle", plugin.getClass().getClassLoader());
-     * } </pre>
-     *
-     * @param locale   the locale to register the strings to
-     * @param baseName the base name of the resource bundle
-     * @param loader   the class loader to use
-     * @throws IllegalArgumentException if a key is already registered
-     * @throws MissingResourceException if a bundle with the base name and locale does not exist
-     */
-    default void registerAll(final Locale locale, final String baseName, final ClassLoader loader) {
-        this.registerAll(locale, ResourceBundle.getBundle(baseName, locale, loader));
-    }
-
-    /**
-     * Registers a resource bundle of localized strings via a file system.
-     *
-     * <pre> {@code
-     *      final var english = Paths.get("bundle_en.properties");
-     *      registry.registerAll(Locale.ENGLISH, path);
-     *      final var english = Paths.get("bundle_fr.properties");
-     *      registry.registerAll(Locale.FRENCH, path);
-     * } </pre>
-     *
-     * @param locale the locale to register the strings to
-     * @param path   the path to the bundle file
-     * @throws IllegalArgumentException if a key is already registered
-     */
-    default void registerAll(final Locale locale, final Path path) throws IOException {
-        try (final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-            this.registerAll(locale, new PropertyResourceBundle(reader));
-        }
+    default void registerAll(final TranslationBundle bundle) {
+        this.registerAll(bundle.getLocale(), bundle.getTranslations());
     }
 
     /**
@@ -134,10 +80,10 @@ public interface ResourceTranslationSource extends TranslationSource {
      *
      * @param key    the key of the string
      * @param locale the locale to register the string to
-     * @param format the localized string
+     * @param translation the localized string
      * @throws IllegalArgumentException if the key is already registered
      */
-    void register(final String key, final Locale locale, final Translation format);
+    void register(final String key, final Locale locale, final Translation translation);
 
     /**
      * Checks if a key is already registered, for any locale.

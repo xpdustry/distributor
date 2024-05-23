@@ -18,8 +18,9 @@
  */
 package com.xpdustry.distributor.api.component;
 
+import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
-import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.Temporal;
 
 public interface TemporalComponent
@@ -29,17 +30,28 @@ public interface TemporalComponent
         return new TemporalComponentImpl.Builder();
     }
 
-    static TemporalComponent temporal(final Temporal temporal, final DateTimeFormatter fallbackFormatter) {
-        return new TemporalComponentImpl(ComponentStyle.empty(), temporal, fallbackFormatter);
+    static TemporalComponent temporal(final Temporal temporal, final TemporalFormat fallbackFormat) {
+        return new TemporalComponentImpl(ComponentStyle.empty(), temporal, fallbackFormat);
+    }
+
+    static TemporalComponent temporal(
+            final Temporal temporal, final TemporalFormat fallbackFormat, final ComponentColor textColor) {
+        return new TemporalComponentImpl(ComponentStyle.style(textColor), temporal, fallbackFormat);
     }
 
     static TemporalComponent temporal(final Temporal temporal) {
-        return new TemporalComponentImpl(ComponentStyle.empty(), temporal, TemporalComponentImpl.DEFAULT_FORMATTER);
+        return new TemporalComponentImpl(
+                ComponentStyle.empty(), temporal, TemporalFormat.ofDateTime(FormatStyle.SHORT));
+    }
+
+    static TemporalComponent temporal(final Temporal temporal, final ComponentColor textColor) {
+        return new TemporalComponentImpl(
+                ComponentStyle.style(textColor), temporal, TemporalFormat.ofDateTime(FormatStyle.SHORT));
     }
 
     Temporal getTemporal();
 
-    DateTimeFormatter getFallbackFormatter();
+    TemporalFormat getFallbackFormat();
 
     @Override
     default Temporal getValue() {
@@ -50,6 +62,6 @@ public interface TemporalComponent
 
         Builder setTemporal(final Temporal temporal);
 
-        Builder setFallbackFormatter(final DateTimeFormatter formatter);
+        Builder setFallbackFormat(final TemporalFormat fallbackFormat);
     }
 }

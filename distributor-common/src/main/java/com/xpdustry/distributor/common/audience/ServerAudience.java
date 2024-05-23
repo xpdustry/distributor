@@ -19,9 +19,9 @@
 package com.xpdustry.distributor.common.audience;
 
 import arc.util.Log;
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
-import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import java.util.Locale;
 
@@ -43,8 +43,8 @@ final class ServerAudience implements Audience {
     }
 
     @Override
-    public void sendMessage(final Component component) {
-        Log.info(DistributorProvider.get().getAnsiEncoder().encode(component, getMetadata()));
+    public void sendMessage(final ComponentLike component) {
+        Log.info(render(component));
     }
 
     @Override
@@ -53,8 +53,8 @@ final class ServerAudience implements Audience {
     }
 
     @Override
-    public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
-        Log.info(DistributorProvider.get().getAnsiEncoder().encode(component, getMetadata()));
+    public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
+        Log.info(render(component));
     }
 
     @Override
@@ -63,12 +63,18 @@ final class ServerAudience implements Audience {
     }
 
     @Override
-    public void sendWarning(final Component component) {
-        Log.warn(DistributorProvider.get().getAnsiEncoder().encode(component, getMetadata()));
+    public void sendWarning(final ComponentLike component) {
+        Log.warn(render(component));
     }
 
     @Override
     public MetadataContainer getMetadata() {
         return metadata;
+    }
+
+    private String render(final ComponentLike component) {
+        return ComponentAppendable.ansi(getMetadata())
+                .append(component.asComponent())
+                .toString();
     }
 }

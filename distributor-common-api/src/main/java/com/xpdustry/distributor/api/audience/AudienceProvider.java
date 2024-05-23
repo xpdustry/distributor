@@ -34,9 +34,8 @@ public interface AudienceProvider {
 
     default Audience getTeam(final Team team) {
         return getPlayers()
-                .getAudiences()
-                .filter(audience ->
-                        audience.getMetadata().getMetadata(Audience.TEAM).orElse(null) == team)
+                .asStream()
+                .filter(a -> a.getMetadata().getMetadata(Audience.TEAM).orElse(null) == team)
                 .collect(Audience.collectToAudience());
     }
 }

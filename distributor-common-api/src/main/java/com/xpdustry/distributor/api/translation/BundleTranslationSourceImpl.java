@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class ResourceTranslationSourceImpl implements ResourceTranslationSource {
+final class BundleTranslationSourceImpl implements BundleTranslationSource {
 
     private final Map<String, Entry> entries = new ConcurrentHashMap<>();
     private final Locale defaultLocale;
 
-    ResourceTranslationSourceImpl(final Locale defaultLocale) {
+    BundleTranslationSourceImpl(final Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
 
@@ -38,8 +38,8 @@ final class ResourceTranslationSourceImpl implements ResourceTranslationSource {
     }
 
     @Override
-    public void register(final String key, final Locale locale, final Translation format) {
-        if (!this.entries.computeIfAbsent(key, k -> new Entry()).register(locale, format)) {
+    public void register(final String key, final Locale locale, final Translation translation) {
+        if (!this.entries.computeIfAbsent(key, k -> new Entry()).register(locale, translation)) {
             throw new IllegalArgumentException(
                     String.format("A translation is already present: %s for %s.", key, locale));
         }
@@ -82,7 +82,7 @@ final class ResourceTranslationSourceImpl implements ResourceTranslationSource {
             }
             if (format == null) {
                 // try with default locale of this registry
-                format = this.translations.get(ResourceTranslationSourceImpl.this.defaultLocale);
+                format = this.translations.get(BundleTranslationSourceImpl.this.defaultLocale);
             }
             if (format == null) {
                 // try local default locale of this JVM

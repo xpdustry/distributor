@@ -25,10 +25,7 @@ public interface Component extends ComponentLike {
     ComponentStyle getStyle();
 
     default ListComponent append(final ComponentLike component) {
-        return ListComponent.components()
-                .append(this)
-                .append(component.asComponent())
-                .build();
+        return ListComponent.components().append(this).append(component).build();
     }
 
     default Component compress() {

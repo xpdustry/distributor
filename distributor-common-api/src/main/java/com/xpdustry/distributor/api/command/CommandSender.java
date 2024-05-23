@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.util.Locale;
 import mindustry.gen.Player;
@@ -51,18 +52,32 @@ public interface CommandSender {
     String getName();
 
     /**
-     * Sends a simple message to the sender.
+     * Sends a message to the sender.
      *
      * @param text the message to send
      */
     void reply(final String text);
 
     /**
-     * Sends a error message to the sender.
+     * Sends a message to the sender.
+     *
+     * @param component the message to send
+     */
+    void reply(final Component component);
+
+    /**
+     * Sends an error message to the sender.
      *
      * @param text the message to send
      */
     void error(final String text);
+
+    /**
+     * Sends an error message to the sender.
+     *
+     * @param component the message to send
+     */
+    void error(final Component component);
 
     /**
      * Returns whether this sender is a player.

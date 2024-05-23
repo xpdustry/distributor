@@ -23,25 +23,18 @@ import arc.graphics.Colors;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
-import com.xpdustry.distributor.api.component.codec.StringComponentDecoder;
+import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
-import com.xpdustry.distributor.api.key.Key;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public final class MindustryDecoderImpl implements StringComponentDecoder {
+public final class MindustryDecoderImpl implements ComponentDecoder<String> {
 
     @Override
-    public Key<Void> getKey() {
-        return MINDUSTRY_DECODER;
+    public Component decode(final String input) {
+        return decode(input, new IndexHolder(), null).compress();
     }
 
-    @Override
-    public Component decode(final String input, final MetadataContainer context) {
-        return decode0(input, new IndexHolder(), null).compress();
-    }
-
-    private Component decode0(final String input, final IndexHolder holder, final @Nullable ComponentColor previous) {
+    private Component decode(final String input, final IndexHolder holder, final @Nullable ComponentColor previous) {
         final var list = ListComponent.components();
         list.setTextColor(previous);
         while (holder.index < input.length()) {
@@ -84,7 +77,7 @@ public final class MindustryDecoderImpl implements StringComponentDecoder {
                     list.append(TextComponent.text(input.substring(holder.index, start)));
                 }
                 holder.index = close + 1;
-                list.append(decode0(input, holder, ComponentColor.from(color)));
+                list.append(decode(input, holder, ComponentColor.from(color)));
             } else {
                 list.append(TextComponent.text("[" + value + "]"));
                 holder.index = close + 1;

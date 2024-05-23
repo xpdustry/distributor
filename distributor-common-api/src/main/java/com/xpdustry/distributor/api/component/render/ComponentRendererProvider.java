@@ -16,16 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.translation;
+package com.xpdustry.distributor.api.component.render;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.Component;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class NoopProcessor implements ComponentAwareTranslation.Processor {
+public interface ComponentRendererProvider {
 
-    static final NoopProcessor INSTANCE = new NoopProcessor();
-
-    @Override
-    public String process(final String value, final ComponentStyle component) {
-        return value;
-    }
+    <T extends Component> @Nullable ComponentRenderer<T> getRenderer(final T component);
 }

@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.audience;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 final class EmptyAudience implements Audience {
@@ -27,7 +28,12 @@ final class EmptyAudience implements Audience {
     private EmptyAudience() {}
 
     @Override
-    public Stream<Audience> getAudiences() {
+    public Iterable<Audience> getAudiences() {
+        return List.of();
+    }
+
+    @Override
+    public Stream<Audience> asStream() {
         return Stream.empty();
     }
 }

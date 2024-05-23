@@ -34,7 +34,7 @@ public interface TranslatableComponent
     }
 
     static TranslatableComponent translatable(
-            final String key, final TranslationArguments parameters, ComponentColor color) {
+            final String key, final TranslationArguments parameters, final ComponentColor color) {
         return new TranslatableComponentImpl(ComponentStyle.style(color), key, parameters);
     }
 

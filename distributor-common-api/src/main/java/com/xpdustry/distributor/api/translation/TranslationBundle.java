@@ -16,16 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.component.codec;
+package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.api.key.Key;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import java.util.Locale;
+import java.util.Map;
+import org.immutables.value.Value;
 
-public interface StringComponentEncoder extends ComponentEncoder<MetadataContainer, String> {
+@DistributorDataClass
+@Value.Immutable
+public interface TranslationBundle {
 
-    Key<Void> MINDUSTRY_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "mindustry-encoder");
+    static TranslationBundle of(final Locale locale, final Map<String, Translation> translations) {
+        return TranslationBundleImpl.of(locale, translations);
+    }
 
-    Key<Void> ANSI_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "ansi-encoder");
+    Locale getLocale();
 
-    Key<Void> PLAINTEXT_ENCODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "plaintext-encoder");
+    Map<String, Translation> getTranslations();
 }

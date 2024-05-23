@@ -16,12 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.component.codec;
+package com.xpdustry.distributor.api.component.render;
 
-import com.xpdustry.distributor.api.key.Key;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
-public interface StringComponentDecoder extends ComponentDecoder<MetadataContainer, String> {
+public interface ComponentRenderer<T extends Component> {
 
-    Key<Void> MINDUSTRY_DECODER = Key.of(Key.DISTRIBUTOR_NAMESPACE, "mindustry-decoder");
+    static <T extends Component> ComponentRenderer<T> noop() {
+        return (component, appendable, metadata) -> {};
+    }
+
+    void render(final T component, final ComponentAppendable appendable, final MetadataContainer metadata);
 }

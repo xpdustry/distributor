@@ -21,28 +21,31 @@ package com.xpdustry.distributor.common.service;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.util.Priority;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 public final class ServiceManagerImpl implements ServiceManager {
 
-    private final Map<Class<?>, Queue<Provider<?>>> services = new HashMap<>();
+    private final Map<Class<?>, List<Provider<?>>> services = new HashMap<>();
     private final Object lock = new Object();
 
     @Override
     public <T> void register(
             final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
         synchronized (this.lock) {
-            this.services
-                    .computeIfAbsent(
-                            service, k -> new PriorityQueue<Provider<?>>(Comparator.comparing(Provider::getPriority)))
-                    .add(Provider.of(plugin, service, instance, priority));
+            var providers = this.services.get(service);
+            if (providers == null) {
+                providers = new ArrayList<>();
+            } else {
+                providers = new ArrayList<>(providers);
+            }
+            providers.add(Provider.of(plugin, service, instance, priority));
+            providers.sort(Comparator.comparing(Provider::getPriority));
+            this.services.put(service, List.copyOf(providers));
         }
     }
 
@@ -50,10 +53,8 @@ public final class ServiceManagerImpl implements ServiceManager {
     @Override
     public <T> List<Provider<T>> getProviders(final Class<T> service) {
         synchronized (this.lock) {
-            final Object implementation = this.services.get(service);
-            return implementation != null
-                    ? List.copyOf((Collection<? extends Provider<T>>) implementation)
-                    : Collections.emptyList();
+            final Object providers = this.services.get(service);
+            return providers != null ? (List<Provider<T>>) providers : Collections.emptyList();
         }
     }
 }

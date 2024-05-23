@@ -21,6 +21,7 @@ package com.xpdustry.distributor.api.command;
 import arc.util.Log;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.util.Locale;
 import mindustry.gen.Player;
@@ -38,16 +39,22 @@ final class ServerCommandSender implements CommandSender {
 
     @Override
     public void reply(final String text) {
-        for (final var line : text.split("\n", -1)) {
-            Log.info(line);
-        }
+        Log.info(text);
+    }
+
+    @Override
+    public void reply(final Component component) {
+        getAudience().sendMessage(component);
     }
 
     @Override
     public void error(final String text) {
-        for (final var line : text.split("\n", -1)) {
-            Log.warn(line);
-        }
+        Log.warn(text);
+    }
+
+    @Override
+    public void error(final Component component) {
+        getAudience().sendWarning(component);
     }
 
     @Override

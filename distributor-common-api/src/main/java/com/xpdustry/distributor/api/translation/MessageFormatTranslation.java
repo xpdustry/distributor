@@ -18,12 +18,12 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.ValueComponent;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import java.util.Locale;
 record MessageFormatTranslation(String pattern, Locale locale) implements ComponentAwareTranslation {
 
     private static final int MAX_NAMED_INDEX = 63;
+    private static final Object[] EMPTY_ARRAY = new Object[MAX_NAMED_INDEX + 1];
 
     MessageFormatTranslation {
         try {
@@ -43,11 +44,11 @@ record MessageFormatTranslation(String pattern, Locale locale) implements Compon
     }
 
     @Override
-    public String format(final TranslationArguments parameters, final Processor processor) {
+    public void formatTo(final TranslationArguments parameters, final ComponentAppendable appendable) {
         if (parameters instanceof TranslationArguments.Empty) {
-            return format(List.of(), processor);
+            formatTo(List.of(), appendable);
         } else if (parameters instanceof TranslationArguments.Array array) {
-            return format(array.getArguments(), processor);
+            formatTo(array.getArguments(), appendable);
         } else if (parameters instanceof TranslationArguments.Named named) {
             final List<Object> entries = new ArrayList<>();
             for (final var entry : named.getArguments().entrySet()) {
@@ -66,65 +67,62 @@ record MessageFormatTranslation(String pattern, Locale locale) implements Compon
                 }
                 entries.set(index, entry.getValue());
             }
-            return format(entries, processor);
+            formatTo(entries, appendable);
         } else {
             throw new IllegalArgumentException("Unsupported arguments type: " + parameters.getClass());
         }
     }
 
     @SuppressWarnings("JdkObsolete")
-    private String format(final List<Object> arguments, final Processor processor) {
+    private void formatTo(final List<Object> arguments, final ComponentAppendable appendable) {
         final var format = new MessageFormat(pattern, locale);
         if (arguments.isEmpty()) {
-            return format.format(null);
+            appendable.append(format.format(null));
         }
 
-        final var builder = new StringBuilder();
-        final var empty = new Object[arguments.size()];
-        final var buffer = format.format(empty, new StringBuffer(), null);
-        final var iterator = format.formatToCharacterIterator(empty);
+        final var buffer = format.format(EMPTY_ARRAY, new StringBuffer(), null);
+        final var iterator = format.formatToCharacterIterator(EMPTY_ARRAY);
 
         while (iterator.getIndex() < iterator.getEndIndex()) {
             final int end = iterator.getRunLimit();
             final var index = (Integer) iterator.getAttribute(MessageFormat.Field.ARGUMENT);
-            if (index != null) {
-                var style = ComponentStyle.empty();
-                var argument = arguments.get(index);
-                if (argument instanceof ComponentLike like) {
-                    final var component = like.asComponent();
-                    style = component.getStyle();
-                    if (component instanceof ValueComponent<?> value) {
-                        argument = value.getValue();
-                    } else {
-                        argument = DistributorProvider.get()
-                                .getPlainTextEncoder()
-                                .encode(
-                                        component,
-                                        MetadataContainer.builder()
-                                                .putConstant(Audience.LOCALE, locale)
-                                                .build());
-                    }
-                }
-                final var subformat = format.getFormatsByArgumentIndex()[index];
-                if (subformat == null) {
-                    builder.append(processor.process(argument.toString(), ComponentStyle.empty()));
-                } else {
-                    String result;
-                    try {
-                        result = subformat
-                                .format(argument, new StringBuffer(), new FieldPosition(iterator.getIndex()))
-                                .toString();
-                    } catch (final IllegalArgumentException e) {
-                        result = argument.toString();
-                    }
-                    builder.append(processor.process(result, style));
-                }
+            if (index == null) {
+                appendable.append(buffer, iterator.getIndex(), end);
             } else {
-                builder.append(processor.process(buffer.substring(iterator.getIndex(), end), ComponentStyle.empty()));
+                var argument = arguments.get(index);
+                var style = ComponentStyle.empty();
+                Component component = null;
+
+                if (argument instanceof ComponentLike like) {
+                    var comp = like.asComponent();
+                    if (comp instanceof ValueComponent<?> value) {
+                        argument = value.getValue();
+                        style = value.getStyle();
+                    } else {
+                        component = comp;
+                    }
+                }
+
+                if (component == null) {
+                    String result;
+                    final var subformat = format.getFormatsByArgumentIndex()[index];
+                    if (subformat == null) {
+                        result = argument.toString();
+                    } else {
+                        try {
+                            result = subformat
+                                    .format(argument, new StringBuffer(), new FieldPosition(iterator.getIndex()))
+                                    .toString();
+                        } catch (final IllegalArgumentException e) {
+                            result = argument.toString();
+                        }
+                    }
+                    component = TextComponent.text(result, style);
+                }
+
+                appendable.append(component);
             }
             iterator.setIndex(end);
         }
-
-        return builder.toString();
     }
 }

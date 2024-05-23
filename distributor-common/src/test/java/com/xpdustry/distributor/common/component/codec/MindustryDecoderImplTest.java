@@ -16,39 +16,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.common.codec;
+package com.xpdustry.distributor.common.component.codec;
 
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
-import com.xpdustry.distributor.common.component.codec.MindustryDecoderImpl;
 import org.junit.jupiter.api.Test;
 
 import static com.xpdustry.distributor.api.component.TextComponent.text;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MindustryDecoderImplTest {
+public final class MindustryDecoderImplTest {
 
     @Test
-    void test_decode() {
-        final var codec = new MindustryDecoderImpl();
-        final var context = MetadataContainer.empty();
+    void test_decode_plain() {
+        final var decoder = new MindustryDecoderImpl();
+        final var component = text("Hello, World!");
+        assertEquals(component, decoder.decode("Hello, World!"));
+    }
 
-        final var component1 = text("Hello, World!");
-        assertEquals(component1, codec.decode("Hello, World!", context));
-
-        final var component2 = text().setContent("Hello, World!")
+    @Test
+    void test_decode_color() {
+        final var decoder = new MindustryDecoderImpl();
+        final var component = text().setContent("Hello, World!")
                 .setTextColor(ComponentColor.BLACK)
                 .build();
-        assertEquals(component2, codec.decode("[#000000]Hello, World!", context));
+        assertEquals(component, decoder.decode("[#000000]Hello, World!"));
+    }
 
-        // Try nested components
-        final var component3 = ListComponent.components()
+    @Test
+    void test_decode_nested() {
+        final var decoder = new MindustryDecoderImpl();
+        final var component = ListComponent.components()
                 .setTextColor(ComponentColor.RED)
                 .append(text("Hello, "))
                 .append(text("World", ComponentColor.GREEN))
                 .append(text("!"))
                 .build();
-        assertEquals(component3, codec.decode("[#FF0000]Hello, [#00FF00]World[]![]", context));
+        assertEquals(component, decoder.decode("[#FF0000]Hello, [#00FF00]World[]![]"));
     }
 }

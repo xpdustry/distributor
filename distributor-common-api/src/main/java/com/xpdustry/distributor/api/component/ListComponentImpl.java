@@ -81,8 +81,10 @@ final class ListComponentImpl extends AbstractComponent<ListComponent, ListCompo
         }
 
         @Override
-        public ListComponent.Builder append(final ComponentLike component) {
-            this.components.add(component.asComponent());
+        public ListComponent.Builder append(final ComponentLike... components) {
+            for (final var component : components) {
+                this.components.add(component.asComponent());
+            }
             return this;
         }
 

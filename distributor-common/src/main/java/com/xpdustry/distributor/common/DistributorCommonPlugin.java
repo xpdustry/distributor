@@ -22,10 +22,9 @@ import arc.Core;
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
-import com.xpdustry.distributor.api.component.codec.StringComponentDecoder;
-import com.xpdustry.distributor.api.component.codec.StringComponentEncoder;
+import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
+import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
 import com.xpdustry.distributor.api.event.EventBus;
-import com.xpdustry.distributor.api.key.Key;
 import com.xpdustry.distributor.api.permission.PermissionReader;
 import com.xpdustry.distributor.api.player.PlayerLookup;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
@@ -34,17 +33,14 @@ import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
 import com.xpdustry.distributor.common.audience.AudienceProviderImpl;
-import com.xpdustry.distributor.common.component.codec.AnsiEncoderImpl;
 import com.xpdustry.distributor.common.component.codec.MindustryDecoderImpl;
-import com.xpdustry.distributor.common.component.codec.MindustryEncoderImpl;
-import com.xpdustry.distributor.common.component.codec.PlainTextEncoderImpl;
+import com.xpdustry.distributor.common.component.render.ServiceComponentRendererProvider;
+import com.xpdustry.distributor.common.component.render.StandardComponentRendererProvider;
 import com.xpdustry.distributor.common.event.EventBusImpl;
 import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
 import com.xpdustry.distributor.common.scheduler.PluginTimeSource;
 import com.xpdustry.distributor.common.service.ServiceManagerImpl;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
@@ -54,13 +50,12 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private final EventBus events = new EventBusImpl();
     private final PluginScheduler scheduler = new PluginSchedulerImpl(
             PluginTimeSource.mindustry(), Core.app::post, Runtime.getRuntime().availableProcessors());
+    private final ComponentRendererProvider componentRendererProvider =
+            new ServiceComponentRendererProvider(this.services);
+    private final ComponentDecoder<String> mindustryComponentDecoder = new MindustryDecoderImpl();
+    private final AudienceProvider audienceProvider = new AudienceProviderImpl(this);
     private @Nullable PlayerLookup lookup = null;
     private @Nullable PermissionReader permissions = null;
-    private @Nullable StringComponentEncoder mindustryEncoder = null;
-    private @Nullable StringComponentDecoder mindustryDecoder = null;
-    private @Nullable StringComponentEncoder ansiEncoder = null;
-    private @Nullable StringComponentEncoder plainTextEncoder = null;
-    private @Nullable AudienceProvider audienceProvider = null;
 
     @Override
     public ServiceManager getServiceManager() {
@@ -93,34 +88,25 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public StringComponentEncoder getMindustryEncoder() {
-        return ensureInitialized(this.mindustryEncoder, "mindustry-string-encoder");
+    public ComponentRendererProvider getComponentRendererProvider() {
+        return componentRendererProvider;
     }
 
     @Override
-    public StringComponentDecoder getMindustryDecoder() {
-        return ensureInitialized(this.mindustryDecoder, "mindustry-string-decoder");
-    }
-
-    @Override
-    public StringComponentEncoder getPlainTextEncoder() {
-        return ensureInitialized(this.plainTextEncoder, "plaintext-string-encoder");
-    }
-
-    @Override
-    public StringComponentEncoder getAnsiEncoder() {
-        return ensureInitialized(this.ansiEncoder, "ansi-string-encoder");
+    public ComponentDecoder<String> getMindustryComponentDecoder() {
+        return mindustryComponentDecoder;
     }
 
     @Override
     public AudienceProvider getAudienceProvider() {
-        return ensureInitialized(this.audienceProvider, "audience-provider");
+        return this.audienceProvider;
     }
 
     @Override
     public void onInit() {
         this.getLogger().info("Loading distributor common api");
         DistributorProvider.set(this);
+        this.services.register(this, ComponentRendererProvider.class, new StandardComponentRendererProvider());
         this.getGlobalTranslationSource().register(TranslationSource.router());
         this.addListener((PluginSchedulerImpl) this.scheduler);
     }
@@ -129,46 +115,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     public void onLoad() {
         this.lookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
         this.permissions = services.provideOrDefault(PermissionReader.class, PermissionReader::empty);
-
-        this.mindustryEncoder = findNamedService(
-                StringComponentEncoder.class,
-                StringComponentEncoder::getKey,
-                StringComponentEncoder.MINDUSTRY_ENCODER,
-                MindustryEncoderImpl::new);
-
-        this.mindustryDecoder = findNamedService(
-                StringComponentDecoder.class,
-                StringComponentDecoder::getKey,
-                MindustryDecoderImpl.MINDUSTRY_DECODER,
-                MindustryDecoderImpl::new);
-
-        this.ansiEncoder = findNamedService(
-                StringComponentEncoder.class,
-                StringComponentEncoder::getKey,
-                StringComponentEncoder.ANSI_ENCODER,
-                AnsiEncoderImpl::new);
-
-        this.plainTextEncoder = findNamedService(
-                StringComponentEncoder.class,
-                StringComponentEncoder::getKey,
-                StringComponentEncoder.PLAINTEXT_ENCODER,
-                PlainTextEncoderImpl::new);
-
-        this.audienceProvider = services.provideOrDefault(AudienceProvider.class, () -> new AudienceProviderImpl(this));
-
         this.getLogger().info("Loaded distributor common api");
-    }
-
-    private <T> T findNamedService(
-            final Class<T> service,
-            final Function<T, Key<Void>> extractor,
-            final Key<Void> key,
-            final Supplier<T> def) {
-        return services.getProviders(service).stream()
-                .map(ServiceManager.Provider::getInstance)
-                .filter(encoder -> extractor.apply(encoder).getName().equals(key.getName()))
-                .findFirst()
-                .orElseGet(def);
     }
 
     private <T> T ensureInitialized(final @Nullable T instance, final String name) {

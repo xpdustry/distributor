@@ -18,9 +18,9 @@
  */
 package com.xpdustry.distributor.common.audience;
 
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
-import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.net.URI;
@@ -55,8 +55,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendMessage(final Component component) {
-        player.sendMessage(DistributorProvider.get().getMindustryEncoder().encode(component, getMetadata()));
+    public void sendMessage(final ComponentLike component) {
+        player.sendMessage(render(component));
     }
 
     @Override
@@ -65,8 +65,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
-        player.sendMessage(DistributorProvider.get().getMindustryEncoder().encode(component, getMetadata()));
+    public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
+        player.sendMessage(render(component));
     }
 
     @Override
@@ -75,9 +75,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendWarning(final Component component) {
-        Call.announce(
-                player.con(), DistributorProvider.get().getMindustryEncoder().encode(component, getMetadata()));
+    public void sendWarning(final ComponentLike component) {
+        Call.announce(player.con(), render(component));
     }
 
     @Override
@@ -86,9 +85,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void showHUDText(final Component component) {
-        Call.setHudText(
-                player.con(), DistributorProvider.get().getMindustryEncoder().encode(component, getMetadata()));
+    public void showHUDText(final ComponentLike component) {
+        Call.setHudText(player.con(), render(component));
     }
 
     @Override
@@ -102,11 +100,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendNotification(final Component component, final char icon) {
-        Call.warningToast(
-                player.con(),
-                icon,
-                DistributorProvider.get().getMindustryEncoder().encode(component, getMetadata()));
+    public void sendNotification(final ComponentLike component, final char icon) {
+        Call.warningToast(player.con(), icon, render(component));
     }
 
     @Override
@@ -115,9 +110,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendAnnouncement(final Component component) {
-        Call.infoMessage(
-                player.con(), DistributorProvider.get().getMindustryEncoder().encode(component, getMetadata()));
+    public void sendAnnouncement(final ComponentLike component) {
+        Call.infoMessage(player.con(), render(component));
     }
 
     @Override
@@ -131,13 +125,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void showLabel(final Component label, final float x, final float y, final Duration duration) {
-        Call.label(
-                player.con(),
-                DistributorProvider.get().getMindustryEncoder().encode(label, getMetadata()),
-                duration.toMillis() / 1000F,
-                x,
-                y);
+    public void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {
+        Call.label(player.con(), render(label), duration.toMillis() / 1000F, x, y);
     }
 
     @Override
@@ -148,5 +137,11 @@ final class PlayerAudience implements Audience {
     @Override
     public PermissionProvider getPermissions() {
         return permissions;
+    }
+
+    private String render(final ComponentLike component) {
+        return ComponentAppendable.mindustry(getMetadata())
+                .append(component.asComponent())
+                .toString();
     }
 }

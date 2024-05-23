@@ -18,23 +18,17 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
 public interface ComponentAwareTranslation extends Translation {
 
     @Override
     default String format(final TranslationArguments parameters) {
-        return format(parameters, Processor.noop());
+        final var appendable = ComponentAppendable.plain(MetadataContainer.empty());
+        formatTo(parameters, appendable);
+        return appendable.toString();
     }
 
-    String format(final TranslationArguments parameters, final Processor processor);
-
-    interface Processor {
-
-        static Processor noop() {
-            return NoopProcessor.INSTANCE;
-        }
-
-        String process(final String value, final ComponentStyle style);
-    }
+    void formatTo(final TranslationArguments parameters, final ComponentAppendable appendable);
 }

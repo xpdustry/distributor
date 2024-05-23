@@ -36,6 +36,10 @@ public interface TextComponent
         return new TextComponentImpl(ComponentStyle.style(textColor), content);
     }
 
+    static TextComponent text(final String content, final ComponentStyle style) {
+        return new TextComponentImpl(style, content);
+    }
+
     static TextComponent space() {
         return TextComponentImpl.SPACE;
     }

@@ -35,7 +35,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
 
     @Override
     default ListComponent append(final ComponentLike component) {
-        return this.toBuilder().append(component.asComponent()).build();
+        return this.toBuilder().append(component).build();
     }
 
     @Override
@@ -52,8 +52,10 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
                 return buildable.toBuilder()
                         .setStyle(getStyle().merge(component.getStyle()))
                         .build();
-            } else {
+            } else if (this.getStyle().equals(ComponentStyle.empty())) {
                 return component;
+            } else {
+                return this.toBuilder().setComponents(List.of(component)).build();
             }
         } else {
             return this.toBuilder().setComponents(components).build();
@@ -64,6 +66,6 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
 
         Builder setComponents(final List<Component> components);
 
-        Builder append(final ComponentLike component);
+        Builder append(final ComponentLike... components);
     }
 }

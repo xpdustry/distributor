@@ -19,11 +19,8 @@
 package com.xpdustry.distributor.api.component.codec;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.key.Key;
 
-public interface ComponentDecoder<C, T> {
+public interface ComponentDecoder<T> {
 
-    Component decode(final T input, final C context);
-
-    Key<Void> getKey();
+    Component decode(final T input);
 }

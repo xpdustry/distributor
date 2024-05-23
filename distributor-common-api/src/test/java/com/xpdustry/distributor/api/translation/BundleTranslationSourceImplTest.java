@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public final class ResourceTranslationSourceImplTest {
+public final class BundleTranslationSourceImplTest {
 
     @Test
     void test_simple_localize() {
@@ -82,7 +82,7 @@ public final class ResourceTranslationSourceImplTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    private ResourceTranslationSourceImpl createSource(final Locale locale) {
-        return new ResourceTranslationSourceImpl(locale);
+    private BundleTranslationSourceImpl createSource(final Locale locale) {
+        return new BundleTranslationSourceImpl(locale);
     }
 }

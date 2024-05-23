@@ -20,22 +20,19 @@ package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.Temporal;
 
 final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, TemporalComponent.Builder>
         implements TemporalComponent {
 
-    static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ISO_INSTANT;
-
     private final Temporal temporal;
-    private final DateTimeFormatter fallbackFormatter;
+    private final TemporalFormat fallbackStyle;
 
-    TemporalComponentImpl(
-            final ComponentStyle style, final Temporal temporal, final DateTimeFormatter fallbackFormatter) {
+    TemporalComponentImpl(final ComponentStyle style, final Temporal temporal, final TemporalFormat fallbackStyle) {
         super(style);
         this.temporal = temporal;
-        this.fallbackFormatter = fallbackFormatter;
+        this.fallbackStyle = fallbackStyle;
     }
 
     @Override
@@ -44,8 +41,8 @@ final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, T
     }
 
     @Override
-    public DateTimeFormatter getFallbackFormatter() {
-        return this.fallbackFormatter;
+    public TemporalFormat getFallbackFormat() {
+        return fallbackStyle;
     }
 
     @Override
@@ -57,7 +54,7 @@ final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, T
             implements TemporalComponent.Builder {
 
         private Temporal temporal;
-        private DateTimeFormatter formatter = DEFAULT_FORMATTER;
+        private TemporalFormat fallbackFormat = TemporalFormat.ofDateTime(FormatStyle.SHORT);
 
         public Builder() {
             this.temporal = Instant.now();
@@ -75,14 +72,14 @@ final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, T
         }
 
         @Override
-        public TemporalComponent.Builder setFallbackFormatter(final DateTimeFormatter formatter) {
-            this.formatter = formatter;
+        public Builder setFallbackFormat(final TemporalFormat fallbackFormat) {
+            this.fallbackFormat = fallbackFormat;
             return this;
         }
 
         @Override
         public TemporalComponent build() {
-            return new TemporalComponentImpl(style.build(), temporal, formatter);
+            return new TemporalComponentImpl(style.build(), temporal, fallbackFormat);
         }
     }
 }

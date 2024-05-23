@@ -20,6 +20,9 @@ package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ListComponent;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.util.Locale;
 import mindustry.gen.Player;
@@ -37,8 +40,21 @@ record PlayerCommandSender(Player player) implements CommandSender {
     }
 
     @Override
+    public void reply(final Component component) {
+        getAudience().sendMessage(component);
+    }
+
+    @Override
     public void error(final String text) {
         this.player.sendMessage("[red]" + text);
+    }
+
+    @Override
+    public void error(final Component component) {
+        getAudience()
+                .sendMessage(ListComponent.components()
+                        .setTextColor(ComponentColor.RED)
+                        .append(component));
     }
 
     @Override
