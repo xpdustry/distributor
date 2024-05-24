@@ -23,17 +23,8 @@ import java.time.Instant;
 import java.time.format.FormatStyle;
 import java.time.temporal.Temporal;
 
-final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, TemporalComponent.Builder>
+record TemporalComponentImpl(ComponentStyle style, Temporal temporal, TemporalFormat format)
         implements TemporalComponent {
-
-    private final Temporal temporal;
-    private final TemporalFormat fallbackStyle;
-
-    TemporalComponentImpl(final ComponentStyle style, final Temporal temporal, final TemporalFormat fallbackStyle) {
-        super(style);
-        this.temporal = temporal;
-        this.fallbackStyle = fallbackStyle;
-    }
 
     @Override
     public Temporal getTemporal() {
@@ -41,20 +32,25 @@ final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, T
     }
 
     @Override
-    public TemporalFormat getFallbackFormat() {
-        return fallbackStyle;
+    public TemporalFormat getFormat() {
+        return format;
     }
 
     @Override
-    public TemporalComponent.Builder toBuilder() {
+    public ComponentStyle getStyle() {
+        return style;
+    }
+
+    @Override
+    public Builder toBuilder() {
         return new Builder(this);
     }
 
-    static final class Builder extends AbstractComponent.Builder<TemporalComponent, TemporalComponent.Builder>
+    static final class Builder extends AbstractComponentBuilder<TemporalComponent, TemporalComponent.Builder>
             implements TemporalComponent.Builder {
 
         private Temporal temporal;
-        private TemporalFormat fallbackFormat = TemporalFormat.ofDateTime(FormatStyle.SHORT);
+        private TemporalFormat format = TemporalFormat.ofDateTime(FormatStyle.SHORT);
 
         public Builder() {
             this.temporal = Instant.now();
@@ -72,14 +68,14 @@ final class TemporalComponentImpl extends AbstractComponent<TemporalComponent, T
         }
 
         @Override
-        public Builder setFallbackFormat(final TemporalFormat fallbackFormat) {
-            this.fallbackFormat = fallbackFormat;
+        public Builder setFormat(final TemporalFormat format) {
+            this.format = format;
             return this;
         }
 
         @Override
         public TemporalComponent build() {
-            return new TemporalComponentImpl(style.build(), temporal, fallbackFormat);
+            return new TemporalComponentImpl(style.build(), temporal, format);
         }
     }
 }

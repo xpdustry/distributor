@@ -18,7 +18,31 @@
  */
 package com.xpdustry.distributor.api.component;
 
-public interface ValueComponent<V> extends Component {
+import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.component.style.ComponentStyle;
+
+public interface ValueComponent<V> extends BuildableComponent<ValueComponent<V>, ValueComponent.Builder<V>> {
+
+    static <V> ValueComponent.Builder<V> value() {
+        return new ValueComponentImpl.Builder<>();
+    }
+
+    static <V> ValueComponent<V> value(final V value) {
+        return new ValueComponentImpl<>(ComponentStyle.empty(), value);
+    }
+
+    static <V> ValueComponent<V> value(final V value, final ComponentColor textColor) {
+        return new ValueComponentImpl<>(ComponentStyle.style(textColor), value);
+    }
+
+    static <V> ValueComponent<V> value(final V value, final ComponentStyle style) {
+        return new ValueComponentImpl<>(style, value);
+    }
 
     V getValue();
+
+    interface Builder<V> extends BuildableComponent.Builder<ValueComponent<V>, ValueComponent.Builder<V>> {
+
+        Builder<V> setValue(final V value);
+    }
 }

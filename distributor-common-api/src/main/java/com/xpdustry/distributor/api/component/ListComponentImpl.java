@@ -21,14 +21,11 @@ package com.xpdustry.distributor.api.component;
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-final class ListComponentImpl extends AbstractComponent<ListComponent, ListComponent.Builder> implements ListComponent {
-
-    private final List<Component> components;
+record ListComponentImpl(ComponentStyle style, List<Component> components) implements ListComponent {
 
     ListComponentImpl(final ComponentStyle style, final List<Component> components) {
-        super(style);
+        this.style = style;
         this.components = List.copyOf(components);
     }
 
@@ -38,28 +35,16 @@ final class ListComponentImpl extends AbstractComponent<ListComponent, ListCompo
     }
 
     @Override
-    public ListComponent.Builder toBuilder() {
+    public ComponentStyle getStyle() {
+        return this.style;
+    }
+
+    @Override
+    public Builder toBuilder() {
         return new Builder(this);
     }
 
-    @Override
-    public String toString() {
-        return "ListComponent{style=" + getStyle() + ", components=" + components + "}";
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStyle(), components);
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        return (o instanceof ListComponentImpl other)
-                && getStyle().equals(other.getStyle())
-                && components.equals(other.components);
-    }
-
-    static final class Builder extends AbstractComponent.Builder<ListComponent, ListComponent.Builder>
+    static final class Builder extends AbstractComponentBuilder<ListComponent, ListComponent.Builder>
             implements ListComponent.Builder {
 
         private final List<Component> components;

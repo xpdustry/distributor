@@ -22,10 +22,10 @@ import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
-import com.xpdustry.distributor.api.component.NumberComponent;
 import com.xpdustry.distributor.api.component.TemporalComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.TranslatableComponent;
+import com.xpdustry.distributor.api.component.ValueComponent;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.component.render.ComponentRenderer;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
@@ -44,12 +44,12 @@ public final class StandardComponentRendererProvider implements ComponentRendere
             return (ComponentRenderer<T>) TextComponentRenderer.INSTANCE;
         } else if (component instanceof ListComponent) {
             return (ComponentRenderer<T>) ListComponentRenderer.INSTANCE;
-        } else if (component instanceof NumberComponent) {
-            return (ComponentRenderer<T>) NumberComponentRenderer.INSTANCE;
         } else if (component instanceof TemporalComponent) {
             return (ComponentRenderer<T>) TemporalComponentRenderer.INSTANCE;
         } else if (component instanceof TranslatableComponent) {
             return (ComponentRenderer<T>) TranslatableComponentRenderer.INSTANCE;
+        } else if (component instanceof ValueComponent) {
+            return (ComponentRenderer<T>) ValueComponentRenderer.INSTANCE;
         } else {
             return null;
         }
@@ -79,19 +79,6 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         }
     }
 
-    private static final class NumberComponentRenderer implements ComponentRenderer<NumberComponent> {
-
-        private static final NumberComponentRenderer INSTANCE = new NumberComponentRenderer();
-
-        @Override
-        public void render(
-                final NumberComponent component,
-                final ComponentAppendable appendable,
-                final MetadataContainer metadata) {
-            appendable.append(component.getNumber().toString());
-        }
-    }
-
     private static final class TemporalComponentRenderer implements ComponentRenderer<TemporalComponent> {
 
         private static final TemporalComponentRenderer INSTANCE = new TemporalComponentRenderer();
@@ -102,7 +89,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
                 final ComponentAppendable appendable,
                 final MetadataContainer metadata) {
             component
-                    .getFallbackFormat()
+                    .getFormat()
                     .toFormatter()
                     .withZone(ZoneId.of("UTC"))
                     .withLocale(metadata.getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault))
@@ -129,6 +116,19 @@ public final class StandardComponentRendererProvider implements ComponentRendere
             } else {
                 appendable.append(translation.format(component.getParameters()));
             }
+        }
+    }
+
+    private static final class ValueComponentRenderer implements ComponentRenderer<ValueComponent<?>> {
+
+        private static final ValueComponentRenderer INSTANCE = new ValueComponentRenderer();
+
+        @Override
+        public void render(
+                final ValueComponent<?> component,
+                final ComponentAppendable appendable,
+                final MetadataContainer metadata) {
+            appendable.append(component.getValue().toString());
         }
     }
 }
