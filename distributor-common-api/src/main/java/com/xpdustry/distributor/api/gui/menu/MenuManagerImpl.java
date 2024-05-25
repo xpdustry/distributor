@@ -28,7 +28,7 @@ import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.ui.Menus;
 
-final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> implements MenuManager {
+final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuManager, MenuPane> implements MenuManager {
 
     private final int id = Menus.registerMenu(this::handle);
 

@@ -21,7 +21,8 @@ package com.xpdustry.distributor.api.gui.transform;
 import com.xpdustry.distributor.api.gui.Pane;
 import com.xpdustry.distributor.api.gui.WindowManager;
 
-public interface TransformerWindowManager<E extends Pane> extends WindowManager {
+public interface TransformerWindowManager<T extends TransformerWindowManager<T, P>, P extends Pane>
+        extends WindowManager {
 
-    void addTransformer(final Transformer<E> transformer);
+    T addTransformer(final Transformer<P> transformer);
 }

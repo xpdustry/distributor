@@ -33,7 +33,7 @@ import java.time.Duration;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 
-final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane> implements PopupManager {
+final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupManager, PopupPane> implements PopupManager {
 
     private final Interval interval = new Interval();
     private Duration updateInterval = Duration.ZERO;

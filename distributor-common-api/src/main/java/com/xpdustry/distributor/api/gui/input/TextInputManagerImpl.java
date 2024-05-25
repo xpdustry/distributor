@@ -31,7 +31,8 @@ import mindustry.gen.Player;
 import mindustry.ui.Menus;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextInputPane> implements TextInputManager {
+final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextInputManager, TextInputPane>
+        implements TextInputManager {
 
     private final int id = Menus.registerTextInput(this::handle);
     private final Set<MUUID> visible = new HashSet<>();
