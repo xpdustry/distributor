@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.gui.menu;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.Action;
 import java.util.Objects;
@@ -38,8 +37,8 @@ final class MenuPaneImpl implements MenuPane {
     }
 
     @Override
-    public MenuPane setTitle(final ComponentLike title) {
-        this.title = title.asComponent();
+    public MenuPane setTitle(final Component title) {
+        this.title = title;
         return this;
     }
 
@@ -49,8 +48,8 @@ final class MenuPaneImpl implements MenuPane {
     }
 
     @Override
-    public MenuPane setContent(final ComponentLike content) {
-        this.content = content.asComponent();
+    public MenuPane setContent(final Component content) {
+        this.content = content;
         return this;
     }
 

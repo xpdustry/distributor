@@ -20,7 +20,6 @@ package com.xpdustry.distributor.api.gui.menu;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.Pane;
 
@@ -32,7 +31,7 @@ public interface MenuPane extends Pane {
 
     Component getTitle();
 
-    MenuPane setTitle(final ComponentLike title);
+    MenuPane setTitle(final Component title);
 
     default MenuPane setTitle(final String title) {
         return setTitle(DistributorProvider.get().getMindustryComponentDecoder().decode(title));
@@ -40,7 +39,7 @@ public interface MenuPane extends Pane {
 
     Component getContent();
 
-    MenuPane setContent(final ComponentLike content);
+    MenuPane setContent(final Component content);
 
     default MenuPane setContent(final String content) {
         return setContent(

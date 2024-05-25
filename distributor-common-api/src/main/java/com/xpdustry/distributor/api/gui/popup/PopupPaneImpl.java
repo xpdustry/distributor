@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.gui.popup;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import java.util.Objects;
@@ -39,8 +38,8 @@ final class PopupPaneImpl implements PopupPane {
     }
 
     @Override
-    public PopupPane setContent(final ComponentLike content) {
-        this.content = content.asComponent();
+    public PopupPane setContent(final Component content) {
+        this.content = content;
         return this;
     }
 

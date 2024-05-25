@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.gui.input;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
@@ -41,8 +40,8 @@ final class TextInputPaneImpl implements TextInputPane {
     }
 
     @Override
-    public TextInputPane setTitle(final ComponentLike title) {
-        this.title = title.asComponent();
+    public TextInputPane setTitle(final Component title) {
+        this.title = title;
         return this;
     }
 
@@ -52,8 +51,8 @@ final class TextInputPaneImpl implements TextInputPane {
     }
 
     @Override
-    public TextInputPane setDescription(final ComponentLike description) {
-        this.description = description.asComponent();
+    public TextInputPane setDescription(final Component description) {
+        this.description = description;
         return this;
     }
 
@@ -63,8 +62,8 @@ final class TextInputPaneImpl implements TextInputPane {
     }
 
     @Override
-    public TextInputPane setPlaceholder(final ComponentLike placeholder) {
-        this.placeholder = placeholder.asComponent();
+    public TextInputPane setPlaceholder(final Component placeholder) {
+        this.placeholder = placeholder;
         return this;
     }
 

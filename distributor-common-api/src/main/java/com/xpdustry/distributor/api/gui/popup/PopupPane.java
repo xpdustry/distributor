@@ -20,7 +20,6 @@ package com.xpdustry.distributor.api.gui.popup;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import com.xpdustry.distributor.api.gui.Pane;
 
@@ -32,7 +31,7 @@ public interface PopupPane extends Pane {
 
     Component getContent();
 
-    PopupPane setContent(final ComponentLike content);
+    PopupPane setContent(final Component content);
 
     default PopupPane setContent(final String content) {
         return setContent(
