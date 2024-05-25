@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.common.audience;
 
+import arc.Core;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
@@ -26,8 +27,15 @@ import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Objects;
+import mindustry.Vars;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
+import mindustry.net.NetConnection;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
+
+import static mindustry.Vars.netServer;
 
 final class PlayerAudience implements Audience {
 
@@ -61,72 +69,119 @@ final class PlayerAudience implements Audience {
 
     @Override
     public void sendMessage(final String message, final String unformatted, final Audience sender) {
-        player.sendMessage(message);
+        if (sender instanceof PlayerAudience other) {
+            player.sendMessage(message, other.player, unformatted);
+        } else {
+            player.sendMessage(message);
+        }
     }
 
     @Override
     public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
-        player.sendMessage(render(component));
+        if (sender instanceof PlayerAudience other) {
+            player.sendMessage(render(component), other.player, render(unformatted));
+        } else {
+            player.sendMessage(render(component));
+        }
     }
 
     @Override
     public void sendWarning(final String message) {
-        Call.announce(player.con(), message);
+        Call.announce(getConnection(), message);
     }
 
     @Override
     public void sendWarning(final ComponentLike component) {
-        Call.announce(player.con(), render(component));
+        Call.announce(getConnection(), render(component));
     }
 
     @Override
     public void showHUDText(final String message) {
-        Call.setHudText(player.con(), message);
+        Call.setHudText(getConnection(), message);
     }
 
     @Override
     public void showHUDText(final ComponentLike component) {
-        Call.setHudText(player.con(), render(component));
+        Call.setHudText(getConnection(), render(component));
     }
 
     @Override
     public void hideHUDText() {
-        Call.hideHudText(player.con());
+        Call.hideHudText(getConnection());
     }
 
     @Override
     public void sendNotification(final String message, final char icon) {
-        Call.warningToast(player.con(), icon, message);
+        Call.warningToast(getConnection(), icon, message);
     }
 
     @Override
     public void sendNotification(final ComponentLike component, final char icon) {
-        Call.warningToast(player.con(), icon, render(component));
+        Call.warningToast(getConnection(), icon, render(component));
     }
 
     @Override
     public void sendAnnouncement(final String message) {
-        Call.infoMessage(player.con(), message);
+        Call.infoMessage(getConnection(), message);
     }
 
     @Override
     public void sendAnnouncement(final ComponentLike component) {
-        Call.infoMessage(player.con(), render(component));
+        Call.infoMessage(getConnection(), render(component));
     }
 
     @Override
     public void openURI(final URI uri) {
-        Call.openURI(player.con(), uri.toString());
+        Call.openURI(getConnection(), uri.toString());
     }
 
     @Override
     public void showLabel(final String label, final float x, final float y, final Duration duration) {
-        Call.label(player.con(), label, duration.toMillis() / 1000F, x, y);
+        Call.label(getConnection(), label, duration.toMillis() / 1000F, x, y);
     }
 
     @Override
     public void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {
-        Call.label(player.con(), render(label), duration.toMillis() / 1000F, x, y);
+        Call.label(getConnection(), render(label), duration.toMillis() / 1000F, x, y);
+    }
+
+    @Override
+    public void kick(final String reason, final Duration duration, final boolean silent) {
+        kick0(reason, duration, silent);
+    }
+
+    @Override
+    public void kick(final ComponentLike reason, final Duration duration, final boolean silent) {
+        kick0(render(reason), duration, silent);
+    }
+
+    private void kick0(final String reason, final Duration duration, final boolean silent) {
+        final var connection = getConnection();
+        if (connection.kicked) return;
+
+        LoggerFactory.getLogger("ROOT")
+                .atLevel(silent ? Level.TRACE : Level.INFO)
+                .setMessage("Kicking connection {} / {}; Reason: {}")
+                .addArgument(connection.address)
+                .addArgument(connection.uuid)
+                .addArgument(reason.replace("\n", " "))
+                .log();
+
+        if (duration.toMillis() > 0L) {
+            netServer.admins.handleKicked(connection.uuid, connection.address, duration.toMillis());
+        }
+
+        Call.kick(connection, reason);
+
+        if (connection.uuid.startsWith("steam:")) {
+            // run with a 2-frame delay so there is time to send the kick packet, steam handles this weirdly
+            Core.app.post(() -> Core.app.post(connection::close));
+        } else {
+            connection.close();
+        }
+
+        Vars.netServer.admins.save();
+        connection.kicked = true;
     }
 
     @Override
@@ -143,5 +198,9 @@ final class PlayerAudience implements Audience {
         return ComponentAppendable.mindustry(getMetadata())
                 .append(component.asComponent())
                 .toString();
+    }
+
+    private NetConnection getConnection() {
+        return Objects.requireNonNull(player.con(), "Player connection is null");
     }
 }

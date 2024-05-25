@@ -161,4 +161,18 @@ public interface ForwardingAudience extends Audience {
             audience.showLabel(label, x, y, duration);
         }
     }
+
+    @Override
+    default void kick(final String reason, final Duration duration, final boolean silent) {
+        for (final var audience : getAudiences()) {
+            audience.kick(reason, duration, silent);
+        }
+    }
+
+    @Override
+    default void kick(final ComponentLike reason, final Duration duration, final boolean silent) {
+        for (final var audience : getAudiences()) {
+            audience.kick(reason, duration, silent);
+        }
+    }
 }

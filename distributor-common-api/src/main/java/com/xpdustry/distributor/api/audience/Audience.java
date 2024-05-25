@@ -98,6 +98,10 @@ public interface Audience {
 
     default void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {}
 
+    default void kick(final String reason, final Duration duration, final boolean silent) {}
+
+    default void kick(final ComponentLike reason, final Duration duration, final boolean silent) {}
+
     default MetadataContainer getMetadata() {
         return MetadataContainer.empty();
     }
