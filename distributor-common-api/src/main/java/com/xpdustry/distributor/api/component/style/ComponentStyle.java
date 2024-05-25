@@ -59,6 +59,13 @@ public interface ComponentStyle extends Buildable<ComponentStyle, ComponentStyle
         return ComponentStyleImpl.of(null, null, decorations);
     }
 
+    static ComponentStyle style(final TextDecoration... decorations) {
+        return ComponentStyleImpl.of(
+                null,
+                null,
+                Arrays.stream(decorations).collect(Collectors.toMap(Function.identity(), decoration -> true)));
+    }
+
     static ComponentStyle empty() {
         return ComponentStyleBuilderImpl.EMPTY;
     }

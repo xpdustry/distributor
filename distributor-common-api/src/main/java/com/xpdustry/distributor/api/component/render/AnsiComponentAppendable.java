@@ -56,7 +56,7 @@ final class AnsiComponentAppendable implements ComponentAppendable {
             final var previous = styles.peek();
             final var next = previous == null ? component.getStyle() : previous.merge(component.getStyle());
             styles.push(next);
-            if (Objects.equals(previous, next)) {
+            if (!Objects.equals(previous, next)) {
                 appendStyle(next);
             }
         }
@@ -67,10 +67,8 @@ final class AnsiComponentAppendable implements ComponentAppendable {
         {
             final var popped = styles.pop();
             final var head = styles.peek();
-            if (head == null) {
-                appendReset();
-            } else if (!Objects.equals(popped, head)) {
-                appendStyle(head);
+            if (!Objects.equals(popped, head)) {
+                appendStyle(head == null ? ComponentStyle.empty() : head);
             }
         }
 
@@ -102,15 +100,22 @@ final class AnsiComponentAppendable implements ComponentAppendable {
     }
 
     private void escape() {
+        escape(builder.length());
+    }
+
+    private void escape(final int end) {
         if (!ANSI_SUPPORTED || builder.length() == mark) return;
-        final var matcher = ANSI_PATTERN.matcher(builder.substring(mark));
-        builder.delete(mark, builder.length());
-        while (matcher.find()) matcher.appendReplacement(builder, "");
-        matcher.appendTail(builder);
+        final var matcher = ANSI_PATTERN.matcher(builder.substring(mark, end));
+        builder.delete(mark, end);
+        final var insert = new StringBuilder();
+        while (matcher.find()) matcher.appendReplacement(insert, "");
+        matcher.appendTail(insert);
+        builder.insert(mark, insert);
         mark = builder.length();
     }
 
     private void appendStyle(final ComponentStyle style) {
+        final var start = builder.length();
         appendReset();
         final var textColor = style.getTextColor();
         if (textColor != null) {
@@ -125,6 +130,7 @@ final class AnsiComponentAppendable implements ComponentAppendable {
             if (!entry.getValue()) continue;
             appendDecorations(decoration);
         }
+        escape(start);
     }
 
     private void appendReset() {
