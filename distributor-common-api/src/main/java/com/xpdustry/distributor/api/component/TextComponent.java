@@ -21,8 +21,7 @@ package com.xpdustry.distributor.api.component;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
 
-public interface TextComponent
-        extends BuildableComponent<TextComponent, TextComponent.Builder>, ValueComponent<String> {
+public interface TextComponent extends BuildableComponent<TextComponent, TextComponent.Builder> {
 
     static TextComponent.Builder text() {
         return new TextComponentImpl.Builder();
@@ -53,11 +52,6 @@ public interface TextComponent
     }
 
     String getContent();
-
-    @Override
-    default String getValue() {
-        return getContent();
-    }
 
     @Override
     default Builder toBuilder() {

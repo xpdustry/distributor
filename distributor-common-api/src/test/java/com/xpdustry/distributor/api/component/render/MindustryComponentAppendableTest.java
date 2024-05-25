@@ -35,9 +35,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static com.xpdustry.distributor.api.component.NumberComponent.number;
 import static com.xpdustry.distributor.api.component.TextComponent.text;
 import static com.xpdustry.distributor.api.component.TranslatableComponent.translatable;
+import static com.xpdustry.distributor.api.component.ValueComponent.value;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class MindustryComponentAppendableTest {
@@ -129,7 +129,7 @@ public final class MindustryComponentAppendableTest {
     @Test
     void test_translatable_arguments() {
         final var component1 = translatable(
-                "describe-number", TranslationArguments.array(number(0, ComponentColor.YELLOW)), ComponentColor.RED);
+                "describe-number", TranslationArguments.array(value(0, ComponentColor.YELLOW)), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is [#FFFF00]zero[][]",
                 createAppendable().append(component1).toString());

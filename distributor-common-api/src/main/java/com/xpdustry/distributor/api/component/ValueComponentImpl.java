@@ -19,50 +19,47 @@
 package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class NumberComponentImpl extends AbstractComponent<NumberComponent, NumberComponent.Builder>
-        implements NumberComponent {
+record ValueComponentImpl<V>(ComponentStyle style, V value) implements ValueComponent<V> {
 
-    private final Number number;
-
-    NumberComponentImpl(final ComponentStyle style, final Number number) {
-        super(style);
-        this.number = number;
+    @Override
+    public V getValue() {
+        return value;
     }
 
     @Override
-    public Number getNumber() {
-        return number;
+    public ComponentStyle getStyle() {
+        return style;
     }
 
     @Override
-    public NumberComponent.Builder toBuilder() {
-        return new Builder(this);
+    public Builder<V> toBuilder() {
+        return new Builder<>(this);
     }
 
-    static final class Builder extends AbstractComponent.Builder<NumberComponent, NumberComponent.Builder>
-            implements NumberComponent.Builder {
+    static final class Builder<V> extends AbstractComponentBuilder<ValueComponent<V>, ValueComponent.Builder<V>>
+            implements ValueComponent.Builder<V> {
 
-        private Number number;
+        private @Nullable V value = null;
 
-        public Builder() {
-            this.number = 0;
-        }
-
-        public Builder(final NumberComponent component) {
+        Builder(final ValueComponent<V> component) {
             super(component);
-            this.number = component.getNumber();
+            this.value = component.getValue();
         }
+
+        Builder() {}
 
         @Override
-        public NumberComponent.Builder setNumber(final Number number) {
-            this.number = number;
+        public Builder<V> setValue(final V value) {
+            this.value = value;
             return this;
         }
 
         @Override
-        public NumberComponent build() {
-            return new NumberComponentImpl(style.build(), number);
+        public ValueComponent<V> build() {
+            return new ValueComponentImpl<>(style.build(), Objects.requireNonNull(value));
         }
     }
 }

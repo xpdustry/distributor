@@ -25,11 +25,6 @@ record TranslatableComponentImpl(ComponentStyle style, String key, TranslationAr
         implements BuildableComponent<TranslatableComponent, TranslatableComponent.Builder>, TranslatableComponent {
 
     @Override
-    public TranslatableComponent.Builder toBuilder() {
-        return new Builder(this);
-    }
-
-    @Override
     public String getKey() {
         return this.key;
     }
@@ -44,7 +39,12 @@ record TranslatableComponentImpl(ComponentStyle style, String key, TranslationAr
         return this.style;
     }
 
-    static final class Builder extends AbstractComponent.Builder<TranslatableComponent, TranslatableComponent.Builder>
+    @Override
+    public Builder toBuilder() {
+        return new Builder(this);
+    }
+
+    static final class Builder extends AbstractComponentBuilder<TranslatableComponent, TranslatableComponent.Builder>
             implements TranslatableComponent.Builder {
 
         private String key;

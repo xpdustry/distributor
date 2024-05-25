@@ -19,20 +19,12 @@
 package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.ComponentStyle;
-import java.util.Objects;
 
-final class TextComponentImpl extends AbstractComponent<TextComponent, TextComponent.Builder> implements TextComponent {
+record TextComponentImpl(ComponentStyle style, String content) implements TextComponent {
 
     static final TextComponent EMPTY = new TextComponentImpl(ComponentStyle.empty(), "");
     static final TextComponent SPACE = new TextComponentImpl(ComponentStyle.empty(), " ");
     static final TextComponent NEWLINE = new TextComponentImpl(ComponentStyle.empty(), "\n");
-
-    private final String content;
-
-    TextComponentImpl(final ComponentStyle style, final String content) {
-        super(style);
-        this.content = content;
-    }
 
     @Override
     public String getContent() {
@@ -40,28 +32,16 @@ final class TextComponentImpl extends AbstractComponent<TextComponent, TextCompo
     }
 
     @Override
-    public TextComponent.Builder toBuilder() {
+    public ComponentStyle getStyle() {
+        return this.style;
+    }
+
+    @Override
+    public Builder toBuilder() {
         return new Builder(this);
     }
 
-    @Override
-    public String toString() {
-        return "TextComponent{style=" + getStyle() + ", content='" + content + "'}";
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStyle(), content);
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        return (o instanceof TextComponentImpl other)
-                && getStyle().equals(other.getStyle())
-                && content.equals(other.getContent());
-    }
-
-    static final class Builder extends AbstractComponent.Builder<TextComponent, TextComponent.Builder>
+    static final class Builder extends AbstractComponentBuilder<TextComponent, TextComponent.Builder>
             implements TextComponent.Builder {
 
         private String content = "";

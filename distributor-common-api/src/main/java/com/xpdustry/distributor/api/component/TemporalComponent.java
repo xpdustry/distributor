@@ -23,20 +23,19 @@ import com.xpdustry.distributor.api.component.style.ComponentStyle;
 import java.time.format.FormatStyle;
 import java.time.temporal.Temporal;
 
-public interface TemporalComponent
-        extends BuildableComponent<TemporalComponent, TemporalComponent.Builder>, ValueComponent<Temporal> {
+public interface TemporalComponent extends BuildableComponent<TemporalComponent, TemporalComponent.Builder> {
 
     static TemporalComponent.Builder temporal() {
         return new TemporalComponentImpl.Builder();
     }
 
-    static TemporalComponent temporal(final Temporal temporal, final TemporalFormat fallbackFormat) {
-        return new TemporalComponentImpl(ComponentStyle.empty(), temporal, fallbackFormat);
+    static TemporalComponent temporal(final Temporal temporal, final TemporalFormat format) {
+        return new TemporalComponentImpl(ComponentStyle.empty(), temporal, format);
     }
 
     static TemporalComponent temporal(
-            final Temporal temporal, final TemporalFormat fallbackFormat, final ComponentColor textColor) {
-        return new TemporalComponentImpl(ComponentStyle.style(textColor), temporal, fallbackFormat);
+            final Temporal temporal, final TemporalFormat format, final ComponentColor textColor) {
+        return new TemporalComponentImpl(ComponentStyle.style(textColor), temporal, format);
     }
 
     static TemporalComponent temporal(final Temporal temporal) {
@@ -51,17 +50,12 @@ public interface TemporalComponent
 
     Temporal getTemporal();
 
-    TemporalFormat getFallbackFormat();
-
-    @Override
-    default Temporal getValue() {
-        return getTemporal();
-    }
+    TemporalFormat getFormat();
 
     interface Builder extends BuildableComponent.Builder<TemporalComponent, TemporalComponent.Builder> {
 
         Builder setTemporal(final Temporal temporal);
 
-        Builder setFallbackFormat(final TemporalFormat fallbackFormat);
+        Builder setFormat(final TemporalFormat format);
     }
 }
