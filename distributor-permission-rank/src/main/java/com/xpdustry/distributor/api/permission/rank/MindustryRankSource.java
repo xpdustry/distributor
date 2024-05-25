@@ -27,6 +27,6 @@ final class MindustryRankSource implements RankSource {
     @Override
     public List<RankNode> getRanks(final Player player) {
         final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
-        return List.of(EnumRankNode.linear(rank, r -> "mindustry_" + r.name().toLowerCase(Locale.ROOT), true));
+        return List.of(EnumRankNode.linear(rank, r -> "mindustry-" + r.name().toLowerCase(Locale.ROOT), true));
     }
 }

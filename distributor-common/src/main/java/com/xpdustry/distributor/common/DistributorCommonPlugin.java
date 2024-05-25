@@ -53,7 +53,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private final ComponentRendererProvider componentRendererProvider =
             new ServiceComponentRendererProvider(this.services);
     private final ComponentDecoder<String> mindustryComponentDecoder = new MindustryDecoderImpl();
-    private final AudienceProvider audienceProvider = new AudienceProviderImpl(this);
+    private final AudienceProvider audienceProvider = new AudienceProviderImpl(this, events);
     private @Nullable PlayerLookup lookup = null;
     private @Nullable PermissionReader permissions = null;
 

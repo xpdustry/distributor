@@ -18,9 +18,9 @@
  */
 package com.xpdustry.distributor.common.audience;
 
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
+import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
@@ -33,8 +33,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     private final Map<MUUID, Audience> players = new HashMap<>();
 
-    public AudienceProviderImpl(final MindustryPlugin plugin) {
-        final var bus = DistributorProvider.get().getEventBus();
+    public AudienceProviderImpl(final MindustryPlugin plugin, final EventBus bus) {
         bus.subscribe(
                 EventType.PlayerJoin.class,
                 Priority.HIGHEST,

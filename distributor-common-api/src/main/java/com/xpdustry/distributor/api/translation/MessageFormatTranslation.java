@@ -78,6 +78,7 @@ record MessageFormatTranslation(String pattern, Locale locale) implements Compon
         final var format = new MessageFormat(pattern, locale);
         if (arguments.isEmpty()) {
             appendable.append(format.format(null));
+            return;
         }
 
         final var buffer = format.format(EMPTY_ARRAY, new StringBuffer(), null);
