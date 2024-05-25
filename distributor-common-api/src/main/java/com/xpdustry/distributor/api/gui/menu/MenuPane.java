@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.Pane;
 
@@ -27,19 +30,28 @@ public interface MenuPane extends Pane {
         return new MenuPaneImpl();
     }
 
-    String getTitle();
+    Component getTitle();
 
-    void setTitle(final String title);
+    MenuPane setTitle(final ComponentLike title);
 
-    String getContent();
+    default MenuPane setTitle(final String title) {
+        return setTitle(DistributorProvider.get().getMindustryComponentDecoder().decode(title));
+    }
 
-    void setContent(final String content);
+    Component getContent();
+
+    MenuPane setContent(final ComponentLike content);
+
+    default MenuPane setContent(final String content) {
+        return setContent(
+                DistributorProvider.get().getMindustryComponentDecoder().decode(content));
+    }
 
     Action getExitAction();
 
-    void setExitAction(final Action action);
+    MenuPane setExitAction(final Action action);
 
     MenuGrid getGrid();
 
-    void setGrid(final MenuGrid grid);
+    MenuPane setGrid(final MenuGrid grid);
 }

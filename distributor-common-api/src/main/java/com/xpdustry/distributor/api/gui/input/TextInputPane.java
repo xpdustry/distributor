@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.input;
 
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
 import com.xpdustry.distributor.api.gui.Pane;
@@ -28,27 +31,41 @@ public interface TextInputPane extends Pane {
         return new TextInputPaneImpl();
     }
 
-    String getTitle();
+    Component getTitle();
 
-    void setTitle(final String title);
+    TextInputPane setTitle(final ComponentLike title);
 
-    String getDescription();
+    default TextInputPane setTitle(final String title) {
+        return setTitle(DistributorProvider.get().getMindustryComponentDecoder().decode(title));
+    }
 
-    void setDescription(final String description);
+    Component getDescription();
 
-    String getPlaceholder();
+    TextInputPane setDescription(final ComponentLike description);
 
-    void setPlaceholder(final String placeholder);
+    default TextInputPane setDescription(final String description) {
+        return setDescription(
+                DistributorProvider.get().getMindustryComponentDecoder().decode(description));
+    }
+
+    Component getPlaceholder();
+
+    TextInputPane setPlaceholder(final ComponentLike placeholder);
+
+    default TextInputPane setPlaceholder(final String placeholder) {
+        return setPlaceholder(
+                DistributorProvider.get().getMindustryComponentDecoder().decode(placeholder));
+    }
 
     int getMaxLength();
 
-    void setMaxLength(final int maxLength);
+    TextInputPane setMaxLength(final int maxLength);
 
     BiAction<String> getInputAction();
 
-    void setInputAction(final BiAction<String> inputAction);
+    TextInputPane setInputAction(final BiAction<String> inputAction);
 
     Action getExitAction();
 
-    void setExitAction(final Action exitAction);
+    TextInputPane setExitAction(final Action exitAction);
 }

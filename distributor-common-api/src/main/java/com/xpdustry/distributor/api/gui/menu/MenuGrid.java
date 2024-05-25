@@ -32,21 +32,21 @@ public interface MenuGrid {
 
     List<MenuOption> getRow(final int index);
 
-    void setRow(final int index, final List<MenuOption> options);
+    MenuGrid setRow(final int index, final List<MenuOption> options);
 
-    default void addRow(final MenuOption... options) {
-        addRow(Arrays.asList(options));
+    default MenuGrid addRow(final MenuOption... options) {
+        return addRow(Arrays.asList(options));
     }
 
-    void addRow(final List<MenuOption> options);
+    MenuGrid addRow(final List<MenuOption> options);
 
-    default void addRow(final int index, final MenuOption... options) {
-        addRow(index, Arrays.asList(options));
+    default MenuGrid addRow(final int index, final MenuOption... options) {
+        return addRow(index, Arrays.asList(options));
     }
 
-    void addRow(final int index, final List<MenuOption> options);
+    MenuGrid addRow(final int index, final List<MenuOption> options);
 
-    void removeRow(final int index);
+    MenuGrid removeRow(final int index);
 
     @Nullable MenuOption getOption(final int id);
 

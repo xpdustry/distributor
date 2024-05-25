@@ -39,23 +39,27 @@ final class MenuGridImpl implements MenuGrid {
     }
 
     @Override
-    public void setRow(int index, List<MenuOption> options) {
+    public MenuGrid setRow(int index, List<MenuOption> options) {
         this.options.set(index, new ArrayList<>(options));
+        return this;
     }
 
     @Override
-    public void addRow(List<MenuOption> options) {
+    public MenuGrid addRow(List<MenuOption> options) {
         this.options.add(new ArrayList<>(options));
+        return this;
     }
 
     @Override
-    public void addRow(int index, List<MenuOption> options) {
+    public MenuGrid addRow(int index, List<MenuOption> options) {
         this.options.add(index, new ArrayList<>(options));
+        return this;
     }
 
     @Override
-    public void removeRow(int index) {
+    public MenuGrid removeRow(int index) {
         options.remove(index);
+        return this;
     }
 
     @Override

@@ -18,35 +18,40 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.Action;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 final class MenuPaneImpl implements MenuPane {
 
-    private String title = "";
-    private String content = "";
+    private Component title = TextComponent.empty();
+    private Component content = TextComponent.empty();
     private Action exitAction = Action.back();
     private MenuGrid grid = MenuGrid.create();
 
     @Override
-    public String getTitle() {
+    public Component getTitle() {
         return title;
     }
 
     @Override
-    public void setTitle(final String title) {
-        this.title = title;
+    public MenuPane setTitle(final ComponentLike title) {
+        this.title = title.asComponent();
+        return this;
     }
 
     @Override
-    public String getContent() {
+    public Component getContent() {
         return content;
     }
 
     @Override
-    public void setContent(final String content) {
-        this.content = content;
+    public MenuPane setContent(final ComponentLike content) {
+        this.content = content.asComponent();
+        return this;
     }
 
     @Override
@@ -55,8 +60,9 @@ final class MenuPaneImpl implements MenuPane {
     }
 
     @Override
-    public void setExitAction(final Action exitAction) {
+    public MenuPane setExitAction(final Action exitAction) {
         this.exitAction = exitAction;
+        return this;
     }
 
     @Override
@@ -65,8 +71,9 @@ final class MenuPaneImpl implements MenuPane {
     }
 
     @Override
-    public void setGrid(final MenuGrid grid) {
+    public MenuPane setGrid(final MenuGrid grid) {
         this.grid = grid;
+        return this;
     }
 
     @Override

@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.popup;
 
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import com.xpdustry.distributor.api.gui.Pane;
 
@@ -27,25 +30,30 @@ public interface PopupPane extends Pane {
         return new PopupPaneImpl();
     }
 
-    String getContent();
+    Component getContent();
 
-    void setContent(final String content);
+    PopupPane setContent(final ComponentLike content);
+
+    default PopupPane setContent(final String content) {
+        return setContent(
+                DistributorProvider.get().getMindustryComponentDecoder().decode(content));
+    }
 
     DisplayUnit getShiftX();
 
-    void setShiftX(final DisplayUnit shiftX);
+    PopupPane setShiftX(final DisplayUnit shiftX);
 
     DisplayUnit getShiftY();
 
-    void setShiftY(final DisplayUnit shiftY);
+    PopupPane setShiftY(final DisplayUnit shiftY);
 
     AlignementX getAlignementX();
 
-    void setAlignementX(final AlignementX alignementX);
+    PopupPane setAlignementX(final AlignementX alignementX);
 
     AlignementY getAlignementY();
 
-    void setAlignementY(final AlignementY alignementY);
+    PopupPane setAlignementY(final AlignementY alignementY);
 
     enum AlignementX {
         LEFT,

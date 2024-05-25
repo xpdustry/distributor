@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.gui.Window;
 import com.xpdustry.distributor.api.gui.transform.AbstractTransformerWindowManager;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
@@ -38,10 +41,13 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
         Call.followUpMenu(
                 window.getViewer().con(),
                 id,
-                window.getPane().getTitle(),
-                window.getPane().getContent(),
+                render(window, window.getPane().getTitle()),
+                render(window, window.getPane().getContent()),
                 window.getPane().getGrid().getOptions().stream()
-                        .map(row -> row.stream().map(MenuOption::getContent).toArray(String[]::new))
+                        .map(row -> row.stream()
+                                .map(MenuOption::getContent)
+                                .map(content -> render(window, content))
+                                .toArray(String[]::new))
                         .toArray(String[][]::new));
     }
 
@@ -89,5 +95,11 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
                 choice.getAction().act(window);
             }
         }
+    }
+
+    private String render(final Window window, final Component component) {
+        return ComponentAppendable.mindustry(window.getAudience().getMetadata())
+                .append(component)
+                .toString();
     }
 }

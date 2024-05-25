@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import org.immutables.value.Value;
@@ -26,11 +29,16 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface MenuOption {
 
-    static MenuOption of(final String content, final Action action) {
-        return MenuOptionImpl.of(content, action);
+    static MenuOption of(final ComponentLike content, final Action action) {
+        return MenuOptionImpl.of(content.asComponent(), action);
     }
 
-    String getContent();
+    static MenuOption of(final String content, final Action action) {
+        return MenuOptionImpl.of(
+                DistributorProvider.get().getMindustryComponentDecoder().decode(content), action);
+    }
+
+    Component getContent();
 
     Action getAction();
 }

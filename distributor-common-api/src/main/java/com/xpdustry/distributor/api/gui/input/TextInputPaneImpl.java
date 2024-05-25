@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.input;
 
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
 import java.util.Objects;
@@ -25,41 +28,44 @@ import java.util.StringJoiner;
 
 final class TextInputPaneImpl implements TextInputPane {
 
-    private String title = "";
-    private String description = "";
-    private String placeholder = "";
+    private Component title = TextComponent.empty();
+    private Component description = TextComponent.empty();
+    private Component placeholder = TextComponent.empty();
     private int maxLength = 0;
     private BiAction<String> inputAction = BiAction.from(Action.back());
     private Action exitAction = Action.back();
 
     @Override
-    public String getTitle() {
+    public Component getTitle() {
         return this.title;
     }
 
     @Override
-    public void setTitle(final String title) {
-        this.title = title;
+    public TextInputPane setTitle(final ComponentLike title) {
+        this.title = title.asComponent();
+        return this;
     }
 
     @Override
-    public String getDescription() {
+    public Component getDescription() {
         return this.description;
     }
 
     @Override
-    public void setDescription(final String description) {
-        this.description = description;
+    public TextInputPane setDescription(final ComponentLike description) {
+        this.description = description.asComponent();
+        return this;
     }
 
     @Override
-    public String getPlaceholder() {
+    public Component getPlaceholder() {
         return this.placeholder;
     }
 
     @Override
-    public void setPlaceholder(final String placeholder) {
-        this.placeholder = placeholder;
+    public TextInputPane setPlaceholder(final ComponentLike placeholder) {
+        this.placeholder = placeholder.asComponent();
+        return this;
     }
 
     @Override
@@ -68,8 +74,9 @@ final class TextInputPaneImpl implements TextInputPane {
     }
 
     @Override
-    public void setMaxLength(final int maxLength) {
+    public TextInputPane setMaxLength(final int maxLength) {
         this.maxLength = maxLength;
+        return this;
     }
 
     @Override
@@ -78,8 +85,9 @@ final class TextInputPaneImpl implements TextInputPane {
     }
 
     @Override
-    public void setInputAction(final BiAction<String> inputAction) {
+    public TextInputPane setInputAction(final BiAction<String> inputAction) {
         this.inputAction = inputAction;
+        return this;
     }
 
     @Override
@@ -88,8 +96,9 @@ final class TextInputPaneImpl implements TextInputPane {
     }
 
     @Override
-    public void setExitAction(final Action exitAction) {
+    public TextInputPane setExitAction(final Action exitAction) {
         this.exitAction = exitAction;
+        return this;
     }
 
     @Override

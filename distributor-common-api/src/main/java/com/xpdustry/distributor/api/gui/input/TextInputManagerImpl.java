@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.gui.input;
 
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.gui.Window;
 import com.xpdustry.distributor.api.gui.transform.AbstractTransformerWindowManager;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
@@ -43,10 +46,10 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
             Call.textInput(
                     window.getViewer().con(),
                     this.id,
-                    window.getPane().getTitle(),
-                    window.getPane().getDescription(),
+                    render(window, window.getPane().getTitle()),
+                    render(window, window.getPane().getDescription()),
                     window.getPane().getMaxLength(),
-                    window.getPane().getPlaceholder(),
+                    render(window, window.getPane().getPlaceholder()),
                     false);
         }
     }
@@ -99,5 +102,11 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
         if (window.isActive() && !visible.contains(MUUID.from(player))) {
             window.show();
         }
+    }
+
+    private String render(final Window window, final Component component) {
+        return ComponentAppendable.mindustry(window.getAudience().getMetadata())
+                .append(component)
+                .toString();
     }
 }

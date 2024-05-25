@@ -18,26 +18,30 @@
  */
 package com.xpdustry.distributor.api.gui.popup;
 
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 final class PopupPaneImpl implements PopupPane {
 
-    private String content = "";
+    private Component content = TextComponent.empty();
     private DisplayUnit shiftX = DisplayUnit.Pixel.ZERO;
     private DisplayUnit shiftY = DisplayUnit.Pixel.ZERO;
     private AlignementX alignementX = AlignementX.CENTER;
     private AlignementY alignementY = AlignementY.CENTER;
 
     @Override
-    public String getContent() {
+    public Component getContent() {
         return this.content;
     }
 
     @Override
-    public void setContent(final String content) {
-        this.content = content;
+    public PopupPane setContent(final ComponentLike content) {
+        this.content = content.asComponent();
+        return this;
     }
 
     @Override
@@ -46,8 +50,9 @@ final class PopupPaneImpl implements PopupPane {
     }
 
     @Override
-    public void setShiftX(final DisplayUnit shiftX) {
+    public PopupPane setShiftX(final DisplayUnit shiftX) {
         this.shiftX = shiftX;
+        return this;
     }
 
     @Override
@@ -56,8 +61,9 @@ final class PopupPaneImpl implements PopupPane {
     }
 
     @Override
-    public void setShiftY(final DisplayUnit shiftY) {
+    public PopupPane setShiftY(final DisplayUnit shiftY) {
         this.shiftY = shiftY;
+        return this;
     }
 
     @Override
@@ -66,8 +72,9 @@ final class PopupPaneImpl implements PopupPane {
     }
 
     @Override
-    public void setAlignementX(final AlignementX alignementX) {
+    public PopupPane setAlignementX(final AlignementX alignementX) {
         this.alignementX = alignementX;
+        return this;
     }
 
     @Override
@@ -76,8 +83,9 @@ final class PopupPaneImpl implements PopupPane {
     }
 
     @Override
-    public void setAlignementY(final AlignementY alignementY) {
+    public PopupPane setAlignementY(final AlignementY alignementY) {
         this.alignementY = alignementY;
+        return this;
     }
 
     @Override

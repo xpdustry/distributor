@@ -22,6 +22,7 @@ import arc.util.Align;
 import arc.util.Interval;
 import arc.util.Time;
 import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import com.xpdustry.distributor.api.gui.Window;
@@ -65,7 +66,9 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
         };
         Call.infoPopup(
                 window.getViewer().con(),
-                window.getPane().getContent(),
+                ComponentAppendable.mindustry(window.getAudience().getMetadata())
+                        .append(window.getPane().getContent())
+                        .toString(),
                 (Time.delta / 60F) * tickUpdateInterval,
                 align,
                 window.getPane().getShiftY().asPixels(window.getViewer(), DisplayUnit.Axis.Y),
