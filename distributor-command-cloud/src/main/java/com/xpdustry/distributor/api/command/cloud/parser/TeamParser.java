@@ -129,7 +129,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
                     ctx,
                     MindustryCaptionKeys.ARGUMENT_PARSE_FAILURE_TEAM,
                     CaptionVariable.of("input", input),
-                    CaptionVariable.of("teamMode", teamMode.name()));
+                    CaptionVariable.of("mode", teamMode.name()));
             this.input = input;
             this.teamMode = teamMode;
         }

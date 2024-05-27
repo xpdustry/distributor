@@ -29,8 +29,16 @@ import com.xpdustry.distributor.api.command.cloud.specifier.AllTeams;
 import com.xpdustry.distributor.api.key.KeyWithCType;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
+import com.xpdustry.distributor.api.translation.BundleTranslationSource;
+import com.xpdustry.distributor.api.translation.ResourceTranslationBundles;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
+import com.xpdustry.distributor.api.translation.TranslationSource;
 import io.leangen.geantyref.TypeToken;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Objects;
 import mindustry.game.Team;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -39,6 +47,7 @@ import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
 import org.incendo.cloud.SenderMapperHolder;
+import org.incendo.cloud.caption.CaptionProvider;
 import org.incendo.cloud.description.Description;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.internal.CommandRegistrationHandler;
@@ -54,6 +63,44 @@ import org.slf4j.LoggerFactory;
  */
 public class MindustryCommandManager<C> extends CommandManager<C>
         implements PluginAware, SenderMapperHolder<CommandSender, C> {
+
+    private static final BundleTranslationSource DEFAULT_TRANSLATION_SOURCE =
+            BundleTranslationSource.create(Locale.ROOT);
+
+    static {
+        try (final var fs = getFileSystems()) {
+            final var directory = fs.getPath("/com/xpdustry/distributor/api/command/cloud");
+            try (final var stream = Files.newDirectoryStream(directory)) {
+                for (final var file : stream) {
+                    final var name = file.getFileName().toString();
+                    if (name.startsWith("bundle") && name.endsWith(".properties")) {
+                        DEFAULT_TRANSLATION_SOURCE.registerAll(ResourceTranslationBundles.fromFile(
+                                Locale.forLanguageTag(name.replace("bundle_", "")
+                                        .replace(".properties", "")
+                                        .replace("_", "-")),
+                                file));
+                    }
+                }
+            }
+        } catch (final Exception e) {
+            LoggerFactory.getLogger(MindustryCommandManager.class).error("Failed to load default translations", e);
+        }
+    }
+
+    private static FileSystem getFileSystems() throws Exception {
+        final var path = Paths.get(MindustryCommandManager.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .toURI());
+        final FileSystem fs;
+        if (path.getFileName().toString().endsWith(".jar")) {
+            fs = FileSystems.newFileSystem(path, (ClassLoader) null);
+        } else {
+            fs = FileSystems.getDefault();
+        }
+        return fs;
+    }
 
     private final MindustryPlugin plugin;
     private final SenderMapper<CommandSender, C> senderMapper;
@@ -83,13 +130,9 @@ public class MindustryCommandManager<C> extends CommandManager<C>
         this.registerDefaultExceptionHandlers();
 
         this.captionRegistry()
-                .registerProvider(new MindustryDefaultCaptionProvider<>())
-                .registerProvider((caption, sender) -> {
-                    final var source = DistributorProvider.get().getGlobalTranslationSource();
-                    final var locale = this.senderMapper().reverse(sender).getLocale();
-                    final var translation = source.getTranslation(caption.key(), locale);
-                    return translation == null ? null : translation.format(TranslationArguments.empty());
-                });
+                .registerProvider(createCaptionProviderFromSource(
+                        DistributorProvider.get().getGlobalTranslationSource()))
+                .registerProvider(createCaptionProviderFromSource(DEFAULT_TRANSLATION_SOURCE));
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());
         this.parserRegistry().registerParser(TeamParser.teamParser());
@@ -170,5 +213,13 @@ public class MindustryCommandManager<C> extends CommandManager<C>
                             .error(context.formatCaption(triplet.second(), triplet.third()));
                 },
                 pair -> logger.error(pair.first(), pair.second()));
+    }
+
+    private CaptionProvider<C> createCaptionProviderFromSource(final TranslationSource source) {
+        return (caption, sender) -> {
+            final var locale = this.senderMapper().reverse(sender).getLocale();
+            final var translation = source.getTranslation(caption.key(), locale);
+            return translation == null ? null : translation.format(TranslationArguments.empty());
+        };
     }
 }
