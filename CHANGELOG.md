@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.0-beta.3 - 2024-05-25
+
+Final beta release.
+All major feature I wanted for distributor 4 have been implemented.
+It is now time to use it in more production plugins to asses the usability of the new APIs.
+
 ## v4.0.0-beta.2 - 2024-04-08
 
 Second beta release.
