@@ -2,7 +2,7 @@ plugins {
     id("distributor.parent-conventions")
 }
 
-version = "4.0.0-beta.3" + if (indraGit.headTag() == null) "-SNAPSHOT" else ""
+version = "4.0.0-rc.1" + if (indraGit.headTag() == null) "-SNAPSHOT" else ""
 group = "com.xpdustry"
 description = "The Mindustry plugin of ur dreams..."
 
