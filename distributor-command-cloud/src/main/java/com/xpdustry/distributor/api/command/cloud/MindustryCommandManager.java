@@ -34,10 +34,6 @@ import com.xpdustry.distributor.api.translation.ResourceTranslationBundles;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import io.leangen.geantyref.TypeToken;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Objects;
 import mindustry.game.Team;
@@ -68,38 +64,8 @@ public class MindustryCommandManager<C> extends CommandManager<C>
             BundleTranslationSource.create(Locale.ROOT);
 
     static {
-        try (final var fs = getFileSystems()) {
-            final var directory = fs.getPath("/com/xpdustry/distributor/api/command/cloud");
-            try (final var stream = Files.newDirectoryStream(directory)) {
-                for (final var file : stream) {
-                    final var name = file.getFileName().toString();
-                    if (name.startsWith("bundle") && name.endsWith(".properties")) {
-                        DEFAULT_TRANSLATION_SOURCE.registerAll(ResourceTranslationBundles.fromFile(
-                                Locale.forLanguageTag(name.replace("bundle_", "")
-                                        .replace(".properties", "")
-                                        .replace("_", "-")),
-                                file));
-                    }
-                }
-            }
-        } catch (final Exception e) {
-            LoggerFactory.getLogger(MindustryCommandManager.class).error("Failed to load default translations", e);
-        }
-    }
-
-    private static FileSystem getFileSystems() throws Exception {
-        final var path = Paths.get(MindustryCommandManager.class
-                .getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .toURI());
-        final FileSystem fs;
-        if (path.getFileName().toString().endsWith(".jar")) {
-            fs = FileSystems.newFileSystem(path, (ClassLoader) null);
-        } else {
-            fs = FileSystems.getDefault();
-        }
-        return fs;
+        DEFAULT_TRANSLATION_SOURCE.registerAll(ResourceTranslationBundles.fromClasspathDirectory(
+                MindustryCommandManager.class, "/com/xpdustry/distributor/api/command/cloud", "bundle"));
     }
 
     private final MindustryPlugin plugin;

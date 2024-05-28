@@ -20,8 +20,13 @@ package com.xpdustry.distributor.api.translation;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -49,6 +54,53 @@ public final class ResourceTranslationBundles {
         } catch (final IOException e) {
             throw new IllegalArgumentException("Failed to load resource bundle from path: " + path, e);
         }
+    }
+
+    public static List<TranslationBundle> fromClasspathDirectory(
+            final Class<?> caller, final String directory, final String baseName) {
+        final var path = Paths.get(
+                caller.getProtectionDomain().getCodeSource().getLocation().getPath());
+        if (path.endsWith(".jar")) {
+            return fromZipDirectory(path, directory, baseName);
+        } else {
+            return fromDirectory(path.resolve(directory), baseName);
+        }
+    }
+
+    public static List<TranslationBundle> fromDirectory(final Path directory, final String baseName) {
+        try {
+            return fromDirectory(
+                    directory.getFileSystem(), directory.toAbsolutePath().toString(), baseName);
+        } catch (final IOException e) {
+            throw new IllegalArgumentException("Failed to load resource bundles from directory: " + directory, e);
+        }
+    }
+
+    public static List<TranslationBundle> fromZipDirectory(
+            final Path zip, final String directory, final String baseName) {
+        try (final var fs = FileSystems.newFileSystem(zip, (ClassLoader) null)) {
+            return fromDirectory(fs, directory, baseName);
+        } catch (final IOException e) {
+            throw new IllegalArgumentException("Failed to load resource bundles from zip: " + zip, e);
+        }
+    }
+
+    private static List<TranslationBundle> fromDirectory(
+            final FileSystem fs, final String directory, final String baseName) throws IOException {
+        final var result = new ArrayList<TranslationBundle>();
+        try (final var stream = Files.newDirectoryStream(fs.getPath(directory))) {
+            for (final var file : stream) {
+                final var name = file.getFileName().toString();
+                if (name.startsWith(baseName) && name.endsWith(".properties")) {
+                    var tag = name.replace(baseName, "").replace(".properties", "");
+                    if (tag.startsWith("_")) {
+                        tag = tag.substring(1);
+                    }
+                    result.add(ResourceTranslationBundles.fromFile(Locale.forLanguageTag(tag.replace("_", "-")), file));
+                }
+            }
+        }
+        return result;
     }
 
     private ResourceTranslationBundles() {}

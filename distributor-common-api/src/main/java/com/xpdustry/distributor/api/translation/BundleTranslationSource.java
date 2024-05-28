@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,10 @@ public interface BundleTranslationSource extends TranslationSource {
 
     default void registerAll(final TranslationBundle bundle) {
         this.registerAll(bundle.getLocale(), bundle.getTranslations());
+    }
+
+    default void registerAll(final Collection<TranslationBundle> bundles) {
+        for (final var bundle : bundles) this.registerAll(bundle);
     }
 
     /**
