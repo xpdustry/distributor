@@ -11,7 +11,7 @@ mindustry = "v146"
 slf4j = "2.0.13"
 
 # command
-cloud = "2.0.0-beta.5"
+cloud = "2.0.0-rc.1"
 
 # utilities
 immutables = "2.10.1"
