@@ -36,6 +36,11 @@ final class MindustryComponentAppendable implements ComponentAppendable {
     }
 
     @Override
+    public MetadataContainer getContext() {
+        return context;
+    }
+
+    @Override
     public ComponentAppendable append(final Component component) {
         {
             var color = component.getStyle().getTextColor();
@@ -48,7 +53,7 @@ final class MindustryComponentAppendable implements ComponentAppendable {
         }
 
         final var renderer = provider.getRenderer(component);
-        if (renderer != null) renderer.render(component, this, context);
+        if (renderer != null) renderer.render(component, this);
 
         {
             final var popped = colors.pop();

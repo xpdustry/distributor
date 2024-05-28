@@ -50,6 +50,8 @@ public interface ComponentAppendable extends Appendable {
                 metadata, DistributorProvider.get().getComponentRendererProvider());
     }
 
+    MetadataContainer getContext();
+
     ComponentAppendable append(final Component component);
 
     @Override

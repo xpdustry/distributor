@@ -34,9 +34,14 @@ final class PlainComponentAppendable implements ComponentAppendable {
     }
 
     @Override
+    public MetadataContainer getContext() {
+        return context;
+    }
+
+    @Override
     public ComponentAppendable append(final Component component) {
         final var renderer = this.provider.getRenderer(component);
-        if (renderer != null) renderer.render(component, this, this.context);
+        if (renderer != null) renderer.render(component, this);
         return this;
     }
 

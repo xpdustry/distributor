@@ -19,13 +19,12 @@
 package com.xpdustry.distributor.api.component.render;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
 public interface ComponentRenderer<T extends Component> {
 
     static <T extends Component> ComponentRenderer<T> noop() {
-        return (component, appendable, metadata) -> {};
+        return (component, appendable) -> {};
     }
 
-    void render(final T component, final ComponentAppendable appendable, final MetadataContainer metadata);
+    void render(final T component, final ComponentAppendable appendable);
 }

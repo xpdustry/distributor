@@ -49,6 +49,11 @@ final class AnsiComponentAppendable implements ComponentAppendable {
     }
 
     @Override
+    public MetadataContainer getContext() {
+        return context;
+    }
+
+    @Override
     public ComponentAppendable append(final Component component) {
         escape();
 
@@ -62,7 +67,7 @@ final class AnsiComponentAppendable implements ComponentAppendable {
         }
 
         final var renderer = provider.getRenderer(component);
-        if (renderer != null) renderer.render(component, this, context);
+        if (renderer != null) renderer.render(component, this);
 
         {
             final var popped = styles.pop();

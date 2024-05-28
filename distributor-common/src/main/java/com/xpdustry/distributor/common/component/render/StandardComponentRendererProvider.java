@@ -29,7 +29,6 @@ import com.xpdustry.distributor.api.component.ValueComponent;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.component.render.ComponentRenderer;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.translation.ComponentAwareTranslation;
 import java.time.ZoneId;
 import java.util.Locale;
@@ -60,8 +59,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final TextComponentRenderer INSTANCE = new TextComponentRenderer();
 
         @Override
-        public void render(
-                final TextComponent component, final ComponentAppendable appendable, final MetadataContainer metadata) {
+        public void render(final TextComponent component, final ComponentAppendable appendable) {
             appendable.append(component.getContent());
         }
     }
@@ -71,8 +69,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final ListComponentRenderer INSTANCE = new ListComponentRenderer();
 
         @Override
-        public void render(
-                final ListComponent component, final ComponentAppendable appendable, final MetadataContainer metadata) {
+        public void render(final ListComponent component, final ComponentAppendable appendable) {
             for (final var child : component.getComponents()) {
                 appendable.append(child);
             }
@@ -84,15 +81,13 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final TemporalComponentRenderer INSTANCE = new TemporalComponentRenderer();
 
         @Override
-        public void render(
-                final TemporalComponent component,
-                final ComponentAppendable appendable,
-                final MetadataContainer metadata) {
+        public void render(final TemporalComponent component, final ComponentAppendable appendable) {
             component
                     .getFormat()
                     .toFormatter()
                     .withZone(ZoneId.of("UTC"))
-                    .withLocale(metadata.getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault))
+                    .withLocale(
+                            appendable.getContext().getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault))
                     .formatTo(component.getTemporal(), appendable);
         }
     }
@@ -102,15 +97,12 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final TranslatableComponentRenderer INSTANCE = new TranslatableComponentRenderer();
 
         @Override
-        public void render(
-                final TranslatableComponent component,
-                final ComponentAppendable appendable,
-                final MetadataContainer metadata) {
+        public void render(final TranslatableComponent component, final ComponentAppendable appendable) {
             final var translation = DistributorProvider.get()
                     .getGlobalTranslationSource()
                     .getTranslationOrMissing(
                             component.getKey(),
-                            metadata.getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault));
+                            appendable.getContext().getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault));
             if (translation instanceof ComponentAwareTranslation aware) {
                 aware.formatTo(component.getParameters(), appendable);
             } else {
@@ -124,10 +116,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final ValueComponentRenderer INSTANCE = new ValueComponentRenderer();
 
         @Override
-        public void render(
-                final ValueComponent<?> component,
-                final ComponentAppendable appendable,
-                final MetadataContainer metadata) {
+        public void render(final ValueComponent<?> component, final ComponentAppendable appendable) {
             appendable.append(component.getValue().toString());
         }
     }
