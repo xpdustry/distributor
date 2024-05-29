@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.command.cloud.parser;
 
 import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
-import com.xpdustry.distributor.api.key.KeyWithCType;
+import com.xpdustry.distributor.api.key.CTypeKey;
 import java.util.Locale;
 import mindustry.Vars;
 import mindustry.ctype.MappableContent;
@@ -41,21 +41,20 @@ import org.incendo.cloud.parser.ParserDescriptor;
  */
 public final class ContentParser<C, T extends MappableContent> implements ArgumentParser<C, T> {
 
-    public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(
-            final KeyWithCType<T> contentType) {
+    public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(final CTypeKey<T> contentType) {
         return ParserDescriptor.of(
                 new ContentParser<>(contentType),
                 contentType.getKey().getToken().getRawType());
     }
 
     public static <C, T extends MappableContent> CommandComponent.Builder<C, T> contentComponent(
-            final KeyWithCType<T> contentType) {
+            final CTypeKey<T> contentType) {
         return CommandComponent.<C, T>builder().parser(contentParser(contentType));
     }
 
-    private final KeyWithCType<T> contentType;
+    private final CTypeKey<T> contentType;
 
-    public ContentParser(final KeyWithCType<T> contentType) {
+    public ContentParser(final CTypeKey<T> contentType) {
         this.contentType = contentType;
     }
 
@@ -75,7 +74,7 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
     public static final class ContentParseException extends ParserException {
 
         private final String input;
-        private final KeyWithCType<?> contentType;
+        private final CTypeKey<?> contentType;
 
         /**
          * Creates a new {@link ContentParseException}.
@@ -84,8 +83,7 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
          * @param ctx     the command context
          * @param contentType the content type
          */
-        public ContentParseException(
-                final CommandContext<?> ctx, final String input, final KeyWithCType<?> contentType) {
+        public ContentParseException(final CommandContext<?> ctx, final String input, final CTypeKey<?> contentType) {
             super(
                     ContentParser.class,
                     ctx,
@@ -100,7 +98,7 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
             return input;
         }
 
-        public KeyWithCType<?> getContentType() {
+        public CTypeKey<?> getContentType() {
             return contentType;
         }
     }

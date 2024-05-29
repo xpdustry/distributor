@@ -26,7 +26,7 @@ import com.xpdustry.distributor.api.command.cloud.parser.ContentParser;
 import com.xpdustry.distributor.api.command.cloud.parser.PlayerParser;
 import com.xpdustry.distributor.api.command.cloud.parser.TeamParser;
 import com.xpdustry.distributor.api.command.cloud.specifier.AllTeams;
-import com.xpdustry.distributor.api.key.KeyWithCType;
+import com.xpdustry.distributor.api.key.CTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
 import com.xpdustry.distributor.api.translation.BundleTranslationSource;
@@ -102,7 +102,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());
         this.parserRegistry().registerParser(TeamParser.teamParser());
-        KeyWithCType.ALL.forEach(
+        CTypeKey.ALL.forEach(
                 contentType -> this.parserRegistry().registerParser(ContentParser.contentParser(contentType)));
 
         this.parserRegistry()
