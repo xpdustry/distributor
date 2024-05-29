@@ -16,27 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.audience;
+package com.xpdustry.distributor.api.key;
 
-import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.player.MUUID;
+import java.util.Locale;
 import mindustry.game.Team;
-import mindustry.gen.Player;
 
-public interface AudienceProvider {
+public final class StandardKeys {
 
-    Audience getPlayer(final MUUID muuid);
+    public static final Key<String> NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "name", String.class);
+    public static final Key<String> DISPLAY_NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "display-name", String.class);
+    public static final Key<MUUID> MUUID = Key.of(Key.DISTRIBUTOR_NAMESPACE, "muuid", MUUID.class);
+    public static final Key<Locale> LOCALE = Key.of(Key.DISTRIBUTOR_NAMESPACE, "locale", Locale.class);
+    public static final Key<Team> TEAM = Key.of(Key.DISTRIBUTOR_NAMESPACE, "team", Team.class);
 
-    Audience getPlayer(final Player player);
-
-    Audience getServer();
-
-    Audience getPlayers();
-
-    default Audience getTeam(final Team team) {
-        return getPlayers()
-                .asStream()
-                .filter(a -> a.getMetadata().getMetadata(StandardKeys.TEAM).orElse(null) == team)
-                .collect(Audience.collectToAudience());
-    }
+    private StandardKeys() {}
 }

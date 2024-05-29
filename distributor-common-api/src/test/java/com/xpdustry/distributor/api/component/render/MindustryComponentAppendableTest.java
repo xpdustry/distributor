@@ -20,9 +20,9 @@ package com.xpdustry.distributor.api.component.render;
 
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.translation.BundleTranslationSource;
 import com.xpdustry.distributor.api.translation.Translation;
@@ -147,7 +147,9 @@ public final class MindustryComponentAppendableTest {
 
     private MindustryComponentAppendable createAppendable(final Locale locale) {
         return new MindustryComponentAppendable(
-                MetadataContainer.builder().putConstant(Audience.LOCALE, locale).build(),
+                MetadataContainer.builder()
+                        .putConstant(StandardKeys.LOCALE, locale)
+                        .build(),
                 new StandardComponentRendererProvider());
     }
 

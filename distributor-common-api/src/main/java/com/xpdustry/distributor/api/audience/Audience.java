@@ -19,30 +19,16 @@
 package com.xpdustry.distributor.api.audience;
 
 import com.xpdustry.distributor.api.component.ComponentLike;
-import com.xpdustry.distributor.api.key.Key;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
-import com.xpdustry.distributor.api.player.MUUID;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import mindustry.game.Team;
 
 public interface Audience {
-
-    Key<String> NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "name", String.class);
-
-    Key<String> DISPLAY_NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "display-name", String.class);
-
-    Key<MUUID> MUUID = Key.of(Key.DISTRIBUTOR_NAMESPACE, "muuid", MUUID.class);
-
-    Key<Locale> LOCALE = Key.of(Key.DISTRIBUTOR_NAMESPACE, "locale", Locale.class);
-
-    Key<Team> TEAM = Key.of(Key.DISTRIBUTOR_NAMESPACE, "team", Team.class);
 
     static Audience of(final Audience... audiences) {
         if (audiences.length == 0) {

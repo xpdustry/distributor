@@ -22,6 +22,7 @@ import arc.Core;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
 import java.net.URI;
@@ -47,13 +48,13 @@ final class PlayerAudience implements Audience {
         this.player = player;
         this.permissions = PermissionProvider.from(player);
         this.metadata = MetadataContainer.builder()
-                .putSupplier(Audience.NAME, () -> player.getInfo().plainLastName())
-                .putSupplier(Audience.DISPLAY_NAME, player::coloredName)
-                .putConstant(Audience.MUUID, com.xpdustry.distributor.api.player.MUUID.from(player))
+                .putSupplier(StandardKeys.NAME, () -> player.getInfo().plainLastName())
+                .putSupplier(StandardKeys.DISPLAY_NAME, player::coloredName)
+                .putConstant(StandardKeys.MUUID, com.xpdustry.distributor.api.player.MUUID.from(player))
                 .putSupplier(
-                        Audience.LOCALE,
+                        StandardKeys.LOCALE,
                         () -> Locale.forLanguageTag(player.locale().replace('-', '_')))
-                .putSupplier(Audience.TEAM, player::team)
+                .putSupplier(StandardKeys.TEAM, player::team)
                 .build();
     }
 

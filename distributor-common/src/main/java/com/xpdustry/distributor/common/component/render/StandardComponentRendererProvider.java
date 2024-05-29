@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.common.component.render;
 
 import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.TemporalComponent;
@@ -29,6 +28,7 @@ import com.xpdustry.distributor.api.component.ValueComponent;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.component.render.ComponentRenderer;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
+import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.translation.ComponentAwareTranslation;
 import java.time.ZoneId;
 import java.util.Locale;
@@ -86,8 +86,10 @@ public final class StandardComponentRendererProvider implements ComponentRendere
                     .getFormat()
                     .toFormatter()
                     .withZone(ZoneId.of("UTC"))
-                    .withLocale(
-                            appendable.getContext().getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault))
+                    .withLocale(appendable
+                            .getContext()
+                            .getMetadata(StandardKeys.LOCALE)
+                            .orElseGet(Locale::getDefault))
                     .formatTo(component.getTemporal(), appendable);
         }
     }
@@ -102,7 +104,10 @@ public final class StandardComponentRendererProvider implements ComponentRendere
                     .getGlobalTranslationSource()
                     .getTranslationOrMissing(
                             component.getKey(),
-                            appendable.getContext().getMetadata(Audience.LOCALE).orElseGet(Locale::getDefault));
+                            appendable
+                                    .getContext()
+                                    .getMetadata(StandardKeys.LOCALE)
+                                    .orElseGet(Locale::getDefault));
             if (translation instanceof ComponentAwareTranslation aware) {
                 aware.formatTo(component.getParameters(), appendable);
             } else {

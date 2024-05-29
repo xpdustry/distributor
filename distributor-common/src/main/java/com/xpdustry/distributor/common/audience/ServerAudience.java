@@ -22,6 +22,7 @@ import arc.util.Log;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import java.util.Locale;
 
@@ -30,9 +31,9 @@ final class ServerAudience implements Audience {
     static final Audience INSTANCE = new ServerAudience();
 
     private final MetadataContainer metadata = MetadataContainer.builder()
-            .putConstant(Audience.NAME, "server")
-            .putConstant(Audience.DISPLAY_NAME, "Server")
-            .putSupplier(Audience.LOCALE, Locale::getDefault)
+            .putConstant(StandardKeys.NAME, "server")
+            .putConstant(StandardKeys.DISPLAY_NAME, "Server")
+            .putSupplier(StandardKeys.LOCALE, Locale::getDefault)
             .build();
 
     private ServerAudience() {}
