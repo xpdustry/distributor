@@ -49,7 +49,7 @@ public sealed interface CommandElement {
     @SuppressWarnings("immutables:subtype")
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Argument extends CommandElement permits ArgumentImpl {
+    non-sealed interface Argument extends CommandElement {
 
         /**
          * Creates a new command argument.
@@ -89,7 +89,7 @@ public sealed interface CommandElement {
     @SuppressWarnings("immutables:subtype")
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Flag extends CommandElement permits FlagImpl {
+    non-sealed interface Flag extends CommandElement {
 
         /**
          * Creates a new command flag.

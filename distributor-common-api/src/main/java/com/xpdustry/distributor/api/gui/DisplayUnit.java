@@ -33,7 +33,7 @@ public interface DisplayUnit {
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Pixel extends DisplayUnit permits PixelImpl {
+    interface Pixel extends DisplayUnit {
 
         Pixel ZERO = Pixel.of(0);
 

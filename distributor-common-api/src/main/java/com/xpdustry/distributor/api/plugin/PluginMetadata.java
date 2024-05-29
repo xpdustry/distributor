@@ -30,7 +30,7 @@ import org.immutables.value.Value;
 
 @DistributorDataClassWithBuilder
 @Value.Immutable
-public sealed interface PluginMetadata permits PluginMetadataImpl {
+public interface PluginMetadata {
 
     static PluginMetadata.Builder builder() {
         return PluginMetadataImpl.builder();
@@ -184,7 +184,7 @@ public sealed interface PluginMetadata permits PluginMetadataImpl {
         return List.of();
     }
 
-    sealed interface Builder permits PluginMetadataImpl.Builder {
+    interface Builder {
 
         Builder setName(final String name);
 

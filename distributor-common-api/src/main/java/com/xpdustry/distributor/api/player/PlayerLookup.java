@@ -77,7 +77,7 @@ public interface PlayerLookup {
      */
     @DistributorDataClassWithBuilder
     @Value.Immutable
-    sealed interface Query permits QueryImpl {
+    interface Query {
 
         /**
          * Creates a simple query with the given input.
@@ -116,7 +116,7 @@ public interface PlayerLookup {
             return true;
         }
 
-        sealed interface Builder permits QueryImpl.Builder {
+        interface Builder {
 
             Builder setInput(final String queryInput);
 

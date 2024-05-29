@@ -48,7 +48,7 @@ public interface ServiceManager {
 
     @DistributorDataClass
     @Value.Immutable
-    sealed interface Provider<T> permits ProviderImpl {
+    interface Provider<T> {
 
         static <T> Provider<T> of(
                 final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
