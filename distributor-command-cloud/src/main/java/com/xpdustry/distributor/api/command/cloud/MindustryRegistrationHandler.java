@@ -77,17 +77,19 @@ final class MindustryRegistrationHandler<C> implements CommandRegistrationHandle
             command.rootComponent().aliases().forEach(this.handler::removeCommand);
         }
 
+        final var descriptionFacade = this.manager.descriptionMapper().map(description);
+
         // Register with the primary name
         this.addCommand(new CloudCommandFacade<>(
                 command.rootComponent().name(),
-                description,
+                descriptionFacade,
                 this.manager,
                 false,
                 this.commands.containsKey(command.rootComponent().name())));
 
         for (final var alias : command.rootComponent().alternativeAliases()) {
             if (!this.commands.containsKey(alias)) {
-                this.addCommand(new CloudCommandFacade<>(alias, description, this.manager, true, false));
+                this.addCommand(new CloudCommandFacade<>(alias, descriptionFacade, this.manager, true, false));
             }
         }
 

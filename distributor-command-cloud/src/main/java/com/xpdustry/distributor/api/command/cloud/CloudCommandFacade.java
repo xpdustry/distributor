@@ -31,7 +31,6 @@ import java.util.Set;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.incendo.cloud.Command;
-import org.incendo.cloud.description.Description;
 import org.incendo.cloud.help.HelpQuery;
 import org.incendo.cloud.help.result.MultipleCommandResult;
 import org.incendo.cloud.help.result.VerboseCommandResult;
@@ -44,23 +43,23 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
     final MindustryCommandManager<C> manager;
     private final boolean alias;
     private final String realName;
-    private final Description cloudDescription;
+    private final DescriptionFacade descriptionFacade;
 
     CloudCommandFacade(
             final String name,
-            final Description description,
+            final DescriptionFacade description,
             final MindustryCommandManager<C> manager,
             final boolean alias,
             final boolean prefixed) {
         super(
                 (prefixed ? manager.getPlugin().getMetadata().getName() + ":" : "") + name,
                 "[args...]",
-                description.textDescription(),
+                description.getText(),
                 new CloudCommandRunner<>(name, manager));
         this.manager = manager;
         this.alias = alias;
         this.realName = name;
-        this.cloudDescription = description;
+        this.descriptionFacade = description;
     }
 
     @Override
@@ -75,7 +74,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
 
     @Override
     public DescriptionFacade getDescription() {
-        return this.manager.descriptionMapper().map(this.cloudDescription);
+        return descriptionFacade;
     }
 
     @Override
