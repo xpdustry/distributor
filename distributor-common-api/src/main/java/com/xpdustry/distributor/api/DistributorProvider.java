@@ -31,35 +31,35 @@ public final class DistributorProvider {
 
     /**
      * Returns the global {@link Distributor} factory.
-     * @throws DistributorInitializationException if the API hasn't been initialized yet
+     * @throws IllegalStateException if the API hasn't been initialized yet
      */
     public static Distributor get() {
         if (DistributorProvider.instance == null) {
-            throw new DistributorInitializationException("The API hasn't been initialized yet.");
+            throw new IllegalStateException("The API hasn't been initialized yet.");
         }
         return DistributorProvider.instance;
     }
 
     /**
      * Sets the global {@link Distributor} factory.
-     * @throws DistributorInitializationException if the API has already been initialized
+     * @throws IllegalStateException if the API has already been initialized
      */
     public static void set(final Distributor distributor) {
         if (DistributorProvider.instance != null) {
-            throw new DistributorInitializationException("The API has already been initialized.");
+            throw new IllegalStateException("The API has already been initialized.");
         }
         DistributorProvider.instance = distributor;
     }
 
     /**
      * Clears the global {@link Distributor} factory.
-     * @throws DistributorInitializationException if the API hasn't been initialized yet
+     * @throws IllegalStateException if the API hasn't been initialized yet
      */
     public static void clear() {
         if (DistributorProvider.instance != null) {
             DistributorProvider.instance = null;
         } else {
-            throw new DistributorInitializationException("The API hasn't been initialized yet.");
+            throw new IllegalStateException("The API hasn't been initialized yet.");
         }
     }
 
