@@ -57,10 +57,20 @@ public interface BundleTranslationSource extends TranslationSource {
         this.registerAll(locale, translations.keySet(), translations::get);
     }
 
+    /**
+     * Registers a translation bundle.
+     *
+     * @param bundle the translation bundle
+     */
     default void registerAll(final TranslationBundle bundle) {
         this.registerAll(bundle.getLocale(), bundle.getTranslations());
     }
 
+    /**
+     * Registers a collection of translation bundles.
+     *
+     * @param bundles the collection of translation bundles
+     */
     default void registerAll(final Collection<TranslationBundle> bundles) {
         for (final var bundle : bundles) this.registerAll(bundle);
     }
@@ -118,4 +128,16 @@ public interface BundleTranslationSource extends TranslationSource {
      * Returns the default locale of this source.
      */
     Locale getDefaultLocale();
+
+    /**
+     * Returns the keys of all registered translations.
+     */
+    Collection<String> getKeys();
+
+    /**
+     * Returns the keys of all registered translations for a specific locale.
+     *
+     * @param locale the locale
+     */
+    Collection<String> getKeys(final Locale locale);
 }

@@ -18,9 +18,12 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class BundleTranslationSourceImpl implements BundleTranslationSource {
@@ -34,7 +37,7 @@ final class BundleTranslationSourceImpl implements BundleTranslationSource {
 
     @Override
     public @Nullable Translation getTranslation(final String key, final Locale locale) {
-        return this.entries.containsKey(key) ? this.entries.get(key).localize(locale) : null;
+        return this.entries.containsKey(key) ? this.entries.get(key).translation(locale) : null;
     }
 
     @Override
@@ -66,6 +69,19 @@ final class BundleTranslationSourceImpl implements BundleTranslationSource {
         return this.defaultLocale;
     }
 
+    @Override
+    public Collection<String> getKeys() {
+        return Collections.unmodifiableCollection(this.entries.keySet());
+    }
+
+    @Override
+    public Collection<String> getKeys(final Locale locale) {
+        return this.entries.entrySet().stream()
+                .filter(entry -> entry.getValue().translations.containsKey(locale))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
     private final class Entry {
 
         private final Map<Locale, Translation> translations = new ConcurrentHashMap<>();
@@ -74,7 +90,7 @@ final class BundleTranslationSourceImpl implements BundleTranslationSource {
             return this.translations.putIfAbsent(locale, format) == null;
         }
 
-        private @Nullable Translation localize(final Locale locale) {
+        private @Nullable Translation translation(final Locale locale) {
             var format = this.translations.get(locale);
             if (format == null) {
                 // try without the country
