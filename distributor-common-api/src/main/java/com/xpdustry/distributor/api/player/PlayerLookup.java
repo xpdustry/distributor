@@ -38,19 +38,16 @@ import org.immutables.value.Value;
  */
 public interface PlayerLookup {
 
-    Supplier<Collection<Player>> DEFAULT_PROVIDER = () -> MindustryCollections.immutableList(Groups.player);
-
-    // https://stackoverflow.com/a/4122200
-    Function<String, String> DEFAULT_NORMALIZER =
-            string -> Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
-                    .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                    .toLowerCase(Locale.ROOT);
-
     /**
      * Creates a new player lookup with the default provider and normalizer.
      */
     static PlayerLookup create() {
-        return new PlayerLookupImpl(DEFAULT_PROVIDER, DEFAULT_NORMALIZER);
+        // https://stackoverflow.com/a/4122200
+        return new PlayerLookupImpl(
+                () -> MindustryCollections.immutableList(Groups.player),
+                string -> Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
+                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                        .toLowerCase(Locale.ROOT));
     }
 
     /**
