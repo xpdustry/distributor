@@ -30,7 +30,7 @@ import com.xpdustry.distributor.api.key.CTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
 import com.xpdustry.distributor.api.translation.BundleTranslationSource;
-import com.xpdustry.distributor.api.translation.ResourceTranslationBundles;
+import com.xpdustry.distributor.api.translation.ResourceBundles;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import io.leangen.geantyref.TypeToken;
@@ -64,7 +64,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
             BundleTranslationSource.create(Locale.ROOT);
 
     static {
-        DEFAULT_TRANSLATION_SOURCE.registerAll(ResourceTranslationBundles.fromClasspathDirectory(
+        DEFAULT_TRANSLATION_SOURCE.registerAll(ResourceBundles.fromClasspathDirectory(
                 MindustryCommandManager.class, "/com/xpdustry/distributor/api/command/cloud", "bundle"));
     }
 

@@ -18,10 +18,33 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-record TextTranslation(String text) implements Translation {
+import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import org.immutables.value.Value;
+
+/**
+ * A translation backed by a simple text.
+ */
+@DistributorDataClass
+@Value.Immutable
+public interface TextTranslation extends Translation {
+
+    /**
+     * Creates a new {@link TextTranslation} with the given text.
+     *
+     * @param text the text
+     * @return the created text translation
+     */
+    static TextTranslation of(final String text) {
+        return TextTranslationImpl.of(text);
+    }
+
+    /**
+     * Returns the text of this text translation.
+     */
+    String getText();
 
     @Override
-    public String format(final TranslationArguments parameters) {
-        return text;
+    default String format(final TranslationArguments parameters) {
+        return this.getText();
     }
 }

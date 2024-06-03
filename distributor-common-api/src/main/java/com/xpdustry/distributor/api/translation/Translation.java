@@ -18,17 +18,16 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.util.Locale;
-
+/**
+ * Represents a translation from a given translation system.
+ */
 public interface Translation {
 
-    static Translation text(final String text) {
-        return new TextTranslation(text);
-    }
-
-    static Translation format(final String pattern, final Locale locale) {
-        return new MessageFormatTranslation(pattern, locale);
-    }
-
+    /**
+     * Formats the translation with the given parameters.
+     *
+     * @param parameters the translation parameters
+     * @return the formatted translation
+     */
     String format(final TranslationArguments parameters);
 }

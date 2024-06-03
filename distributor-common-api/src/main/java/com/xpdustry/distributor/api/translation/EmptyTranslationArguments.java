@@ -18,20 +18,13 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
-import java.util.Locale;
-import java.util.Map;
-import org.immutables.value.Value;
+import java.util.List;
 
-@DistributorDataClass
-@Value.Immutable
-public interface TranslationBundle {
+enum EmptyTranslationArguments implements TranslationArguments.Array {
+    INSTANCE;
 
-    static TranslationBundle of(final Locale locale, final Map<String, Translation> translations) {
-        return TranslationBundleImpl.of(locale, translations);
+    @Override
+    public List<Object> getArguments() {
+        return List.of();
     }
-
-    Locale getLocale();
-
-    Map<String, Translation> getTranslations();
 }

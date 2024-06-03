@@ -25,7 +25,8 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.translation.BundleTranslationSource;
-import com.xpdustry.distributor.api.translation.Translation;
+import com.xpdustry.distributor.api.translation.MessageFormatTranslation;
+import com.xpdustry.distributor.api.translation.TextTranslation;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
 import com.xpdustry.distributor.common.component.render.StandardComponentRendererProvider;
@@ -45,12 +46,12 @@ public final class MindustryComponentAppendableTest {
     @BeforeAll
     static void setup() {
         final var translator = BundleTranslationSource.create(Locale.ENGLISH);
-        translator.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
-        translator.register("greeting", Locale.ENGLISH, Translation.text("Hello"));
+        translator.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
+        translator.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
         translator.register(
                 "describe-number",
                 Locale.ENGLISH,
-                Translation.format("The [number] is {0,choice,0#zero|1#one}", Locale.ENGLISH));
+                MessageFormatTranslation.of("The [number] is {0,choice,0#zero|1#one}", Locale.ENGLISH));
         final var distributor = Mockito.mock(Distributor.class);
         final var global = TranslationSourceRegistry.create();
         global.register(translator);

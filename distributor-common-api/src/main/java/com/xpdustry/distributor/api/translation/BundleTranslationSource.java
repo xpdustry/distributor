@@ -21,36 +21,31 @@ package com.xpdustry.distributor.api.translation;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * A translation source that can register strings from resource bundles, files and others.
+ * A translation source that can register translation from resource bundles and other sources.
  */
 public interface BundleTranslationSource extends TranslationSource {
 
     /**
-     * Creates a new {@code LocalizationSourceRegistry} instance.
+     * Creates a new {@code BundleTranslationSource} instance.
      *
-     * @param defaultLocale the default locale of the localization source
-     * @return a new {@code LocalizationSourceRegistry} instance
+     * @param defaultLocale the default locale of the translation source
+     * @return a new {@code BundleTranslationSource} instance
      */
     static BundleTranslationSource create(final Locale defaultLocale) {
         return new BundleTranslationSourceImpl(defaultLocale);
     }
 
     /**
-     * Registers a map of localized strings.
+     * Registers a map of translations.
      *
-     * <pre> {@code
-     *      final var strings = new HashMap<String, MessageFormat>();
-     *      strings.put("example.hello", new MessageFormat("Hello {0}!", Locale.ENGLISH));
-     *      strings.put("example.goodbye", new MessageFormat("Goodbye {0}!", Locale.ENGLISH));
-     *      registry.registerAll(Locale.ENGLISH, strings);
-     * } </pre>
-     *
-     * @param locale  the locale to register the strings to
-     * @param translations the map of localized strings
+     * @param locale  the locale of the translations
+     * @param translations the map
      * @throws IllegalArgumentException if a key is already registered
      */
     default void registerAll(final Locale locale, final Map<String, Translation> translations) {
@@ -58,71 +53,103 @@ public interface BundleTranslationSource extends TranslationSource {
     }
 
     /**
-     * Registers a translation bundle.
+     * Registers the entries of the given resource bundle as text translations.
      *
-     * @param bundle the translation bundle
+     * @param bundle the resource bundle
      */
-    default void registerAll(final TranslationBundle bundle) {
-        this.registerAll(bundle.getLocale(), bundle.getTranslations());
+    default void registerAll(final ResourceBundle bundle) {
+        this.registerAll(bundle, ResourceBundles::getTextTranslation);
     }
 
     /**
-     * Registers a collection of translation bundles.
+     * Registers the entries of the given resource bundle.
      *
-     * @param bundles the collection of translation bundles
-     */
-    default void registerAll(final Collection<TranslationBundle> bundles) {
-        for (final var bundle : bundles) this.registerAll(bundle);
-    }
-
-    /**
-     * Registers a set of localized strings by using a mapping function to obtain each string.
-     *
-     * @param locale   the locale to register the strings to
-     * @param keys     the set of keys to register
-     * @param function the mapping function
-     * @throws IllegalArgumentException if the key is already registered
+     * @param bundle the resource bundle
+     * @param extractor the function to extract {@link Translation}
      */
     default void registerAll(
-            final Locale locale, final Set<String> keys, final Function<String, Translation> function) {
-        for (final var key : keys) {
-            this.register(key, locale, function.apply(key));
-        }
+            final ResourceBundle bundle, final BiFunction<ResourceBundle, String, Translation> extractor) {
+        this.registerAll(bundle.getLocale(), bundle.keySet(), k -> extractor.apply(bundle, k));
     }
 
     /**
-     * Registers a localized string.
+     * Registers the entries of the given resource bundles as text translations.
      *
-     * @param key    the key of the string
-     * @param locale the locale to register the string to
-     * @param translation the localized string
+     * @param bundles the collection of resource bundles
+     */
+    default void registerAll(final Collection<ResourceBundle> bundles) {
+        this.registerAll(bundles, ResourceBundles::getTextTranslation);
+    }
+
+    /**
+     * Registers the entries of the given resource bundles.
+     *
+     * @param bundles the collection of resource bundles
+     * @param extractor  the function to extract {@link Translation}
+     */
+    default void registerAll(
+            final Collection<ResourceBundle> bundles, final BiFunction<ResourceBundle, String, Translation> extractor) {
+        for (final var bundle : bundles) this.registerAll(bundle, extractor);
+    }
+
+    /**
+     * Registers a set of translations by using a mapper function to obtain each translation.
+     *
+     * @param locale   the locale of the translations
+     * @param keys     the set of keys to register
+     * @param mapper   the mapper function to obtain the translation
+     * @throws IllegalArgumentException if the key is already registered
+     */
+    default void registerAll(final Locale locale, final Set<String> keys, final Function<String, Translation> mapper) {
+        for (final var key : keys) this.register(key, locale, mapper.apply(key));
+    }
+
+    /**
+     * Registers a translation.
+     *
+     * @param key    the key of the translation
+     * @param locale the locale of the translation
+     * @param translation the translation
      * @throws IllegalArgumentException if the key is already registered
      */
     void register(final String key, final Locale locale, final Translation translation);
 
     /**
-     * Checks if a key is already registered, for any locale.
+     * Checks if a key is registered for any locale.
      *
-     * @param key the key to check
-     * @return {@code true} if the key is already registered, {@code false} otherwise
+     * @param key the key of
+     * @return {@code true} if the key is registered, {@code false} otherwise
      */
     boolean registered(final String key);
 
     /**
-     * Checks if a key is already registered for a specific locale.
+     * Checks if a key is registered for a specific locale.
      *
-     * @param key    the key to check
+     * @param key    the key
      * @param locale the locale to check
-     * @return {@code true} if the key is already registered for the specific locale, {@code false} otherwise
+     * @return {@code true} if the key is registered for the specific locale, {@code false} otherwise
      */
     boolean registered(final String key, final Locale locale);
 
     /**
-     * Unregisters a localized string.
+     * Unregisters a key.
      *
      * @param key the key of the string
      */
     void unregister(final String key);
+
+    /**
+     * Unregisters a key for a specific locale.
+     *
+     * @param key    the key
+     * @param locale the locale
+     */
+    void unregister(final String key, final Locale locale);
+
+    /**
+     * Unregisters all translations.
+     */
+    void clear();
 
     /**
      * Returns the default locale of this source.

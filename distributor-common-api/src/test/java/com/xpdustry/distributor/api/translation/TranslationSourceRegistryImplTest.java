@@ -27,9 +27,9 @@ public final class TranslationSourceRegistryImplTest {
 
     @Test
     void test_lookup_order() {
-        final var registry = createSource();
+        final var registry = new TranslationSourceRegistryImpl();
         final var source1 = new BundleTranslationSourceImpl(Locale.FRENCH);
-        source1.register("greeting", Locale.FRENCH, Translation.text("Bonjour!"));
+        source1.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour!"));
         final var source2 = RouterTranslationSource.INSTANCE;
 
         assertThat(registry.getTranslation("greeting", RouterTranslationSource.ROUTER_LOCALE))
@@ -46,9 +46,5 @@ public final class TranslationSourceRegistryImplTest {
                 .isNotNull()
                 .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("router");
-    }
-
-    private TranslationSourceRegistryImpl createSource() {
-        return new TranslationSourceRegistryImpl();
     }
 }

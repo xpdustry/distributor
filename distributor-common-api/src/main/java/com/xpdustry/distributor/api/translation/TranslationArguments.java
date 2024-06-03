@@ -19,44 +19,75 @@
 package com.xpdustry.distributor.api.translation;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
-import com.xpdustry.distributor.internal.annotation.DistributorDataClassSingleton;
 import java.util.List;
 import java.util.Map;
 import org.immutables.value.Value;
 
+/**
+ * Represents the arguments of a translation.
+ */
 public sealed interface TranslationArguments {
 
+    /**
+     * Creates a new {@link TranslationArguments.Array} with the given values.
+     *
+     * @param values the values as a list
+     * @return the created array translation arguments
+     */
     static TranslationArguments.Array array(final List<Object> values) {
         return ArrayImpl.of(values);
     }
 
+    /**
+     * Creates a new {@link TranslationArguments.Array} with the given values.
+     *
+     * @param values the values as an array
+     * @return the created array translation arguments
+     */
     static TranslationArguments.Array array(final Object... values) {
         return ArrayImpl.of(List.of(values));
     }
 
+    /**
+     * Creates a new {@link TranslationArguments.Named} with the given values.
+     *
+     * @param values the values as a map
+     * @return the created named translation arguments
+     */
     static TranslationArguments.Named named(final Map<String, Object> values) {
         return NamedImpl.of(values);
     }
 
-    static TranslationArguments.Empty empty() {
-        return EmptyImpl.of();
+    /**
+     * Returns a {@link TranslationArguments.Array} instance with no arguments.
+     */
+    static TranslationArguments.Array empty() {
+        return EmptyTranslationArguments.INSTANCE;
     }
 
+    /**
+     * Positional arguments for a translation.
+     */
     @DistributorDataClass
     @Value.Immutable
     non-sealed interface Array extends TranslationArguments {
 
+        /**
+         * Returns the arguments.
+         */
         List<Object> getArguments();
     }
 
+    /**
+     * Named arguments for a translation.
+     */
     @DistributorDataClass
     @Value.Immutable
     non-sealed interface Named extends TranslationArguments {
 
+        /**
+         * Returns the arguments.
+         */
         Map<String, Object> getArguments();
     }
-
-    @DistributorDataClassSingleton
-    @Value.Immutable
-    non-sealed interface Empty extends TranslationArguments {}
 }

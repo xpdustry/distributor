@@ -54,6 +54,22 @@ final class BundleTranslationSourceImpl implements BundleTranslationSource {
     }
 
     @Override
+    public void unregister(final String key, final Locale locale) {
+        if (this.entries.containsKey(key)) {
+            final var entry = this.entries.get(key);
+            entry.translations.remove(locale);
+            if (entry.translations.isEmpty()) {
+                this.entries.remove(key);
+            }
+        }
+    }
+
+    @Override
+    public void clear() {
+        this.entries.clear();
+    }
+
+    @Override
     public boolean registered(final String key) {
         return this.entries.containsKey(key);
     }

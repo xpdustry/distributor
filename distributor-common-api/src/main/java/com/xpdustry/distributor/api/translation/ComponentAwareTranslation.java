@@ -21,6 +21,9 @@ package com.xpdustry.distributor.api.translation;
 import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
+/**
+ * A translation that can format to a {@link ComponentAppendable}.
+ */
 public interface ComponentAwareTranslation extends Translation {
 
     @Override
@@ -30,5 +33,11 @@ public interface ComponentAwareTranslation extends Translation {
         return appendable.toString();
     }
 
+    /**
+     * Formats the translation to the given {@link ComponentAppendable}.
+     *
+     * @param parameters the translation parameters
+     * @param appendable the appendable
+     */
     void formatTo(final TranslationArguments parameters, final ComponentAppendable appendable);
 }

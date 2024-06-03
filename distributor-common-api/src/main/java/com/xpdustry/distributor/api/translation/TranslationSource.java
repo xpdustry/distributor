@@ -18,13 +18,12 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A helper class for adding translation support to your plugin.
+ * A helper class for adding translations to your plugin.
  */
 public interface TranslationSource {
 
@@ -36,30 +35,35 @@ public interface TranslationSource {
     }
 
     /**
-     * Returns the localized string for the given key or {@code null} if absent.
+     * Returns a translation for the given key or {@code null} if absent.
      *
-     * <pre> {@code
-     *      // Send a localized message to every player
-     *      final TranslationSource source = ...;
-     *      Groups.player.each(player -> {
-     *          final var locale = Locale.forLanguageTag(player.locale().replace('_', '-'));
-     *          final var message = source.getTranslationOrMissing("example.key", locale);
-     *          player.sendMessage(message.formatArray("Hello"));
-     *      }
-     * } </pre>
-     *
-     * @param key the key of the string to localize
-     * @return the localized string contained in a {@link MessageFormat}, or {@code null} if no string was found.
+     * @param key the key
+     * @return the translation, or {@code null} if no suitable translation was found.
      */
     @Nullable Translation getTranslation(final String key, final Locale locale);
 
+    /**
+     * Returns a translation for the given key or a default translation if absent.
+     *
+     * @param key the key
+     * @param locale the locale
+     * @param fallback the fallback translation
+     * @return the translation
+     */
     default Translation getTranslationOrDefault(
             final String key, final Locale locale, final Function<String, Translation> fallback) {
         final var translation = getTranslation(key, locale);
         return translation != null ? translation : fallback.apply(key);
     }
 
+    /**
+     * Returns a translation for the given key or a missing translation if absent.
+     *
+     * @param key the key
+     * @param locale the locale
+     * @return the translation
+     */
     default Translation getTranslationOrMissing(final String key, final Locale locale) {
-        return getTranslationOrDefault(key, locale, k -> Translation.text("???" + k + "???"));
+        return getTranslationOrDefault(key, locale, k -> TextTranslation.of("???" + k + "???"));
     }
 }

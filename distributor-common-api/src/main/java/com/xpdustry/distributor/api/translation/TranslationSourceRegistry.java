@@ -19,21 +19,21 @@
 package com.xpdustry.distributor.api.translation;
 
 /**
- * A mutable localization source that delegates the localization lookup to other sources in FIFO order.
+ * A translation source that delegates the lookup to other sources in FIFO order.
  */
 public interface TranslationSourceRegistry extends TranslationSource {
 
     /**
-     * Creates a new {@code MultiLocalizationSource} instance.
+     * Creates a new {@code TranslationSourceRegistry} instance.
      */
     static TranslationSourceRegistry create() {
         return new TranslationSourceRegistryImpl();
     }
 
     /**
-     * Adds a localization source to the list of sources.
+     * Adds a translation source to the list of sources.
      *
-     * @param source the source to add
+     * @param source the source
      */
     void register(final TranslationSource source);
 }

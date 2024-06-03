@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public final class BundleTranslationSourceImplTest {
 
     @Test
-    void test_simple_localize() {
+    void test_get_translation() {
         final var registry = createSource(Locale.ENGLISH);
-        registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
-        registry.register("greeting", Locale.ENGLISH, Translation.text("Hello"));
+        registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
+        registry.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
 
         assertThat(registry.getTranslation("greeting", Locale.FRENCH))
                 .isNotNull()
@@ -38,6 +38,11 @@ public final class BundleTranslationSourceImplTest {
                 .isEqualTo("Bonjour");
 
         assertThat(registry.getTranslation("greeting", Locale.ENGLISH))
+                .isNotNull()
+                .extracting(translation -> translation.format(TranslationArguments.empty()))
+                .isEqualTo("Hello");
+
+        assertThat(registry.getTranslation("greeting", Locale.US))
                 .isNotNull()
                 .extracting(translation -> translation.format(TranslationArguments.empty()))
                 .isEqualTo("Hello");
@@ -52,33 +57,42 @@ public final class BundleTranslationSourceImplTest {
     void test_unregister() {
         final var registry = createSource(Locale.ENGLISH);
 
-        registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
-        registry.register("greeting", Locale.ENGLISH, Translation.text("Hello"));
-
-        assertThat(registry.getTranslation("greeting", Locale.ENGLISH)).isNotNull();
-        assertThat(registry.getTranslation("greeting", Locale.FRENCH)).isNotNull();
+        registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
+        registry.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
+        registry.register("greeting", Locale.ITALIAN, TextTranslation.of("Ciao"));
 
         assertThat(registry.registered("greeting")).isTrue();
+        assertThat(registry.getTranslation("greeting", Locale.ENGLISH)).isNotNull();
+        assertThat(registry.getTranslation("greeting", Locale.FRENCH)).isNotNull();
+        assertThat(registry.getTranslation("greeting", Locale.ITALIAN)).isNotNull();
         assertThat(registry.registered("greeting", Locale.ENGLISH)).isTrue();
         assertThat(registry.registered("greeting", Locale.FRENCH)).isTrue();
-        assertThat(registry.registered("greeting", Locale.CHINESE)).isFalse();
+        assertThat(registry.registered("greeting", Locale.ITALIAN)).isTrue();
+
+        registry.unregister("greeting", Locale.ENGLISH);
+        assertThat(registry.getTranslation("greeting", Locale.ENGLISH)).isNull();
+        assertThat(registry.getTranslation("greeting", Locale.FRENCH)).isNotNull();
+        assertThat(registry.getTranslation("greeting", Locale.ITALIAN)).isNotNull();
+        assertThat(registry.registered("greeting")).isTrue();
+        assertThat(registry.registered("greeting", Locale.ENGLISH)).isFalse();
+        assertThat(registry.registered("greeting", Locale.FRENCH)).isTrue();
+        assertThat(registry.registered("greeting", Locale.ITALIAN)).isTrue();
 
         registry.unregister("greeting");
-
+        assertThat(registry.getTranslation("greeting", Locale.ENGLISH)).isNull();
         assertThat(registry.getTranslation("greeting", Locale.ENGLISH)).isNull();
         assertThat(registry.getTranslation("greeting", Locale.FRENCH)).isNull();
-
         assertThat(registry.registered("greeting")).isFalse();
         assertThat(registry.registered("greeting", Locale.ENGLISH)).isFalse();
         assertThat(registry.registered("greeting", Locale.FRENCH)).isFalse();
-        assertThat(registry.registered("greeting", Locale.CHINESE)).isFalse();
+        assertThat(registry.registered("greeting", Locale.ITALIAN)).isFalse();
     }
 
     @Test
     void test_illegal_register() {
         final var registry = createSource(Locale.ENGLISH);
-        registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour"));
-        assertThatThrownBy(() -> registry.register("greeting", Locale.FRENCH, Translation.text("Bonjour")))
+        registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
+        assertThatThrownBy(() -> registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
