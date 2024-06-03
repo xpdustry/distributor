@@ -18,18 +18,12 @@
  */
 package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.audience.Audience;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface Window {
 
     Player getViewer();
-
-    default Audience getAudience() {
-        return DistributorProvider.get().getAudienceProvider().getPlayer(getViewer());
-    }
 
     State getState();
 

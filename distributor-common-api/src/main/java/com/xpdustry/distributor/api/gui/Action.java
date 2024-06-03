@@ -18,7 +18,12 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.key.Key;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import mindustry.Vars;
 
 @FunctionalInterface
 public interface Action {
@@ -37,6 +42,13 @@ public interface Action {
 
     static <T> Action with(final Key<T> key, final T value) {
         return window -> window.getState().set(key, value);
+    }
+
+    static <T> Action compute(final Key<T> key, final T def, final Function<T, T> function) {
+        return window -> {
+            final var value = window.getState().getOptional(key).orElse(def);
+            window.getState().set(key, function.apply(value));
+        };
     }
 
     static Action without(final Key<?> key) {
@@ -69,6 +81,25 @@ public interface Action {
                 current = current.getParent();
             }
         };
+    }
+
+    static Action audience(final Consumer<Audience> consumer) {
+        return view ->
+                consumer.accept(DistributorProvider.get().getAudienceProvider().getPlayer(view.getViewer()));
+    }
+
+    static Action run(final Runnable runnable) {
+        return view -> runnable.run();
+    }
+
+    static Action command(final String name, final String... arguments) {
+        final var builder = new StringBuilder(name.length() + 1 + (arguments.length * 4));
+        builder.append('/').append(name);
+        for (final var argument : arguments) {
+            builder.append(' ').append(argument);
+        }
+        final var input = builder.toString();
+        return view -> Vars.netServer.clientCommands.handleMessage(input, view.getViewer());
     }
 
     void act(final Window window);
