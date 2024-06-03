@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.api.permission;
 
+import com.xpdustry.distributor.api.util.TriState;
+
 /**
  * A mutable permission tree.
  */

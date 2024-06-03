@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.permission;
 
 import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.util.TriState;
 import mindustry.gen.Player;
 
 record PlayerPermissionProvider(Player player) implements PermissionProvider {

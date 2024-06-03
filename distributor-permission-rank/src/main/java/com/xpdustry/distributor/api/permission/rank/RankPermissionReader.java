@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.permission.rank;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.permission.PermissionReader;
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.util.TriState;
 import mindustry.gen.Player;
 
 final class RankPermissionReader implements PermissionReader {

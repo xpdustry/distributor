@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission;
 
+import com.xpdustry.distributor.api.util.TriState;
 import java.util.Map;
 import java.util.regex.Pattern;
 

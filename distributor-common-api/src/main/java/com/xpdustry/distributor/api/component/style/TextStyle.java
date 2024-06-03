@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.api.component.style;
 
-import com.xpdustry.distributor.api.permission.TriState;
 import com.xpdustry.distributor.api.util.Buildable;
+import com.xpdustry.distributor.api.util.TriState;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Arrays;
 import java.util.HashMap;

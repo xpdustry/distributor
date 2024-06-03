@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.util.TriState;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;

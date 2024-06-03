@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.component;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.TextDecoration;
 import com.xpdustry.distributor.api.component.style.TextStyle;
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.util.TriState;
 import java.util.Map;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

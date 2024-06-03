@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission;
 
+import com.xpdustry.distributor.api.util.TriState;
 import mindustry.gen.Player;
 
 @FunctionalInterface

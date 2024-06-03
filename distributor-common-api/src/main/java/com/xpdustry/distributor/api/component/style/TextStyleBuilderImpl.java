@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.component.style;
 
-import com.xpdustry.distributor.api.permission.TriState;
+import com.xpdustry.distributor.api.util.TriState;
 import java.util.EnumMap;
 import java.util.Map;
 import org.checkerframework.checker.nullness.qual.Nullable;
