@@ -3,6 +3,7 @@ ranks:
   mindustry_player:
     distributor.player.lookup.name: true
     distributor.player.lookup.entity_id: true
+    distributor.player.lookup.server_id: true
     distributor.player.lookup.uuid: false
 
   mindustry_admin:

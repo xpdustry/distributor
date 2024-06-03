@@ -18,17 +18,14 @@
  */
 package com.xpdustry.distributor.api.player;
 
-import arc.util.Strings;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClassWithBuilder;
-import java.text.Normalizer;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
@@ -44,10 +41,7 @@ public interface PlayerLookup {
     static PlayerLookup create() {
         // https://stackoverflow.com/a/4122200
         return new PlayerLookupImpl(
-                () -> MindustryCollections.immutableList(Groups.player),
-                string -> Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
-                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                        .toLowerCase(Locale.ROOT));
+                () -> MindustryCollections.immutableList(Groups.player), PlayerLookupImpl.DEFAULT_NORMALIZER);
     }
 
     /**
@@ -57,7 +51,7 @@ public interface PlayerLookup {
      * @param normalizer the normalizer
      * @return the player lookup
      */
-    static PlayerLookup create(final Supplier<Collection<Player>> provider, final Function<String, String> normalizer) {
+    static PlayerLookup create(final Supplier<Collection<Player>> provider, final UnaryOperator<String> normalizer) {
         return new PlayerLookupImpl(provider, normalizer);
     }
 

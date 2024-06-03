@@ -19,21 +19,30 @@
 package com.xpdustry.distributor.api.player;
 
 import arc.Core;
+import arc.util.Strings;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
 
 final class PlayerLookupImpl implements PlayerLookup {
 
+    static final UnaryOperator<String> DEFAULT_NORMALIZER =
+            string -> Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
+                    .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                    .toLowerCase(Locale.ROOT);
+
     private final Supplier<Collection<Player>> provider;
     private final Function<String, String> normalizer;
 
-    PlayerLookupImpl(final Supplier<Collection<Player>> provider, final Function<String, String> normalizer) {
+    PlayerLookupImpl(final Supplier<Collection<Player>> provider, final UnaryOperator<String> normalizer) {
         this.provider = provider;
         this.normalizer = normalizer;
     }

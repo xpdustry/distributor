@@ -18,15 +18,13 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-record LinearEnumRankNode<E extends Enum<E>>(E value, Function<E, String> nameProvider, boolean ascending)
-        implements EnumRankNode<E> {
+record LinearEnumRankNode<E extends Enum<E>>(E value, String namespace, boolean ascending) implements EnumRankNode<E> {
 
     @Override
     public String getName() {
-        return this.nameProvider.apply(this.value);
+        return this.namespace + "_" + this.value.name().toLowerCase();
     }
 
     @Override
@@ -40,11 +38,11 @@ record LinearEnumRankNode<E extends Enum<E>>(E value, Function<E, String> namePr
         final var constants = this.value.getDeclaringClass().getEnumConstants();
         if (this.ascending) {
             return (this.value.ordinal() > 0)
-                    ? new LinearEnumRankNode<>(constants[this.value.ordinal() - 1], this.nameProvider, true)
+                    ? new LinearEnumRankNode<>(constants[this.value.ordinal() - 1], namespace, true)
                     : null;
         } else {
             return (this.value.ordinal() + 1 < constants.length)
-                    ? new LinearEnumRankNode<>(constants[this.value.ordinal() + 1], this.nameProvider, false)
+                    ? new LinearEnumRankNode<>(constants[this.value.ordinal() + 1], namespace, false)
                     : null;
         }
     }

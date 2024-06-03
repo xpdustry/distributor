@@ -118,7 +118,7 @@ public final class PlayerLookupImplTest {
     }
 
     private void assertQueryResult(final PlayerLookup.Query query, final Player... result) {
-        final var lookup = new PlayerLookupImpl(() -> PLAYERS, PlayerLookup.DEFAULT_NORMALIZER);
+        final var lookup = new PlayerLookupImpl(() -> PLAYERS, PlayerLookupImpl.DEFAULT_NORMALIZER);
         assertThat(lookup.findOnlinePlayers(query)).containsExactlyInAnyOrder(result);
     }
 

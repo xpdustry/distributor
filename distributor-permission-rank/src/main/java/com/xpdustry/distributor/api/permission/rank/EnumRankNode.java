@@ -18,8 +18,6 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import java.util.Locale;
-import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -37,18 +35,13 @@ public interface EnumRankNode<E extends Enum<E>> extends RankNode {
      * </ul>
      *
      * @param value         the rank value
-     * @param nameExtractor the extractor for the rank name
+     * @param namespace     the rank namespace
      * @param ascending     whether the enum ranks are in ascending order
      * @param <E>           the enum type
      * @return the created enum rank node
      */
-    static <E extends Enum<E>> RankNode linear(
-            final E value, final Function<E, String> nameExtractor, boolean ascending) {
-        return new LinearEnumRankNode<>(value, nameExtractor, ascending);
-    }
-
-    static <E extends Enum<E>> RankNode linear(final E value, boolean ascending) {
-        return linear(value, e -> e.name().toLowerCase(Locale.ROOT), ascending);
+    static <E extends Enum<E>> RankNode linear(final E value, final String namespace, boolean ascending) {
+        return new LinearEnumRankNode<>(value, namespace, ascending);
     }
 
     /**
