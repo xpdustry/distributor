@@ -38,8 +38,8 @@ import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public abstract class AbstractTransformerWindowManager<T extends TransformerWindowManager<T, P>, P extends Pane>
-        implements TransformerWindowManager<T, P>, PluginAware {
+public abstract class AbstractTransformerWindowManager<P extends Pane>
+        implements TransformerWindowManager<P>, PluginAware {
 
     private final MindustryPlugin plugin;
     private final EventSubscription playerLeaveListener;
@@ -82,11 +82,9 @@ public abstract class AbstractTransformerWindowManager<T extends TransformerWind
         return Collections.unmodifiableCollection(this.windows.values());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public final T addTransformer(final Transformer<P> transformer) {
+    public final void addTransformer(final Transformer<P> transformer) {
         transformers.add(Objects.requireNonNull(transformer));
-        return (T) this;
     }
 
     @Override

@@ -22,7 +22,7 @@ import com.xpdustry.distributor.api.gui.transform.TransformerWindowManager;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.time.Duration;
 
-public interface PopupManager extends TransformerWindowManager<PopupManager, PopupPane> {
+public interface PopupManager extends TransformerWindowManager<PopupPane> {
 
     static PopupManager create(final MindustryPlugin plugin) {
         return new PopupManagerImpl(plugin);

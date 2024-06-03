@@ -33,7 +33,7 @@ import java.time.Duration;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 
-final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupManager, PopupPane> implements PopupManager {
+final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane> implements PopupManager {
 
     private final Interval interval = new Interval();
     private Duration updateInterval = Duration.ZERO;
@@ -66,7 +66,10 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupManag
         };
         Call.infoPopup(
                 window.getViewer().con(),
-                ComponentStringBuilder.mindustry(window.getAudience().getMetadata())
+                ComponentStringBuilder.mindustry(DistributorProvider.get()
+                                .getAudienceProvider()
+                                .getPlayer(window.getViewer())
+                                .getMetadata())
                         .append(window.getPane().getContent())
                         .toString(),
                 (Time.delta / 60F) * tickUpdateInterval,

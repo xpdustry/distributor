@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.input;
 
+import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.gui.Window;
@@ -31,8 +32,7 @@ import mindustry.gen.Player;
 import mindustry.ui.Menus;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextInputManager, TextInputPane>
-        implements TextInputManager {
+final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextInputPane> implements TextInputManager {
 
     private final int id = Menus.registerTextInput(this::handle);
     private final Set<MUUID> visible = new HashSet<>();
@@ -106,7 +106,10 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
     }
 
     private String render(final Window window, final Component component) {
-        return ComponentStringBuilder.mindustry(window.getAudience().getMetadata())
+        return ComponentStringBuilder.mindustry(DistributorProvider.get()
+                        .getAudienceProvider()
+                        .getPlayer(window.getViewer())
+                        .getMetadata())
                 .append(component)
                 .toString();
     }

@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.gui.Window;
@@ -28,7 +29,7 @@ import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.ui.Menus;
 
-final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuManager, MenuPane> implements MenuManager {
+final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> implements MenuManager {
 
     private final int id = Menus.registerMenu(this::handle);
 
@@ -98,7 +99,10 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuManager
     }
 
     private String render(final Window window, final Component component) {
-        return ComponentStringBuilder.mindustry(window.getAudience().getMetadata())
+        return ComponentStringBuilder.mindustry(DistributorProvider.get()
+                        .getAudienceProvider()
+                        .getPlayer(window.getViewer())
+                        .getMetadata())
                 .append(component)
                 .toString();
     }

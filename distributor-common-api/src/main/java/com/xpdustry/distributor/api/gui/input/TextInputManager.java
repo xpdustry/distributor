@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.gui.input;
 import com.xpdustry.distributor.api.gui.transform.TransformerWindowManager;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 
-public interface TextInputManager extends TransformerWindowManager<TextInputManager, TextInputPane> {
+public interface TextInputManager extends TransformerWindowManager<TextInputPane> {
 
     static TextInputManager create(final MindustryPlugin plugin) {
         return new TextInputManagerImpl(plugin);
