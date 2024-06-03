@@ -18,13 +18,14 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
+import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 record LinearEnumRankNode<E extends Enum<E>>(E value, String namespace, boolean ascending) implements EnumRankNode<E> {
 
     @Override
     public String getName() {
-        return this.namespace + "_" + this.value.name().toLowerCase();
+        return this.namespace + "_" + this.value.name().toLowerCase(Locale.ROOT);
     }
 
     @Override

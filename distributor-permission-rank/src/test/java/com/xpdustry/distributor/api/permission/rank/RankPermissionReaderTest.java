@@ -20,6 +20,7 @@ package com.xpdustry.distributor.api.permission.rank;
 
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.key.Key;
 import com.xpdustry.distributor.api.permission.MutablePermissionTree;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.service.ServiceManager;
@@ -66,8 +67,8 @@ public final class RankPermissionReaderTest {
 
     @Test
     void test_simple() {
-        final var rank1 = EnumRankNode.linear(TestRank.LOW, TestRank::name, true);
-        final var rank2 = EnumRankNode.linear(TestRank.HIGH, TestRank::name, true);
+        final var rank1 = EnumRankNode.linear(TestRank.LOW, Key.DISTRIBUTOR_NAMESPACE, true);
+        final var rank2 = EnumRankNode.linear(TestRank.HIGH, Key.DISTRIBUTOR_NAMESPACE, true);
         final var permissions1 = MutablePermissionTree.create();
         permissions1.setPermission("test", false);
         final var permissions2 = MutablePermissionTree.create();

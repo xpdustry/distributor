@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
+import com.xpdustry.distributor.api.key.Key;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -29,7 +30,7 @@ public final class LinearEnumRankNodeTest {
     @ParameterizedTest
     @EnumSource(TestRank.class)
     void test_get_previous_ascending(final TestRank current) {
-        final var node = new LinearEnumRankNode<>(current, Enum::name, true);
+        final var node = new LinearEnumRankNode<>(current, Key.DISTRIBUTOR_NAMESPACE, true);
         final var expected = current.ordinal() > 0 ? TestRank.values()[current.ordinal() - 1] : null;
         final var assertion = assertThat(node.getPrevious());
         if (expected == null) {
@@ -42,7 +43,7 @@ public final class LinearEnumRankNodeTest {
     @ParameterizedTest
     @EnumSource(TestRank.class)
     void test_get_previous_descending(final TestRank current) {
-        final var node = new LinearEnumRankNode<>(current, Enum::name, false);
+        final var node = new LinearEnumRankNode<>(current, Key.DISTRIBUTOR_NAMESPACE, false);
         final var expected =
                 current.ordinal() + 1 < TestRank.values().length ? TestRank.values()[current.ordinal() + 1] : null;
         final var assertion = assertThat(node.getPrevious());

@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
+import com.xpdustry.distributor.api.key.Key;
 import com.xpdustry.distributor.api.util.TriState;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,10 +36,10 @@ public final class YamlRankPermissionSourceTest {
             """
             version: 1
             ranks:
-              low:
+              distributor_low:
                 test1.sub: false
                 test2: true
-              high:
+              distributor_high:
                 test1: true
                 test2: false
             """;
@@ -59,8 +60,8 @@ public final class YamlRankPermissionSourceTest {
     void test_simple() throws IOException {
         final var source = createSource(TEST_CONFIG_VALID);
         source.reload();
-        final var rank1 = EnumRankNode.linear(TestRank.LOW, true);
-        final var rank2 = EnumRankNode.linear(TestRank.HIGH, true);
+        final var rank1 = EnumRankNode.linear(TestRank.LOW, Key.DISTRIBUTOR_NAMESPACE, true);
+        final var rank2 = EnumRankNode.linear(TestRank.HIGH, Key.DISTRIBUTOR_NAMESPACE, true);
 
         final var permissions1 = source.getRankPermissions(rank1);
         final var permissions2 = source.getRankPermissions(rank2);
