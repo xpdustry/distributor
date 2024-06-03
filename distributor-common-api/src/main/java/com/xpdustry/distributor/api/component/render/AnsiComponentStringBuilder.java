@@ -21,8 +21,8 @@ package com.xpdustry.distributor.api.component.render;
 import arc.util.OS;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
 import com.xpdustry.distributor.api.component.style.TextDecoration;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -30,20 +30,20 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class AnsiComponentAppendable implements ComponentAppendable {
+final class AnsiComponentStringBuilder implements ComponentStringBuilder {
 
     private static final boolean ANSI_SUPPORTED = OS.isLinux || OS.isMac || (OS.isWindows && OS.hasEnv("WT_SESSION"));
     private static final String ANSI_ESCAPE_START = "\033[";
     private static final String ANSI_ESCAPE_CLOSE = "m";
     private static final Pattern ANSI_PATTERN = Pattern.compile("(\033\\[[\\d;]*[a-zA-Z])");
 
-    private final Deque<ComponentStyle> styles = new ArrayDeque<>();
+    private final Deque<TextStyle> styles = new ArrayDeque<>();
     private final StringBuilder builder = new StringBuilder();
     private final MetadataContainer context;
     private final ComponentRendererProvider provider;
     private int mark = 0;
 
-    AnsiComponentAppendable(final MetadataContainer context, final ComponentRendererProvider provider) {
+    AnsiComponentStringBuilder(final MetadataContainer context, final ComponentRendererProvider provider) {
         this.context = context;
         this.provider = provider;
     }
@@ -54,12 +54,12 @@ final class AnsiComponentAppendable implements ComponentAppendable {
     }
 
     @Override
-    public ComponentAppendable append(final Component component) {
+    public ComponentStringBuilder append(final Component component) {
         escape();
 
         {
             final var previous = styles.peek();
-            final var next = previous == null ? component.getStyle() : previous.merge(component.getStyle());
+            final var next = previous == null ? component.getTextStyle() : previous.merge(component.getTextStyle());
             styles.push(next);
             if (!Objects.equals(previous, next)) {
                 appendStyle(next);
@@ -73,7 +73,7 @@ final class AnsiComponentAppendable implements ComponentAppendable {
             final var popped = styles.pop();
             final var head = styles.peek();
             if (!Objects.equals(popped, head)) {
-                appendStyle(head == null ? ComponentStyle.empty() : head);
+                appendStyle(head == null ? TextStyle.none() : head);
             }
         }
 
@@ -81,19 +81,19 @@ final class AnsiComponentAppendable implements ComponentAppendable {
     }
 
     @Override
-    public ComponentAppendable append(final @Nullable CharSequence csq) {
+    public ComponentStringBuilder append(final @Nullable CharSequence csq) {
         builder.append(csq);
         return this;
     }
 
     @Override
-    public ComponentAppendable append(final @Nullable CharSequence csq, final int start, final int end) {
+    public ComponentStringBuilder append(final @Nullable CharSequence csq, final int start, final int end) {
         builder.append(csq, start, end);
         return this;
     }
 
     @Override
-    public ComponentAppendable append(final char c) {
+    public ComponentStringBuilder append(final char c) {
         builder.append(c);
         return this;
     }
@@ -119,7 +119,7 @@ final class AnsiComponentAppendable implements ComponentAppendable {
         mark = builder.length();
     }
 
-    private void appendStyle(final ComponentStyle style) {
+    private void appendStyle(final TextStyle style) {
         final var start = builder.length();
         appendReset();
         final var textColor = style.getTextColor();

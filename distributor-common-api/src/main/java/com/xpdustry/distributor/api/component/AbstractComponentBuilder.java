@@ -19,8 +19,8 @@
 package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.ComponentColor;
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
 import com.xpdustry.distributor.api.component.style.TextDecoration;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.permission.TriState;
 import java.util.Map;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -28,48 +28,48 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 abstract class AbstractComponentBuilder<C extends BuildableComponent<C, B>, B extends BuildableComponent.Builder<C, B>>
         implements BuildableComponent.Builder<C, B> {
 
-    protected ComponentStyle.Builder style;
+    protected TextStyle.Builder textStyle;
 
     public AbstractComponentBuilder(final C component) {
-        this.style = component.getStyle().toBuilder();
+        this.textStyle = component.getTextStyle().toBuilder();
     }
 
     public AbstractComponentBuilder() {
-        this.style = ComponentStyle.builder();
+        this.textStyle = TextStyle.builder();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public B setTextColor(final @Nullable ComponentColor textColor) {
-        style.setTextColor(textColor);
+        textStyle.setTextColor(textColor);
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public B setBackColor(final @Nullable ComponentColor backColor) {
-        style.setBackColor(backColor);
+        textStyle.setBackColor(backColor);
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public B setDecorations(final Map<TextDecoration, ? extends Boolean> decorations) {
-        style.setDecorations(decorations);
+    public B setDecorations(final Map<TextDecoration, Boolean> decorations) {
+        textStyle.setDecorations(decorations);
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public B setDecoration(final TextDecoration decoration, final TriState state) {
-        style.setDecoration(decoration, state);
+        textStyle.setDecoration(decoration, state);
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public B setStyle(final ComponentStyle style) {
-        this.style = style.toBuilder();
+    public B setTextStyle(final TextStyle textStyle) {
+        this.textStyle = textStyle.toBuilder();
         return (B) this;
     }
 }

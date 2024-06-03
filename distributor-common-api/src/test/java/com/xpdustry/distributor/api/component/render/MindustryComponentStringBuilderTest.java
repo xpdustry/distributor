@@ -36,12 +36,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static com.xpdustry.distributor.api.component.NumberComponent.number;
 import static com.xpdustry.distributor.api.component.TextComponent.text;
 import static com.xpdustry.distributor.api.component.TranslatableComponent.translatable;
-import static com.xpdustry.distributor.api.component.ValueComponent.value;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public final class MindustryComponentAppendableTest {
+public final class MindustryComponentStringBuilderTest {
 
     @BeforeAll
     static void setup() {
@@ -66,54 +66,54 @@ public final class MindustryComponentAppendableTest {
 
     @Test
     void test_append_text_simple() {
-        final var appendable = createAppendable();
-        appendable.append("Hello, World!");
-        assertEquals("Hello, World!", appendable.toString());
+        final var builder = createBuilder();
+        builder.append("Hello, World!");
+        assertEquals("Hello, World!", builder.toString());
     }
 
     @Test
     void test_append_escaped_text() {
-        final var appendable = createAppendable();
-        appendable.append("Hello, [World]!");
-        assertEquals("Hello, [[World]!", appendable.toString());
+        final var builder = createBuilder();
+        builder.append("Hello, [World]!");
+        assertEquals("Hello, [[World]!", builder.toString());
     }
 
     @Test
     void test_append_component_simple() {
-        final var appendable = createAppendable();
-        appendable.append(text("Hello, World!"));
-        assertEquals("Hello, World!", appendable.toString());
+        final var builder = createBuilder();
+        builder.append(text("Hello, World!"));
+        assertEquals("Hello, World!", builder.toString());
     }
 
     @Test
     void test_append_component_colored() {
-        final var appendable = createAppendable();
-        appendable.append(text("Hello, World!", ComponentColor.RED));
-        assertEquals("[#FF0000]Hello, World![]", appendable.toString());
+        final var builder = createBuilder();
+        builder.append(text("Hello, World!", ComponentColor.RED));
+        assertEquals("[#FF0000]Hello, World![]", builder.toString());
     }
 
     @Test
     void test_append_nested_components() {
-        final var appendable = createAppendable();
-        appendable.append(ListComponent.components()
+        final var builder = createBuilder();
+        builder.append(ListComponent.components()
                 .setTextColor(ComponentColor.RED)
                 .append(text("Hello, "))
                 .append(text("World", ComponentColor.GREEN))
                 .append(text("!"))
                 .build());
-        assertEquals("[#FF0000]Hello, [#00FF00]World[]![]", appendable.toString());
+        assertEquals("[#FF0000]Hello, [#00FF00]World[]![]", builder.toString());
     }
 
     @Test
     void test_append_component_duplicate_colors() {
-        final var appendable = createAppendable();
-        appendable.append(ListComponent.components()
+        final var builder = createBuilder();
+        builder.append(ListComponent.components()
                 .setTextColor(ComponentColor.RED)
                 .append(text("Hello, ", ComponentColor.RED))
                 .append(text("World", ComponentColor.RED))
                 .append(text("!", ComponentColor.RED))
                 .build());
-        assertEquals("[#FF0000]Hello, World![]", appendable.toString());
+        assertEquals("[#FF0000]Hello, World![]", builder.toString());
     }
 
     @Test
@@ -121,40 +121,40 @@ public final class MindustryComponentAppendableTest {
         final var component = translatable("greeting", ComponentColor.RED);
         assertEquals(
                 "[#FF0000]Bonjour[]",
-                createAppendable(Locale.FRENCH).append(component).toString());
+                createBuilder(Locale.FRENCH).append(component).toString());
         assertEquals(
                 "[#FF0000]Hello[]",
-                createAppendable(Locale.ENGLISH).append(component).toString());
+                createBuilder(Locale.ENGLISH).append(component).toString());
     }
 
     @Test
     void test_translatable_arguments() {
         final var component1 = translatable(
-                "describe-number", TranslationArguments.array(value(0, ComponentColor.YELLOW)), ComponentColor.RED);
+                "describe-number", TranslationArguments.array(number(0, ComponentColor.YELLOW)), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is [#FFFF00]zero[][]",
-                createAppendable().append(component1).toString());
+                createBuilder().append(component1).toString());
 
         final var component2 = translatable("describe-number", TranslationArguments.array(0), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is zero[]",
-                createAppendable().append(component2).toString());
+                createBuilder().append(component2).toString());
 
         final var component3 = translatable("describe-number", TranslationArguments.array("0"), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is 0[]",
-                createAppendable().append(component3).toString());
+                createBuilder().append(component3).toString());
     }
 
-    private MindustryComponentAppendable createAppendable(final Locale locale) {
-        return new MindustryComponentAppendable(
+    private MindustryComponentStringBuilder createBuilder(final Locale locale) {
+        return new MindustryComponentStringBuilder(
                 MetadataContainer.builder()
                         .putConstant(StandardKeys.LOCALE, locale)
                         .build(),
                 new StandardComponentRendererProvider());
     }
 
-    private MindustryComponentAppendable createAppendable() {
-        return createAppendable(Locale.ENGLISH);
+    private MindustryComponentStringBuilder createBuilder() {
+        return createBuilder(Locale.ENGLISH);
     }
 }

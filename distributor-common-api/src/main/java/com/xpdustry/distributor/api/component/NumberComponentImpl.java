@@ -18,48 +18,48 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-record ValueComponentImpl<V>(ComponentStyle style, V value) implements ValueComponent<V> {
+record NumberComponentImpl(TextStyle textStyle, Number number) implements NumberComponent {
 
     @Override
-    public V getValue() {
-        return value;
+    public Number getNumber() {
+        return number;
     }
 
     @Override
-    public ComponentStyle getStyle() {
-        return style;
+    public TextStyle getTextStyle() {
+        return textStyle;
     }
 
     @Override
-    public Builder<V> toBuilder() {
-        return new Builder<>(this);
+    public Builder toBuilder() {
+        return new Builder(this);
     }
 
-    static final class Builder<V> extends AbstractComponentBuilder<ValueComponent<V>, ValueComponent.Builder<V>>
-            implements ValueComponent.Builder<V> {
+    public static class Builder extends AbstractComponentBuilder<NumberComponent, NumberComponent.Builder>
+            implements NumberComponent.Builder {
 
-        private @Nullable V value = null;
+        private @Nullable Number number = null;
 
-        Builder(final ValueComponent<V> component) {
+        public Builder() {}
+
+        public Builder(final NumberComponent component) {
             super(component);
-            this.value = component.getValue();
+            this.number = component.getNumber();
         }
 
-        Builder() {}
-
         @Override
-        public Builder<V> setValue(final V value) {
-            this.value = value;
+        public Builder setNumber(final Number number) {
+            this.number = Objects.requireNonNull(number);
             return this;
         }
 
         @Override
-        public ValueComponent<V> build() {
-            return new ValueComponentImpl<>(style.build(), Objects.requireNonNull(value));
+        public NumberComponent build() {
+            return new NumberComponentImpl(textStyle.build(), Objects.requireNonNull(number));
         }
     }
 }

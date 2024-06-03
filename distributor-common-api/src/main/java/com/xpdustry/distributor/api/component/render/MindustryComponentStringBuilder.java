@@ -23,14 +23,14 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class MindustryComponentAppendable implements ComponentAppendable {
+final class MindustryComponentStringBuilder implements ComponentStringBuilder {
 
     private final IntSeq colors = new IntSeq();
     private final StringBuilder builder = new StringBuilder();
     private final MetadataContainer context;
     private final ComponentRendererProvider provider;
 
-    MindustryComponentAppendable(final MetadataContainer context, final ComponentRendererProvider provider) {
+    MindustryComponentStringBuilder(final MetadataContainer context, final ComponentRendererProvider provider) {
         this.context = context;
         this.provider = provider;
     }
@@ -41,9 +41,9 @@ final class MindustryComponentAppendable implements ComponentAppendable {
     }
 
     @Override
-    public ComponentAppendable append(final Component component) {
+    public ComponentStringBuilder append(final Component component) {
         {
-            var color = component.getStyle().getTextColor();
+            var color = component.getTextStyle().getTextColor();
             final var rgb = color == null ? -1 : color.getRGB();
             final var previous = colors.isEmpty() ? -1 : colors.peek();
             colors.add(rgb);
@@ -67,12 +67,12 @@ final class MindustryComponentAppendable implements ComponentAppendable {
     }
 
     @Override
-    public ComponentAppendable append(final @Nullable CharSequence csq) {
+    public ComponentStringBuilder append(final @Nullable CharSequence csq) {
         return append(csq, 0, csq == null ? 0 : csq.length());
     }
 
     @Override
-    public ComponentAppendable append(final @Nullable CharSequence csq, final int start, final int end) {
+    public ComponentStringBuilder append(final @Nullable CharSequence csq, final int start, final int end) {
         if (csq == null) {
             builder.append("null");
         } else {
@@ -84,7 +84,7 @@ final class MindustryComponentAppendable implements ComponentAppendable {
     }
 
     @Override
-    public ComponentAppendable append(final char c) {
+    public ComponentStringBuilder append(final char c) {
         if (c == '[') {
             builder.append("[[");
         } else {

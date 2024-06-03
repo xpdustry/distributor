@@ -18,12 +18,13 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
-import java.time.Instant;
-import java.time.format.FormatStyle;
+import com.xpdustry.distributor.api.component.style.TemporalStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.time.temporal.Temporal;
+import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-record TemporalComponentImpl(ComponentStyle style, Temporal temporal, TemporalFormat format)
+record TemporalComponentImpl(TextStyle textStyle, Temporal temporal, TemporalStyle format)
         implements TemporalComponent {
 
     @Override
@@ -32,13 +33,13 @@ record TemporalComponentImpl(ComponentStyle style, Temporal temporal, TemporalFo
     }
 
     @Override
-    public TemporalFormat getFormat() {
+    public TemporalStyle getTemporalStyle() {
         return format;
     }
 
     @Override
-    public ComponentStyle getStyle() {
-        return style;
+    public TextStyle getTextStyle() {
+        return textStyle;
     }
 
     @Override
@@ -49,12 +50,10 @@ record TemporalComponentImpl(ComponentStyle style, Temporal temporal, TemporalFo
     static final class Builder extends AbstractComponentBuilder<TemporalComponent, TemporalComponent.Builder>
             implements TemporalComponent.Builder {
 
-        private Temporal temporal;
-        private TemporalFormat format = TemporalFormat.ofDateTime(FormatStyle.SHORT);
+        private @Nullable Temporal temporal = null;
+        private TemporalStyle format = TemporalStyle.none();
 
-        public Builder() {
-            this.temporal = Instant.now();
-        }
+        public Builder() {}
 
         public Builder(final TemporalComponent component) {
             super(component);
@@ -63,19 +62,19 @@ record TemporalComponentImpl(ComponentStyle style, Temporal temporal, TemporalFo
 
         @Override
         public Builder setTemporal(final Temporal temporal) {
-            this.temporal = temporal;
+            this.temporal = Objects.requireNonNull(temporal);
             return this;
         }
 
         @Override
-        public Builder setFormat(final TemporalFormat format) {
-            this.format = format;
+        public Builder setTemporalStyle(final TemporalStyle temporalStyle) {
+            this.format = temporalStyle;
             return this;
         }
 
         @Override
         public TemporalComponent build() {
-            return new TemporalComponentImpl(style.build(), temporal, format);
+            return new TemporalComponentImpl(textStyle.build(), Objects.requireNonNull(temporal), format);
         }
     }
 }

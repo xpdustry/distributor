@@ -18,14 +18,14 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 
-record ListComponentImpl(ComponentStyle style, List<Component> components) implements ListComponent {
+record ListComponentImpl(TextStyle textStyle, List<Component> components) implements ListComponent {
 
-    ListComponentImpl(final ComponentStyle style, final List<Component> components) {
-        this.style = style;
+    ListComponentImpl(final TextStyle textStyle, final List<Component> components) {
+        this.textStyle = textStyle;
         this.components = List.copyOf(components);
     }
 
@@ -35,8 +35,8 @@ record ListComponentImpl(ComponentStyle style, List<Component> components) imple
     }
 
     @Override
-    public ComponentStyle getStyle() {
-        return this.style;
+    public TextStyle getTextStyle() {
+        return this.textStyle;
     }
 
     @Override
@@ -75,7 +75,7 @@ record ListComponentImpl(ComponentStyle style, List<Component> components) imple
 
         @Override
         public ListComponentImpl build() {
-            return new ListComponentImpl(style.build(), components);
+            return new ListComponentImpl(textStyle.build(), components);
         }
     }
 }

@@ -20,7 +20,18 @@ package com.xpdustry.distributor.api.component.codec;
 
 import com.xpdustry.distributor.api.component.Component;
 
+/**
+ * A component encoder.
+ *
+ * @param <T> the output type
+ */
 public interface ComponentEncoder<T> {
 
+    /**
+     * Encodes the input component.
+     *
+     * @param input the input component
+     * @return the encoded output
+     */
     T encode(final Component input);
 }

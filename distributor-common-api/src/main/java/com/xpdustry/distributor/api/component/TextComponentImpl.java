@@ -18,13 +18,13 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 
-record TextComponentImpl(ComponentStyle style, String content) implements TextComponent {
+record TextComponentImpl(TextStyle textStyle, String content) implements TextComponent {
 
-    static final TextComponent EMPTY = new TextComponentImpl(ComponentStyle.empty(), "");
-    static final TextComponent SPACE = new TextComponentImpl(ComponentStyle.empty(), " ");
-    static final TextComponent NEWLINE = new TextComponentImpl(ComponentStyle.empty(), "\n");
+    static final TextComponent EMPTY = new TextComponentImpl(TextStyle.none(), "");
+    static final TextComponent SPACE = new TextComponentImpl(TextStyle.none(), " ");
+    static final TextComponent NEWLINE = new TextComponentImpl(TextStyle.none(), "\n");
 
     @Override
     public String getContent() {
@@ -32,8 +32,8 @@ record TextComponentImpl(ComponentStyle style, String content) implements TextCo
     }
 
     @Override
-    public ComponentStyle getStyle() {
-        return this.style;
+    public TextStyle getTextStyle() {
+        return this.textStyle;
     }
 
     @Override
@@ -63,7 +63,7 @@ record TextComponentImpl(ComponentStyle style, String content) implements TextCo
 
         @Override
         public TextComponent build() {
-            return new TextComponentImpl(style.build(), content);
+            return new TextComponentImpl(textStyle.build(), content);
         }
     }
 }

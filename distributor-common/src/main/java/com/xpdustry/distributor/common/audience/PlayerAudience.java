@@ -21,7 +21,7 @@ package com.xpdustry.distributor.common.audience;
 import arc.Core;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
-import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionProvider;
@@ -196,7 +196,7 @@ final class PlayerAudience implements Audience {
     }
 
     private String render(final ComponentLike component) {
-        return ComponentAppendable.mindustry(getMetadata())
+        return ComponentStringBuilder.mindustry(getMetadata())
                 .append(component.asComponent())
                 .toString();
     }

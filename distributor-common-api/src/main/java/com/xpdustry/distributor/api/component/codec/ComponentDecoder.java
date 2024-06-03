@@ -20,7 +20,18 @@ package com.xpdustry.distributor.api.component.codec;
 
 import com.xpdustry.distributor.api.component.Component;
 
+/**
+ * A component decoder.
+ *
+ * @param <T> the input type
+ */
 public interface ComponentDecoder<T> {
 
+    /**
+     * Decodes the input into a component.
+     *
+     * @param input the input
+     * @return the component
+     */
     Component decode(final T input);
 }

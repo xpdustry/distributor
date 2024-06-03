@@ -22,13 +22,13 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class PlainComponentAppendable implements ComponentAppendable {
+final class PlainComponentStringBuilder implements ComponentStringBuilder {
 
     private final StringBuilder builder = new StringBuilder();
     private final MetadataContainer context;
     private final ComponentRendererProvider provider;
 
-    public PlainComponentAppendable(final MetadataContainer context, final ComponentRendererProvider provider) {
+    public PlainComponentStringBuilder(final MetadataContainer context, final ComponentRendererProvider provider) {
         this.context = context;
         this.provider = provider;
     }
@@ -39,26 +39,26 @@ final class PlainComponentAppendable implements ComponentAppendable {
     }
 
     @Override
-    public ComponentAppendable append(final Component component) {
+    public ComponentStringBuilder append(final Component component) {
         final var renderer = this.provider.getRenderer(component);
         if (renderer != null) renderer.render(component, this);
         return this;
     }
 
     @Override
-    public ComponentAppendable append(final @Nullable CharSequence csq) {
+    public ComponentStringBuilder append(final @Nullable CharSequence csq) {
         this.builder.append(csq);
         return this;
     }
 
     @Override
-    public ComponentAppendable append(final @Nullable CharSequence csq, final int start, final int end) {
+    public ComponentStringBuilder append(final @Nullable CharSequence csq, final int start, final int end) {
         this.builder.append(csq, start, end);
         return this;
     }
 
     @Override
-    public ComponentAppendable append(final char c) {
+    public ComponentStringBuilder append(final char c) {
         this.builder.append(c);
         return this;
     }

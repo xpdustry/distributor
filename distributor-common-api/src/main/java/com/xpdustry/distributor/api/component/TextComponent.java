@@ -19,47 +19,121 @@
 package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.ComponentColor;
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 
+/**
+ * A component that displays text.
+ */
 public interface TextComponent extends BuildableComponent<TextComponent, TextComponent.Builder> {
 
+    /**
+     * Creates a new text component builder.
+     */
     static TextComponent.Builder text() {
         return new TextComponentImpl.Builder();
     }
 
+    /**
+     * Creates a new text component with the specified content.
+     *
+     * @param content the content
+     * @return the text component
+     */
     static TextComponent text(final String content) {
-        return new TextComponentImpl(ComponentStyle.empty(), content);
+        return new TextComponentImpl(TextStyle.none(), content);
     }
 
+    /**
+     * Creates a new text component with the specified content and text color.
+     *
+     * @param content the content
+     * @param textColor the text color
+     * @return the text component
+     */
     static TextComponent text(final String content, final ComponentColor textColor) {
-        return new TextComponentImpl(ComponentStyle.style(textColor), content);
+        return new TextComponentImpl(TextStyle.of(textColor), content);
     }
 
-    static TextComponent text(final String content, final ComponentStyle style) {
-        return new TextComponentImpl(style, content);
+    /**
+     * Creates a new text component with the specified content and text textStyle.
+     *
+     * @param content the content
+     * @param textStyle the text textStyle
+     * @return the text component
+     */
+    static TextComponent text(final String content, final TextStyle textStyle) {
+        return new TextComponentImpl(textStyle, content);
     }
 
+    /**
+     * Creates a new text component with the specified character.
+     *
+     * @param ch the character
+     * @return the text component
+     */
+    static TextComponent text(final char ch) {
+        return new TextComponentImpl(TextStyle.none(), String.valueOf(ch));
+    }
+
+    /**
+     * Creates a new text component with the specified character and text color.
+     *
+     * @param ch the character
+     * @param textColor the text color
+     * @return the text component
+     */
+    static TextComponent text(final char ch, final ComponentColor textColor) {
+        return new TextComponentImpl(TextStyle.of(textColor), String.valueOf(ch));
+    }
+
+    /**
+     * Creates a new text component with the specified character and text textStyle.
+     *
+     * @param ch the character
+     * @param textStyle the text textStyle
+     * @return the text component
+     */
+    static TextComponent text(final char ch, final TextStyle textStyle) {
+        return new TextComponentImpl(textStyle, String.valueOf(ch));
+    }
+
+    /**
+     * Returns a text component with only a space character.
+     */
     static TextComponent space() {
         return TextComponentImpl.SPACE;
     }
 
-    static TextComponent empty() {
-        return TextComponentImpl.EMPTY;
-    }
-
+    /**
+     * Returns a text component with a newline character.
+     */
     static TextComponent newline() {
         return TextComponentImpl.NEWLINE;
     }
 
-    String getContent();
-
-    @Override
-    default Builder toBuilder() {
-        return new TextComponentImpl.Builder(this);
+    /**
+     * Returns a text component with no content.
+     */
+    static TextComponent empty() {
+        return TextComponentImpl.EMPTY;
     }
 
+    /**
+     * Returns the content of this component.
+     */
+    String getContent();
+
+    /**
+     * A builder for text components.
+     */
     interface Builder extends BuildableComponent.Builder<TextComponent, TextComponent.Builder> {
 
+        /**
+         * Sets the content of the component.
+         *
+         * @param content the content
+         * @return this builder
+         */
         Builder setContent(final String content);
     }
 }

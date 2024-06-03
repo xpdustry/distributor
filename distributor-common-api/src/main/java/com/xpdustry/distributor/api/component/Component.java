@@ -18,16 +18,34 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 
+/**
+ * A component is an immutable object that represents something that can be displayed to a receiver.
+ * This can be a simple text, locale specific objects like dates or numbers or even translations.
+ */
 public interface Component extends ComponentLike {
 
-    ComponentStyle getStyle();
+    /**
+     * Returns the text textStyle of this component.
+     */
+    TextStyle getTextStyle();
 
+    /**
+     * Appends the given component to this component.
+     *
+     * @param component the component to append
+     * @return the concatenated component
+     */
     default ListComponent append(final ComponentLike component) {
         return ListComponent.components().append(this).append(component).build();
     }
 
+    /**
+     * Compresses this component. Removing empty subcommands and/or merging subcomponents if necessary.
+     *
+     * @return the compressed component
+     */
     default Component compress() {
         return this;
     }

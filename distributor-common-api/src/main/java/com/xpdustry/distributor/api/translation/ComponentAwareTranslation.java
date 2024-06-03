@@ -18,26 +18,26 @@
  */
 package com.xpdustry.distributor.api.translation;
 
-import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 
 /**
- * A translation that can format to a {@link ComponentAppendable}.
+ * A translation that can format to a {@link ComponentStringBuilder}.
  */
 public interface ComponentAwareTranslation extends Translation {
 
     @Override
     default String format(final TranslationArguments parameters) {
-        final var appendable = ComponentAppendable.plain(MetadataContainer.empty());
-        formatTo(parameters, appendable);
-        return appendable.toString();
+        final var builder = ComponentStringBuilder.plain(MetadataContainer.empty());
+        formatTo(parameters, builder);
+        return builder.toString();
     }
 
     /**
-     * Formats the translation to the given {@link ComponentAppendable}.
+     * Formats the translation to the given {@link ComponentStringBuilder}.
      *
      * @param parameters the translation parameters
-     * @param appendable the appendable
+     * @param builder the builder
      */
-    void formatTo(final TranslationArguments parameters, final ComponentAppendable appendable);
+    void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder);
 }

@@ -20,11 +20,26 @@ package com.xpdustry.distributor.api.component.render;
 
 import com.xpdustry.distributor.api.component.Component;
 
+/**
+ * A component renderer.
+ */
 public interface ComponentRenderer<T extends Component> {
 
+    /**
+     * Returns a no-op component renderer.
+     *
+     * @param <T> the component type
+     * @return the no-op component renderer
+     */
     static <T extends Component> ComponentRenderer<T> noop() {
-        return (component, appendable) -> {};
+        return (component, builder) -> {};
     }
 
-    void render(final T component, final ComponentAppendable appendable);
+    /**
+     * Renders the specified component.
+     *
+     * @param component the component
+     * @param builder the component string builder
+     */
+    void render(final T component, final ComponentStringBuilder builder);
 }

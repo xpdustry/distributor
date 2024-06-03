@@ -16,43 +16,97 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.component;
+package com.xpdustry.distributor.api.component.style;
 
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import com.xpdustry.distributor.internal.annotation.DistributorDataClassSingleton;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
 
-public sealed interface TemporalFormat {
+/**
+ * Represents the style of a temporal component.
+ */
+public sealed interface TemporalStyle {
 
-    static TemporalFormat ofDate(final FormatStyle style) {
+    /**
+     * Creates a new datetime temporal style with the specified date style.
+     *
+     * @param style the date style
+     * @return the datetime temporal style
+     */
+    static TemporalStyle.DateTime ofDate(final FormatStyle style) {
         return DateTimeImpl.of(style, null);
     }
 
-    static TemporalFormat ofTime(final FormatStyle style) {
+    /**
+     * Creates a new datetime temporal style with the specified time style.
+     *
+     * @param style the time style
+     * @return the datetime temporal style
+     */
+    static TemporalStyle.DateTime ofTime(final FormatStyle style) {
         return DateTimeImpl.of(null, style);
     }
 
-    static TemporalFormat ofDateTime(final FormatStyle dateStyle, final FormatStyle timeStyle) {
+    /**
+     * Creates a new datetime temporal style with the specified date and time styles.
+     *
+     * @param dateStyle the date style
+     * @param timeStyle the time style
+     * @return the datetime temporal style
+     */
+    static TemporalStyle.DateTime ofDateTime(final FormatStyle dateStyle, final FormatStyle timeStyle) {
         return DateTimeImpl.of(dateStyle, timeStyle);
     }
 
-    static TemporalFormat ofDateTime(final FormatStyle style) {
+    /**
+     * Creates a new datetime temporal style with the specified date and time styles.
+     *
+     * @param style the date and time style
+     * @return the datetime temporal style
+     */
+    static TemporalStyle.DateTime ofDateTime(final FormatStyle style) {
         return DateTimeImpl.of(style, style);
     }
 
-    DateTimeFormatter toFormatter();
+    /**
+     * Returns a temporal style that does not format the temporal component.
+     */
+    static TemporalStyle.None none() {
+        return NoneImpl.of();
+    }
 
+    /**
+     * Represents temporal style with no styling.
+     */
+    @DistributorDataClassSingleton
+    @Value.Immutable
+    non-sealed interface None extends TemporalStyle {}
+
+    /**
+     * Represents temporal style with a date and/or time style.
+     * <p>
+     * {@link #getDateStyle()} and {@link #getTimeStyle()} are never both {@code null}.
+     */
     @DistributorDataClass
     @Value.Immutable
-    non-sealed interface DateTime extends TemporalFormat {
+    non-sealed interface DateTime extends TemporalStyle {
 
+        /**
+         * Returns the date style.
+         */
         @Nullable FormatStyle getDateStyle();
 
+        /**
+         * Returns the time style.
+         */
         @Nullable FormatStyle getTimeStyle();
 
-        @Override
+        /**
+         * Converts this style into a {@link DateTimeFormatter}.
+         */
         default DateTimeFormatter toFormatter() {
             final var dateStyle = this.getDateStyle();
             final var timeStyle = this.getTimeStyle();

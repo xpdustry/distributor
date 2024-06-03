@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.component.style;
 
+/**
+ * Represents a text decoration.
+ */
 public enum TextDecoration {
     BOLD,
     ITALIC,

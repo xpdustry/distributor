@@ -18,19 +18,57 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.List;
 
+/**
+ * A component that contains a list of components.
+ */
 public interface ListComponent extends BuildableComponent<ListComponent, ListComponent.Builder> {
 
+    /**
+     * Creates a new list component with the specified components.
+     *
+     * @param components the components
+     * @return the list component
+     */
     static ListComponent components(final Component... components) {
-        return new ListComponentImpl(ComponentStyle.empty(), List.of(components));
+        return new ListComponentImpl(TextStyle.none(), List.of(components));
     }
 
+    /**
+     * Creates a new list component with the specified text color and components.
+     *
+     * @param textColor the text color
+     * @param components the components
+     * @return the list component
+     */
+    static ListComponent components(final ComponentColor textColor, final Component... components) {
+        return new ListComponentImpl(TextStyle.of(textColor), List.of(components));
+    }
+
+    /**
+     * Creates a new list component with the specified text textStyle and components.
+     *
+     * @param textStyle the text textStyle
+     * @param components the components
+     * @return the list component
+     */
+    static ListComponent components(final TextStyle textStyle, final Component... components) {
+        return new ListComponentImpl(textStyle, List.of(components));
+    }
+
+    /**
+     * Creates a new list component builder.
+     */
     static ListComponent.Builder components() {
         return new ListComponentImpl.Builder();
     }
 
+    /**
+     * Returns the components in this list component.
+     */
     List<Component> getComponents();
 
     @Override
@@ -50,9 +88,9 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
             final var component = components.get(0);
             if (component instanceof BuildableComponent<?, ?> buildable) {
                 return buildable.toBuilder()
-                        .setStyle(getStyle().merge(component.getStyle()))
+                        .setTextStyle(getTextStyle().merge(component.getTextStyle()))
                         .build();
-            } else if (this.getStyle().equals(ComponentStyle.empty())) {
+            } else if (this.getTextStyle().equals(TextStyle.none())) {
                 return component;
             } else {
                 return this.toBuilder().setComponents(List.of(component)).build();
@@ -62,10 +100,25 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
         }
     }
 
+    /**
+     * A builder for list components.
+     */
     interface Builder extends BuildableComponent.Builder<ListComponent, ListComponent.Builder> {
 
+        /**
+         * Sets the components of the list component.
+         *
+         * @param components the components
+         * @return this builder
+         */
         Builder setComponents(final List<Component> components);
 
+        /**
+         * Appends components to the list component.
+         *
+         * @param components the components
+         * @return this builder
+         */
         Builder append(final ComponentLike... components);
     }
 }

@@ -21,7 +21,7 @@ package com.xpdustry.distributor.common.audience;
 import arc.util.Log;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
-import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import java.util.Locale;
@@ -74,7 +74,7 @@ final class ServerAudience implements Audience {
     }
 
     private String render(final ComponentLike component) {
-        return ComponentAppendable.ansi(getMetadata())
+        return ComponentStringBuilder.ansi(getMetadata())
                 .append(component.asComponent())
                 .toString();
     }

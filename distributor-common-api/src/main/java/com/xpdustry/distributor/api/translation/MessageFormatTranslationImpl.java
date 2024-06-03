@@ -20,10 +20,12 @@ package com.xpdustry.distributor.api.translation;
 
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.NumberComponent;
+import com.xpdustry.distributor.api.component.TemporalComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
-import com.xpdustry.distributor.api.component.ValueComponent;
-import com.xpdustry.distributor.api.component.render.ComponentAppendable;
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
+import com.xpdustry.distributor.api.component.style.TemporalStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -55,9 +57,9 @@ record MessageFormatTranslationImpl(String pattern, Locale locale)
     }
 
     @Override
-    public void formatTo(final TranslationArguments parameters, final ComponentAppendable appendable) {
+    public void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
         if (parameters instanceof TranslationArguments.Array array) {
-            formatTo(array.getArguments(), appendable);
+            formatTo(array.getArguments(), builder);
         } else if (parameters instanceof TranslationArguments.Named named) {
             final List<Object> entries = new ArrayList<>();
             for (final var entry : named.getArguments().entrySet()) {
@@ -76,17 +78,17 @@ record MessageFormatTranslationImpl(String pattern, Locale locale)
                 }
                 entries.set(index, entry.getValue());
             }
-            formatTo(entries, appendable);
+            formatTo(entries, builder);
         } else {
             throw new IllegalArgumentException("Unsupported arguments type: " + parameters.getClass());
         }
     }
 
     @SuppressWarnings("JdkObsolete")
-    private void formatTo(final List<Object> arguments, final ComponentAppendable appendable) {
+    private void formatTo(final List<Object> arguments, final ComponentStringBuilder builder) {
         final var format = new MessageFormat(pattern, locale);
         if (arguments.isEmpty()) {
-            appendable.append(format.format(null));
+            builder.append(format.format(null));
             return;
         }
 
@@ -97,17 +99,20 @@ record MessageFormatTranslationImpl(String pattern, Locale locale)
             final int end = iterator.getRunLimit();
             final var index = (Integer) iterator.getAttribute(MessageFormat.Field.ARGUMENT);
             if (index == null) {
-                appendable.append(buffer, iterator.getIndex(), end);
+                builder.append(buffer, iterator.getIndex(), end);
             } else {
                 var argument = arguments.get(index);
-                var style = ComponentStyle.empty();
+                var style = TextStyle.none();
                 Component component = null;
 
                 if (argument instanceof ComponentLike like) {
                     var comp = like.asComponent();
-                    if (comp instanceof ValueComponent<?> value) {
-                        argument = value.getValue();
-                        style = value.getStyle();
+                    style = comp.getTextStyle();
+                    if (comp instanceof TemporalComponent temporal
+                            && temporal.getTemporalStyle() instanceof TemporalStyle.None) {
+                        argument = temporal.getTemporal();
+                    } else if (comp instanceof NumberComponent number) {
+                        argument = number.getNumber();
                     } else {
                         component = comp;
                     }
@@ -130,7 +135,7 @@ record MessageFormatTranslationImpl(String pattern, Locale locale)
                     component = TextComponent.text(result, style);
                 }
 
-                appendable.append(component);
+                builder.append(component);
             }
             iterator.setIndex(end);
         }

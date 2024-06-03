@@ -23,35 +23,35 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class ComponentStyleBuilderImpl implements ComponentStyle.Builder {
+final class TextStyleBuilderImpl implements TextStyle.Builder {
 
-    static final ComponentStyle EMPTY = ComponentStyleImpl.of(null, null, Map.of());
+    static final TextStyle EMPTY = TextStyleImpl.of(null, null, Map.of());
 
     private @Nullable ComponentColor textColor = null;
     private @Nullable ComponentColor backColor = null;
     private final Map<TextDecoration, Boolean> decorations = new EnumMap<>(TextDecoration.class);
 
     @Override
-    public ComponentStyle.Builder setTextColor(final @Nullable ComponentColor color) {
+    public TextStyle.Builder setTextColor(final @Nullable ComponentColor color) {
         this.textColor = color;
         return this;
     }
 
     @Override
-    public ComponentStyle.Builder setBackColor(final @Nullable ComponentColor backColor) {
+    public TextStyle.Builder setBackColor(final @Nullable ComponentColor backColor) {
         this.backColor = backColor;
         return this;
     }
 
     @Override
-    public ComponentStyle.Builder setDecorations(final Map<TextDecoration, ? extends Boolean> decorations) {
+    public TextStyle.Builder setDecorations(final Map<TextDecoration, Boolean> decorations) {
         this.decorations.clear();
         this.decorations.putAll(decorations);
         return this;
     }
 
     @Override
-    public ComponentStyle.Builder setDecoration(TextDecoration decoration, TriState state) {
+    public TextStyle.Builder setDecoration(TextDecoration decoration, TriState state) {
         if (state == TriState.UNDEFINED) {
             decorations.remove(decoration);
         } else {
@@ -61,7 +61,7 @@ final class ComponentStyleBuilderImpl implements ComponentStyle.Builder {
     }
 
     @Override
-    public ComponentStyle build() {
-        return ComponentStyleImpl.of(textColor, backColor, new EnumMap<>(decorations));
+    public TextStyle build() {
+        return TextStyleImpl.of(textColor, backColor, new EnumMap<>(decorations));
     }
 }

@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.gui.menu;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.render.ComponentAppendable;
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.gui.Window;
 import com.xpdustry.distributor.api.gui.transform.AbstractTransformerWindowManager;
 import com.xpdustry.distributor.api.player.MUUID;
@@ -98,7 +98,7 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuManager
     }
 
     private String render(final Window window, final Component component) {
-        return ComponentAppendable.mindustry(window.getAudience().getMetadata())
+        return ComponentStringBuilder.mindustry(window.getAudience().getMetadata())
                 .append(component)
                 .toString();
     }

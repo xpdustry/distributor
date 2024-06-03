@@ -18,10 +18,10 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 
-record TranslatableComponentImpl(ComponentStyle style, String key, TranslationArguments parameters)
+record TranslatableComponentImpl(TextStyle textStyle, String key, TranslationArguments parameters)
         implements BuildableComponent<TranslatableComponent, TranslatableComponent.Builder>, TranslatableComponent {
 
     @Override
@@ -35,8 +35,8 @@ record TranslatableComponentImpl(ComponentStyle style, String key, TranslationAr
     }
 
     @Override
-    public ComponentStyle getStyle() {
-        return this.style;
+    public TextStyle getTextStyle() {
+        return this.textStyle;
     }
 
     @Override
@@ -75,7 +75,7 @@ record TranslatableComponentImpl(ComponentStyle style, String key, TranslationAr
 
         @Override
         public TranslatableComponent build() {
-            return new TranslatableComponentImpl(style.build(), this.key, this.parameters);
+            return new TranslatableComponentImpl(textStyle.build(), this.key, this.parameters);
         }
     }
 }

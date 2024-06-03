@@ -18,7 +18,13 @@
  */
 package com.xpdustry.distributor.api.component;
 
+/**
+ * An object that can be converted to a {@link Component}.
+ */
 public interface ComponentLike {
 
+    /**
+     * Converts this object to a {@link Component}.
+     */
     Component asComponent();
 }

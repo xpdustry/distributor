@@ -21,13 +21,14 @@ package com.xpdustry.distributor.common.component.render;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
+import com.xpdustry.distributor.api.component.NumberComponent;
 import com.xpdustry.distributor.api.component.TemporalComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.TranslatableComponent;
-import com.xpdustry.distributor.api.component.ValueComponent;
-import com.xpdustry.distributor.api.component.render.ComponentAppendable;
 import com.xpdustry.distributor.api.component.render.ComponentRenderer;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
+import com.xpdustry.distributor.api.component.style.TemporalStyle;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.translation.ComponentAwareTranslation;
 import java.time.ZoneId;
@@ -47,8 +48,8 @@ public final class StandardComponentRendererProvider implements ComponentRendere
             return (ComponentRenderer<T>) TemporalComponentRenderer.INSTANCE;
         } else if (component instanceof TranslatableComponent) {
             return (ComponentRenderer<T>) TranslatableComponentRenderer.INSTANCE;
-        } else if (component instanceof ValueComponent) {
-            return (ComponentRenderer<T>) ValueComponentRenderer.INSTANCE;
+        } else if (component instanceof NumberComponent) {
+            return (ComponentRenderer<T>) NumberComponentRenderer.INSTANCE;
         } else {
             return null;
         }
@@ -59,8 +60,8 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final TextComponentRenderer INSTANCE = new TextComponentRenderer();
 
         @Override
-        public void render(final TextComponent component, final ComponentAppendable appendable) {
-            appendable.append(component.getContent());
+        public void render(final TextComponent component, final ComponentStringBuilder builder) {
+            builder.append(component.getContent());
         }
     }
 
@@ -69,9 +70,9 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final ListComponentRenderer INSTANCE = new ListComponentRenderer();
 
         @Override
-        public void render(final ListComponent component, final ComponentAppendable appendable) {
+        public void render(final ListComponent component, final ComponentStringBuilder builder) {
             for (final var child : component.getComponents()) {
-                appendable.append(child);
+                builder.append(child);
             }
         }
     }
@@ -81,16 +82,19 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final TemporalComponentRenderer INSTANCE = new TemporalComponentRenderer();
 
         @Override
-        public void render(final TemporalComponent component, final ComponentAppendable appendable) {
-            component
-                    .getFormat()
-                    .toFormatter()
-                    .withZone(ZoneId.of("UTC"))
-                    .withLocale(appendable
-                            .getContext()
-                            .getMetadata(StandardKeys.LOCALE)
-                            .orElseGet(Locale::getDefault))
-                    .formatTo(component.getTemporal(), appendable);
+        public void render(final TemporalComponent component, final ComponentStringBuilder builder) {
+            if (component.getTemporalStyle() instanceof TemporalStyle.DateTime format) {
+                format.toFormatter()
+                        .withZone(ZoneId.of("UTC"))
+                        .withLocale(builder.getContext()
+                                .getMetadata(StandardKeys.LOCALE)
+                                .orElseGet(Locale::getDefault))
+                        .formatTo(component.getTemporal(), builder);
+            } else if (component.getTemporalStyle() instanceof TemporalStyle.None) {
+                builder.append(component.getTemporal().toString());
+            } else {
+                throw new IllegalArgumentException("Unsupported temporal format: " + component.getTemporalStyle());
+            }
         }
     }
 
@@ -99,30 +103,29 @@ public final class StandardComponentRendererProvider implements ComponentRendere
         private static final TranslatableComponentRenderer INSTANCE = new TranslatableComponentRenderer();
 
         @Override
-        public void render(final TranslatableComponent component, final ComponentAppendable appendable) {
+        public void render(final TranslatableComponent component, final ComponentStringBuilder builder) {
             final var translation = DistributorProvider.get()
                     .getGlobalTranslationSource()
                     .getTranslationOrMissing(
                             component.getKey(),
-                            appendable
-                                    .getContext()
+                            builder.getContext()
                                     .getMetadata(StandardKeys.LOCALE)
                                     .orElseGet(Locale::getDefault));
             if (translation instanceof ComponentAwareTranslation aware) {
-                aware.formatTo(component.getParameters(), appendable);
+                aware.formatTo(component.getParameters(), builder);
             } else {
-                appendable.append(translation.format(component.getParameters()));
+                builder.append(translation.format(component.getParameters()));
             }
         }
     }
 
-    private static final class ValueComponentRenderer implements ComponentRenderer<ValueComponent<?>> {
+    private static final class NumberComponentRenderer implements ComponentRenderer<NumberComponent> {
 
-        private static final ValueComponentRenderer INSTANCE = new ValueComponentRenderer();
+        private static final NumberComponentRenderer INSTANCE = new NumberComponentRenderer();
 
         @Override
-        public void render(final ValueComponent<?> component, final ComponentAppendable appendable) {
-            appendable.append(component.getValue().toString());
+        public void render(final NumberComponent component, final ComponentStringBuilder builder) {
+            builder.append(component.getNumber().toString());
         }
     }
 }

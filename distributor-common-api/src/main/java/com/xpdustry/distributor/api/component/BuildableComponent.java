@@ -18,18 +18,39 @@
  */
 package com.xpdustry.distributor.api.component;
 
-import com.xpdustry.distributor.api.component.style.ComponentStyle;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.util.Buildable;
 
+/**
+ * A component that can be built and converted to a builder.
+ *
+ * @param <C> the type of the component
+ * @param <B> the type of the builder
+ */
 public interface BuildableComponent<C extends BuildableComponent<C, B>, B extends BuildableComponent.Builder<C, B>>
         extends Component {
 
+    /**
+     * Creates a new builder from this component.
+     */
     B toBuilder();
 
+    /**
+     * A builder for a buildable component.
+     *
+     * @param <C> the type of the component
+     * @param <B> the type of the builder
+     */
     interface Builder<C extends BuildableComponent<C, B>, B extends Builder<C, B>>
-            extends ComponentLike, ComponentStyle.Setter<B>, Buildable.Builder<C, B> {
+            extends ComponentLike, TextStyle.Setter<B>, Buildable.Builder<C, B> {
 
-        B setStyle(final ComponentStyle style);
+        /**
+         * Sets the text textStyle of the component.
+         *
+         * @param textStyle the text textStyle
+         * @return this builder
+         */
+        B setTextStyle(final TextStyle textStyle);
 
         @Override
         default Component asComponent() {
