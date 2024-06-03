@@ -139,6 +139,10 @@ public interface PlayerLookup {
     enum Field {
         NAME,
         UUID,
-        ENTITY_ID
+        ENTITY_ID,
+        /**
+         * This one is for server specific identifiers.
+         */
+        SERVER_ID
     }
 }
