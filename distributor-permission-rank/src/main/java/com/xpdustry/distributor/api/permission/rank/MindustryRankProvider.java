@@ -16,30 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.permission;
+package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.util.TriState;
+import com.xpdustry.distributor.api.key.Key;
+import java.util.List;
 import mindustry.gen.Player;
 
-/**
- * A simple interface for getting the permissions of online players.
- */
-@FunctionalInterface
-public interface PermissionReader {
+final class MindustryRankProvider implements RankProvider {
 
-    /**
-     * Returns an empty permission reader.
-     */
-    static PermissionReader empty() {
-        return EmptyPermissionReader.INSTANCE;
+    @Override
+    public List<RankNode> getRanks(final Player player) {
+        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
+        return List.of(EnumRankNode.linear(rank, Key.MINDUSTRY_NAMESPACE, true));
     }
-
-    /**
-     * Gets the permission of the given player.
-     *
-     * @param player the player
-     * @param permission the permission
-     * @return the permission
-     */
-    TriState getPermission(final Player player, final String permission);
 }

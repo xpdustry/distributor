@@ -39,7 +39,6 @@ public interface PlayerLookup {
      * Creates a new player lookup with the default provider and normalizer.
      */
     static PlayerLookup create() {
-        // https://stackoverflow.com/a/4122200
         return new PlayerLookupImpl(
                 () -> MindustryCollections.immutableList(Groups.player), PlayerLookupImpl.DEFAULT_NORMALIZER);
     }

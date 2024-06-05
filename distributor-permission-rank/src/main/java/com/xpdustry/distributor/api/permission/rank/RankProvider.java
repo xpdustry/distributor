@@ -18,15 +18,19 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.key.Key;
 import java.util.List;
 import mindustry.gen.Player;
 
-final class MindustryRankSource implements RankSource {
+/**
+ * Manages the retrieval of ranks for players.
+ */
+public interface RankProvider {
 
-    @Override
-    public List<RankNode> getRanks(final Player player) {
-        final var rank = player.admin() ? MindustryRank.ADMIN : MindustryRank.PLAYER;
-        return List.of(EnumRankNode.linear(rank, Key.MINDUSTRY_NAMESPACE, true));
-    }
+    /**
+     * Returns the ranks for the given player.
+     *
+     * @param player the player
+     * @return the ranks of the player
+     */
+    List<RankNode> getRanks(final Player player);
 }

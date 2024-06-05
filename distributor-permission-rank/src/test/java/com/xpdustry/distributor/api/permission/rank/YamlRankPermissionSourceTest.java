@@ -34,7 +34,6 @@ public final class YamlRankPermissionSourceTest {
 
     private static final String TEST_CONFIG_VALID =
             """
-            version: 1
             ranks:
               distributor_low:
                 test1.sub: false
@@ -44,13 +43,8 @@ public final class YamlRankPermissionSourceTest {
                 test2: false
             """;
 
-    private static final String TEST_CONFIG_VERSION_MISMATCH = """
-            version: 2
-            """;
-
     private static final String TEST_CONFIG_INVALID_RANK =
             """
-            version: 1
             ranks:
               '':
                 test1: true
@@ -85,12 +79,6 @@ public final class YamlRankPermissionSourceTest {
             assertThatThrownBy(() -> source.getRankPermissions(CircularRankNode.of(0)))
                     .isInstanceOf(IllegalStateException.class);
         });
-    }
-
-    @Test
-    void test_version_mismatch() {
-        final var source = createSource(TEST_CONFIG_VERSION_MISMATCH);
-        assertThatThrownBy(source::reload).isInstanceOf(IOException.class);
     }
 
     @Test

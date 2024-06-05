@@ -135,7 +135,7 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     }
 
     private void checkPermission(final String permission) {
-        if (!PermissionTree.PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!PERMISSION_PATTERN.matcher(permission).matches()) {
             throw new IllegalArgumentException("The permission is not valid: " + permission);
         }
     }

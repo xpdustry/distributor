@@ -23,7 +23,7 @@ import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
-import com.xpdustry.distributor.api.permission.PermissionProvider;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -83,7 +83,7 @@ record PlayerCommandSender(Player player) implements CommandSender {
     }
 
     @Override
-    public PermissionProvider getPermissions() {
-        return PermissionProvider.from(this.player);
+    public PermissionContainer getPermissions() {
+        return DistributorProvider.get().getPlayerPermissionProvider().getPermissions(this.player);
     }
 }

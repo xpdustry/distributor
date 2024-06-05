@@ -23,6 +23,8 @@ import java.util.Map;
 
 record ImmutablePermissionTree(PermissionTree inner) implements PermissionTree {
 
+    static final PermissionTree EMPTY = new ImmutablePermissionTree(MutablePermissionTree.create());
+
     @Override
     public TriState getPermission(final String permission) {
         return inner.getPermission(permission);

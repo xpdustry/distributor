@@ -34,6 +34,7 @@ import mindustry.net.Administration;
 
 final class PlayerLookupImpl implements PlayerLookup {
 
+    // https://stackoverflow.com/a/4122200
     static final UnaryOperator<String> DEFAULT_NORMALIZER =
             string -> Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
                     .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")

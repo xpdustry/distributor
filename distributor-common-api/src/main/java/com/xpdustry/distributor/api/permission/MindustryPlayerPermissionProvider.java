@@ -19,27 +19,13 @@
 package com.xpdustry.distributor.api.permission;
 
 import com.xpdustry.distributor.api.util.TriState;
-import java.util.Collections;
-import java.util.Map;
+import mindustry.gen.Player;
 
-final class EmptyPermissionTree implements PermissionTree {
-
-    static final EmptyPermissionTree INSTANCE = new EmptyPermissionTree();
-
-    private EmptyPermissionTree() {}
+enum MindustryPlayerPermissionProvider implements PlayerPermissionProvider {
+    INSTANCE;
 
     @Override
-    public TriState getPermission(final String permission) {
-        return TriState.UNDEFINED;
-    }
-
-    @Override
-    public Map<String, Boolean> getPermissions() {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName();
+    public PermissionContainer getPermissions(final Player player) {
+        return permission -> player.admin() ? TriState.TRUE : TriState.UNDEFINED;
     }
 }

@@ -22,7 +22,7 @@ import com.xpdustry.distributor.api.audience.AudienceProvider;
 import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
 import com.xpdustry.distributor.api.event.EventBus;
-import com.xpdustry.distributor.api.permission.PermissionReader;
+import com.xpdustry.distributor.api.permission.PlayerPermissionProvider;
 import com.xpdustry.distributor.api.player.PlayerLookup;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.service.ServiceManager;
@@ -36,7 +36,7 @@ public interface Distributor {
 
     EventBus getEventBus();
 
-    PermissionReader getPermissionReader();
+    PlayerPermissionProvider getPlayerPermissionProvider();
 
     PlayerLookup getPlayerLookup();
 

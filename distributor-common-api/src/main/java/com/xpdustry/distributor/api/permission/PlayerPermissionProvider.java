@@ -18,14 +18,26 @@
  */
 package com.xpdustry.distributor.api.permission;
 
-import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.util.TriState;
 import mindustry.gen.Player;
 
-record PlayerPermissionProvider(Player player) implements PermissionProvider {
+/**
+ * A permission provider for online players.
+ */
+@FunctionalInterface
+public interface PlayerPermissionProvider {
 
-    @Override
-    public TriState getPermission(final String permission) {
-        return DistributorProvider.get().getPermissionReader().getPermission(player, permission);
+    /**
+     * Returns a permission provider backed by Mindustry admin permissions.
+     */
+    static PlayerPermissionProvider mindustry() {
+        return MindustryPlayerPermissionProvider.INSTANCE;
     }
+
+    /**
+     * Gets the permission of the given player.
+     *
+     * @param player the player
+     * @return the player's permission
+     */
+    PermissionContainer getPermissions(final Player player);
 }

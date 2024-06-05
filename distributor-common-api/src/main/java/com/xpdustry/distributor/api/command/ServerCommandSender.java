@@ -22,7 +22,7 @@ import arc.util.Log;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.permission.PermissionProvider;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -78,8 +78,8 @@ final class ServerCommandSender implements CommandSender {
     }
 
     @Override
-    public PermissionProvider getPermissions() {
-        return PermissionProvider.all();
+    public PermissionContainer getPermissions() {
+        return PermissionContainer.all();
     }
 
     @Override

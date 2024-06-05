@@ -20,6 +20,7 @@ package com.xpdustry.distributor.api.permission.rank;
 
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.permission.MutablePermissionTree;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import com.xpdustry.distributor.api.permission.PermissionTree;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import java.io.BufferedReader;
@@ -38,9 +39,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 final class YamlRankPermissionSource implements RankPermissionSource, PluginListener {
 
-    private static final int FILE_FORMAT_VERSION = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlRankPermissionSource.class);
-
     private Map<String, PermissionTree> permissions = Collections.emptyMap();
     private final Map<String, PermissionTree> cache = new HashMap<>();
     private final Object lock = new Object();
@@ -75,7 +74,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     }
 
     @Override
-    public PermissionTree getRankPermissions(final RankNode node) {
+    public PermissionContainer getRankPermissions(final RankNode node) {
         synchronized (this.lock) {
             return getRankPermissions0(node, new HashSet<>());
         }
@@ -110,11 +109,6 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     void reload() throws IOException {
         final Map<String, PermissionTree> map = new HashMap<>();
         final var root = this.loader.load();
-        final var version = root.node("version").getInt(FILE_FORMAT_VERSION);
-        if (version != FILE_FORMAT_VERSION) {
-            throw new IOException("Unsupported rank file version: " + version);
-        }
-
         for (final var rank : root.node("ranks").childrenMap().entrySet()) {
             final var name = (String) rank.getKey();
             if (name.isBlank() || !RankNode.NAME_PATTERN.matcher(name).matches()) {

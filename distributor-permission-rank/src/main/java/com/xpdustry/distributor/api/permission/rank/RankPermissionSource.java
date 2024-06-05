@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.permission.PermissionTree;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 
 /**
  * Manages the retrieval of permissions for rank nodes.
@@ -31,5 +31,5 @@ public interface RankPermissionSource {
      * @param node the rank node
      * @return the permission tree of the rank node
      */
-    PermissionTree getRankPermissions(final RankNode node);
+    PermissionContainer getRankPermissions(final RankNode node);
 }

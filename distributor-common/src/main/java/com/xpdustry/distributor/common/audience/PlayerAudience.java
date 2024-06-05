@@ -19,12 +19,13 @@
 package com.xpdustry.distributor.common.audience;
 
 import arc.Core;
+import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
-import com.xpdustry.distributor.api.permission.PermissionProvider;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Locale;
@@ -41,12 +42,10 @@ import static mindustry.Vars.netServer;
 final class PlayerAudience implements Audience {
 
     private final Player player;
-    private final PermissionProvider permissions;
     private final MetadataContainer metadata;
 
     PlayerAudience(final Player player) {
         this.player = player;
-        this.permissions = PermissionProvider.from(player);
         this.metadata = MetadataContainer.builder()
                 .putSupplier(StandardKeys.NAME, () -> player.getInfo().plainLastName())
                 .putSupplier(StandardKeys.DISPLAY_NAME, player::coloredName)
@@ -191,8 +190,8 @@ final class PlayerAudience implements Audience {
     }
 
     @Override
-    public PermissionProvider getPermissions() {
-        return permissions;
+    public PermissionContainer getPermissions() {
+        return DistributorProvider.get().getPlayerPermissionProvider().getPermissions(this.player);
     }
 
     private String render(final ComponentLike component) {

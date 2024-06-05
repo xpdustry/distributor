@@ -81,6 +81,12 @@ public interface MutablePermissionTree extends PermissionTree {
         removePermission(permission, false);
     }
 
+    /**
+     * Removes the given permission from the tree. Essentially making it {@link TriState#UNDEFINED}.
+     *
+     * @param permission the permission
+     * @param all whether to remove all child permissions
+     */
     void removePermission(final String permission, final boolean all);
 
     /**

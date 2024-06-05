@@ -25,7 +25,7 @@ import com.xpdustry.distributor.api.audience.AudienceProvider;
 import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
 import com.xpdustry.distributor.api.event.EventBus;
-import com.xpdustry.distributor.api.permission.PermissionReader;
+import com.xpdustry.distributor.api.permission.PlayerPermissionProvider;
 import com.xpdustry.distributor.api.player.PlayerLookup;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
@@ -55,7 +55,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     private final ComponentDecoder<String> mindustryComponentDecoder = new MindustryDecoderImpl();
     private final AudienceProvider audienceProvider = new AudienceProviderImpl(this, events);
     private @Nullable PlayerLookup lookup = null;
-    private @Nullable PermissionReader permissions = null;
+    private @Nullable PlayerPermissionProvider permissions = null;
 
     @Override
     public ServiceManager getServiceManager() {
@@ -68,8 +68,8 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public PermissionReader getPermissionReader() {
-        return ensureInitialized(this.permissions, "permission");
+    public PlayerPermissionProvider getPlayerPermissionProvider() {
+        return ensureInitialized(this.permissions, "player-permission-provider");
     }
 
     @Override
@@ -114,7 +114,8 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     @Override
     public void onLoad() {
         this.lookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
-        this.permissions = services.provideOrDefault(PermissionReader.class, PermissionReader::empty);
+        this.permissions =
+                services.provideOrDefault(PlayerPermissionProvider.class, PlayerPermissionProvider::mindustry);
         this.getLogger().info("Loaded distributor common api");
     }
 

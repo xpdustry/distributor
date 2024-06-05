@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.audience;
 
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
-import com.xpdustry.distributor.api.permission.PermissionProvider;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
@@ -100,7 +100,7 @@ public interface Audience {
         return Stream.of(this);
     }
 
-    default PermissionProvider getPermissions() {
-        return PermissionProvider.empty();
+    default PermissionContainer getPermissions() {
+        return PermissionContainer.empty();
     }
 }

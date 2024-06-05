@@ -42,19 +42,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public final class RankPermissionReaderTest {
 
-    private RankPermissionReader reader;
+    private RankPlayerPermissionProvider reader;
     private ServiceManager services;
     private @Mock MindustryPlugin plugin;
     private @Mock Player player1;
     private @Mock Player player2;
     private @Mock Player player3;
-    private @Mock RankSource rankSource;
+    private @Mock RankProvider rankProvider;
 
     @BeforeEach
     void setup() {
-        this.reader = new RankPermissionReader();
+        this.reader = new RankPlayerPermissionProvider();
         this.services = new ServiceManagerImpl();
-        this.services.register(plugin, RankSource.class, rankSource, Priority.NORMAL);
+        this.services.register(plugin, RankProvider.class, rankProvider, Priority.NORMAL);
         final var distributor = Mockito.mock(Distributor.class);
         Mockito.when(distributor.getServiceManager()).thenReturn(this.services);
         DistributorProvider.set(distributor);
@@ -73,20 +73,26 @@ public final class RankPermissionReaderTest {
         permissions1.setPermission("test", false);
         final var permissions2 = MutablePermissionTree.create();
         permissions2.setPermission("test", true);
-        Mockito.when(this.rankSource.getRanks(this.player1)).thenReturn(List.of(rank1));
-        Mockito.when(this.rankSource.getRanks(this.player2)).thenReturn(List.of(rank2));
-        Mockito.when(this.rankSource.getRanks(this.player3)).thenReturn(List.of());
+        Mockito.when(this.rankProvider.getRanks(this.player1)).thenReturn(List.of(rank1));
+        Mockito.when(this.rankProvider.getRanks(this.player2)).thenReturn(List.of(rank2));
+        Mockito.when(this.rankProvider.getRanks(this.player3)).thenReturn(List.of());
 
         final var permissionSource = Mockito.mock(RankPermissionSource.class);
         Mockito.when(permissionSource.getRankPermissions(rank1)).thenReturn(permissions1);
         Mockito.when(permissionSource.getRankPermissions(rank2)).thenReturn(permissions2);
         this.services.register(this.plugin, RankPermissionSource.class, permissionSource, Priority.NORMAL);
 
-        assertThat(this.reader.getPermission(this.player1, "test")).isEqualTo(TriState.FALSE);
-        assertThat(this.reader.getPermission(this.player1, "unknown")).isEqualTo(TriState.UNDEFINED);
-        assertThat(this.reader.getPermission(this.player2, "test")).isEqualTo(TriState.TRUE);
-        assertThat(this.reader.getPermission(this.player2, "unknown")).isEqualTo(TriState.UNDEFINED);
-        assertThat(this.reader.getPermission(this.player3, "test")).isEqualTo(TriState.UNDEFINED);
-        assertThat(this.reader.getPermission(this.player3, "unknown")).isEqualTo(TriState.UNDEFINED);
+        assertThat(this.reader.getPermissions(this.player1).getPermission("test"))
+                .isEqualTo(TriState.FALSE);
+        assertThat(this.reader.getPermissions(this.player1).getPermission("unknown"))
+                .isEqualTo(TriState.UNDEFINED);
+        assertThat(this.reader.getPermissions(this.player2).getPermission("test"))
+                .isEqualTo(TriState.TRUE);
+        assertThat(this.reader.getPermissions(this.player2).getPermission("unknown"))
+                .isEqualTo(TriState.UNDEFINED);
+        assertThat(this.reader.getPermissions(this.player3).getPermission("test"))
+                .isEqualTo(TriState.UNDEFINED);
+        assertThat(this.reader.getPermissions(this.player3).getPermission("unknown"))
+                .isEqualTo(TriState.UNDEFINED);
     }
 }

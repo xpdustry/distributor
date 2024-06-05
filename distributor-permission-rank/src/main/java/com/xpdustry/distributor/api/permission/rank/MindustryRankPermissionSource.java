@@ -18,16 +18,14 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.permission.PermissionTree;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 
 final class MindustryRankPermissionSource implements RankPermissionSource {
 
     @Override
-    public PermissionTree getRankPermissions(final RankNode node) {
-        if (node instanceof EnumRankNode<?> rank && rank.getValue() == MindustryRank.ADMIN) {
-            return PermissionTree.all();
-        } else {
-            return PermissionTree.empty();
-        }
+    public PermissionContainer getRankPermissions(final RankNode node) {
+        return node instanceof EnumRankNode<?> rank && rank.getValue() == MindustryRank.ADMIN
+                ? PermissionContainer.all()
+                : PermissionContainer.empty();
     }
 }

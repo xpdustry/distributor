@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.command;
 
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.permission.PermissionProvider;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.util.Locale;
 import mindustry.gen.Player;
 
@@ -100,7 +100,7 @@ public interface CommandSender {
     /**
      * Returns the permissions of this command sender.
      */
-    PermissionProvider getPermissions();
+    PermissionContainer getPermissions();
 
     /**
      * Returns the locale of this command sender.
