@@ -39,7 +39,7 @@ import org.slf4j.event.Level;
 
 import static mindustry.Vars.netServer;
 
-final class PlayerAudience implements Audience {
+public final class PlayerAudience implements Audience {
 
     private final Player player;
     private final MetadataContainer metadata;
@@ -48,7 +48,9 @@ final class PlayerAudience implements Audience {
         this.player = player;
         this.metadata = MetadataContainer.builder()
                 .putSupplier(StandardKeys.NAME, () -> player.getInfo().plainLastName())
-                .putSupplier(StandardKeys.DISPLAY_NAME, player::coloredName)
+                .putSupplier(StandardKeys.DISPLAY_NAME, () -> DistributorProvider.get()
+                        .getMindustryComponentDecoder()
+                        .decode(player.coloredName()))
                 .putConstant(StandardKeys.MUUID, com.xpdustry.distributor.api.player.MUUID.from(player))
                 .putSupplier(
                         StandardKeys.LOCALE,

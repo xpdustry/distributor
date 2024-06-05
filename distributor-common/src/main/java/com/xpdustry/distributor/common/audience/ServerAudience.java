@@ -21,22 +21,21 @@ package com.xpdustry.distributor.common.audience;
 import arc.util.Log;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.util.Locale;
 
-final class ServerAudience implements Audience {
-
-    static final Audience INSTANCE = new ServerAudience();
+public enum ServerAudience implements Audience {
+    INSTANCE;
 
     private final MetadataContainer metadata = MetadataContainer.builder()
             .putConstant(StandardKeys.NAME, "server")
-            .putConstant(StandardKeys.DISPLAY_NAME, "Server")
+            .putConstant(StandardKeys.DISPLAY_NAME, TextComponent.text("Server"))
             .putSupplier(StandardKeys.LOCALE, Locale::getDefault)
             .build();
-
-    private ServerAudience() {}
 
     @Override
     public void sendMessage(final String message) {
@@ -71,6 +70,11 @@ final class ServerAudience implements Audience {
     @Override
     public MetadataContainer getMetadata() {
         return metadata;
+    }
+
+    @Override
+    public PermissionContainer getPermissions() {
+        return PermissionContainer.all();
     }
 
     private String render(final ComponentLike component) {

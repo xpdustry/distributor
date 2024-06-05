@@ -18,25 +18,65 @@
  */
 package com.xpdustry.distributor.api.audience;
 
-import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.player.MUUID;
 import mindustry.game.Team;
 import mindustry.gen.Player;
 
+/**
+ * Provides various {@link Audience} instances.
+ */
 public interface AudienceProvider {
 
+    /**
+     * Returns an {@link Audience} instance representing everything and everyone.
+     * Will dynamically update as players join and leave.
+     */
+    Audience getEveryone();
+
+    /**
+     * Returns an {@link Audience} instance representing the player with the given {@link MUUID}.
+     * Will return an empty audience if the player is not online.
+     *
+     * @param muuid the player's {@link MUUID}
+     * @return the player's audience or an empty audience
+     */
     Audience getPlayer(final MUUID muuid);
 
+    /**
+     * Returns an {@link Audience} instance representing the player with the given uuid.
+     * <strong>Keep in mind this method is not secure, especially if strict mode is disabled.</strong>
+     *
+     * @param uuid the player's {@link String}
+     * @return the player's audience or an empty audience
+     */
+    Audience getPlayer(final String uuid);
+
+    /**
+     * Returns an {@link Audience} instance representing the player with the given {@link Player}.
+     * Unlike {@link #getPlayer(MUUID)}, this method will never return an empty audience.
+     *
+     * @param player the player
+     * @return the player's audience
+     */
     Audience getPlayer(final Player player);
 
+    /**
+     * Returns an {@link Audience} instance representing the server.
+     */
     Audience getServer();
 
+    /**
+     * Returns an {@link Audience} instance representing all players.
+     * Will dynamically update as players join and leave.
+     */
     Audience getPlayers();
 
-    default Audience getTeam(final Team team) {
-        return getPlayers()
-                .asStream()
-                .filter(a -> a.getMetadata().getMetadata(StandardKeys.TEAM).orElse(null) == team)
-                .collect(Audience.collectToAudience());
-    }
+    /**
+     * Returns an {@link Audience} instance representing the team with the given {@link Team}.
+     * Will dynamically update as players join and leave.
+     *
+     * @param team the team
+     * @return the team's audience
+     */
+    Audience getTeam(final Team team);
 }

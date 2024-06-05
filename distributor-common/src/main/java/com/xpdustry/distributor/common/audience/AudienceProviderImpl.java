@@ -18,22 +18,33 @@
  */
 package com.xpdustry.distributor.common.audience;
 
+import arc.struct.IntMap;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
+import com.xpdustry.distributor.api.audience.ForwardingAudience;
 import com.xpdustry.distributor.api.event.EventBus;
+import com.xpdustry.distributor.api.key.StandardKeys;
+import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import mindustry.game.EventType;
+import mindustry.game.Team;
 import mindustry.gen.Player;
 
 public final class AudienceProviderImpl implements AudienceProvider {
 
-    private final Map<MUUID, Audience> players = new HashMap<>();
+    private final Map<MUUID, Audience> players = new ConcurrentHashMap<>();
+    // Using int map in case a smart guy tries to override default teams
+    private final IntMap<TeamAudience> teams = new IntMap<>();
 
     public AudienceProviderImpl(final MindustryPlugin plugin, final EventBus bus) {
+        for (int i = 0; i < 256; i++) {
+            teams.put(i, new TeamAudience(i));
+        }
         bus.subscribe(
                 EventType.PlayerJoin.class,
                 Priority.HIGHEST,
@@ -47,8 +58,21 @@ public final class AudienceProviderImpl implements AudienceProvider {
     }
 
     @Override
+    public Audience getEveryone() {
+        return Audience.of(getPlayers(), getServer());
+    }
+
+    @Override
     public Audience getPlayer(final MUUID muuid) {
         return players.getOrDefault(muuid, Audience.empty());
+    }
+
+    @Override
+    public Audience getPlayer(final String uuid) {
+        return players.entrySet().stream()
+                .filter(e -> e.getKey().getUuid().equals(uuid))
+                .map(Map.Entry::getValue)
+                .collect(Audience.collectToAudience());
     }
 
     @Override
@@ -64,6 +88,40 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     @Override
     public Audience getPlayers() {
-        return players.values().stream().collect(Audience.collectToAudience());
+        return Audience.of(players.values());
+    }
+
+    @Override
+    public Audience getTeam(final Team team) {
+        final var audience = teams.get(team.id);
+        if (audience == null) throw new IllegalArgumentException("Unknown team: " + team);
+        return audience;
+    }
+
+    private final class TeamAudience implements ForwardingAudience {
+
+        private final int team;
+        private final MetadataContainer metadata;
+
+        private TeamAudience(final int team) {
+            this.team = team;
+            this.metadata = MetadataContainer.builder()
+                    .putSupplier(StandardKeys.TEAM, () -> Team.get(team))
+                    .build();
+        }
+
+        @Override
+        public MetadataContainer getMetadata() {
+            return metadata;
+        }
+
+        @Override
+        public Iterable<Audience> getAudiences() {
+            return getPlayers()
+                    .asStream()
+                    .filter(a -> Objects.equals(
+                            a.getMetadata().getMetadata(StandardKeys.TEAM).orElse(null), Team.get(team)))
+                    .toList();
+        }
     }
 }
