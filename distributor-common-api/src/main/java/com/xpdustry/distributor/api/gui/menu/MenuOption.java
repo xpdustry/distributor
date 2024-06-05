@@ -32,6 +32,10 @@ public interface MenuOption {
         return MenuOptionImpl.of(content, action);
     }
 
+    static MenuOption of(final char icon, final Action action) {
+        return of(String.valueOf(icon), action);
+    }
+
     static MenuOption of(final String content, final Action action) {
         return MenuOptionImpl.of(
                 DistributorProvider.get().getMindustryComponentDecoder().decode(content), action);

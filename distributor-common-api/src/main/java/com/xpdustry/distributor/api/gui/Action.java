@@ -25,25 +25,41 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import mindustry.Vars;
 
+/**
+ * A function that is executed when an interaction occurs in a gui.
+ */
 @FunctionalInterface
 public interface Action {
 
-    static Action of(final Action... actions) {
-        return (window) -> {
-            for (final var action : actions) {
-                action.act(window);
-            }
-        };
-    }
-
+    /**
+     * Returns an action that does nothing.
+     */
     static Action none() {
         return window -> {};
     }
 
+    /**
+     * Returns an action that sets a state entry with the given value.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param <T>   the type of the value
+     * @return the action
+     */
     static <T> Action with(final Key<T> key, final T value) {
         return window -> window.getState().set(key, value);
     }
 
+    /**
+     * Returns an action that computes a state entry.
+     * If not present, the default value is used.
+     *
+     * @param key      the key
+     * @param def      the default value
+     * @param function the function to compute the value
+     * @param <T>      the type of the value
+     * @return the action
+     */
     static <T> Action compute(final Key<T> key, final T def, final Function<T, T> function) {
         return window -> {
             final var value = window.getState().getOptional(key).orElse(def);
@@ -51,14 +67,44 @@ public interface Action {
         };
     }
 
+    /**
+     * Returns an action that computes a state entry if it exists.
+     *
+     * @param key      the key
+     * @param function the function to compute the value
+     * @param <T>      the type of the value
+     * @return the action
+     */
+    static <T> Action compute(final Key<T> key, final Function<T, T> function) {
+        return window -> {
+            window.getState().getOptional(key).ifPresent(value -> window.getState()
+                    .set(key, function.apply(value)));
+        };
+    }
+
+    /**
+     * Returns an action that removes a state entry.
+     *
+     * @param key the key
+     * @return the action
+     */
     static Action without(final Key<?> key) {
         return window -> window.getState().remove(key);
     }
 
+    /**
+     * Returns an action that goes back to the previous window.
+     */
     static Action back() {
         return back(1);
     }
 
+    /**
+     * Returns an action that goes back to the window at the given depth.
+     *
+     * @param depth the depth
+     * @return the action
+     */
     static Action back(final int depth) {
         return window -> {
             var current = window;
@@ -73,6 +119,9 @@ public interface Action {
         };
     }
 
+    /**
+     * Returns an action that hides all windows in the hierarchy.
+     */
     static Action hideAll() {
         return window -> {
             var current = window;
@@ -83,24 +132,55 @@ public interface Action {
         };
     }
 
+    /**
+     * Returns an action mapping the viewer to an {@link Audience}.
+     *
+     * @param consumer the sub action running on the audience
+     * @return the action
+     */
     static Action audience(final Consumer<Audience> consumer) {
-        return view ->
-                consumer.accept(DistributorProvider.get().getAudienceProvider().getPlayer(view.getViewer()));
+        return window ->
+                consumer.accept(DistributorProvider.get().getAudienceProvider().getPlayer(window.getViewer()));
     }
 
+    /**
+     * Returns an action that runs the given runnable.
+     *
+     * @param runnable the runnable
+     * @return the action
+     */
     static Action run(final Runnable runnable) {
-        return view -> runnable.run();
+        return window -> runnable.run();
     }
 
+    /**
+     * Returns an action that invoke a command for the viewer.
+     */
     static Action command(final String name, final String... arguments) {
         final var builder = new StringBuilder(name.length() + 1 + (arguments.length * 4));
         builder.append('/').append(name);
-        for (final var argument : arguments) {
-            builder.append(' ').append(argument);
-        }
+        for (final var argument : arguments) builder.append(' ').append(argument);
         final var input = builder.toString();
-        return view -> Vars.netServer.clientCommands.handleMessage(input, view.getViewer());
+        return window -> Vars.netServer.clientCommands.handleMessage(input, window.getViewer());
     }
 
+    /**
+     * Executes the action.
+     *
+     * @param window the window
+     */
     void act(final Window window);
+
+    /**
+     * Returns a new action that first executes this action and then the given action.
+     *
+     * @param next the action to execute after this action
+     * @return the new action
+     */
+    default Action then(final Action next) {
+        return window -> {
+            this.act(window);
+            next.act(window);
+        };
+    }
 }

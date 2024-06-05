@@ -154,18 +154,18 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
                     .addRow(
                             createConditionalOption(
                                     page > 0,
-                                    String.valueOf(Iconc.left),
-                                    Action.of(Action.with(pageKey, page - 1), Window::show)),
+                                    Iconc.left,
+                                    Action.with(pageKey, page - 1).then(Window::show)),
                             MenuOption.of("page " + Mathf.clamp(page + 1, 0, pages) + " / " + pages, Action.none()),
-                            MenuOption.of(String.valueOf(Iconc.cancel), Action.back()),
                             createConditionalOption(
                                     cursor + 1 < elements.size(),
-                                    String.valueOf(Iconc.right),
-                                    Action.of(Action.with(pageKey, page + 1), Window::show)));
+                                    Iconc.right,
+                                    Action.with(pageKey, page + 1).then(Window::show)));
         }
     }
 
-    private MenuOption createConditionalOption(final boolean condition, final String content, final Action action) {
-        return MenuOption.of(condition ? content : "[darkgray]" + content, condition ? action : Action.none());
+    private MenuOption createConditionalOption(final boolean condition, final char icon, final Action action) {
+        return MenuOption.of(
+                condition ? String.valueOf(icon) : "[darkgray]" + icon, condition ? action : Action.none());
     }
 }

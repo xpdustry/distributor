@@ -18,21 +18,53 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+/**
+ * A function that is executed when an interaction occurs in a gui. Takes an additional parameter as the input.
+ */
 @FunctionalInterface
 public interface BiAction<T> {
 
+    /**
+     * Returns a {@code BiAction} that wraps the given {@code Action}.
+     *
+     * @param action the action
+     * @return the bi-action
+     */
     static <T> BiAction<T> from(final Action action) {
         return (window, value) -> action.act(window);
     }
 
-    @SafeVarargs
-    static <T> BiAction<T> of(final BiAction<T>... actions) {
+    /**
+     * Executes the bi-action.
+     *
+     * @param window the window
+     * @param input  the input
+     */
+    void act(final Window window, final T input);
+
+    /**
+     * Returns a {@code BiAction} that executes this bi-action and then the given bi-action.
+     *
+     * @param next the next bi-action
+     * @return the bi-action
+     */
+    default BiAction<T> then(final BiAction<T> next) {
         return (window, value) -> {
-            for (final var action : actions) {
-                action.act(window, value);
-            }
+            this.act(window, value);
+            next.act(window, value);
         };
     }
 
-    void act(final Window window, final T value);
+    /**
+     * Returns a {@code BiAction} that executes this bi-action and then the given action.
+     *
+     * @param next the next action
+     * @return the bi-action
+     */
+    default BiAction<T> then(final Action next) {
+        return (window, value) -> {
+            this.act(window, value);
+            next.act(window);
+        };
+    }
 }
