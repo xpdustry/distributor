@@ -60,22 +60,8 @@ public final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendMessage(final String message) {
-        player.sendMessage(message);
-    }
-
-    @Override
     public void sendMessage(final ComponentLike component) {
         player.sendMessage(render(component));
-    }
-
-    @Override
-    public void sendMessage(final String message, final String unformatted, final Audience sender) {
-        if (sender instanceof PlayerAudience other) {
-            player.sendMessage(message, other.player, unformatted);
-        } else {
-            player.sendMessage(message);
-        }
     }
 
     @Override
@@ -88,18 +74,8 @@ public final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendWarning(final String message) {
-        Call.announce(getConnection(), message);
-    }
-
-    @Override
     public void sendWarning(final ComponentLike component) {
         Call.announce(getConnection(), render(component));
-    }
-
-    @Override
-    public void showHUDText(final String message) {
-        Call.setHudText(getConnection(), message);
     }
 
     @Override
@@ -113,18 +89,8 @@ public final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void sendNotification(final String message, final char icon) {
-        Call.warningToast(getConnection(), icon, message);
-    }
-
-    @Override
     public void sendNotification(final ComponentLike component, final char icon) {
         Call.warningToast(getConnection(), icon, render(component));
-    }
-
-    @Override
-    public void sendAnnouncement(final String message) {
-        Call.infoMessage(getConnection(), message);
     }
 
     @Override
@@ -138,42 +104,29 @@ public final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void showLabel(final String label, final float x, final float y, final Duration duration) {
-        Call.label(getConnection(), label, duration.toMillis() / 1000F, x, y);
-    }
-
-    @Override
     public void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {
         Call.label(getConnection(), render(label), duration.toMillis() / 1000F, x, y);
     }
 
     @Override
-    public void kick(final String reason, final Duration duration, final boolean silent) {
-        kick0(reason, duration, silent);
-    }
-
-    @Override
     public void kick(final ComponentLike reason, final Duration duration, final boolean silent) {
-        kick0(render(reason), duration, silent);
-    }
-
-    private void kick0(final String reason, final Duration duration, final boolean silent) {
         final var connection = getConnection();
         if (connection.kicked) return;
 
+        final var rendered = render(reason);
         LoggerFactory.getLogger("ROOT")
                 .atLevel(silent ? Level.TRACE : Level.INFO)
                 .setMessage("Kicking connection {} / {}; Reason: {}")
                 .addArgument(connection.address)
                 .addArgument(connection.uuid)
-                .addArgument(reason.replace("\n", " "))
+                .addArgument(rendered.replace("\n", " "))
                 .log();
 
         if (duration.toMillis() > 0L) {
             netServer.admins.handleKicked(connection.uuid, connection.address, duration.toMillis());
         }
 
-        Call.kick(connection, reason);
+        Call.kick(connection, rendered);
 
         if (connection.uuid.startsWith("steam:")) {
             // run with a 2-frame delay so there is time to send the kick packet, steam handles this weirdly

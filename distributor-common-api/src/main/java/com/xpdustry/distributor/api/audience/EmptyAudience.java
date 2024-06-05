@@ -21,11 +21,8 @@ package com.xpdustry.distributor.api.audience;
 import java.util.List;
 import java.util.stream.Stream;
 
-final class EmptyAudience implements Audience {
-
-    static final Audience INSTANCE = new EmptyAudience();
-
-    private EmptyAudience() {}
+enum EmptyAudience implements Audience {
+    INSTANCE;
 
     @Override
     public Iterable<Audience> getAudiences() {

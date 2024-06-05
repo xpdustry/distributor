@@ -28,6 +28,9 @@ import java.util.Collection;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * An audience that forwards all operations to a collection of sub audiences.
+ */
 @FunctionalInterface
 public interface ForwardingAudience extends Audience {
 
@@ -51,23 +54,9 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void sendMessage(final String message) {
-        for (final var audience : getAudiences()) {
-            audience.sendMessage(message);
-        }
-    }
-
-    @Override
     default void sendMessage(final ComponentLike component) {
         for (final var audience : getAudiences()) {
             audience.sendMessage(component);
-        }
-    }
-
-    @Override
-    default void sendMessage(final String message, final String unformatted, final Audience sender) {
-        for (final var audience : getAudiences()) {
-            audience.sendMessage(message, unformatted, sender);
         }
     }
 
@@ -79,23 +68,9 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void sendWarning(final String message) {
-        for (final var audience : getAudiences()) {
-            audience.sendWarning(message);
-        }
-    }
-
-    @Override
     default void sendWarning(final ComponentLike component) {
         for (final var audience : getAudiences()) {
             audience.sendWarning(component);
-        }
-    }
-
-    @Override
-    default void showHUDText(final String message) {
-        for (final var audience : getAudiences()) {
-            audience.showHUDText(message);
         }
     }
 
@@ -114,23 +89,9 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void sendNotification(final String message, final char icon) {
-        for (final var audience : getAudiences()) {
-            audience.sendNotification(message, icon);
-        }
-    }
-
-    @Override
     default void sendNotification(final ComponentLike component, final char icon) {
         for (final var audience : getAudiences()) {
             audience.sendNotification(component, icon);
-        }
-    }
-
-    @Override
-    default void sendAnnouncement(final String message) {
-        for (final var audience : getAudiences()) {
-            audience.sendAnnouncement(message);
         }
     }
 
@@ -149,23 +110,9 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void showLabel(final String label, final float x, final float y, final Duration duration) {
-        for (final var audience : getAudiences()) {
-            audience.showLabel(label, x, y, duration);
-        }
-    }
-
-    @Override
     default void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {
         for (final var audience : getAudiences()) {
             audience.showLabel(label, x, y, duration);
-        }
-    }
-
-    @Override
-    default void kick(final String reason, final Duration duration, final boolean silent) {
-        for (final var audience : getAudiences()) {
-            audience.kick(reason, duration, silent);
         }
     }
 

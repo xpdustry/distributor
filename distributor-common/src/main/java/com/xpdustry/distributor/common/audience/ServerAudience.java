@@ -38,28 +38,13 @@ public enum ServerAudience implements Audience {
             .build();
 
     @Override
-    public void sendMessage(final String message) {
-        Log.info(message);
-    }
-
-    @Override
     public void sendMessage(final ComponentLike component) {
         Log.info(render(component));
     }
 
     @Override
-    public void sendMessage(final String message, final String unformatted, final Audience sender) {
-        Log.info(message);
-    }
-
-    @Override
     public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
         Log.info(render(component));
-    }
-
-    @Override
-    public void sendWarning(final String message) {
-        Log.warn(message);
     }
 
     @Override

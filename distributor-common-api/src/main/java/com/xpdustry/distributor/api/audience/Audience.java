@@ -28,8 +28,17 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A universal interface for sending Mindustry content to receivers.
+ */
 public interface Audience {
 
+    /**
+     * Creates an audience that forwards its content to the given audiences.
+     *
+     * @param audiences the audiences
+     * @return the forwarding audience
+     */
     static Audience of(final Audience... audiences) {
         if (audiences.length == 0) {
             return Audience.empty();
@@ -40,66 +49,130 @@ public interface Audience {
         }
     }
 
+    /**
+     * Creates an audience that forwards its content to the given audiences.
+     *
+     * @param audiences the audiences
+     * @return the forwarding audience
+     */
     static Audience of(final Iterable<Audience> audiences) {
         return ((ForwardingAudience) () -> audiences);
     }
 
+    /**
+     * Returns an empty audience that does nothing.
+     */
     static Audience empty() {
         return EmptyAudience.INSTANCE;
     }
 
+    /**
+     * Returns a collector, combining a stream of audiences into a single forwarding audience.
+     */
     static Collector<Audience, ?, Audience> collectToAudience() {
         return Collectors.collectingAndThen(Collectors.toList(), Audience::of);
     }
 
-    default void sendMessage(final String message) {}
-
+    /**
+     * Sends a message to this audience.
+     *
+     * @param component the message
+     */
     default void sendMessage(final ComponentLike component) {}
 
-    default void sendMessage(final String message, final String unformatted, final Audience sender) {}
-
+    /**
+     * Sends a message to this audience.
+     *
+     * @param component the message
+     * @param unformatted the unformatted message
+     * @param sender the sender
+     */
     default void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {}
 
-    default void sendWarning(final String message) {}
-
+    /**
+     * Sends a warning to this audience.
+     *
+     * @param component the warning
+     */
     default void sendWarning(final ComponentLike component) {}
 
-    default void showHUDText(final String message) {}
-
+    /**
+     * Shows a HUD text to this audience.
+     *
+     * @param component the HUD text
+     */
     default void showHUDText(final ComponentLike component) {}
 
+    /**
+     * Hides the HUD text of this audience.
+     */
     default void hideHUDText() {}
 
-    default void sendNotification(final String message, final char icon) {}
-
+    /**
+     * Sends a notification to this audience.
+     *
+     * @param component the notification
+     * @param icon the icon
+     */
     default void sendNotification(final ComponentLike component, final char icon) {}
 
-    default void sendAnnouncement(final String message) {}
-
+    /**
+     * Sends an announcement to this audience.
+     *
+     * @param component the announcement
+     */
     default void sendAnnouncement(final ComponentLike component) {}
 
+    /**
+     * Sends an uri to open to this audience.
+     *
+     * @param uri the uri
+     */
     default void openURI(final URI uri) {}
 
-    default void showLabel(final String label, final float x, final float y, final Duration duration) {}
-
+    /**
+     * Shows a label to this audience.
+     *
+     * @param label the label
+     * @param x the x position in world coordinates
+     * @param y the y position in world coordinates
+     * @param duration the duration
+     */
     default void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {}
 
-    default void kick(final String reason, final Duration duration, final boolean silent) {}
-
+    /**
+     * Kicks this audience from the server.
+     *
+     * @param reason the reason
+     * @param duration the duration
+     * @param silent whether the kick should be logged
+     */
     default void kick(final ComponentLike reason, final Duration duration, final boolean silent) {}
 
+    /**
+     * Returns the metadata of this audience.
+     */
     default MetadataContainer getMetadata() {
         return MetadataContainer.empty();
     }
 
+    /**
+     * Returns the audiences this audience forwards to.
+     */
     default Iterable<Audience> getAudiences() {
         return List.of(this);
     }
 
+    /**
+     * Returns the audiences this audience forwards to as a stream.
+     */
     default Stream<Audience> asStream() {
         return Stream.of(this);
     }
 
+    /**
+     * Returns the permissions of this audience.
+     */
     default PermissionContainer getPermissions() {
         return PermissionContainer.empty();
     }
