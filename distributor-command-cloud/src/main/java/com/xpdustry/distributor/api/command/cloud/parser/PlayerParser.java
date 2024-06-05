@@ -23,7 +23,10 @@ import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
+import com.xpdustry.distributor.api.command.cloud.MindustryCommandContextKeys;
+import com.xpdustry.distributor.api.permission.PermissionContainer;
 import com.xpdustry.distributor.api.player.PlayerLookup;
+import com.xpdustry.distributor.api.util.TriState;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -62,8 +65,14 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var queryBuilder = PlayerLookup.Query.builder().setInput(input.readString());
         final var fields = new ArrayList<PlayerLookup.Field>();
+        final var permissions = ctx.getOrDefault(MindustryCommandContextKeys.PERMISSIONS, PermissionContainer.empty());
         for (final var field : PlayerLookup.Field.values()) {
-            if (ctx.hasPermission("distributor.player.lookup." + field.name().toLowerCase(Locale.ROOT))) {
+            var state = permissions.getPermission(
+                    "distributor.player.lookup." + field.name().toLowerCase(Locale.ROOT));
+            if (state == TriState.UNDEFINED) {
+                state = this.getDefaultPermission(field);
+            }
+            if (state.asBoolean()) {
                 fields.add(field);
             }
         }
@@ -92,6 +101,13 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
                         .map(Suggestion::suggestion)
                         .toList(),
                 Core.app::post);
+    }
+
+    private TriState getDefaultPermission(final PlayerLookup.Field field) {
+        return switch (field) {
+            case NAME, ENTITY_ID, SERVER_ID -> TriState.TRUE;
+            case UUID -> TriState.FALSE;
+        };
     }
 
     /**
