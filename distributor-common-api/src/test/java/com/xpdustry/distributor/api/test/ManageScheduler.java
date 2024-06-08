@@ -39,7 +39,7 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotatedFields;
 
-public final class ManageSchedulerExtension
+public final class ManageScheduler
         implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback {
 
     private final Map<Field, PluginSchedulerImpl> schedulers = new ConcurrentHashMap<>();

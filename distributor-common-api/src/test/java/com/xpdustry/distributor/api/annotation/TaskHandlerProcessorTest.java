@@ -24,7 +24,7 @@ import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.scheduler.Cancellable;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
-import com.xpdustry.distributor.api.test.ManageSchedulerExtension;
+import com.xpdustry.distributor.api.test.ManageScheduler;
 import com.xpdustry.distributor.api.test.TestScheduler;
 import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
 import java.time.Duration;
@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(ManageSchedulerExtension.class)
+@ExtendWith(ManageScheduler.class)
 @SuppressWarnings({"UnusedMethod", "UnusedVariable"})
 public final class TaskHandlerProcessorTest {
 

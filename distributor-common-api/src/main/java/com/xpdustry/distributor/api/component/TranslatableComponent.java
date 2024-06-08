@@ -22,6 +22,7 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import mindustry.ctype.MappableContent;
+import mindustry.game.Team;
 
 /**
  * A component that displays a translatable text.
@@ -112,7 +113,7 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final MappableContent content) {
-        return new TranslatableComponentImpl(TextStyle.none(), getKey(content), TranslationArguments.empty());
+        return translatable(content, TextStyle.none());
     }
 
     /**
@@ -123,7 +124,7 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final MappableContent content, final ComponentColor textColor) {
-        return new TranslatableComponentImpl(TextStyle.of(textColor), getKey(content), TranslationArguments.empty());
+        return translatable(content, TextStyle.of(textColor));
     }
 
     /**
@@ -134,11 +135,48 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final MappableContent content, final TextStyle textStyle) {
-        return new TranslatableComponentImpl(textStyle, getKey(content), TranslationArguments.empty());
+        return new TranslatableComponentImpl(
+                textStyle,
+                "mindustry." + content.getContentType().name() + "." + content.name + ".name",
+                TranslationArguments.empty());
     }
 
-    private static String getKey(final MappableContent content) {
-        return "mindustry." + content.getContentType().name() + "." + content.name + ".name";
+    /**
+     * Creates a new translatable component with the specified team.
+     *
+     * @param team the team
+     * @return the translatable component
+     */
+    static TranslatableComponent translatable(final Team team) {
+        return translatable(team, TextStyle.none());
+    }
+
+    /**
+     * Creates a new translatable component with the specified team and text color.
+     *
+     * @param team the team
+     * @param textColor the text color
+     * @return the translatable component
+     */
+    static TranslatableComponent translatable(final Team team, final ComponentColor textColor) {
+        return translatable(team, TextStyle.of(textColor));
+    }
+
+    /**
+     * Creates a new translatable component with the specified team and text textStyle.
+     *
+     * @param team the team
+     * @param textStyle the text textStyle
+     * @return the translatable component
+     */
+    static TranslatableComponent translatable(final Team team, final TextStyle textStyle) {
+        if (team.id < Team.baseTeams.length) {
+            return new TranslatableComponentImpl(
+                    textStyle, "mindustry.team." + team.name + ".name", TranslationArguments.empty());
+        } else {
+            return new TranslatableComponentImpl(
+                    textStyle, "distributor.component.team", TranslationArguments.array(team.id));
+        }
     }
 
     /**

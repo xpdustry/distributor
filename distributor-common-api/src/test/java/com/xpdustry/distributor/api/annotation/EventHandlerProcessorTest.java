@@ -23,7 +23,7 @@ import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
-import com.xpdustry.distributor.api.test.ManageSchedulerExtension;
+import com.xpdustry.distributor.api.test.ManageScheduler;
 import com.xpdustry.distributor.api.test.TestPlugin;
 import com.xpdustry.distributor.api.test.TestScheduler;
 import com.xpdustry.distributor.api.util.Priority;
@@ -44,7 +44,7 @@ import org.mockito.Mockito;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(ManageSchedulerExtension.class)
+@ExtendWith(ManageScheduler.class)
 @SuppressWarnings({"UnusedMethod", "UnusedVariable"})
 public final class EventHandlerProcessorTest {
 
