@@ -27,7 +27,7 @@ public interface MessageFormatTranslation extends Translation {
 
     /**
      * Creates a new {@link MessageFormatTranslation} with the given pattern and locale.
-     * The implementation returned by this method is also {@link ComponentAwareTranslation compatible with components}.
+     * The implementation returned by this method supports {@link com.xpdustry.distributor.api.component.render.ComponentStringBuilder}.
      *
      * @param pattern the pattern
      * @param locale the locale

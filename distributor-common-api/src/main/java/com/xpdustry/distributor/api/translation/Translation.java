@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
+
 /**
  * Represents a translation from a given translation system.
  */
@@ -30,4 +32,14 @@ public interface Translation {
      * @return the formatted translation
      */
     String format(final TranslationArguments parameters);
+
+    /**
+     * Formats the translation to the given {@link ComponentStringBuilder}.
+     *
+     * @param parameters the translation parameters
+     * @param builder the builder
+     */
+    default void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
+        builder.append(format(parameters));
+    }
 }

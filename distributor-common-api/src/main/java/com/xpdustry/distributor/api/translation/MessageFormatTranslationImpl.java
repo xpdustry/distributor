@@ -32,8 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-record MessageFormatTranslationImpl(String pattern, Locale locale)
-        implements MessageFormatTranslation, ComponentAwareTranslation {
+record MessageFormatTranslationImpl(String pattern, Locale locale) implements MessageFormatTranslation {
 
     private static final int MAX_NAMED_INDEX = 63;
     private static final Object[] EMPTY_ARRAY = new Object[MAX_NAMED_INDEX + 1];
@@ -57,49 +56,28 @@ record MessageFormatTranslationImpl(String pattern, Locale locale)
     }
 
     @Override
-    public void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
-        if (parameters instanceof TranslationArguments.Array array) {
-            formatTo(array.getArguments(), builder);
-        } else if (parameters instanceof TranslationArguments.Named named) {
-            final List<Object> entries = new ArrayList<>();
-            for (final var entry : named.getArguments().entrySet()) {
-                final int index;
-                try {
-                    index = Integer.parseInt(entry.getKey());
-                } catch (NumberFormatException ignored) {
-                    continue;
-                }
-                if (index > MAX_NAMED_INDEX) {
-                    throw new IllegalArgumentException(
-                            "Max argument index exceeded, expected less than " + MAX_NAMED_INDEX + ", got " + index);
-                }
-                for (int i = entries.size(); i <= index; i++) {
-                    entries.add(null);
-                }
-                entries.set(index, entry.getValue());
-            }
-            formatTo(entries, builder);
-        } else {
-            throw new IllegalArgumentException("Unsupported arguments type: " + parameters.getClass());
-        }
+    public String format(final TranslationArguments parameters) {
+        return createFormat().format(getArguments(parameters).toArray());
     }
 
     @SuppressWarnings("JdkObsolete")
-    private void formatTo(final List<Object> arguments, final ComponentStringBuilder builder) {
-        final var format = new MessageFormat(pattern, locale);
+    @Override
+    public void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
+        final var format = createFormat();
+        final var arguments = getArguments(parameters);
         if (arguments.isEmpty()) {
             builder.append(format.format(null));
             return;
         }
 
-        final var buffer = format.format(EMPTY_ARRAY, new StringBuffer(), null);
+        final var unformatted = format.format(EMPTY_ARRAY);
         final var iterator = format.formatToCharacterIterator(EMPTY_ARRAY);
 
         while (iterator.getIndex() < iterator.getEndIndex()) {
             final int end = iterator.getRunLimit();
             final var index = (Integer) iterator.getAttribute(MessageFormat.Field.ARGUMENT);
             if (index == null) {
-                builder.append(buffer, iterator.getIndex(), end);
+                builder.append(unformatted, iterator.getIndex(), end);
             } else {
                 var argument = arguments.get(index);
                 var style = TextStyle.none();
@@ -139,5 +117,36 @@ record MessageFormatTranslationImpl(String pattern, Locale locale)
             }
             iterator.setIndex(end);
         }
+    }
+
+    private List<Object> getArguments(final TranslationArguments arguments) {
+        if (arguments instanceof TranslationArguments.Array array) {
+            return array.getArguments();
+        } else if (arguments instanceof TranslationArguments.Named named) {
+            final List<Object> entries = new ArrayList<>();
+            for (final var entry : named.getArguments().entrySet()) {
+                final int index;
+                try {
+                    index = Integer.parseInt(entry.getKey());
+                } catch (NumberFormatException ignored) {
+                    continue;
+                }
+                if (index > MAX_NAMED_INDEX) {
+                    throw new IllegalArgumentException(
+                            "Max argument index exceeded, expected less than " + MAX_NAMED_INDEX + ", got " + index);
+                }
+                for (int i = entries.size(); i <= index; i++) {
+                    entries.add(null);
+                }
+                entries.set(index, entry.getValue());
+            }
+            return entries;
+        } else {
+            throw new IllegalArgumentException("Unsupported arguments type: " + arguments.getClass());
+        }
+    }
+
+    private MessageFormat createFormat() {
+        return new MessageFormat(pattern, locale);
     }
 }

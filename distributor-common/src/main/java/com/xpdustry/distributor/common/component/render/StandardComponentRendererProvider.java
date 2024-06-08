@@ -30,7 +30,6 @@ import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.component.style.TemporalStyle;
 import com.xpdustry.distributor.api.key.StandardKeys;
-import com.xpdustry.distributor.api.translation.ComponentAwareTranslation;
 import java.time.ZoneId;
 import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -104,18 +103,14 @@ public final class StandardComponentRendererProvider implements ComponentRendere
 
         @Override
         public void render(final TranslatableComponent component, final ComponentStringBuilder builder) {
-            final var translation = DistributorProvider.get()
+            DistributorProvider.get()
                     .getGlobalTranslationSource()
                     .getTranslationOrMissing(
                             component.getKey(),
                             builder.getContext()
                                     .getOptional(StandardKeys.LOCALE)
-                                    .orElseGet(Locale::getDefault));
-            if (translation instanceof ComponentAwareTranslation aware) {
-                aware.formatTo(component.getParameters(), builder);
-            } else {
-                builder.append(translation.format(component.getParameters()));
-            }
+                                    .orElseGet(Locale::getDefault))
+                    .formatTo(component.getParameters(), builder);
         }
     }
 
