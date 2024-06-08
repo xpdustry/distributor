@@ -145,9 +145,8 @@ public interface Audience {
      *
      * @param reason the reason
      * @param duration the duration
-     * @param silent whether the kick should be logged
      */
-    default void kick(final ComponentLike reason, final Duration duration, final boolean silent) {}
+    default void kick(final ComponentLike reason, final Duration duration) {}
 
     /**
      * Returns the metadata of this audience.

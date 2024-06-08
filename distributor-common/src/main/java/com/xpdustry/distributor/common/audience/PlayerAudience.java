@@ -18,7 +18,6 @@
  */
 package com.xpdustry.distributor.common.audience;
 
-import arc.Core;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
@@ -32,14 +31,9 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Objects;
-import mindustry.Vars;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.net.NetConnection;
-import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
-
-import static mindustry.Vars.netServer;
 
 public final class PlayerAudience implements Audience {
 
@@ -111,34 +105,8 @@ public final class PlayerAudience implements Audience {
     }
 
     @Override
-    public void kick(final ComponentLike reason, final Duration duration, final boolean silent) {
-        final var connection = getConnection();
-        if (connection.kicked) return;
-
-        final var rendered = render(reason);
-        LoggerFactory.getLogger("ROOT")
-                .atLevel(silent ? Level.TRACE : Level.INFO)
-                .setMessage("Kicking connection {} / {}; Reason: {}")
-                .addArgument(connection.address)
-                .addArgument(connection.uuid)
-                .addArgument(rendered.replace("\n", " "))
-                .log();
-
-        if (duration.toMillis() > 0L) {
-            netServer.admins.handleKicked(connection.uuid, connection.address, duration.toMillis());
-        }
-
-        Call.kick(connection, rendered);
-
-        if (connection.uuid.startsWith("steam:")) {
-            // run with a 2-frame delay so there is time to send the kick packet, steam handles this weirdly
-            Core.app.post(() -> Core.app.post(connection::close));
-        } else {
-            connection.close();
-        }
-
-        Vars.netServer.admins.save();
-        connection.kicked = true;
+    public void kick(final ComponentLike reason, final Duration duration) {
+        getConnection().kick(render(reason), duration.toMillis());
     }
 
     @Override
