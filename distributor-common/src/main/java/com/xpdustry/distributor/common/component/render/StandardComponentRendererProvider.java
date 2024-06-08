@@ -87,7 +87,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
                 format.toFormatter()
                         .withZone(ZoneId.of("UTC"))
                         .withLocale(builder.getContext()
-                                .getMetadata(StandardKeys.LOCALE)
+                                .getOptional(StandardKeys.LOCALE)
                                 .orElseGet(Locale::getDefault))
                         .formatTo(component.getTemporal(), builder);
             } else if (component.getTemporalStyle() instanceof TemporalStyle.None) {
@@ -109,7 +109,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
                     .getTranslationOrMissing(
                             component.getKey(),
                             builder.getContext()
-                                    .getMetadata(StandardKeys.LOCALE)
+                                    .getOptional(StandardKeys.LOCALE)
                                     .orElseGet(Locale::getDefault));
             if (translation instanceof ComponentAwareTranslation aware) {
                 aware.formatTo(component.getParameters(), builder);

@@ -19,22 +19,22 @@
 package com.xpdustry.distributor.api.component.render;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class PlainComponentStringBuilder implements ComponentStringBuilder {
 
     private final StringBuilder builder = new StringBuilder();
-    private final MetadataContainer context;
+    private final KeyContainer context;
     private final ComponentRendererProvider provider;
 
-    public PlainComponentStringBuilder(final MetadataContainer context, final ComponentRendererProvider provider) {
+    public PlainComponentStringBuilder(final KeyContainer context, final ComponentRendererProvider provider) {
         this.context = context;
         this.provider = provider;
     }
 
     @Override
-    public MetadataContainer getContext() {
+    public KeyContainer getContext() {
         return context;
     }
 

@@ -23,18 +23,20 @@ import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
+import com.xpdustry.distributor.api.key.DynamicKeyContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.key.StandardKeys;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.util.Locale;
 
 public enum ServerAudience implements Audience {
     INSTANCE;
 
-    private final MetadataContainer metadata = MetadataContainer.builder()
+    @SuppressWarnings("ImmutableEnumChecker")
+    private final KeyContainer metadata = DynamicKeyContainer.builder()
             .putConstant(StandardKeys.NAME, "server")
             .putConstant(StandardKeys.DISPLAY_NAME, TextComponent.text("Server"))
-            .putSupplier(StandardKeys.LOCALE, Locale::getDefault)
+            .putSupplied(StandardKeys.LOCALE, Locale::getDefault)
             .build();
 
     @Override
@@ -53,7 +55,7 @@ public enum ServerAudience implements Audience {
     }
 
     @Override
-    public MetadataContainer getMetadata() {
+    public KeyContainer getMetadata() {
         return metadata;
     }
 

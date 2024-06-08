@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.gui.transform;
 
 import com.xpdustry.distributor.api.gui.Pane;
-import com.xpdustry.distributor.api.gui.State;
+import com.xpdustry.distributor.api.key.MutableKeyContainer;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
@@ -33,13 +33,13 @@ public interface Transformer<P extends Pane> {
     @Value.Immutable
     interface Context<P extends Pane> {
 
-        static <P extends Pane> Context<P> of(final P pane, final State state, final Player viewer) {
+        static <P extends Pane> Context<P> of(final P pane, final MutableKeyContainer state, final Player viewer) {
             return ContextImpl.of(pane, state, viewer);
         }
 
         P getPane();
 
-        State getState();
+        MutableKeyContainer getState();
 
         Player getViewer();
     }

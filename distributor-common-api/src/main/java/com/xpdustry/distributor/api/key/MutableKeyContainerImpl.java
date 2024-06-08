@@ -16,35 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.gui;
+package com.xpdustry.distributor.api.key;
 
-import com.xpdustry.distributor.api.key.Key;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class StateImpl implements State {
+final class MutableKeyContainerImpl implements MutableKeyContainer {
 
     private final Map<Key<?>, Object> data = new HashMap<>();
 
     @Override
-    public <T> Optional<T> getOptional(final Key<T> key) {
+    public <V> Optional<V> getOptional(final Key<V> key) {
         return Optional.ofNullable(key.getToken().getRawType().cast(data.get(key)));
     }
 
     @Override
-    public <T> @Nullable T set(final Key<T> key, final T value) {
-        return key.getToken().getRawType().cast(data.put(key, value));
+    public <V> @Nullable V set(final Key<V> key, final V value) {
+        final var previous = data.put(key, value);
+        return key.getToken().getRawType().cast(previous);
     }
 
     @Override
-    public <T> T remove(final Key<T> key) {
+    public <T> @Nullable T remove(final Key<T> key) {
         return key.getToken().getRawType().cast(data.remove(key));
     }
 
     @Override
-    public boolean contains(final Key<?> key) {
-        return data.containsKey(key);
+    public Set<Key<?>> getKeys() {
+        return Collections.unmodifiableSet(data.keySet());
     }
 }

@@ -18,4 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+/**
+ * Represents the content of a window.
+ */
 public interface Pane {}

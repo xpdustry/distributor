@@ -16,27 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.gui;
+package com.xpdustry.distributor.api.key;
 
-import com.xpdustry.distributor.api.key.Key;
 import java.util.Optional;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import java.util.Set;
 
-public interface State {
+enum EmptyKeyContainer implements KeyContainer {
+    INSTANCE;
 
-    static State create() {
-        return new StateImpl();
+    @Override
+    public <V> Optional<V> getOptional(final Key<V> key) {
+        return Optional.empty();
     }
 
-    <T> Optional<T> getOptional(final Key<T> key);
-
-    default <T> @Nullable T get(final Key<T> key) {
-        return getOptional(key).orElse(null);
+    @Override
+    public Set<Key<?>> getKeys() {
+        return Set.of();
     }
-
-    <T> @Nullable T set(final Key<T> key, final T value);
-
-    <T> @Nullable T remove(final Key<T> key);
-
-    boolean contains(final Key<?> key);
 }

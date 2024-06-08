@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.component.render;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -36,7 +36,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @param provider the component renderer provider
      * @return the plain component string builder
      */
-    static ComponentStringBuilder plain(final MetadataContainer context, final ComponentRendererProvider provider) {
+    static ComponentStringBuilder plain(final KeyContainer context, final ComponentRendererProvider provider) {
         return new PlainComponentStringBuilder(context, provider);
     }
 
@@ -49,7 +49,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @param context the context
      * @return the plain component string builder
      */
-    static ComponentStringBuilder plain(final MetadataContainer context) {
+    static ComponentStringBuilder plain(final KeyContainer context) {
         return new PlainComponentStringBuilder(
                 context, DistributorProvider.get().getComponentRendererProvider());
     }
@@ -64,7 +64,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @param provider the component renderer provider
      * @return the ANSI component string builder
      */
-    static ComponentStringBuilder ansi(final MetadataContainer context, final ComponentRendererProvider provider) {
+    static ComponentStringBuilder ansi(final KeyContainer context, final ComponentRendererProvider provider) {
         return new AnsiComponentStringBuilder(context, provider);
     }
 
@@ -79,7 +79,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @param context the context
      * @return the ANSI component string builder
      */
-    static ComponentStringBuilder ansi(final MetadataContainer context) {
+    static ComponentStringBuilder ansi(final KeyContainer context) {
         return new AnsiComponentStringBuilder(context, DistributorProvider.get().getComponentRendererProvider());
     }
 
@@ -93,7 +93,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @param provider the component renderer provider
      * @return the Mindustry component string builder
      */
-    static ComponentStringBuilder mindustry(final MetadataContainer context, final ComponentRendererProvider provider) {
+    static ComponentStringBuilder mindustry(final KeyContainer context, final ComponentRendererProvider provider) {
         return new MindustryComponentStringBuilder(context, provider);
     }
 
@@ -108,7 +108,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @param context the context
      * @return the Mindustry component string builder
      */
-    static ComponentStringBuilder mindustry(final MetadataContainer context) {
+    static ComponentStringBuilder mindustry(final KeyContainer context) {
         return new MindustryComponentStringBuilder(
                 context, DistributorProvider.get().getComponentRendererProvider());
     }
@@ -116,7 +116,7 @@ public interface ComponentStringBuilder extends Appendable {
     /**
      * Returns the context of this builder.
      */
-    MetadataContainer getContext();
+    KeyContainer getContext();
 
     /**
      * Appends the specified component.

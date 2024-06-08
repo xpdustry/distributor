@@ -23,8 +23,9 @@ import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
 import com.xpdustry.distributor.api.audience.ForwardingAudience;
 import com.xpdustry.distributor.api.event.EventBus;
+import com.xpdustry.distributor.api.key.DynamicKeyContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.key.StandardKeys;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
@@ -101,17 +102,17 @@ public final class AudienceProviderImpl implements AudienceProvider {
     private final class TeamAudience implements ForwardingAudience {
 
         private final int team;
-        private final MetadataContainer metadata;
+        private final KeyContainer metadata;
 
         private TeamAudience(final int team) {
             this.team = team;
-            this.metadata = MetadataContainer.builder()
-                    .putSupplier(StandardKeys.TEAM, () -> Team.get(team))
+            this.metadata = DynamicKeyContainer.builder()
+                    .putSupplied(StandardKeys.TEAM, () -> Team.get(team))
                     .build();
         }
 
         @Override
-        public MetadataContainer getMetadata() {
+        public KeyContainer getMetadata() {
             return metadata;
         }
 
@@ -120,7 +121,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
             return getPlayers()
                     .asStream()
                     .filter(a -> Objects.equals(
-                            a.getMetadata().getMetadata(StandardKeys.TEAM).orElse(null), Team.get(team)))
+                            a.getMetadata().getOptional(StandardKeys.TEAM).orElse(null), Team.get(team)))
                     .toList();
         }
     }

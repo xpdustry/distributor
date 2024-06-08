@@ -22,30 +22,55 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
 
+/**
+ * A generic unit for window managers relying on the player's screen size.
+ */
 public interface DisplayUnit {
 
+    /**
+     * Converts this unit to pixels based on the player's screen size.
+     *
+     * @param player the player
+     * @param axis   the axis to convert
+     * @return the converted value
+     */
     int asPixels(final Player player, final Axis axis);
 
+    /**
+     * Represents an axis.
+     */
     enum Axis {
         X,
         Y
     }
 
+    /**
+     * Represents a unit in raw pixels.
+     */
     @DistributorDataClass
     @Value.Immutable
     interface Pixel extends DisplayUnit {
 
         Pixel ZERO = Pixel.of(0);
 
+        /**
+         * Creates a new {@link Pixel} instance with the given value.
+         *
+         * @param value the value
+         * @return the new instance
+         */
         static Pixel of(final int value) {
             return PixelImpl.of(value);
         }
 
-        int getValue();
+        /**
+         * Returns the pixels.
+         */
+        int getPixels();
 
         @Override
         default int asPixels(final Player player, final Axis axis) {
-            return getValue();
+            return getPixels();
         }
     }
 }

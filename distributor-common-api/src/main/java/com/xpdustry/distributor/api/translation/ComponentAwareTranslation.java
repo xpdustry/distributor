@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.translation;
 
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 
 /**
  * A translation that can format to a {@link ComponentStringBuilder}.
@@ -28,7 +28,7 @@ public interface ComponentAwareTranslation extends Translation {
 
     @Override
     default String format(final TranslationArguments parameters) {
-        final var builder = ComponentStringBuilder.plain(MetadataContainer.empty());
+        final var builder = ComponentStringBuilder.plain(KeyContainer.empty());
         formatTo(parameters, builder);
         return builder.toString();
     }

@@ -21,8 +21,8 @@ package com.xpdustry.distributor.api.gui.transform;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.gui.Pane;
-import com.xpdustry.distributor.api.gui.State;
 import com.xpdustry.distributor.api.gui.Window;
+import com.xpdustry.distributor.api.key.MutableKeyContainer;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginAware;
@@ -113,14 +113,14 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
 
         private final Player viewer;
         private final @Nullable Window parent;
-        private final State state;
+        private final MutableKeyContainer state;
         private @MonotonicNonNull P pane = null;
         private boolean transforming = false;
 
         private SimpleWindow(final Player viewer, final @Nullable Window parent) {
             this.viewer = viewer;
             this.parent = parent;
-            this.state = parent != null ? parent.getState() : State.create();
+            this.state = parent != null ? parent.getState() : MutableKeyContainer.create();
         }
 
         @Override
@@ -168,7 +168,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         @Override
-        public State getState() {
+        public MutableKeyContainer getState() {
             return state;
         }
 

@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.audience;
 
 import com.xpdustry.distributor.api.component.ComponentLike;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.net.URI;
 import java.time.Duration;
@@ -152,8 +152,8 @@ public interface Audience {
     /**
      * Returns the metadata of this audience.
      */
-    default MetadataContainer getMetadata() {
-        return MetadataContainer.empty();
+    default KeyContainer getMetadata() {
+        return KeyContainer.empty();
     }
 
     /**

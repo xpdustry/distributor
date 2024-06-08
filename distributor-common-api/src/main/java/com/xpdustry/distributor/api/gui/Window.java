@@ -18,20 +18,42 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+import com.xpdustry.distributor.api.key.MutableKeyContainer;
 import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Represents a window. A container for the pane and state of a GUI.
+ */
 public interface Window {
 
+    /**
+     * Returns the viewer of this window.
+     */
     Player getViewer();
 
-    State getState();
+    /**
+     * Returns the state of this window.
+     */
+    MutableKeyContainer getState();
 
+    /**
+     * Returns the parent window of this window.
+     */
     @Nullable Window getParent();
 
+    /**
+     * Returns whether this window is active.
+     */
     boolean isActive();
 
+    /**
+     * Shows this window.
+     */
     void show();
 
+    /**
+     * Hides this window.
+     */
     void hide();
 }

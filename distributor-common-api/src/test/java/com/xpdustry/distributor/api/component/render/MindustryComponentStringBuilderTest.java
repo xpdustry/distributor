@@ -22,8 +22,8 @@ import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.key.DynamicKeyContainer;
 import com.xpdustry.distributor.api.key.StandardKeys;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.translation.BundleTranslationSource;
 import com.xpdustry.distributor.api.translation.MessageFormatTranslation;
 import com.xpdustry.distributor.api.translation.TextTranslation;
@@ -148,7 +148,7 @@ public final class MindustryComponentStringBuilderTest {
 
     private MindustryComponentStringBuilder createBuilder(final Locale locale) {
         return new MindustryComponentStringBuilder(
-                MetadataContainer.builder()
+                DynamicKeyContainer.builder()
                         .putConstant(StandardKeys.LOCALE, locale)
                         .build(),
                 new StandardComponentRendererProvider());

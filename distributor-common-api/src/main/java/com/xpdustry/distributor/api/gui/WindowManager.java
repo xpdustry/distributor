@@ -21,13 +21,34 @@ package com.xpdustry.distributor.api.gui;
 import java.util.Collection;
 import mindustry.gen.Player;
 
+/**
+ * A factory creating {@link Window} instances.
+ */
 public interface WindowManager {
 
+    /**
+     * Creates a new window for the given viewer.
+     *
+     * @param viewer the viewer
+     * @return the window
+     */
     Window create(final Player viewer);
 
+    /**
+     * Creates a new window for the given parent window.
+     *
+     * @param parent the parent window
+     * @return the window
+     */
     Window create(final Window parent);
 
+    /**
+     * Returns the active windows.
+     */
     Collection<Window> getActiveWindows();
 
+    /**
+     * Disposes this window manager.
+     */
     default void dispose() {}
 }

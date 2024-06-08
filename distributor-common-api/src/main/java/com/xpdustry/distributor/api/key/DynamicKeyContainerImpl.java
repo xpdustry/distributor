@@ -16,48 +16,56 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.metadata;
+package com.xpdustry.distributor.api.key;
 
-import com.xpdustry.distributor.api.key.Key;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
-final class MetadataContainerImpl implements MetadataContainer {
-
-    static MetadataContainerImpl EMPTY = new MetadataContainerImpl(Map.of());
+final class DynamicKeyContainerImpl implements DynamicKeyContainer {
 
     private final Map<Key<?>, Supplier<?>> metas;
 
-    MetadataContainerImpl(final Map<Key<?>, Supplier<?>> metas) {
+    DynamicKeyContainerImpl(final Map<Key<?>, Supplier<?>> metas) {
         this.metas = Map.copyOf(metas);
     }
 
     @Override
-    public <V> Optional<V> getMetadata(final Key<V> key) {
+    public <V> Optional<V> getOptional(final Key<V> key) {
         final var supplier = metas.get(key);
-        return supplier == null
-                ? Optional.empty()
-                : Optional.ofNullable(key.getToken().getRawType().cast(supplier.get()));
+        if (supplier == null) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(key.getToken().getRawType().cast(supplier.get()));
+        }
     }
 
     @Override
-    public Map<Key<?>, Supplier<?>> getAllMetadata() {
-        return metas;
+    public Set<Key<?>> getKeys() {
+        return Collections.unmodifiableSet(metas.keySet());
     }
 
     @Override
-    public MetadataContainer.Builder toBuilder() {
-        return new Builder(metas);
+    public Builder toBuilder() {
+        return new Builder(this);
     }
 
-    static final class Builder implements MetadataContainer.Builder {
+    static final class Builder implements DynamicKeyContainer.Builder {
 
         private final Map<Key<?>, Supplier<?>> metas;
 
-        Builder(final Map<Key<?>, Supplier<?>> metas) {
-            this.metas = new HashMap<>(metas);
+        Builder(final KeyContainer container) {
+            if (container instanceof DynamicKeyContainerImpl impl) {
+                this.metas = new HashMap<>(impl.metas);
+            } else {
+                this.metas = new HashMap<>();
+                for (final var key : container.getKeys()) {
+                    container.getOptional(key).ifPresent(value -> this.metas.put(key, new StaticSupplier<>(value)));
+                }
+            }
         }
 
         @Override
@@ -67,26 +75,14 @@ final class MetadataContainerImpl implements MetadataContainer {
         }
 
         @Override
-        public <V> Builder putSupplier(Key<V> key, Supplier<V> value) {
+        public <V> Builder putSupplied(final Key<V> key, final Supplier<V> value) {
             this.metas.put(key, value);
             return this;
         }
 
         @Override
-        public Builder removeMetadata(final Key<?> key) {
-            this.metas.remove(key);
-            return this;
-        }
-
-        @Override
-        public Builder putAllMetadata(final MetadataContainer metadata) {
-            this.metas.putAll(metadata.getAllMetadata());
-            return this;
-        }
-
-        @Override
-        public MetadataContainer build() {
-            return new MetadataContainerImpl(metas);
+        public DynamicKeyContainer build() {
+            return new DynamicKeyContainerImpl(metas);
         }
     }
 

@@ -23,9 +23,11 @@ import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
+import com.xpdustry.distributor.api.key.DynamicKeyContainer;
+import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.key.StandardKeys;
-import com.xpdustry.distributor.api.metadata.MetadataContainer;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
+import com.xpdustry.distributor.api.player.MUUID;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Locale;
@@ -42,20 +44,20 @@ import static mindustry.Vars.netServer;
 public final class PlayerAudience implements Audience {
 
     private final Player player;
-    private final MetadataContainer metadata;
+    private final KeyContainer metadata;
 
     PlayerAudience(final Player player) {
         this.player = player;
-        this.metadata = MetadataContainer.builder()
-                .putSupplier(StandardKeys.NAME, () -> player.getInfo().plainLastName())
-                .putSupplier(StandardKeys.DISPLAY_NAME, () -> DistributorProvider.get()
+        this.metadata = DynamicKeyContainer.builder()
+                .putSupplied(StandardKeys.NAME, () -> player.getInfo().plainLastName())
+                .putSupplied(StandardKeys.DISPLAY_NAME, () -> DistributorProvider.get()
                         .getMindustryComponentDecoder()
                         .decode(player.coloredName()))
-                .putConstant(StandardKeys.MUUID, com.xpdustry.distributor.api.player.MUUID.from(player))
-                .putSupplier(
+                .putConstant(StandardKeys.MUUID, MUUID.from(player))
+                .putSupplied(
                         StandardKeys.LOCALE,
                         () -> Locale.forLanguageTag(player.locale().replace('-', '_')))
-                .putSupplier(StandardKeys.TEAM, player::team)
+                .putSupplied(StandardKeys.TEAM, player::team)
                 .build();
     }
 
@@ -140,7 +142,7 @@ public final class PlayerAudience implements Audience {
     }
 
     @Override
-    public MetadataContainer getMetadata() {
+    public KeyContainer getMetadata() {
         return metadata;
     }
 
