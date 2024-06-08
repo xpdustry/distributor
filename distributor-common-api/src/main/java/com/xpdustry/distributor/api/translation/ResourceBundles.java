@@ -65,7 +65,7 @@ public final class ResourceBundles {
             final Class<?> caller, final String directory, final String name) {
         final var path = Paths.get(
                 caller.getProtectionDomain().getCodeSource().getLocation().getPath());
-        if (path.endsWith(".jar")) {
+        if (path.getFileName().toString().endsWith(".jar")) {
             return fromZipDirectory(path, directory, name);
         } else {
             return fromDirectory(path.resolve(directory), name);
