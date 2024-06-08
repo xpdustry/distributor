@@ -44,9 +44,10 @@ public interface AudienceProvider {
 
     /**
      * Returns an {@link Audience} instance representing the player with the given uuid.
+     * <p>
      * <strong>Keep in mind this method is not secure, especially if strict mode is disabled.</strong>
      *
-     * @param uuid the player's {@link String}
+     * @param uuid the player uuid
      * @return the player's audience or an empty audience
      */
     Audience getPlayer(final String uuid);

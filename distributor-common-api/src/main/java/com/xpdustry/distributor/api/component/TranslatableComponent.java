@@ -21,6 +21,7 @@ package com.xpdustry.distributor.api.component;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
+import mindustry.ctype.MappableContent;
 
 /**
  * A component that displays a translatable text.
@@ -102,6 +103,42 @@ public interface TranslatableComponent
      */
     static TranslatableComponent translatable(final String key, final TextStyle textStyle) {
         return new TranslatableComponentImpl(textStyle, key, TranslationArguments.empty());
+    }
+
+    /**
+     * Creates a new translatable component with the specified content.
+     *
+     * @param content the content
+     * @return the translatable component
+     */
+    static TranslatableComponent translatable(final MappableContent content) {
+        return new TranslatableComponentImpl(TextStyle.none(), getKey(content), TranslationArguments.empty());
+    }
+
+    /**
+     * Creates a new translatable component with the specified content and text color.
+     *
+     * @param content the content
+     * @param textColor the text color
+     * @return the translatable component
+     */
+    static TranslatableComponent translatable(final MappableContent content, final ComponentColor textColor) {
+        return new TranslatableComponentImpl(TextStyle.of(textColor), getKey(content), TranslationArguments.empty());
+    }
+
+    /**
+     * Creates a new translatable component with the specified content and text textStyle.
+     *
+     * @param content the content
+     * @param textStyle the text textStyle
+     * @return the translatable component
+     */
+    static TranslatableComponent translatable(final MappableContent content, final TextStyle textStyle) {
+        return new TranslatableComponentImpl(textStyle, getKey(content), TranslationArguments.empty());
+    }
+
+    private static String getKey(final MappableContent content) {
+        return "mindustry." + content.getContentType().name() + "." + content.name + ".name";
     }
 
     /**

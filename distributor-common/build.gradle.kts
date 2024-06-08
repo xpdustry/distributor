@@ -16,9 +16,19 @@ dependencies {
     implementation(projects.distributorCommonApi)
 }
 
+val downloadMindustryBundles by tasks.registering(DownloadMindustryBundles::class) {
+    version = libs.versions.mindustry.get()
+}
+
 tasks.shadowJar {
     val relocationPackage = "com.xpdustry.distributor.common.shadow"
     relocate("io.leangen.geantyref", "$relocationPackage.geantyref")
+
+    from(downloadMindustryBundles) {
+        into("com/xpdustry/distributor/common/bundles/")
+        rename { "mindustry_$it" }
+    }
+
     minimize {
         exclude(dependency(projects.distributorCommonApi))
     }
