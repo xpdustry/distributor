@@ -29,6 +29,7 @@ import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.player.MUUID;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +44,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
     private final IntMap<TeamAudience> teams = new IntMap<>();
 
     public AudienceProviderImpl(final MindustryPlugin plugin, final EventBus bus) {
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < Team.all.length; i++) {
             teams.put(i, new TeamAudience(i));
         }
         bus.subscribe(
@@ -89,7 +90,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     @Override
     public Audience getPlayers() {
-        return Audience.of(players.values());
+        return Audience.of(Collections.unmodifiableCollection(players.values()));
     }
 
     @Override
@@ -101,13 +102,13 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     private final class TeamAudience implements ForwardingAudience {
 
-        private final int team;
+        private final int id;
         private final KeyContainer metadata;
 
-        private TeamAudience(final int team) {
-            this.team = team;
+        private TeamAudience(final int id) {
+            this.id = id;
             this.metadata = DynamicKeyContainer.builder()
-                    .putSupplied(StandardKeys.TEAM, () -> Team.get(team))
+                    .putSupplied(StandardKeys.TEAM, () -> Team.get(id))
                     .build();
         }
 
@@ -121,7 +122,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
             return getPlayers()
                     .asStream()
                     .filter(a -> Objects.equals(
-                            a.getMetadata().getOptional(StandardKeys.TEAM).orElse(null), Team.get(team)))
+                            a.getMetadata().getOptional(StandardKeys.TEAM).orElse(null), Team.get(id)))
                     .toList();
         }
     }
