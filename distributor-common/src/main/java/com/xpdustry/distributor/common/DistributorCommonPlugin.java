@@ -33,7 +33,6 @@ import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.BundleTranslationSource;
 import com.xpdustry.distributor.api.translation.ResourceBundles;
 import com.xpdustry.distributor.api.translation.TranslationSource;
-import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
 import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.common.audience.AudienceProviderImpl;
 import com.xpdustry.distributor.common.component.codec.MindustryDecoderImpl;
@@ -43,6 +42,7 @@ import com.xpdustry.distributor.common.event.EventBusImpl;
 import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
 import com.xpdustry.distributor.common.scheduler.PluginTimeSource;
 import com.xpdustry.distributor.common.service.ServiceManagerImpl;
+import com.xpdustry.distributor.common.translation.ServiceTranslationSource;
 import java.util.Locale;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -50,7 +50,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
     private final ServiceManager services = new ServiceManagerImpl();
-    private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
+    private final TranslationSource source = new ServiceTranslationSource(services);
     private final EventBus events = new EventBusImpl();
     private final PluginScheduler scheduler = new PluginSchedulerImpl(
             PluginTimeSource.mindustry(), Core.app::post, Runtime.getRuntime().availableProcessors());
@@ -77,7 +77,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     }
 
     @Override
-    public TranslationSourceRegistry getGlobalTranslationSource() {
+    public TranslationSource getGlobalTranslationSource() {
         return this.source;
     }
 
@@ -112,13 +112,11 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
         DistributorProvider.set(this);
         this.services.register(
                 this, ComponentRendererProvider.class, new StandardComponentRendererProvider(), Priority.NORMAL);
-        this.getGlobalTranslationSource().register(TranslationSource.router());
-        this.addListener((PluginSchedulerImpl) this.scheduler);
-
+        this.services.register(this, TranslationSource.class, TranslationSource.router(), Priority.HIGH);
         final var mindustry = BundleTranslationSource.create(Locale.ENGLISH);
         mindustry.registerAll(ResourceBundles.fromClasspathDirectory(
                 getClass(), "com/xpdustry/distributor/common/bundles/", "mindustry_bundle"));
-        this.getGlobalTranslationSource().register(mindustry);
+        this.services.register(this, TranslationSource.class, mindustry, Priority.NORMAL);
     }
 
     @Override

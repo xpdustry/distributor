@@ -26,13 +26,13 @@ import com.xpdustry.distributor.api.permission.PlayerPermissionProvider;
 import com.xpdustry.distributor.api.player.PlayerLookup;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.service.ServiceManager;
-import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
+import com.xpdustry.distributor.api.translation.TranslationSource;
 
 public interface Distributor {
 
     ServiceManager getServiceManager();
 
-    TranslationSourceRegistry getGlobalTranslationSource();
+    TranslationSource getGlobalTranslationSource();
 
     EventBus getEventBus();
 
