@@ -35,9 +35,9 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
 
         services.register(this, PlayerPermissionProvider.class, new RankPlayerPermissionProvider(), Priority.HIGH);
         services.register(this, RankProvider.class, new MindustryRankProvider(), Priority.LOW);
-        final var source = new YamlRankPermissionSource(() -> Files.newBufferedReader(this.getConfigFile()));
-        this.addListener(source);
-        services.register(this, RankPermissionSource.class, source);
+        final var yaml = new YamlRankPermissionSource(() -> Files.newBufferedReader(this.getConfigFile()));
+        this.addListener(yaml);
+        services.register(this, RankPermissionSource.class, yaml, Priority.NORMAL);
         services.register(this, RankPermissionSource.class, new MindustryRankPermissionSource(), Priority.LOW);
 
         this.getLogger().info("Initialized distributor permission rank plugin");

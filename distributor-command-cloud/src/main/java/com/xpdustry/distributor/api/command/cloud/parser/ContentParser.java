@@ -41,9 +41,9 @@ import org.incendo.cloud.parser.ParserDescriptor;
  */
 public final class ContentParser<C, T extends MappableContent> implements ArgumentParser<C, T> {
 
+    @SuppressWarnings("unchecked")
     public static <C, T extends MappableContent> ParserDescriptor<C, T> contentParser(final CTypeKey<T> contentType) {
-        return ParserDescriptor.of(
-                new ContentParser<>(contentType),
+        return ParserDescriptor.of(new ContentParser<>(contentType), (Class<T>)
                 contentType.getKey().getToken().getRawType());
     }
 

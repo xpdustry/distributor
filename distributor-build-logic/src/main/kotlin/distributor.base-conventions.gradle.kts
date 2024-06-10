@@ -47,12 +47,7 @@ spotless {
         palantirJavaFormat(libs.versions.palantir.get())
         formatAnnotations()
         importOrder("", "\\#")
-        custom("noWildcardImports") {
-            if (it.contains("*;\n")) {
-                throw Error("No wildcard imports allowed")
-            }
-            it
-        }
+        custom("no-wildcard-imports") { it.apply { if (contains("*;\n")) error("No wildcard imports allowed") } }
         bumpThisNumberIfACustomStepChanges(1)
     }
 }

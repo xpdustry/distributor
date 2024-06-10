@@ -18,43 +18,76 @@
  */
 package com.xpdustry.distributor.common.service;
 
+import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.service.ServiceManager;
+import com.xpdustry.distributor.api.service.ServiceProvider;
+import com.xpdustry.distributor.api.service.ServiceProviderEvent;
 import com.xpdustry.distributor.api.util.Priority;
+import com.xpdustry.distributor.api.util.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ServiceManagerImpl implements ServiceManager {
 
-    private final Map<Class<?>, List<Provider<?>>> services = new HashMap<>();
-    private final Object lock = new Object();
+    private final Map<TypeToken<?>, List<ServiceProvider<?>>> services = new ConcurrentHashMap<>();
+    private final EventBus bus;
 
+    public ServiceManagerImpl(final EventBus bus) {
+        this.bus = bus;
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public <T> void register(
-            final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
-        synchronized (this.lock) {
-            var providers = this.services.get(service);
+    public <T> ServiceProvider<T> register(
+            final MindustryPlugin plugin, final TypeToken<T> service, final T instance, final Priority priority) {
+        final var provider = new ServiceProvider[1];
+        this.services.compute(service, (key, providers) -> {
+            final var created = new ServiceProviderImpl<>(plugin, service, instance, priority);
+            provider[0] = created;
             if (providers == null) {
-                providers = new ArrayList<>();
-            } else {
-                providers = new ArrayList<>(providers);
+                return List.of(created);
             }
-            providers.add(Provider.of(plugin, service, instance, priority));
-            providers.sort(Comparator.comparing(Provider::getPriority));
-            this.services.put(service, List.copyOf(providers));
-        }
+            providers = new ArrayList<>(providers);
+            providers.add(created);
+            providers.sort(Comparator.comparing(ServiceProvider::getPriority));
+            return List.copyOf(providers);
+        });
+        bus.post(new ServiceProviderEvent(provider[0]));
+        return provider[0];
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<Provider<T>> getProviders(final Class<T> service) {
-        synchronized (this.lock) {
-            final Object providers = this.services.get(service);
-            return providers != null ? (List<Provider<T>>) providers : Collections.emptyList();
+    public <T> List<ServiceProvider<T>> getProviders(final TypeToken<T> service) {
+        final Object providers = this.services.getOrDefault(service, Collections.emptyList());
+        return (List<ServiceProvider<T>>) providers;
+    }
+
+    private record ServiceProviderImpl<T>(MindustryPlugin plugin, TypeToken<T> service, T instance, Priority priority)
+            implements ServiceProvider<T> {
+        @Override
+        public MindustryPlugin getPlugin() {
+            return this.plugin;
+        }
+
+        @Override
+        public TypeToken<T> getService() {
+            return this.service;
+        }
+
+        @Override
+        public T getInstance() {
+            return this.instance;
+        }
+
+        @Override
+        public Priority getPriority() {
+            return this.priority;
         }
     }
 }

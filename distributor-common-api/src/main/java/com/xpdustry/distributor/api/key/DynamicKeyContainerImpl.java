@@ -33,13 +33,14 @@ final class DynamicKeyContainerImpl implements DynamicKeyContainer {
         this.metas = Map.copyOf(metas);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <V> Optional<V> getOptional(final Key<V> key) {
         final var supplier = metas.get(key);
         if (supplier == null) {
             return Optional.empty();
         } else {
-            return Optional.ofNullable(key.getToken().getRawType().cast(supplier.get()));
+            return Optional.ofNullable((V) key.getToken().getRawType().cast(supplier.get()));
         }
     }
 

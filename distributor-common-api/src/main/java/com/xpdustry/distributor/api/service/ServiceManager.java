@@ -20,47 +20,34 @@ package com.xpdustry.distributor.api.service;
 
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
+import com.xpdustry.distributor.api.util.TypeToken;
 import java.util.List;
-import java.util.function.Supplier;
-import org.immutables.value.Value;
+import java.util.Optional;
 
 public interface ServiceManager {
 
-    <T> void register(final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority);
-
-    default <T> void register(final MindustryPlugin plugin, final Class<T> service, final T instance) {
-        this.register(plugin, service, instance, Priority.NORMAL);
+    default <T> ServiceProvider<T> register(
+            final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
+        return this.register(plugin, TypeToken.of(service), instance, priority);
     }
 
-    default <T> T provide(final Class<T> service) {
-        return provideOrDefault(service, () -> {
-            throw new IllegalStateException("Expected provider for " + service.getCanonicalName() + ", got nothing.");
-        });
+    <T> ServiceProvider<T> register(
+            final MindustryPlugin plugin, final TypeToken<T> service, final T instance, final Priority priority);
+
+    default <T> Optional<T> provide(final Class<T> service) {
+        return this.provide(TypeToken.of(service));
     }
 
-    default <T> T provideOrDefault(final Class<T> service, final Supplier<T> factory) {
+    default <T> Optional<T> provide(final TypeToken<T> service) {
         final var providers = this.getProviders(service);
-        return providers.isEmpty() ? factory.get() : providers.get(0).getInstance();
+        return providers.isEmpty()
+                ? Optional.empty()
+                : Optional.of(providers.get(0).getInstance());
     }
 
-    <T> List<Provider<T>> getProviders(final Class<T> service);
-
-    @DistributorDataClass
-    @Value.Immutable
-    interface Provider<T> {
-
-        static <T> Provider<T> of(
-                final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
-            return ProviderImpl.of(plugin, service, instance, priority);
-        }
-
-        MindustryPlugin getPlugin();
-
-        Class<T> getService();
-
-        T getInstance();
-
-        Priority getPriority();
+    default <T> List<ServiceProvider<T>> getProviders(final Class<T> service) {
+        return this.getProviders(TypeToken.of(service));
     }
+
+    <T> List<ServiceProvider<T>> getProviders(final TypeToken<T> service);
 }

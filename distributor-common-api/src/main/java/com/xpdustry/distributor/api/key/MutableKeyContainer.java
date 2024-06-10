@@ -46,8 +46,8 @@ public interface MutableKeyContainer extends KeyContainer {
      * Removes the value associated with the given {@code key}.
      *
      * @param key the key
-     * @param <T> the type of the value
+     * @param <V> the type of the value
      * @return the previous value associated with the key, or {@code null} if there was none
      */
-    <T> @Nullable T remove(final Key<T> key);
+    <V> @Nullable V remove(final Key<V> key);
 }

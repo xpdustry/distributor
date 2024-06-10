@@ -21,11 +21,12 @@ package com.xpdustry.distributor.api.util;
 import io.leangen.geantyref.GenericTypeReflector;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 public abstract class TypeToken<T> {
 
     private final Type type;
-    private final Class<T> rawType;
+    private final Class<?> rawType;
 
     public static <T> TypeToken<T> of(final Class<T> type) {
         return new TypeToken<>(type) {};
@@ -35,7 +36,6 @@ public abstract class TypeToken<T> {
         return new TypeToken<>(type) {};
     }
 
-    @SuppressWarnings("unchecked")
     protected TypeToken() {
         // Taken from guava TypeToken
         final var superclass = getClass().getGenericSuperclass();
@@ -43,20 +43,34 @@ public abstract class TypeToken<T> {
             throw new IllegalStateException(String.format("%s isn't parameterized", superclass));
         }
         this.type = parameterized.getActualTypeArguments()[0];
-        this.rawType = (Class<T>) GenericTypeReflector.erase(type);
+        this.rawType = GenericTypeReflector.erase(type);
     }
 
-    @SuppressWarnings("unchecked")
     protected TypeToken(final Type type) {
         this.type = type;
-        this.rawType = (Class<T>) GenericTypeReflector.erase(type);
+        this.rawType = GenericTypeReflector.erase(type);
     }
 
-    public Type getType() {
+    public final Type getType() {
         return this.type;
     }
 
-    public Class<T> getRawType() {
+    public final Class<?> getRawType() {
         return this.rawType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.type);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return (obj == this) || (obj instanceof TypeToken<?> that && Objects.equals(this.type, that.type));
+    }
+
+    @Override
+    public String toString() {
+        return "TypeToken{type=" + type + '}';
     }
 }

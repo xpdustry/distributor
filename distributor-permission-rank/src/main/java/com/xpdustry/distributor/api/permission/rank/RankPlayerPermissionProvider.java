@@ -31,7 +31,7 @@ final class RankPlayerPermissionProvider implements PlayerPermissionProvider {
         return permission -> {
             final var services = DistributorProvider.get().getServiceManager();
             final var permissionSources = services.getProviders(RankPermissionSource.class);
-            final var rankSource = services.provide(RankProvider.class);
+            final var rankSource = services.provide(RankProvider.class).orElseThrow();
             for (final var rank : rankSource.getRanks(player)) {
                 for (final var permissionSource : permissionSources) {
                     final var value = permissionSource

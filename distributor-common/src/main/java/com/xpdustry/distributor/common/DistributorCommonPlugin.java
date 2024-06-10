@@ -34,6 +34,7 @@ import com.xpdustry.distributor.api.translation.BundleTranslationSource;
 import com.xpdustry.distributor.api.translation.ResourceBundles;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import com.xpdustry.distributor.api.translation.TranslationSourceRegistry;
+import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.common.audience.AudienceProviderImpl;
 import com.xpdustry.distributor.common.component.codec.MindustryDecoderImpl;
 import com.xpdustry.distributor.common.component.render.ServiceComponentRendererProvider;
@@ -48,9 +49,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
-    private final ServiceManager services = new ServiceManagerImpl();
     private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private final EventBus events = new EventBusImpl();
+    private final ServiceManager services = new ServiceManagerImpl(events);
     private final PluginScheduler scheduler = new PluginSchedulerImpl(
             PluginTimeSource.mindustry(), Core.app::post, Runtime.getRuntime().availableProcessors());
     private final ComponentRendererProvider componentRendererProvider =
@@ -109,7 +110,8 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     public void onInit() {
         this.getLogger().info("Loading distributor common api");
         DistributorProvider.set(this);
-        this.services.register(this, ComponentRendererProvider.class, new StandardComponentRendererProvider());
+        this.services.register(
+                this, ComponentRendererProvider.class, new StandardComponentRendererProvider(), Priority.NORMAL);
         this.getGlobalTranslationSource().register(TranslationSource.router());
         this.addListener((PluginSchedulerImpl) this.scheduler);
 
@@ -121,9 +123,9 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public void onLoad() {
-        this.lookup = services.provideOrDefault(PlayerLookup.class, PlayerLookup::create);
+        this.lookup = services.provide(PlayerLookup.class).orElseGet(PlayerLookup::create);
         this.permissions =
-                services.provideOrDefault(PlayerPermissionProvider.class, PlayerPermissionProvider::mindustry);
+                services.provide(PlayerPermissionProvider.class).orElseGet(PlayerPermissionProvider::mindustry);
         this.getLogger().info("Loaded distributor common api");
     }
 
