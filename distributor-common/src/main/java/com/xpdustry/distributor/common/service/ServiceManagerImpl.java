@@ -18,11 +18,9 @@
  */
 package com.xpdustry.distributor.common.service;
 
-import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.service.ServiceProvider;
-import com.xpdustry.distributor.api.service.ServiceProviderEvent;
 import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.api.util.TypeToken;
 import java.util.ArrayList;
@@ -35,30 +33,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ServiceManagerImpl implements ServiceManager {
 
     private final Map<TypeToken<?>, List<ServiceProvider<?>>> services = new ConcurrentHashMap<>();
-    private final EventBus bus;
 
-    public ServiceManagerImpl(final EventBus bus) {
-        this.bus = bus;
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public <T> ServiceProvider<T> register(
+    public <T> void register(
             final MindustryPlugin plugin, final TypeToken<T> service, final T instance, final Priority priority) {
-        final var provider = new ServiceProvider[1];
         this.services.compute(service, (key, providers) -> {
-            final var created = new ServiceProviderImpl<>(plugin, service, instance, priority);
-            provider[0] = created;
-            if (providers == null) {
-                return List.of(created);
-            }
+            final var provider = new ServiceProviderImpl<>(plugin, service, instance, priority);
+            if (providers == null) return List.of(provider);
             providers = new ArrayList<>(providers);
-            providers.add(created);
+            providers.add(provider);
             providers.sort(Comparator.comparing(ServiceProvider::getPriority));
             return List.copyOf(providers);
         });
-        bus.post(new ServiceProviderEvent(provider[0]));
-        return provider[0];
     }
 
     @SuppressWarnings("unchecked")

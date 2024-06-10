@@ -49,9 +49,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
+    private final ServiceManager services = new ServiceManagerImpl();
     private final TranslationSourceRegistry source = TranslationSourceRegistry.create();
     private final EventBus events = new EventBusImpl();
-    private final ServiceManager services = new ServiceManagerImpl(events);
     private final PluginScheduler scheduler = new PluginSchedulerImpl(
             PluginTimeSource.mindustry(), Core.app::post, Runtime.getRuntime().availableProcessors());
     private final ComponentRendererProvider componentRendererProvider =

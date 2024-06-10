@@ -133,7 +133,7 @@ final class AnsiComponentStringBuilder implements ComponentStringBuilder {
         for (final var entry : style.getDecorations().entrySet()) {
             final var decoration = entry.getKey();
             if (!entry.getValue()) continue;
-            appendDecorations(decoration);
+            appendDecoration(decoration);
         }
         escape(start);
     }
@@ -143,7 +143,7 @@ final class AnsiComponentStringBuilder implements ComponentStringBuilder {
         builder.append(ANSI_ESCAPE_START).append(0).append(ANSI_ESCAPE_CLOSE);
     }
 
-    private void appendDecorations(final TextDecoration decoration) {
+    private void appendDecoration(final TextDecoration decoration) {
         if (!ANSI_SUPPORTED) return;
         builder.append(ANSI_ESCAPE_START);
         builder.append(

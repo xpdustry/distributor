@@ -26,12 +26,12 @@ import java.util.Optional;
 
 public interface ServiceManager {
 
-    default <T> ServiceProvider<T> register(
+    default <T> void register(
             final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
-        return this.register(plugin, TypeToken.of(service), instance, priority);
+        this.register(plugin, TypeToken.of(service), instance, priority);
     }
 
-    <T> ServiceProvider<T> register(
+    <T> void register(
             final MindustryPlugin plugin, final TypeToken<T> service, final T instance, final Priority priority);
 
     default <T> Optional<T> provide(final Class<T> service) {

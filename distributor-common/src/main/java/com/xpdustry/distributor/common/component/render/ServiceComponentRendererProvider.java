@@ -22,45 +22,22 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentRenderer;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
 import com.xpdustry.distributor.api.service.ServiceManager;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class ServiceComponentRendererProvider implements ComponentRendererProvider {
 
-    private final Map<Class<?>, ComponentRenderer<?>> cache = new HashMap<>();
-    private final Set<Class<?>> resolved = new HashSet<>();
     private final ServiceManager services;
-    private int size = 0;
-    private final Object lock = new Object();
 
     public ServiceComponentRendererProvider(final ServiceManager services) {
         this.services = services;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public @Nullable <T extends Component> ComponentRenderer<T> getRenderer(final T component) {
-        synchronized (lock) {
-            final var providers = services.getProviders(ComponentRendererProvider.class);
-            if (providers.size() != size) {
-                size = providers.size();
-                cache.clear();
-                resolved.clear();
-            }
-            if (!resolved.add(component.getClass())) {
-                return (ComponentRenderer<T>) cache.get(component.getClass());
-            }
-            for (final var provider : providers) {
-                final var renderer = provider.getInstance().getRenderer(component);
-                if (renderer != null) {
-                    cache.put(component.getClass(), renderer);
-                    return renderer;
-                }
-            }
-            return null;
+        for (final var provider : services.getProviders(ComponentRendererProvider.class)) {
+            final var renderer = provider.getInstance().getRenderer(component);
+            if (renderer != null) return renderer;
         }
+        return null;
     }
 }
