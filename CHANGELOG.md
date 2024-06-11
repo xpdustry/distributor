@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.0-rc.1 - 2024-06-11
+
+Inital release candiate.
+Javadocs are mostly done, the wiki is next.
+
 ## v4.0.0-beta.3 - 2024-05-25
 
 Final beta release.
