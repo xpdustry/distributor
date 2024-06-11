@@ -24,14 +24,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/actions/wrapper-validation@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
-          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build Artifact
         run: ./gradlew build release
@@ -48,6 +50,7 @@ jobs:
         with:
           name: distributor-artifacts
           path: build/tmp/release/*.jar
+          if-no-files-found: error
 
       - name: Determine Status
         run: |
@@ -84,7 +87,7 @@ jobs:
 
       - name: Commit Updated Changelog
         if: ${{ env.STATUS == 'release' && github.event_name == 'release' }}
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: ${{ github.event.release.target_commitish }}
           commit_message: Update CHANGELOG
