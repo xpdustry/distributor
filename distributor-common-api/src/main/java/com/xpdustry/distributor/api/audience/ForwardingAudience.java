@@ -38,7 +38,7 @@ public interface ForwardingAudience extends Audience {
     Iterable<Audience> getAudiences();
 
     @Override
-    default Stream<Audience> asStream() {
+    default Stream<Audience> toStream() {
         final var audiences = getAudiences();
         final Stream<Audience> stream;
         if (audiences instanceof Collection<Audience> collection) {
@@ -50,7 +50,7 @@ public interface ForwardingAudience extends Audience {
         } else {
             stream = StreamSupport.stream(audiences.spliterator(), false);
         }
-        return stream.flatMap(Audience::asStream);
+        return stream.flatMap(Audience::toStream);
     }
 
     @Override

@@ -120,7 +120,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
         @Override
         public Iterable<Audience> getAudiences() {
             return getPlayers()
-                    .asStream()
+                    .toStream()
                     .filter(a -> Objects.equals(
                             a.getMetadata().getOptional(StandardKeys.TEAM).orElse(null), Team.get(id)))
                     .toList();

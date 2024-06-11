@@ -30,7 +30,7 @@ enum EmptyAudience implements Audience {
     }
 
     @Override
-    public Stream<Audience> asStream() {
+    public Stream<Audience> toStream() {
         return Stream.empty();
     }
 }

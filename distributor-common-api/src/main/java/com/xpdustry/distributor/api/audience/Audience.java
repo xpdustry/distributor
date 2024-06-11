@@ -165,7 +165,7 @@ public interface Audience {
     /**
      * Returns the audiences this audience forwards to as a stream.
      */
-    default Stream<Audience> asStream() {
+    default Stream<Audience> toStream() {
         return Stream.of(this);
     }
 
