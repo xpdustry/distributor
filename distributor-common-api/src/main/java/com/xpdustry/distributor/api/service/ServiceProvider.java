@@ -22,6 +22,11 @@ import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.api.util.TypeToken;
 
+/**
+ * A service provider, containing information about a service implementation.
+ *
+ * @param <T> the type of the service
+ */
 public interface ServiceProvider<T> {
 
     MindustryPlugin getPlugin();

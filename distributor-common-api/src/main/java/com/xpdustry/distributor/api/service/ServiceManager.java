@@ -24,20 +24,55 @@ import com.xpdustry.distributor.api.util.TypeToken;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * A service manager that allows plugins to share functionalities painlessly.
+ */
 public interface ServiceManager {
 
+    /**
+     * Registers the {@code instance} as one of the available implementations for the {@code service}.
+     *
+     * @param plugin the plugin
+     * @param service the service
+     * @param instance the instance
+     * @param priority the priority
+     * @param <T> the type of the service
+     */
     default <T> void register(
             final MindustryPlugin plugin, final Class<T> service, final T instance, final Priority priority) {
         this.register(plugin, TypeToken.of(service), instance, priority);
     }
 
+    /**
+     * Registers the {@code instance} as one of the available implementations for the {@code service}.
+     *
+     * @param plugin the plugin
+     * @param service the service
+     * @param instance the instance
+     * @param priority the priority
+     * @param <T> the type of the service
+     */
     <T> void register(
             final MindustryPlugin plugin, final TypeToken<T> service, final T instance, final Priority priority);
 
+    /**
+     * Provides a service of the given type.
+     *
+     * @param service the service
+     * @param <T> the type of the service
+     * @return an implementation of the service or an empty optional if no implementation is found
+     */
     default <T> Optional<T> provide(final Class<T> service) {
         return this.provide(TypeToken.of(service));
     }
 
+    /**
+     * Provides an instance of the given {@code service}.
+     *
+     * @param service the service
+     * @param <T> the type of the service
+     * @return an implementation of the service or an empty optional if no implementation is found
+     */
     default <T> Optional<T> provide(final TypeToken<T> service) {
         final var providers = this.getProviders(service);
         return providers.isEmpty()
@@ -45,9 +80,23 @@ public interface ServiceManager {
                 : Optional.of(providers.get(0).getInstance());
     }
 
+    /**
+     * Returns all providers of the given service.
+     *
+     * @param service the service
+     * @param <T> the type of the service
+     * @return the providers
+     */
     default <T> List<ServiceProvider<T>> getProviders(final Class<T> service) {
         return this.getProviders(TypeToken.of(service));
     }
 
+    /**
+     * Returns all providers of the given service.
+     *
+     * @param service the service
+     * @param <T> the type of the service
+     * @return the providers
+     */
     <T> List<ServiceProvider<T>> getProviders(final TypeToken<T> service);
 }
