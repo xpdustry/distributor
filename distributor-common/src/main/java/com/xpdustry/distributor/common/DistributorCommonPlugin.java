@@ -110,6 +110,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     public void onInit() {
         this.getLogger().info("Loading distributor common api");
         DistributorProvider.set(this);
+        this.addListener((PluginSchedulerImpl) this.scheduler);
         this.services.register(
                 this, ComponentRendererProvider.class, new StandardComponentRendererProvider(), Priority.NORMAL);
         this.services.register(this, TranslationSource.class, TranslationSource.router(), Priority.HIGH);
