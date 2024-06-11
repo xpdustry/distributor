@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v4.0.0-rc.1 - 2024-06-11
 
-Inital release candiate.
+Initial release candidate.
 Javadocs are mostly done, the wiki is next.
 
 ## v4.0.0-beta.3 - 2024-05-25
