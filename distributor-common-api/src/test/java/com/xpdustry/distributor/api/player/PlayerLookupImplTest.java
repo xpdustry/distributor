@@ -34,7 +34,7 @@ public final class PlayerLookupImplTest {
     private static int counter = 1;
 
     private static final List<Player> PLAYERS = new ArrayList<>();
-    private static final Player PLAYER_1 = createPlayer("deez");
+    private static final Player PLAYER_1 = createPlayer("deez", "AAAAAAAAAAAAAAAAAAAAAA==");
     private static final Player PLAYER_2 = createPlayer("deez nuts");
     private static final Player PLAYER_3 = createPlayer("phinner");
     private static final Player PLAYER_4 = createPlayer("[green]zeta");
@@ -125,9 +125,13 @@ public final class PlayerLookupImplTest {
     private static Player createPlayer(final String name) {
         final var uuid = new byte[16];
         RANDOM.nextBytes(uuid);
+        return createPlayer(name, Base64.getEncoder().encodeToString(uuid));
+    }
+
+    private static Player createPlayer(final String name, final String uuid) {
         final var player = Mockito.mock(Player.class);
         Mockito.when(player.name()).thenReturn(name);
-        Mockito.when(player.uuid()).thenReturn(Base64.getEncoder().encodeToString(uuid));
+        Mockito.when(player.uuid()).thenReturn(uuid);
         Mockito.when(player.id()).thenReturn(counter++);
         Mockito.when(player.toString()).thenReturn(name);
         PLAYERS.add(player);
