@@ -9,6 +9,7 @@ mindustry = "v146"
 
 # logging
 slf4j = "2.0.13"
+slf4md = "1.0.0"
 
 # command
 cloud = "2.0.0-rc.1"
@@ -50,7 +51,6 @@ arc-backend-headless = { module = "com.github.Anuken.Arc:backend-headless", vers
 
 # logging
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-from-jul = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # command

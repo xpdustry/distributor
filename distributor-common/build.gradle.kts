@@ -9,7 +9,6 @@ distributorModule {
     display = "DistributorCommon"
     main = "com.xpdustry.distributor.common.DistributorCommonPlugin"
     description = "Core classes of distributor."
-    dependencies = listOf("distributor-logging")
 }
 
 dependencies {
@@ -32,8 +31,4 @@ tasks.shadowJar {
     minimize {
         exclude(dependency(projects.distributorCommonApi))
     }
-}
-
-tasks.runMindustryServer {
-    mods.from(projects.distributorLoggingSimple.shadowJar)
 }

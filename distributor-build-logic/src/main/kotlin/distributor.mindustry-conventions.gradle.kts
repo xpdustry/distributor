@@ -1,5 +1,6 @@
 import fr.xpdustry.toxopid.dsl.mindustryDependencies
 import fr.xpdustry.toxopid.spec.ModMetadata
+import fr.xpdustry.toxopid.task.GithubArtifactDownload
 
 plugins {
     id("net.kyori.indra")
@@ -22,8 +23,15 @@ tasks.runMindustryClient {
     mods.setFrom()
 }
 
+val downloadSlf4md by tasks.registering(GithubArtifactDownload::class) {
+    user = "xpdustry"
+    repo = "slf4md"
+    name = "slf4md-simple.jar"
+    version = libs.versions.slf4md.map { "v$it" }
+}
+
 tasks.runMindustryServer {
-    mods.from(tasks.shadowJar)
+    mods.from(tasks.shadowJar, downloadSlf4md)
 }
 
 tasks.shadowJar {
@@ -40,7 +48,7 @@ tasks.shadowJar {
                 main = extension.main.get(),
                 java = true,
                 hidden = true,
-                dependencies = extension.dependencies.get(),
+                dependencies = extension.dependencies.get().toMutableList().apply { add("slf4md") },
             )
 
         val temp = temporaryDir.resolve("plugin.json")
