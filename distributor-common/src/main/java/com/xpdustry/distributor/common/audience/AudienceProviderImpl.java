@@ -51,7 +51,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
                 EventType.PlayerJoin.class,
                 Priority.HIGHEST,
                 plugin,
-                event -> players.put(MUUID.from(event.player), new PlayerAudience(event.player)));
+                event -> players.put(MUUID.from(event.player), new PlayerAudienceImpl(event.player)));
         bus.subscribe(
                 EventType.PlayerLeave.class,
                 Priority.LOWEST,
@@ -80,7 +80,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
     @Override
     public Audience getPlayer(final Player player) {
         final var audience = players.get(MUUID.from(player));
-        return audience != null ? audience : new PlayerAudience(player);
+        return audience != null ? audience : new PlayerAudienceImpl(player);
     }
 
     @Override

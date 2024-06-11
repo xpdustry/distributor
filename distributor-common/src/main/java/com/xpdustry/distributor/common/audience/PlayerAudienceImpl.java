@@ -20,6 +20,7 @@ package com.xpdustry.distributor.common.audience;
 
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
+import com.xpdustry.distributor.api.audience.PlayerAudience;
 import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
@@ -35,12 +36,12 @@ import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.net.NetConnection;
 
-public final class PlayerAudience implements Audience {
+public final class PlayerAudienceImpl implements PlayerAudience {
 
     private final Player player;
     private final KeyContainer metadata;
 
-    PlayerAudience(final Player player) {
+    PlayerAudienceImpl(final Player player) {
         this.player = player;
         this.metadata = DynamicKeyContainer.builder()
                 .putSupplied(StandardKeys.NAME, () -> player.getInfo().plainLastName())
@@ -63,7 +64,7 @@ public final class PlayerAudience implements Audience {
     @Override
     public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
         if (sender instanceof PlayerAudience other) {
-            player.sendMessage(render(component), other.player, render(unformatted));
+            player.sendMessage(render(component), other.getPlayer(), render(unformatted));
         } else {
             player.sendMessage(render(component));
         }
@@ -117,6 +118,11 @@ public final class PlayerAudience implements Audience {
     @Override
     public PermissionContainer getPermissions() {
         return DistributorProvider.get().getPlayerPermissionProvider().getPermissions(this.player);
+    }
+
+    @Override
+    public Player getPlayer() {
+        return player;
     }
 
     private String render(final ComponentLike component) {
