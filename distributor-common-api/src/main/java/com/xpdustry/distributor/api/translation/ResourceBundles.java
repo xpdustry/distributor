@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -63,8 +63,11 @@ public final class ResourceBundles {
      */
     public static List<ResourceBundle> fromClasspathDirectory(
             final Class<?> caller, final String directory, final String name) {
-        final var path = Paths.get(
-                caller.getProtectionDomain().getCodeSource().getLocation().getPath());
+        final var path = new File(caller.getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .getPath())
+                .toPath();
         if (path.getFileName().toString().endsWith(".jar")) {
             return fromZipDirectory(path, directory, name);
         } else {
