@@ -25,6 +25,7 @@ import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class MindustryDecoderImpl implements ComponentDecoder<String> {
@@ -36,7 +37,7 @@ public final class MindustryDecoderImpl implements ComponentDecoder<String> {
 
     private Component decode(final String input, final IndexHolder holder, final @Nullable ComponentColor previous) {
         final var list = ListComponent.components();
-        list.setTextColor(previous);
+        list.setTextStyle(TextStyle.of(previous));
         while (holder.index < input.length()) {
             final var start = input.indexOf('[', holder.index);
             if (start == -1) {

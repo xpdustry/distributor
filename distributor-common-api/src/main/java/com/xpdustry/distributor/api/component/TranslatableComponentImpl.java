@@ -20,6 +20,7 @@ package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
+import java.util.Objects;
 
 record TranslatableComponentImpl(TextStyle textStyle, String key, TranslationArguments parameters)
         implements BuildableComponent<TranslatableComponent, TranslatableComponent.Builder>, TranslatableComponent {
@@ -44,9 +45,9 @@ record TranslatableComponentImpl(TextStyle textStyle, String key, TranslationArg
         return new Builder(this);
     }
 
-    static final class Builder extends AbstractComponentBuilder<TranslatableComponent, TranslatableComponent.Builder>
-            implements TranslatableComponent.Builder {
+    static final class Builder implements TranslatableComponent.Builder {
 
+        private TextStyle textStyle = TextStyle.of();
         private String key;
         private TranslationArguments parameters;
 
@@ -56,9 +57,15 @@ record TranslatableComponentImpl(TextStyle textStyle, String key, TranslationArg
         }
 
         public Builder(final TranslatableComponent component) {
-            super(component);
+            this.textStyle = component.getTextStyle();
             this.key = component.getKey();
             this.parameters = component.getParameters();
+        }
+
+        @Override
+        public Builder setTextStyle(final TextStyle textStyle) {
+            this.textStyle = Objects.requireNonNull(textStyle);
+            return this;
         }
 
         @Override
@@ -75,7 +82,7 @@ record TranslatableComponentImpl(TextStyle textStyle, String key, TranslationArg
 
         @Override
         public TranslatableComponent build() {
-            return new TranslatableComponentImpl(textStyle.build(), this.key, this.parameters);
+            return new TranslatableComponentImpl(textStyle, this.key, this.parameters);
         }
     }
 }

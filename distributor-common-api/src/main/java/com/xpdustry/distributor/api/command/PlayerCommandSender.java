@@ -51,10 +51,7 @@ record PlayerCommandSender(Player player) implements CommandSender {
 
     @Override
     public void error(final Component component) {
-        getAudience()
-                .sendMessage(ListComponent.components()
-                        .setTextColor(ComponentColor.RED)
-                        .append(component));
+        getAudience().sendMessage(ListComponent.components(ComponentColor.RED, component));
     }
 
     @Override

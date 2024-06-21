@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.audience;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
-import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.Component;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
@@ -54,28 +54,28 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void sendMessage(final ComponentLike component) {
+    default void sendMessage(final Component component) {
         for (final var audience : getAudiences()) {
             audience.sendMessage(component);
         }
     }
 
     @Override
-    default void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
+    default void sendMessage(final Component component, final Component unformatted, final Audience sender) {
         for (final var audience : getAudiences()) {
             audience.sendMessage(component, unformatted, sender);
         }
     }
 
     @Override
-    default void sendWarning(final ComponentLike component) {
+    default void sendWarning(final Component component) {
         for (final var audience : getAudiences()) {
             audience.sendWarning(component);
         }
     }
 
     @Override
-    default void showHUDText(final ComponentLike component) {
+    default void showHUDText(final Component component) {
         for (final var audience : getAudiences()) {
             audience.showHUDText(component);
         }
@@ -89,14 +89,14 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void sendNotification(final ComponentLike component, final char icon) {
+    default void sendNotification(final Component component, final char icon) {
         for (final var audience : getAudiences()) {
             audience.sendNotification(component, icon);
         }
     }
 
     @Override
-    default void sendAnnouncement(final ComponentLike component) {
+    default void sendAnnouncement(final Component component) {
         for (final var audience : getAudiences()) {
             audience.sendAnnouncement(component);
         }
@@ -110,14 +110,14 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {
+    default void showLabel(final Component label, final float x, final float y, final Duration duration) {
         for (final var audience : getAudiences()) {
             audience.showLabel(label, x, y, duration);
         }
     }
 
     @Override
-    default void kick(final ComponentLike reason, final Duration duration) {
+    default void kick(final Component reason, final Duration duration) {
         for (final var audience : getAudiences()) {
             audience.kick(reason, duration);
         }

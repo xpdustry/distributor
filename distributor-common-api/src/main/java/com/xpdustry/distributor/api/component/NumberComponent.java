@@ -40,7 +40,7 @@ public interface NumberComponent extends BuildableComponent<NumberComponent, Num
      * @return the number component
      */
     static NumberComponent number(final Number number) {
-        return new NumberComponentImpl(TextStyle.none(), number);
+        return new NumberComponentImpl(TextStyle.of(), number);
     }
 
     /**

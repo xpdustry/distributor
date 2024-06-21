@@ -46,7 +46,7 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
      * @return the temporal component
      */
     static TemporalComponent temporal(final Temporal temporal, final TemporalStyle temporalStyle) {
-        return new TemporalComponentImpl(TextStyle.none(), temporal, temporalStyle);
+        return new TemporalComponentImpl(TextStyle.of(), temporal, temporalStyle);
     }
 
     /**
@@ -82,7 +82,7 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
      * @return the temporal component
      */
     static TemporalComponent temporal(final Temporal temporal) {
-        return new TemporalComponentImpl(TextStyle.none(), temporal, TemporalStyle.none());
+        return new TemporalComponentImpl(TextStyle.of(), temporal, TemporalStyle.none());
     }
 
     /**

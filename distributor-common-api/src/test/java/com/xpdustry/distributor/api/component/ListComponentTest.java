@@ -18,13 +18,17 @@
  */
 package com.xpdustry.distributor.api.component;
 
-/**
- * An object that can be converted to a {@link Component}.
- */
-public interface ComponentLike {
+import org.junit.jupiter.api.Test;
 
-    /**
-     * Converts this object to a {@link Component}.
-     */
-    Component asComponent();
+import static com.xpdustry.distributor.api.component.ListComponent.components;
+import static com.xpdustry.distributor.api.component.TextComponent.text;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public final class ListComponentTest {
+
+    @Test
+    void test_compress_no_style() {
+        final var component = components(components(components(text("Hello")), components(text("World")), text("!")));
+        assertThat(component.compress()).isEqualTo(components(text("Hello"), text("World"), text("!")));
+    }
 }

@@ -21,7 +21,7 @@ package com.xpdustry.distributor.common.audience;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.PlayerAudience;
-import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
 import com.xpdustry.distributor.api.key.KeyContainer;
@@ -57,12 +57,12 @@ public final class PlayerAudienceImpl implements PlayerAudience {
     }
 
     @Override
-    public void sendMessage(final ComponentLike component) {
+    public void sendMessage(final Component component) {
         player.sendMessage(render(component));
     }
 
     @Override
-    public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
+    public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
         if (sender instanceof PlayerAudience other) {
             player.sendMessage(render(component), other.getPlayer(), render(unformatted));
         } else {
@@ -71,12 +71,12 @@ public final class PlayerAudienceImpl implements PlayerAudience {
     }
 
     @Override
-    public void sendWarning(final ComponentLike component) {
+    public void sendWarning(final Component component) {
         Call.announce(getConnection(), render(component));
     }
 
     @Override
-    public void showHUDText(final ComponentLike component) {
+    public void showHUDText(final Component component) {
         Call.setHudText(getConnection(), render(component));
     }
 
@@ -86,12 +86,12 @@ public final class PlayerAudienceImpl implements PlayerAudience {
     }
 
     @Override
-    public void sendNotification(final ComponentLike component, final char icon) {
+    public void sendNotification(final Component component, final char icon) {
         Call.warningToast(getConnection(), icon, render(component));
     }
 
     @Override
-    public void sendAnnouncement(final ComponentLike component) {
+    public void sendAnnouncement(final Component component) {
         Call.infoMessage(getConnection(), render(component));
     }
 
@@ -101,12 +101,12 @@ public final class PlayerAudienceImpl implements PlayerAudience {
     }
 
     @Override
-    public void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {
+    public void showLabel(final Component label, final float x, final float y, final Duration duration) {
         Call.label(getConnection(), render(label), duration.toMillis() / 1000F, x, y);
     }
 
     @Override
-    public void kick(final ComponentLike reason, final Duration duration) {
+    public void kick(final Component reason, final Duration duration) {
         getConnection().kick(render(reason), duration.toMillis());
     }
 
@@ -125,10 +125,8 @@ public final class PlayerAudienceImpl implements PlayerAudience {
         return player;
     }
 
-    private String render(final ComponentLike component) {
-        return ComponentStringBuilder.mindustry(getMetadata())
-                .append(component.asComponent())
-                .toString();
+    private String render(final Component component) {
+        return ComponentStringBuilder.mindustry(getMetadata()).append(component).toString();
     }
 
     private NetConnection getConnection() {

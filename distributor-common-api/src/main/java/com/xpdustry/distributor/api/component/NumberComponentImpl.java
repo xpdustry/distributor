@@ -39,16 +39,22 @@ record NumberComponentImpl(TextStyle textStyle, Number number) implements Number
         return new Builder(this);
     }
 
-    public static class Builder extends AbstractComponentBuilder<NumberComponent, NumberComponent.Builder>
-            implements NumberComponent.Builder {
+    public static class Builder implements NumberComponent.Builder {
 
+        private TextStyle textStyle = TextStyle.of();
         private @Nullable Number number = null;
 
         public Builder() {}
 
         public Builder(final NumberComponent component) {
-            super(component);
+            this.textStyle = component.getTextStyle();
             this.number = component.getNumber();
+        }
+
+        @Override
+        public Builder setTextStyle(final TextStyle textStyle) {
+            this.textStyle = Objects.requireNonNull(textStyle);
+            return this;
         }
 
         @Override
@@ -59,7 +65,7 @@ record NumberComponentImpl(TextStyle textStyle, Number number) implements Number
 
         @Override
         public NumberComponent build() {
-            return new NumberComponentImpl(textStyle.build(), Objects.requireNonNull(number));
+            return new NumberComponentImpl(textStyle, Objects.requireNonNull(number));
         }
     }
 }

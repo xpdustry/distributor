@@ -20,7 +20,7 @@ package com.xpdustry.distributor.common.audience;
 
 import arc.util.Log;
 import com.xpdustry.distributor.api.audience.Audience;
-import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
@@ -40,17 +40,17 @@ public enum ServerAudience implements Audience {
             .build();
 
     @Override
-    public void sendMessage(final ComponentLike component) {
+    public void sendMessage(final Component component) {
         Log.info(render(component));
     }
 
     @Override
-    public void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {
+    public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
         Log.info(render(component));
     }
 
     @Override
-    public void sendWarning(final ComponentLike component) {
+    public void sendWarning(final Component component) {
         Log.warn(render(component));
     }
 
@@ -64,9 +64,7 @@ public enum ServerAudience implements Audience {
         return PermissionContainer.all();
     }
 
-    private String render(final ComponentLike component) {
-        return ComponentStringBuilder.ansi(getMetadata())
-                .append(component.asComponent())
-                .toString();
+    private String render(final Component component) {
+        return ComponentStringBuilder.ansi(getMetadata()).append(component).toString();
     }
 }

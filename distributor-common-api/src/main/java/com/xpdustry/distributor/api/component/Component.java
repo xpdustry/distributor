@@ -24,7 +24,7 @@ import com.xpdustry.distributor.api.component.style.TextStyle;
  * A component is an immutable object that represents something that can be displayed to a receiver.
  * This can be a simple text, locale specific objects like dates or numbers or even translations.
  */
-public interface Component extends ComponentLike {
+public interface Component {
 
     /**
      * Returns the text textStyle of this component.
@@ -32,26 +32,11 @@ public interface Component extends ComponentLike {
     TextStyle getTextStyle();
 
     /**
-     * Appends the given component to this component.
-     *
-     * @param component the component to append
-     * @return the concatenated component
-     */
-    default ListComponent append(final ComponentLike component) {
-        return ListComponent.components().append(this).append(component).build();
-    }
-
-    /**
      * Compresses this component. Removing empty subcommands and/or merging subcomponents if necessary.
      *
      * @return the compressed component
      */
     default Component compress() {
-        return this;
-    }
-
-    @Override
-    default Component asComponent() {
         return this;
     }
 }

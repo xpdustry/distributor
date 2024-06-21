@@ -19,12 +19,13 @@
 package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.TextStyle;
+import java.util.Objects;
 
 record TextComponentImpl(TextStyle textStyle, String content) implements TextComponent {
 
-    static final TextComponent EMPTY = new TextComponentImpl(TextStyle.none(), "");
-    static final TextComponent SPACE = new TextComponentImpl(TextStyle.none(), " ");
-    static final TextComponent NEWLINE = new TextComponentImpl(TextStyle.none(), "\n");
+    static final TextComponent EMPTY = new TextComponentImpl(TextStyle.of(), "");
+    static final TextComponent SPACE = new TextComponentImpl(TextStyle.of(), " ");
+    static final TextComponent NEWLINE = new TextComponentImpl(TextStyle.of(), "\n");
 
     @Override
     public String getContent() {
@@ -41,9 +42,9 @@ record TextComponentImpl(TextStyle textStyle, String content) implements TextCom
         return new Builder(this);
     }
 
-    static final class Builder extends AbstractComponentBuilder<TextComponent, TextComponent.Builder>
-            implements TextComponent.Builder {
+    static final class Builder implements TextComponent.Builder {
 
+        private TextStyle textStyle = TextStyle.of();
         private String content = "";
 
         public Builder() {
@@ -51,8 +52,14 @@ record TextComponentImpl(TextStyle textStyle, String content) implements TextCom
         }
 
         public Builder(final TextComponent component) {
-            super(component);
+            this.textStyle = component.getTextStyle();
             this.content = component.getContent();
+        }
+
+        @Override
+        public Builder setTextStyle(final TextStyle textStyle) {
+            this.textStyle = Objects.requireNonNull(textStyle);
+            return this;
         }
 
         @Override
@@ -63,7 +70,7 @@ record TextComponentImpl(TextStyle textStyle, String content) implements TextCom
 
         @Override
         public TextComponent build() {
-            return new TextComponentImpl(textStyle.build(), content);
+            return new TextComponentImpl(textStyle, content);
         }
     }
 }

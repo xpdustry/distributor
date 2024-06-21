@@ -73,7 +73,7 @@ final class AnsiComponentStringBuilder implements ComponentStringBuilder {
             final var popped = styles.pop();
             final var head = styles.peek();
             if (!Objects.equals(popped, head)) {
-                appendStyle(head == null ? TextStyle.none() : head);
+                appendStyle(head == null ? TextStyle.of() : head);
             }
         }
 

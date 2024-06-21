@@ -20,7 +20,9 @@ package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 record ListComponentImpl(TextStyle textStyle, List<Component> components) implements ListComponent {
 
@@ -44,13 +46,13 @@ record ListComponentImpl(TextStyle textStyle, List<Component> components) implem
         return new Builder(this);
     }
 
-    static final class Builder extends AbstractComponentBuilder<ListComponent, ListComponent.Builder>
-            implements ListComponent.Builder {
+    static final class Builder implements ListComponent.Builder {
 
+        private TextStyle textStyle = TextStyle.of();
         private final List<Component> components;
 
         Builder(final ListComponent component) {
-            super(component);
+            this.textStyle = component.getTextStyle();
             this.components = new ArrayList<>(component.getComponents());
         }
 
@@ -59,23 +61,33 @@ record ListComponentImpl(TextStyle textStyle, List<Component> components) implem
         }
 
         @Override
-        public ListComponent.Builder setComponents(final List<Component> components) {
+        public Builder setTextStyle(final TextStyle textStyle) {
+            this.textStyle = Objects.requireNonNull(textStyle);
+            return this;
+        }
+
+        @Override
+        public Builder setComponents(final List<Component> components) {
             this.components.clear();
             this.components.addAll(components);
             return this;
         }
 
         @Override
-        public ListComponent.Builder append(final ComponentLike... components) {
-            for (final var component : components) {
-                this.components.add(component.asComponent());
-            }
+        public Builder append(final Component component) {
+            this.components.add(component);
+            return this;
+        }
+
+        @Override
+        public Builder append(final Collection<Component> components) {
+            this.components.addAll(components);
             return this;
         }
 
         @Override
         public ListComponentImpl build() {
-            return new ListComponentImpl(textStyle.build(), components);
+            return new ListComponentImpl(textStyle, components);
         }
     }
 }

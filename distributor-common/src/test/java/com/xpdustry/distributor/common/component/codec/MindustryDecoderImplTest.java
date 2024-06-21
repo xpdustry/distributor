@@ -37,21 +37,15 @@ public final class MindustryDecoderImplTest {
     @Test
     void test_decode_color() {
         final var decoder = new MindustryDecoderImpl();
-        final var component = text().setContent("Hello, World!")
-                .setTextColor(ComponentColor.BLACK)
-                .build();
-        assertEquals(component, decoder.decode("[#000000]Hello, World!"));
+        final var component = text("Hello, World!", ComponentColor.RED);
+        assertEquals(component, decoder.decode("[#FF0000]Hello, World!"));
     }
 
     @Test
     void test_decode_nested() {
         final var decoder = new MindustryDecoderImpl();
-        final var component = ListComponent.components()
-                .setTextColor(ComponentColor.RED)
-                .append(text("Hello, "))
-                .append(text("World", ComponentColor.GREEN))
-                .append(text("!"))
-                .build();
+        final var component = ListComponent.components(
+                ComponentColor.RED, text("Hello, "), text("World", ComponentColor.GREEN), text("!"));
         assertEquals(component, decoder.decode("[#FF0000]Hello, [#00FF00]World[]![]"));
     }
 }

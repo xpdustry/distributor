@@ -18,7 +18,11 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
+import arc.graphics.Color;
 import arc.math.Mathf;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.component.style.TextStyle;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
 import com.xpdustry.distributor.api.gui.Window;
@@ -27,13 +31,19 @@ import com.xpdustry.distributor.api.key.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import mindustry.gen.Iconc;
 
+import static com.xpdustry.distributor.api.component.TextComponent.empty;
+import static com.xpdustry.distributor.api.component.TextComponent.text;
+
 public final class ListTransformer<E> implements Transformer<MenuPane> {
 
-    private Function<Context<MenuPane>, List<E>> provider = context -> List.of();
-    private Function<E, String> renderer = Object::toString;
+    private static final TextStyle DISABLED = TextStyle.of(ComponentColor.from(Color.darkGray));
+
+    private Function<Context<MenuPane>, List<E>> provider = ctx -> List.of();
+    private BiFunction<Context<MenuPane>, E, Component> renderer = (ctx, e) -> text(e.toString());
     private BiAction<E> choiceAction = BiAction.from(Action.none());
     private int height = 5;
     private int width = 1;
@@ -50,11 +60,15 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
         return this;
     }
 
-    public Function<E, String> getRenderer() {
+    public BiFunction<Context<MenuPane>, E, Component> getRenderer() {
         return renderer;
     }
 
-    public ListTransformer<E> setRenderer(final Function<E, String> renderer) {
+    public ListTransformer<E> setRenderer(final Function<E, Component> renderer) {
+        return setRenderer((ctx, e) -> renderer.apply(e));
+    }
+
+    public ListTransformer<E> setRenderer(final BiFunction<Context<MenuPane>, E, Component> renderer) {
         this.renderer = Objects.requireNonNull(renderer);
         return this;
     }
@@ -133,9 +147,9 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
                 cursor = (page * getPageSize()) + (i * width) + j;
                 if (cursor < elements.size()) {
                     final var element = elements.get(cursor);
-                    options.add(MenuOption.of(renderer.apply(element), ctx -> choiceAction.act(ctx, element)));
+                    options.add(MenuOption.of(renderer.apply(context, element), ctx -> choiceAction.act(ctx, element)));
                 } else if (this.fillEmptySpace) {
-                    options.add(MenuOption.of("", Action.none()));
+                    options.add(MenuOption.of(empty(), Action.none()));
                 } else {
                     break;
                 }
@@ -156,7 +170,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
                                     page > 0,
                                     Iconc.left,
                                     Action.with(pageKey, page - 1).then(Window::show)),
-                            MenuOption.of("page " + Mathf.clamp(page + 1, 0, pages) + " / " + pages, Action.none()),
+                            MenuOption.of(Mathf.clamp(page + 1, 0, pages) + " / " + pages, Action.none()),
                             createConditionalOption(
                                     cursor + 1 < elements.size(),
                                     Iconc.right,
@@ -165,7 +179,6 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
     }
 
     private MenuOption createConditionalOption(final boolean condition, final char icon, final Action action) {
-        return MenuOption.of(
-                condition ? String.valueOf(icon) : "[darkgray]" + icon, condition ? action : Action.none());
+        return MenuOption.of(text(icon, condition ? TextStyle.of() : DISABLED), condition ? action : Action.none());
     }
 }

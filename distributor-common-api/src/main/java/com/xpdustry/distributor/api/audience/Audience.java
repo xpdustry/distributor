@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.audience;
 
-import com.xpdustry.distributor.api.component.ComponentLike;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.net.URI;
@@ -78,7 +78,7 @@ public interface Audience {
      *
      * @param component the message
      */
-    default void sendMessage(final ComponentLike component) {}
+    default void sendMessage(final Component component) {}
 
     /**
      * Sends a message to this audience.
@@ -87,21 +87,21 @@ public interface Audience {
      * @param unformatted the unformatted message
      * @param sender the sender
      */
-    default void sendMessage(final ComponentLike component, final ComponentLike unformatted, final Audience sender) {}
+    default void sendMessage(final Component component, final Component unformatted, final Audience sender) {}
 
     /**
      * Sends a warning to this audience.
      *
      * @param component the warning
      */
-    default void sendWarning(final ComponentLike component) {}
+    default void sendWarning(final Component component) {}
 
     /**
      * Shows a HUD text to this audience.
      *
      * @param component the HUD text
      */
-    default void showHUDText(final ComponentLike component) {}
+    default void showHUDText(final Component component) {}
 
     /**
      * Hides the HUD text of this audience.
@@ -114,14 +114,14 @@ public interface Audience {
      * @param component the notification
      * @param icon the icon
      */
-    default void sendNotification(final ComponentLike component, final char icon) {}
+    default void sendNotification(final Component component, final char icon) {}
 
     /**
      * Sends an announcement to this audience.
      *
      * @param component the announcement
      */
-    default void sendAnnouncement(final ComponentLike component) {}
+    default void sendAnnouncement(final Component component) {}
 
     /**
      * Sends an uri to open to this audience.
@@ -138,7 +138,7 @@ public interface Audience {
      * @param y the y position in world coordinates
      * @param duration the duration
      */
-    default void showLabel(final ComponentLike label, final float x, final float y, final Duration duration) {}
+    default void showLabel(final Component label, final float x, final float y, final Duration duration) {}
 
     /**
      * Kicks this audience from the server.
@@ -146,7 +146,7 @@ public interface Audience {
      * @param reason the reason
      * @param duration the duration
      */
-    default void kick(final ComponentLike reason, final Duration duration) {}
+    default void kick(final Component reason, final Duration duration) {}
 
     /**
      * Returns the metadata of this audience.

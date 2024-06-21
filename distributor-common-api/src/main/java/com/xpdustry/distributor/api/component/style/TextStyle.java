@@ -18,23 +18,25 @@
  */
 package com.xpdustry.distributor.api.component.style;
 
-import com.xpdustry.distributor.api.util.Buildable;
 import com.xpdustry.distributor.api.util.TriState;
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.immutables.value.Value;
 
 /**
  * Represents the styling of the text contained in a component.
  */
-@DistributorDataClass
-@Value.Immutable
-public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
+public interface TextStyle {
+
+    /**
+     * Returns a text style with no styling.
+     */
+    static TextStyle of() {
+        return TextStyleImpl.NONE;
+    }
 
     /**
      * Creates a new text style with the given colors and decorations.
@@ -48,7 +50,7 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
             final @Nullable ComponentColor textColor,
             final @Nullable ComponentColor backColor,
             final Map<TextDecoration, Boolean> decorations) {
-        return TextStyleImpl.of(textColor, backColor, decorations);
+        return new TextStyleImpl(textColor, backColor, decorations);
     }
 
     /**
@@ -59,7 +61,7 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
      * @return the text style
      */
     static TextStyle of(final @Nullable ComponentColor textColor, final @Nullable ComponentColor backColor) {
-        return TextStyleImpl.of(textColor, backColor, Map.of());
+        return new TextStyleImpl(textColor, backColor, Map.of());
     }
 
     /**
@@ -69,7 +71,7 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
      * @return the text style
      */
     static TextStyle of(final @Nullable ComponentColor textColor) {
-        return TextStyleImpl.of(textColor, null, Map.of());
+        return new TextStyleImpl(textColor, null, Map.of());
     }
 
     /**
@@ -79,7 +81,7 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
      * @return the text style
      */
     static TextStyle of(final @Nullable ComponentColor textColor, final TextDecoration... decorations) {
-        return TextStyleImpl.of(
+        return new TextStyleImpl(
                 textColor,
                 null,
                 Arrays.stream(decorations).collect(Collectors.toMap(Function.identity(), decoration -> true)));
@@ -92,7 +94,7 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
      * @return the text style
      */
     static TextStyle of(final Map<TextDecoration, Boolean> decorations) {
-        return TextStyleImpl.of(null, null, decorations);
+        return new TextStyleImpl(null, null, decorations);
     }
 
     /**
@@ -102,24 +104,10 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
      * @return the text style
      */
     static TextStyle of(final TextDecoration... decorations) {
-        return TextStyleImpl.of(
+        return new TextStyleImpl(
                 null,
                 null,
                 Arrays.stream(decorations).collect(Collectors.toMap(Function.identity(), decoration -> true)));
-    }
-
-    /**
-     * Returns a text style with no styling.
-     */
-    static TextStyle none() {
-        return TextStyleBuilderImpl.EMPTY;
-    }
-
-    /**
-     * Creates a new text style builder.
-     */
-    static TextStyle.Builder builder() {
-        return new TextStyleBuilderImpl();
     }
 
     /**
@@ -128,9 +116,25 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
     @Nullable ComponentColor getTextColor();
 
     /**
+     * Sets the text color.
+     *
+     * @param textColor the text color
+     * @return a new text style with the given text color
+     */
+    TextStyle setTextColor(final @Nullable ComponentColor textColor);
+
+    /**
      * Returns the background color of this style.
      */
     @Nullable ComponentColor getBackColor();
+
+    /**
+     * Sets the background color.
+     *
+     * @param backColor the background color
+     * @return a new text style with the given background color
+     */
+    TextStyle setBackColor(final @Nullable ComponentColor backColor);
 
     /**
      * Returns the decorations of this style.
@@ -138,86 +142,45 @@ public interface TextStyle extends Buildable<TextStyle, TextStyle.Builder> {
     Map<TextDecoration, Boolean> getDecorations();
 
     /**
+     * Sets the decorations.
+     *
+     * @param decorations the decorations
+     * @return a new text style with the given decorations
+     */
+    TextStyle setDecorations(final Map<TextDecoration, Boolean> decorations);
+
+    /**
+     * Adds a decoration.
+     *
+     * @param decoration the decoration
+     * @return this setter or a copy
+     */
+    default TextStyle addDecoration(final TextDecoration decoration) {
+        return setDecoration(decoration, TriState.TRUE);
+    }
+
+    /**
+     * Sets a decoration state. If the state is {@link TriState#UNDEFINED}, the decoration is removed.
+     *
+     * @param decoration the decoration
+     * @param state the state
+     * @return a new text style with the given decoration state
+     */
+    default TextStyle setDecoration(final TextDecoration decoration, final TriState state) {
+        final var copy = new HashMap<>(this.getDecorations());
+        if (state == TriState.UNDEFINED) {
+            copy.remove(decoration);
+        } else {
+            copy.put(decoration, state.asBoolean());
+        }
+        return setDecorations(copy);
+    }
+
+    /**
      * Merges this text style with another one, overriding existing values.
      *
      * @param other the style to merge
      * @return the merged text style
      */
-    default TextStyle merge(final TextStyle other) {
-        final var builder = toBuilder();
-        if (other.getTextColor() != null) {
-            builder.setTextColor(other.getTextColor());
-        }
-        if (other.getBackColor() != null) {
-            builder.setBackColor(other.getBackColor());
-        }
-        final var decorations = new HashMap<>(getDecorations());
-        decorations.putAll(other.getDecorations());
-        builder.setDecorations(decorations);
-        return builder.build();
-    }
-
-    @Override
-    default Builder toBuilder() {
-        return new TextStyleBuilderImpl()
-                .setTextColor(getTextColor())
-                .setBackColor(getBackColor())
-                .setDecorations(getDecorations());
-    }
-
-    /**
-     * A text style builder.
-     */
-    interface Builder extends Setter<Builder>, Buildable.Builder<TextStyle, Builder> {}
-
-    /**
-     * Represents an object that can set text style properties.
-     *
-     * @param <T> the type of the setter
-     */
-    interface Setter<T extends Setter<T>> {
-
-        /**
-         * Sets the text color.
-         *
-         * @param textColor the text color
-         * @return this setter
-         */
-        T setTextColor(final @Nullable ComponentColor textColor);
-
-        /**
-         * Sets the background color.
-         *
-         * @param backColor the background color
-         * @return this setter
-         */
-        T setBackColor(final @Nullable ComponentColor backColor);
-
-        /**
-         * Adds a decoration.
-         *
-         * @param decoration the decoration
-         * @return this setter
-         */
-        default T addDecoration(final TextDecoration decoration) {
-            return setDecoration(decoration, TriState.TRUE);
-        }
-
-        /**
-         * Sets the decorations.
-         *
-         * @param decorations the decorations
-         * @return this setter
-         */
-        T setDecorations(final Map<TextDecoration, Boolean> decorations);
-
-        /**
-         * Sets a decoration state. If the state is {@link TriState#UNDEFINED}, the decoration is removed.
-         *
-         * @param decoration the decoration
-         * @param state the state
-         * @return this setter
-         */
-        T setDecoration(final TextDecoration decoration, final TriState state);
-    }
+    TextStyle merge(final TextStyle other);
 }

@@ -40,7 +40,7 @@ public interface TextComponent extends BuildableComponent<TextComponent, TextCom
      * @return the text component
      */
     static TextComponent text(final String content) {
-        return new TextComponentImpl(TextStyle.none(), content);
+        return new TextComponentImpl(TextStyle.of(), content);
     }
 
     /**
@@ -72,7 +72,7 @@ public interface TextComponent extends BuildableComponent<TextComponent, TextCom
      * @return the text component
      */
     static TextComponent text(final char ch) {
-        return new TextComponentImpl(TextStyle.none(), String.valueOf(ch));
+        return new TextComponentImpl(TextStyle.of(), String.valueOf(ch));
     }
 
     /**

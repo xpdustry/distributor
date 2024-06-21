@@ -95,24 +95,19 @@ public final class MindustryComponentStringBuilderTest {
     @Test
     void test_append_nested_components() {
         final var builder = createBuilder();
-        builder.append(ListComponent.components()
-                .setTextColor(ComponentColor.RED)
-                .append(text("Hello, "))
-                .append(text("World", ComponentColor.GREEN))
-                .append(text("!"))
-                .build());
+        builder.append(ListComponent.components(
+                ComponentColor.RED, text("Hello, "), text("World", ComponentColor.GREEN), text("!")));
         assertEquals("[#FF0000]Hello, [#00FF00]World[]![]", builder.toString());
     }
 
     @Test
     void test_append_component_duplicate_colors() {
         final var builder = createBuilder();
-        builder.append(ListComponent.components()
-                .setTextColor(ComponentColor.RED)
-                .append(text("Hello, ", ComponentColor.RED))
-                .append(text("World", ComponentColor.RED))
-                .append(text("!", ComponentColor.RED))
-                .build());
+        builder.append(ListComponent.components(
+                ComponentColor.RED,
+                text("Hello, ", ComponentColor.RED),
+                text("World", ComponentColor.RED),
+                text("!", ComponentColor.RED)));
         assertEquals("[#FF0000]Hello, World![]", builder.toString());
     }
 

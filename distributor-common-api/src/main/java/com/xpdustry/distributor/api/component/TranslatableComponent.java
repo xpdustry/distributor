@@ -45,7 +45,7 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final String key, final TranslationArguments parameters) {
-        return new TranslatableComponentImpl(TextStyle.none(), key, parameters);
+        return new TranslatableComponentImpl(TextStyle.of(), key, parameters);
     }
 
     /**
@@ -81,7 +81,7 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final String key) {
-        return new TranslatableComponentImpl(TextStyle.none(), key, TranslationArguments.empty());
+        return new TranslatableComponentImpl(TextStyle.of(), key, TranslationArguments.empty());
     }
 
     /**
@@ -113,7 +113,7 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final MappableContent content) {
-        return translatable(content, TextStyle.none());
+        return translatable(content, TextStyle.of());
     }
 
     /**
@@ -148,7 +148,7 @@ public interface TranslatableComponent
      * @return the translatable component
      */
     static TranslatableComponent translatable(final Team team) {
-        return translatable(team, TextStyle.none());
+        return translatable(team, TextStyle.of());
     }
 
     /**

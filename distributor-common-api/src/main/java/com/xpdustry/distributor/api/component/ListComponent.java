@@ -20,12 +20,22 @@ package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.TextStyle;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A component that contains a list of components.
  */
 public interface ListComponent extends BuildableComponent<ListComponent, ListComponent.Builder> {
+
+    /**
+     * Creates a new list component builder.
+     */
+    static ListComponent.Builder components() {
+        return new ListComponentImpl.Builder();
+    }
 
     /**
      * Creates a new list component with the specified components.
@@ -34,7 +44,17 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
      * @return the list component
      */
     static ListComponent components(final Component... components) {
-        return new ListComponentImpl(TextStyle.none(), List.of(components));
+        return new ListComponentImpl(TextStyle.of(), List.of(components));
+    }
+
+    /**
+     * Creates a new list component with the specified components.
+     *
+     * @param components the components
+     * @return the list component
+     */
+    static ListComponent components(final Collection<Component> components) {
+        return new ListComponentImpl(TextStyle.of(), List.copyOf(components));
     }
 
     /**
@@ -49,6 +69,17 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     }
 
     /**
+     * Creates a new list component with the specified text color and components.
+     *
+     * @param textColor the text color
+     * @param components the components
+     * @return the list component
+     */
+    static ListComponent components(final ComponentColor textColor, final Collection<Component> components) {
+        return new ListComponentImpl(TextStyle.of(textColor), List.copyOf(components));
+    }
+
+    /**
      * Creates a new list component with the specified text textStyle and components.
      *
      * @param textStyle the text textStyle
@@ -60,10 +91,14 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     }
 
     /**
-     * Creates a new list component builder.
+     * Creates a new list component with the specified text textStyle and components.
+     *
+     * @param textStyle the text textStyle
+     * @param components the components
+     * @return the list component
      */
-    static ListComponent.Builder components() {
-        return new ListComponentImpl.Builder();
+    static ListComponent components(final TextStyle textStyle, final Collection<Component> components) {
+        return new ListComponentImpl(textStyle, List.copyOf(components));
     }
 
     /**
@@ -72,14 +107,13 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     List<Component> getComponents();
 
     @Override
-    default ListComponent append(final ComponentLike component) {
-        return this.toBuilder().append(component).build();
-    }
-
-    @Override
     default Component compress() {
         final var components = this.getComponents().stream()
                 .map(Component::compress)
+                .flatMap(component -> component instanceof ListComponent list
+                                && list.getTextStyle().equals(TextStyle.of())
+                        ? list.getComponents().stream()
+                        : Stream.of(component))
                 .filter(component -> !component.equals(TextComponent.empty()))
                 .toList();
         if (components.isEmpty()) {
@@ -90,7 +124,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
                 return buildable.toBuilder()
                         .setTextStyle(getTextStyle().merge(component.getTextStyle()))
                         .build();
-            } else if (this.getTextStyle().equals(TextStyle.none())) {
+            } else if (this.getTextStyle().equals(TextStyle.of())) {
                 return component;
             } else {
                 return this.toBuilder().setComponents(List.of(component)).build();
@@ -114,11 +148,29 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
         Builder setComponents(final List<Component> components);
 
         /**
-         * Appends components to the list component.
+         * Appends the given component to this builder.
+         *
+         * @param component the component
+         * @return this builder
+         */
+        Builder append(final Component component);
+
+        /**
+         * Appends the given components to this builder.
          *
          * @param components the components
          * @return this builder
          */
-        Builder append(final ComponentLike... components);
+        default Builder append(final Component... components) {
+            return append(Arrays.asList(components));
+        }
+
+        /**
+         * Appends the given components to this builder.
+         *
+         * @param components the components
+         * @return this builder
+         */
+        Builder append(final Collection<Component> components);
     }
 }

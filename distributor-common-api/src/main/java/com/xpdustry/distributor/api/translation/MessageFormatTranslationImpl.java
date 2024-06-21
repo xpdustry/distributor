@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.translation;
 
 import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.ComponentLike;
 import com.xpdustry.distributor.api.component.NumberComponent;
 import com.xpdustry.distributor.api.component.TemporalComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
@@ -80,11 +79,10 @@ record MessageFormatTranslationImpl(String pattern, Locale locale) implements Me
                 builder.append(unformatted, iterator.getIndex(), end);
             } else {
                 var argument = arguments.get(index);
-                var style = TextStyle.none();
+                var style = TextStyle.of();
                 Component component = null;
 
-                if (argument instanceof ComponentLike like) {
-                    var comp = like.asComponent();
+                if (argument instanceof Component comp) {
                     style = comp.getTextStyle();
                     if (comp instanceof TemporalComponent temporal
                             && temporal.getTemporalStyle() instanceof TemporalStyle.None) {

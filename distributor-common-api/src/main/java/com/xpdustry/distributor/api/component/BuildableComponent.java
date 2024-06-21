@@ -28,12 +28,7 @@ import com.xpdustry.distributor.api.util.Buildable;
  * @param <B> the type of the builder
  */
 public interface BuildableComponent<C extends BuildableComponent<C, B>, B extends BuildableComponent.Builder<C, B>>
-        extends Component {
-
-    /**
-     * Creates a new builder from this component.
-     */
-    B toBuilder();
+        extends Component, Buildable<C, B> {
 
     /**
      * A builder for a buildable component.
@@ -41,8 +36,7 @@ public interface BuildableComponent<C extends BuildableComponent<C, B>, B extend
      * @param <C> the type of the component
      * @param <B> the type of the builder
      */
-    interface Builder<C extends BuildableComponent<C, B>, B extends Builder<C, B>>
-            extends ComponentLike, TextStyle.Setter<B>, Buildable.Builder<C, B> {
+    interface Builder<C extends BuildableComponent<C, B>, B extends Builder<C, B>> extends Buildable.Builder<C, B> {
 
         /**
          * Sets the text textStyle of the component.
@@ -51,10 +45,5 @@ public interface BuildableComponent<C extends BuildableComponent<C, B>, B extend
          * @return this builder
          */
         B setTextStyle(final TextStyle textStyle);
-
-        @Override
-        default Component asComponent() {
-            return this.build();
-        }
     }
 }

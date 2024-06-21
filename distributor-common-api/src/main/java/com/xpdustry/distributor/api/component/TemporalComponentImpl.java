@@ -47,17 +47,24 @@ record TemporalComponentImpl(TextStyle textStyle, Temporal temporal, TemporalSty
         return new Builder(this);
     }
 
-    static final class Builder extends AbstractComponentBuilder<TemporalComponent, TemporalComponent.Builder>
-            implements TemporalComponent.Builder {
+    static final class Builder implements TemporalComponent.Builder {
 
+        private TextStyle textStyle = TextStyle.of();
         private @Nullable Temporal temporal = null;
         private TemporalStyle format = TemporalStyle.none();
 
         public Builder() {}
 
         public Builder(final TemporalComponent component) {
-            super(component);
+            this.textStyle = component.getTextStyle();
             this.temporal = component.getTemporal();
+            this.format = component.getTemporalStyle();
+        }
+
+        @Override
+        public Builder setTextStyle(final TextStyle textStyle) {
+            this.textStyle = Objects.requireNonNull(textStyle);
+            return this;
         }
 
         @Override
@@ -74,7 +81,7 @@ record TemporalComponentImpl(TextStyle textStyle, Temporal temporal, TemporalSty
 
         @Override
         public TemporalComponent build() {
-            return new TemporalComponentImpl(textStyle.build(), Objects.requireNonNull(temporal), format);
+            return new TemporalComponentImpl(textStyle, Objects.requireNonNull(temporal), format);
         }
     }
 }
