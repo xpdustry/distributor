@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
-
 plugins {
     id("net.kyori.indra.publishing")
 }
@@ -25,24 +23,17 @@ indra {
     configurePublications {
         pom {
             organization {
-                name.set("Xpdustry")
-                url.set("https://www.xpdustry.com")
+                name = "Xpdustry"
+                url = "https://www.xpdustry.com"
             }
 
             developers {
                 developer {
-                    id.set("Phinner")
-                    timezone.set("Europe/Brussels")
+                    id = "phinner"
+                    url = "https://github.com/phinner"
+                    timezone = "Europe/Brussels"
                 }
             }
-        }
-    }
-}
-
-plugins.withType<ShadowJavaPlugin> {
-    components.withType<AdhocComponentWithVariants>().forEach {
-        it.withVariantsFromConfiguration(project.configurations.named("shadowRuntimeElements").get()) {
-            skip()
         }
     }
 }
