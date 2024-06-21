@@ -28,6 +28,10 @@ public enum TriState {
     TRUE(true),
     UNDEFINED(false);
 
+    public static TriState of(final boolean state) {
+        return state ? TRUE : FALSE;
+    }
+
     public static TriState of(final @Nullable Boolean state) {
         return state == null ? UNDEFINED : state ? TRUE : FALSE;
     }
