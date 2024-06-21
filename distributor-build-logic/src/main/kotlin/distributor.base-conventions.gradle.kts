@@ -28,7 +28,8 @@ dependencies {
     compileOnlyApi(libs.checker.qual)
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
-    testImplementation(libs.bundles.tests)
+    testImplementation(libs.bundles.test.lib)
+    testRuntimeOnly(libs.bundles.test.engine)
 }
 
 indra {
