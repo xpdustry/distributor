@@ -35,8 +35,10 @@ tasks.runMindustryServer {
 }
 
 val generateMetadataFile by tasks.registering {
+    val output = temporaryDir.resolve("plugin.json")
+    outputs.file(output)
     doLast {
-        temporaryDir.resolve("plugin.json").writeText(
+        output.writeText(
             ModMetadata.toJson(
                 ModMetadata(
                     name = extension.identifier.get(),
