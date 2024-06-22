@@ -26,7 +26,7 @@ guava-testlib = "33.2.1-jre"
 mockito = "5.12.0"
 
 # static analysis
-errorprone-gradle = "4.0.0"
+errorprone-gradle = "4.0.1"
 errorprone-core = "2.28.0"
 nullaway = "0.11.0"
 checker-qual = "3.44.0"
