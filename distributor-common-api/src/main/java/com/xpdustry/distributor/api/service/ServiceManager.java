@@ -49,11 +49,35 @@ public interface ServiceManager {
      * @param plugin the plugin
      * @param service the service
      * @param instance the instance
+     * @param <T> the type of the service
+     */
+    default <T> void register(final MindustryPlugin plugin, final Class<T> service, final T instance) {
+        this.register(plugin, TypeToken.of(service), instance, Priority.NORMAL);
+    }
+
+    /**
+     * Registers the {@code instance} as one of the available implementations for the {@code service}.
+     *
+     * @param plugin the plugin
+     * @param service the service
+     * @param instance the instance
      * @param priority the priority
      * @param <T> the type of the service
      */
     <T> void register(
             final MindustryPlugin plugin, final TypeToken<T> service, final T instance, final Priority priority);
+
+    /**
+     * Registers the {@code instance} as one of the available implementations for the {@code service}.
+     *
+     * @param plugin the plugin
+     * @param service the service
+     * @param instance the instance
+     * @param <T> the type of the service
+     */
+    default <T> void register(final MindustryPlugin plugin, final TypeToken<T> service, final T instance) {
+        this.register(plugin, service, instance, Priority.NORMAL);
+    }
 
     /**
      * Provides a service of the given type.
