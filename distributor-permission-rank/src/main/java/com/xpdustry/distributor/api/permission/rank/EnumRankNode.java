@@ -45,6 +45,20 @@ public interface EnumRankNode<E extends Enum<E>> extends RankNode {
     }
 
     /**
+     * Creates a {@code EnumRankNode} with no hierarchy.
+     * This means each rank node is independent of each other.
+     * Ideal for achievements based permissions.
+     *
+     * @param value         the rank value
+     * @param namespace     the rank namespace
+     * @param <E>           the enum type
+     * @return the created enum rank node
+     */
+    static <E extends Enum<E>> RankNode singular(final E value, final String namespace) {
+        return new SingularEnumRankNode<>(value, namespace);
+    }
+
+    /**
      * Returns the enum value of this rank node.
      */
     E getValue();
