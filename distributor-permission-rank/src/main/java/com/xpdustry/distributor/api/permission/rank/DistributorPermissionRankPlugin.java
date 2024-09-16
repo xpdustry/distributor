@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public final class DistributorPermissionRankPlugin extends AbstractMindustryPlugin {
 
     @Override
@@ -37,7 +38,7 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
         services.register(this, RankProvider.class, new MindustryRankProvider(), Priority.LOW);
         final var yaml = new YamlRankPermissionSource(() -> Files.newBufferedReader(this.getConfigFile()));
         this.addListener(yaml);
-        services.register(this, RankPermissionSource.class, yaml, Priority.NORMAL);
+        services.register(this, RankPermissionSource.class, yaml);
         services.register(this, RankPermissionSource.class, new MindustryRankPermissionSource(), Priority.LOW);
 
         this.getLogger().info("Initialized distributor permission rank plugin");

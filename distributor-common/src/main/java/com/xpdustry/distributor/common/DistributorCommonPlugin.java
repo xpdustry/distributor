@@ -111,13 +111,12 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
         this.getLogger().info("Loading distributor common api");
         DistributorProvider.set(this);
         this.addListener((PluginSchedulerImpl) this.scheduler);
-        this.services.register(
-                this, ComponentRendererProvider.class, new StandardComponentRendererProvider(), Priority.NORMAL);
+        this.services.register(this, ComponentRendererProvider.class, new StandardComponentRendererProvider());
         this.services.register(this, TranslationSource.class, TranslationSource.router(), Priority.HIGH);
         final var mindustry = BundleTranslationSource.create(Locale.ENGLISH);
         mindustry.registerAll(ResourceBundles.fromClasspathDirectory(
                 getClass(), "com/xpdustry/distributor/common/bundles/", "mindustry_bundle"));
-        this.services.register(this, TranslationSource.class, mindustry, Priority.NORMAL);
+        this.services.register(this, TranslationSource.class, mindustry);
     }
 
     @Override
