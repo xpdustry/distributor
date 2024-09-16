@@ -12,7 +12,7 @@ slf4j = "2.0.16"
 slf4md = "1.0.0"
 
 # command
-cloud = "2.0.0-rc.2"
+cloud = "2.0.0"
 
 # utilities
 immutables = "2.10.1"
