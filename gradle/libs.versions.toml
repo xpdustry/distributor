@@ -20,7 +20,7 @@ geantyref = "2.0.0"
 junit = "5.11.1"
 assertj = "3.26.3"
 guava-testlib = "33.3.1-jre"
-mockito = "5.13.0"
+mockito = "5.14.1"
 
 # static analysis
 errorprone-gradle = "4.0.1"
