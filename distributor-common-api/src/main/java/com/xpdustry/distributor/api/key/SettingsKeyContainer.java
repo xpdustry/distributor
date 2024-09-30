@@ -79,6 +79,7 @@ enum SettingsKeyContainer implements MutableKeyContainer {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private static final class InstantSerializer implements Json.Serializer<Instant> {
 
         @Override
