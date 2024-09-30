@@ -33,6 +33,15 @@ public interface MutableKeyContainer extends KeyContainer {
     }
 
     /**
+     * Returns a mutable container view of {@link arc.Core#settings}.
+     * <p>
+     * <b>Warning:</b> This container currently only supports primitive types and mindustry collections.
+     */
+    static MutableKeyContainer settings() {
+        return SettingsKeyContainer.INSTANCE;
+    }
+
+    /**
      * Sets the {@code value} associated with the given {@code key}.
      *
      * @param key   the key
