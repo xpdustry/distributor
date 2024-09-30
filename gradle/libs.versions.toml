@@ -33,7 +33,7 @@ palantir = "2.46.0"
 ktlint = "0.51.0-FINAL"
 
 # gradle
-toxopid = "4.0.2"
+toxopid = "4.1.0"
 indra = "3.1.3"
 spotless = "6.25.0"
 shadow = "8.1.8"
