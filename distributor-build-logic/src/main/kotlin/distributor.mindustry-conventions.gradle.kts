@@ -5,7 +5,7 @@ import com.xpdustry.toxopid.task.GithubAssetDownload
 
 plugins {
     id("net.kyori.indra")
-    id("io.github.goooler.shadow")
+    id("com.gradleup.shadow")
     id("com.xpdustry.toxopid")
 }
 
