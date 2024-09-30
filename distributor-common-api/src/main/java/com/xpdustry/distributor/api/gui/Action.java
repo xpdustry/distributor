@@ -155,6 +155,10 @@ public interface Action {
 
     /**
      * Returns an action that invoke a command for the viewer.
+     *
+     * @param name the command name
+     * @param arguments the command arguments
+     * @return the action
      */
     static Action command(final String name, final String... arguments) {
         final var builder = new StringBuilder(name.length() + 1 + (arguments.length * 4));
@@ -162,6 +166,16 @@ public interface Action {
         for (final var argument : arguments) builder.append(' ').append(argument);
         final var input = builder.toString();
         return window -> Vars.netServer.clientCommands.handleMessage(input, window.getViewer());
+    }
+
+    /**
+     * Returns an action that creates and shows a new window with the given manager.
+     *
+     * @param manager the window manager
+     * @return the action
+     */
+    static Action show(final WindowManager manager) {
+        return window -> manager.create(window.getViewer()).show();
     }
 
     /**
