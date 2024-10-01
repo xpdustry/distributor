@@ -6,7 +6,7 @@ mindustry = "v146"
 
 # logging
 slf4j = "2.0.16"
-slf4md = "1.0.0"
+slf4md = "1.0.1"
 
 # command
 cloud = "2.0.0"
