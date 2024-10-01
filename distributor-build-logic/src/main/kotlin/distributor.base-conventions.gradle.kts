@@ -5,6 +5,7 @@ plugins {
     id("com.diffplug.spotless")
     id("net.kyori.indra")
     id("net.kyori.indra.licenser.spotless")
+    id("net.kyori.indra.crossdoc")
     id("net.ltgt.errorprone")
 }
 
@@ -43,6 +44,13 @@ indraSpotlessLicenser {
     licenseHeaderFile(rootProject.file("LICENSE_HEADER.md"))
 }
 
+indraCrossdoc {
+    baseUrl("https://maven.xpdustry.com/${if (version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"}/")
+    nameBasedDocumentationUrlProvider {
+        projectNamePrefix = "distributor-"
+    }
+}
+
 spotless {
     java {
         palantirJavaFormat(libs.versions.palantir.get())
@@ -56,7 +64,7 @@ spotless {
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:-serial")
     options.errorprone {
-        disableWarningsInGeneratedCode.set(true)
+        disableWarningsInGeneratedCode = true
         disable("MissingSummary", "FutureReturnValueIgnored", "InlineMeSuggester", "EmptyCatch")
         check("NullAway", if (name.contains("test", ignoreCase = true)) CheckSeverity.OFF else CheckSeverity.ERROR)
         option("NullAway:AnnotatedPackages", "com.xpdustry.distributor")

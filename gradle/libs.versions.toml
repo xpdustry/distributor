@@ -81,11 +81,12 @@ checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "ch
 toxopid = { module = "com.xpdustry:toxopid", version.ref = "toxopid" }
 indra-common = { module = "net.kyori:indra-common", version.ref = "indra" }
 indra-licenser-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
+indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
 
 [bundles]
-indra = [ "indra-common", "indra-licenser-spotless" ]
+indra = [ "indra-common", "indra-licenser-spotless", "indra-crossdoc" ]
 mindustry = [ "mindustry-core", "mindustry-server", "arc-core", "arc-backend-headless" ]
 test-lib = [ "junit-api", "junit-params", "assertj-core", "guava-testlib", "mockito-core", "mockito-junit-jupiter" ]
 test-engine = [ "junit-engine-jupiter", "junit-engine-vintage", "junit-platform-launcher" ]
