@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
@@ -36,31 +34,33 @@ import org.immutables.value.Value;
 public interface PlayerLookup {
 
     /**
-     * Creates a new player lookup with the default provider and normalizer.
+     * Creates a new simple player lookup.
+     *
+     * @see SimplePlayerLookup
      */
     static PlayerLookup create() {
-        return new PlayerLookupImpl(
-                () -> MindustryCollections.immutableList(Groups.player), PlayerLookupImpl.DEFAULT_NORMALIZER);
+        return new SimplePlayerLookup();
     }
 
     /**
-     * Creates a new player lookup with the given provider and normalizer.
+     * Finds online players matching the given query.
+     * Defaults to searching all players.
      *
-     * @param provider the player provider
-     * @param normalizer the normalizer
-     * @return the player lookup
+     * @param query the query
+     * @return the matching players
      */
-    static PlayerLookup create(final Supplier<Collection<Player>> provider, final UnaryOperator<String> normalizer) {
-        return new PlayerLookupImpl(provider, normalizer);
+    default List<Player> findOnlinePlayers(final Query query) {
+        return findOnlinePlayers(MindustryCollections.immutableList(Groups.player), query);
     }
 
     /**
      * Finds online players matching the given query.
      *
+     * @param players the players to search
      * @param query the query
      * @return the matching players
      */
-    List<Player> findOnlinePlayers(final Query query);
+    List<Player> findOnlinePlayers(final Collection<Player> players, final Query query);
 
     /**
      * A query for looking up players.

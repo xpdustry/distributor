@@ -26,33 +26,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
 
-final class PlayerLookupImpl implements PlayerLookup {
-
-    // https://stackoverflow.com/a/4122200
-    static final UnaryOperator<String> DEFAULT_NORMALIZER =
-            string -> Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
-                    .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                    .toLowerCase(Locale.ROOT);
-
-    private final Supplier<Collection<Player>> provider;
-    private final Function<String, String> normalizer;
-
-    PlayerLookupImpl(final Supplier<Collection<Player>> provider, final UnaryOperator<String> normalizer) {
-        this.provider = provider;
-        this.normalizer = normalizer;
-    }
+public class SimplePlayerLookup implements PlayerLookup {
 
     @Override
-    public List<Player> findOnlinePlayers(final Query query) {
-        final var players = this.provider.get();
+    public List<Player> findOnlinePlayers(final Collection<Player> players, final Query query) {
         final List<Player> result = new ArrayList<>();
+        this.findOnlinePlayers0(players, query, result);
+        return Collections.unmodifiableList(result);
+    }
 
+    protected void findOnlinePlayers0(final Collection<Player> players, final Query query, final List<Player> result) {
         if (query.getFields().contains(Field.ENTITY_ID) && query.getInput().startsWith("#")) {
             try {
                 final var id = Integer.parseInt(query.getInput().substring(1));
@@ -60,10 +46,10 @@ final class PlayerLookupImpl implements PlayerLookup {
                     if (player.id() != id) {
                         continue;
                     }
-                    if (query.isMatchExact()) {
-                        return List.of(player);
-                    }
                     result.add(player);
+                    if (query.isMatchExact()) {
+                        return;
+                    }
                 }
             } catch (final NumberFormatException ignored) {
             }
@@ -74,10 +60,10 @@ final class PlayerLookupImpl implements PlayerLookup {
                 if (!player.uuid().equals(query.getInput())) {
                     continue;
                 }
-                if (query.isMatchExact()) {
-                    return List.of(player);
-                }
                 result.add(player);
+                if (query.isMatchExact()) {
+                    return;
+                }
                 if (Core.settings != null && Administration.Config.strict.bool()) {
                     break;
                 }
@@ -86,13 +72,13 @@ final class PlayerLookupImpl implements PlayerLookup {
 
         if (query.getFields().contains(Field.NAME)) {
             final List<Player> matches = new ArrayList<>();
-            final var normalized = this.normalizer.apply(query.getInput());
+            final var normalized = this.normalize(query.getInput());
 
             Player match = null;
             int matched = 0;
 
             for (final var player : players) {
-                final var playerName = this.normalizer.apply(player.name());
+                final var playerName = this.normalize(player.name());
                 if (playerName.equalsIgnoreCase(normalized)) {
                     match = player;
                     matched++;
@@ -103,12 +89,17 @@ final class PlayerLookupImpl implements PlayerLookup {
             }
 
             if (matched == 1 && query.isMatchExact()) {
-                return List.of(match);
+                result.add(match);
             } else {
                 result.addAll(matches);
             }
         }
+    }
 
-        return Collections.unmodifiableList(result);
+    protected String normalize(final String string) {
+        // https://stackoverflow.com/a/4122200
+        return Normalizer.normalize(Strings.stripColors(string), Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .toLowerCase(Locale.ROOT);
     }
 }

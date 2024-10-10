@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public final class PlayerLookupImplTest {
+public final class SimplePlayerLookupTest {
 
     private static final Random RANDOM = new Random();
     private static int counter = 1;
@@ -118,8 +118,8 @@ public final class PlayerLookupImplTest {
     }
 
     private void assertQueryResult(final PlayerLookup.Query query, final Player... result) {
-        final var lookup = new PlayerLookupImpl(() -> PLAYERS, PlayerLookupImpl.DEFAULT_NORMALIZER);
-        assertThat(lookup.findOnlinePlayers(query)).containsExactlyInAnyOrder(result);
+        final var lookup = new SimplePlayerLookup();
+        assertThat(lookup.findOnlinePlayers(PLAYERS, query)).containsExactlyInAnyOrder(result);
     }
 
     private static Player createPlayer(final String name) {
