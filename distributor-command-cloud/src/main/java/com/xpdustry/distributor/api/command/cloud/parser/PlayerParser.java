@@ -63,7 +63,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
 
     @Override
     public ArgumentParseResult<Player> parse(final CommandContext<C> ctx, final CommandInput input) {
-        final var queryBuilder = PlayerLookup.Query.builder().setInput(input.readString());
+        final var builder = PlayerLookup.Query.builder().setInput(input.readString());
         final var fields = new ArrayList<PlayerLookup.Field>();
         final var permissions = ctx.getOrDefault(MindustryCommandContextKeys.PERMISSIONS, PermissionContainer.empty());
         for (final var field : PlayerLookup.Field.values()) {
@@ -76,7 +76,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
                 fields.add(field);
             }
         }
-        final var query = queryBuilder.setFields(fields).build();
+        final var query = builder.setFields(fields).build();
         final var players = DistributorProvider.get().getPlayerLookup().findOnlinePlayers(query);
         if (players.isEmpty()) {
             return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(ctx, query.getInput()));
