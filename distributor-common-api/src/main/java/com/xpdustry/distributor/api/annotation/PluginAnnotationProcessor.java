@@ -62,6 +62,19 @@ public interface PluginAnnotationProcessor<R> {
     }
 
     /**
+     * Processes the {@link TriggerHandler} method annotations of a given object to create trigger listeners.
+     * The result is an {@link EventSubscription} tied to all created trigger listeners. If none, an empty result is returned.
+     * <br>
+     * This processor supports the {@link Async} annotation. Trigger handler methods will be executed asynchronously if present.
+     *
+     * @param plugin the owning plugin
+     * @return a new trigger handler processor
+     */
+    static PluginAnnotationProcessor<EventSubscription> triggers(final MindustryPlugin plugin) {
+        return new TriggerHandlerProcessor(plugin);
+    }
+
+    /**
      * Composes multiple processors into one that returns their result in a list.
      * <br>
      * Note that if a composed processor is in the list of processors, it will be flattened. Such as:
