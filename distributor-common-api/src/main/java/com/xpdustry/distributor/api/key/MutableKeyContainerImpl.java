@@ -35,6 +35,11 @@ final class MutableKeyContainerImpl implements MutableKeyContainer {
         return Optional.ofNullable((V) key.getToken().getRawType().cast(data.get(key)));
     }
 
+    @Override
+    public boolean contains(final Key<?> key) {
+        return data.containsKey(key);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <V> @Nullable V set(final Key<V> key, final V value) {

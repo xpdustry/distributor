@@ -34,26 +34,33 @@ public interface Key<V> {
     String GENERATED_NAMESPACE = "generated";
 
     static Key<Void> of(final String name) {
+        ensureValidString(name, "name");
         return KeyImpl.of(MINDUSTRY_NAMESPACE, name, TypeToken.of(Void.class));
     }
 
     static Key<Void> of(final String namespace, final String name) {
+        ensureValidString(namespace, "namespace");
+        ensureValidString(name, "name");
         return KeyImpl.of(namespace, name, TypeToken.of(Void.class));
     }
 
     static <T> Key<T> of(final String name, final Class<T> type) {
+        ensureValidString(name, "name");
         return KeyImpl.of(MINDUSTRY_NAMESPACE, name, TypeToken.of(type));
     }
 
     static <T> Key<T> of(final String name, final TypeToken<T> type) {
+        ensureValidString(name, "name");
         return KeyImpl.of(MINDUSTRY_NAMESPACE, name, type);
     }
 
     static <T> Key<T> of(final String namespace, final String name, final TypeToken<T> type) {
+        ensureValidString(namespace, "namespace");
         return KeyImpl.of(namespace, name, type);
     }
 
     static <T> Key<T> of(final String namespace, final String name, final Class<T> type) {
+        ensureValidString(namespace, "namespace");
         return KeyImpl.of(namespace, name, TypeToken.of(type));
     }
 
@@ -65,9 +72,14 @@ public interface Key<V> {
         return KeyImpl.of(GENERATED_NAMESPACE, UUID.randomUUID().toString(), type);
     }
 
+    private static void ensureValidString(final String value, final String name) {
+        if (value.isEmpty() || value.isBlank()) throw new IllegalArgumentException(name + " cannot be empty nor blank");
+    }
+
     String getNamespace();
 
     String getName();
 
+    @Value.Auxiliary
     TypeToken<V> getToken();
 }

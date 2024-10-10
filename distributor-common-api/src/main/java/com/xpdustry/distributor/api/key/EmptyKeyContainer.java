@@ -30,6 +30,11 @@ enum EmptyKeyContainer implements KeyContainer {
     }
 
     @Override
+    public boolean contains(final Key<?> key) {
+        return false;
+    }
+
+    @Override
     public Set<Key<?>> getKeys() {
         return Set.of();
     }

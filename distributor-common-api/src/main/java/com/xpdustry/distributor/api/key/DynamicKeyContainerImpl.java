@@ -45,6 +45,11 @@ final class DynamicKeyContainerImpl implements DynamicKeyContainer {
     }
 
     @Override
+    public boolean contains(final Key<?> key) {
+        return metas.containsKey(key);
+    }
+
+    @Override
     public Set<Key<?>> getKeys() {
         return Collections.unmodifiableSet(metas.keySet());
     }

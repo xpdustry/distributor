@@ -87,9 +87,7 @@ public interface KeyContainer {
      * @param key the key
      * @return {@code true} if the value exists, or {@code false} if it does not
      */
-    default boolean contains(final Key<?> key) {
-        return this.getOptional(key).isPresent();
-    }
+    boolean contains(final Key<?> key);
 
     /**
      * Returns an immutable view of the keys in the registry.

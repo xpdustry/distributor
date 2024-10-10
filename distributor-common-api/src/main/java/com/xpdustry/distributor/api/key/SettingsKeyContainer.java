@@ -38,13 +38,19 @@ enum SettingsKeyContainer implements MutableKeyContainer {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Optional<V> getOptional(final Key<V> key) {
-        return Optional.ofNullable((V) Core.settings.get(key.getNamespace() + ":" + key.getName(), null));
+        final var name = toInternalKey(key);
+        return Optional.ofNullable((V) Core.settings.get(name, Core.settings.getDefault(name)));
+    }
+
+    @Override
+    public boolean contains(final Key<?> key) {
+        return Core.settings.has(toInternalKey(key));
     }
 
     @Override
     public Set<Key<?>> getKeys() {
         final var keys = new HashSet<Key<?>>();
-        for (final var key : Core.settings.keys()) keys.add(Key.of(key));
+        for (final var key : Core.settings.keys()) keys.add(fromInternalKey(key));
         return keys;
     }
 
@@ -54,7 +60,7 @@ enum SettingsKeyContainer implements MutableKeyContainer {
         if (!isSupportedType(value.getClass())) {
             throw new IllegalArgumentException("Unsupported type: " + value.getClass());
         }
-        final var name = key.getNamespace() + ":" + key.getName();
+        final var name = toInternalKey(key);
         final var previous = Core.settings.get(name, null);
         Core.settings.put(name, value);
         return (V) previous;
@@ -63,7 +69,7 @@ enum SettingsKeyContainer implements MutableKeyContainer {
     @SuppressWarnings("unchecked")
     @Override
     public <V> @Nullable V remove(final Key<V> key) {
-        final var name = key.getNamespace() + ":" + key.getName();
+        final var name = toInternalKey(key);
         final var previous = Core.settings.get(name, null);
         Core.settings.remove(name);
         return (V) previous;
@@ -77,6 +83,17 @@ enum SettingsKeyContainer implements MutableKeyContainer {
         if (JsonIO.json.getSerializer(clazz) == null) {
             JsonIO.json.setSerializer(clazz, serializer);
         }
+    }
+
+    private String toInternalKey(final Key<?> key) {
+        return key.getNamespace().equals(Key.MINDUSTRY_NAMESPACE)
+                ? key.getName()
+                : key.getNamespace() + ":" + key.getName();
+    }
+
+    private Key<Void> fromInternalKey(final String key) {
+        final var index = key.indexOf(':');
+        return index == -1 ? Key.of(key) : Key.of(key.substring(0, index), key.substring(index + 1));
     }
 
     @SuppressWarnings("rawtypes")
