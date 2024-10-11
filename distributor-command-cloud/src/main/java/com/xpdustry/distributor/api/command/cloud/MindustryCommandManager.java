@@ -38,7 +38,6 @@ import java.util.Locale;
 import java.util.Objects;
 import mindustry.game.Team;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
@@ -70,26 +69,32 @@ public class MindustryCommandManager<C> extends CommandManager<C>
 
     private final MindustryPlugin plugin;
     private final SenderMapper<CommandSender, C> senderMapper;
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final CommandHandler handler;
     private DescriptionMapper<Description> descriptionMapper = DescriptionMapper.text(Description::textDescription);
-    private @Nullable CommandHandler handler = null;
 
     /**
      * Constructs a new {@link MindustryCommandManager}.
      *
      * @param plugin the owning plugin
+     * @param handler the command handler
      * @param coordinator the execution coordinator
      * @param senderMapper the sender mapper
      * @see CommandManager#CommandManager(ExecutionCoordinator, CommandRegistrationHandler)
      */
     public MindustryCommandManager(
             final MindustryPlugin plugin,
+            final CommandHandler handler,
             final ExecutionCoordinator<C> coordinator,
             final SenderMapper<CommandSender, C> senderMapper) {
         super(coordinator, CommandRegistrationHandler.nullCommandRegistrationHandler());
+
+        this.handler = handler;
+        this.commandRegistrationHandler(new MindustryRegistrationHandler<>(this, handler));
+        this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
+
         this.plugin = plugin;
         this.senderMapper = senderMapper;
-        this.logger = LoggerFactory.getLogger(this.getClass());
 
         this.registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
 
@@ -121,17 +126,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
                         this.senderMapper()
                                 .reverse(ctx.commandContext().sender())
                                 .getPermissions()));
-    }
 
-    /**
-     * Initializes the command manager with it's backing command handler.
-     *
-     * @param handler the backing command handler
-     */
-    public final void initialize(final CommandHandler handler) {
-        this.commandRegistrationHandler(new MindustryRegistrationHandler<>(this, handler));
-        this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
-        this.handler = handler;
         this.parameterInjectorRegistry()
                 .registerInjector(
                         CommandHandler.class,
