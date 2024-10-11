@@ -78,6 +78,10 @@ record MessageFormatTranslationImpl(String pattern, Locale locale) implements Me
             if (index == null) {
                 builder.append(unformatted, iterator.getIndex(), end);
             } else {
+                if (index >= arguments.size()) {
+                    throw new IllegalArgumentException("Argument index out of bounds for '" + pattern
+                            + "': Maximum index is " + Math.max(0, arguments.size() - 1) + ", got " + index);
+                }
                 var argument = arguments.get(index);
                 var style = TextStyle.of();
                 Component component = null;
