@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+import com.xpdustry.distributor.api.key.Key;
+
 /**
  * A function that is executed when an interaction occurs in a gui. Takes an additional parameter as the input.
  */
@@ -32,6 +34,17 @@ public interface BiAction<T> {
      */
     static <T> BiAction<T> from(final Action action) {
         return (window, value) -> action.act(window);
+    }
+
+    /**
+     * Returns a bi-action that sets a state entry with the bi-action input.
+     *
+     * @param key   the key
+     * @param <T>   the type of the value
+     * @return the bi-action
+     */
+    static <T> BiAction<T> with(final Key<T> key) {
+        return (window, value) -> window.getState().set(key, value);
     }
 
     /**

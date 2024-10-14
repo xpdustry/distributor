@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.gui.menu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -30,12 +31,12 @@ final class MenuGridImpl implements MenuGrid {
 
     @Override
     public List<List<MenuOption>> getOptions() {
-        return options.stream().map(List::copyOf).toList();
+        return options.stream().map(Collections::unmodifiableList).toList();
     }
 
     @Override
     public List<MenuOption> getRow(int index) {
-        return options.get(index);
+        return Collections.unmodifiableList(options.get(index));
     }
 
     @Override
@@ -77,6 +78,39 @@ final class MenuGridImpl implements MenuGrid {
     @Override
     public MenuOption getOption(final int x, final int y) {
         return options.get(y).get(x);
+    }
+
+    @Override
+    public MenuGrid addOption(final MenuOption option) {
+        if (options.isEmpty()) {
+            addRow(List.of(option));
+        } else {
+            final var row = options.get(options.size() - 1);
+            row.add(option);
+        }
+        return this;
+    }
+
+    @Override
+    public MenuOption addOption(final int y, final MenuOption option) {
+        options.get(y).add(option);
+        return option;
+    }
+
+    @Override
+    public MenuOption addOption(final int x, final int y, MenuOption option) {
+        options.get(y).add(x, option);
+        return option;
+    }
+
+    @Override
+    public MenuGrid removeOption(final int x, final int y) {
+        final var row = options.get(y);
+        row.remove(x);
+        if (row.isEmpty()) {
+            options.remove(y);
+        }
+        return this;
     }
 
     @Override

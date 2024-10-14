@@ -51,4 +51,12 @@ public interface MenuGrid {
     @Nullable MenuOption getOption(final int id);
 
     MenuOption getOption(final int x, final int y);
+
+    MenuGrid addOption(final MenuOption option);
+
+    MenuOption addOption(final int y, final MenuOption option);
+
+    MenuOption addOption(final int x, final int y, final MenuOption option);
+
+    MenuGrid removeOption(final int x, final int y);
 }

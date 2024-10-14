@@ -39,17 +39,23 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
 
     @Override
     protected void onWindowOpen(final SimpleWindow window) {
+        final var options = window.getPane().getGrid().getOptions().stream()
+                .map(row -> row.stream()
+                        .map(MenuOption::getContent)
+                        .map(content -> render(window, content))
+                        .toArray(String[]::new))
+                .toArray(String[][]::new);
+        for (int i = 0; i < options.length; i++) {
+            if (options[i].length == 0) {
+                throw new IllegalArgumentException("Row " + i + " is empty");
+            }
+        }
         Call.followUpMenu(
                 window.getViewer().con(),
                 id,
                 render(window, window.getPane().getTitle()),
                 render(window, window.getPane().getContent()),
-                window.getPane().getGrid().getOptions().stream()
-                        .map(row -> row.stream()
-                                .map(MenuOption::getContent)
-                                .map(content -> render(window, content))
-                                .toArray(String[]::new))
-                        .toArray(String[][]::new));
+                options);
     }
 
     @Override
