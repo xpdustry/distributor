@@ -25,7 +25,7 @@ mockito = "5.14.1"
 # static analysis
 errorprone-gradle = "4.0.1"
 errorprone-core = "2.33.0"
-nullaway = "0.11.3"
+nullaway = "0.12.1"
 checker-qual = "3.48.0"
 
 # linting
