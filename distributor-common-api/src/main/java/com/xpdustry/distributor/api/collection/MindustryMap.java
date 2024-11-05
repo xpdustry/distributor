@@ -89,11 +89,6 @@ final class MindustryMap<K, V> extends AbstractMap<K, V> {
         this.map.clear();
     }
 
-    @Override
-    public String toString() {
-        return this.map.toString();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public V getOrDefault(final Object key, final V defaultValue) {

@@ -37,10 +37,7 @@ public final class MindustryMapTest extends TestCase {
                 .named(MindustryMap.class.getSimpleName())
                 .withFeatures(
                         List.of(MapFeature.GENERAL_PURPOSE, MapFeature.ALLOWS_NULL_VALUES, MapFeature.SUPPORTS_REMOVE))
-                .withFeatures(List.of(
-                        CollectionSize.ANY,
-                        CollectionFeature.NON_STANDARD_TOSTRING,
-                        CollectionFeature.SUPPORTS_ITERATOR_REMOVE))
+                .withFeatures(List.of(CollectionSize.ANY, CollectionFeature.SUPPORTS_ITERATOR_REMOVE))
                 .createTestSuite());
         return suite;
     }
