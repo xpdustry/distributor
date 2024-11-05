@@ -59,7 +59,7 @@ public interface AudienceProvider {
      * @param player the player
      * @return the player's audience
      */
-    Audience getPlayer(final Player player);
+    PlayerAudience getPlayer(final Player player);
 
     /**
      * Returns an {@link Audience} instance representing the server.

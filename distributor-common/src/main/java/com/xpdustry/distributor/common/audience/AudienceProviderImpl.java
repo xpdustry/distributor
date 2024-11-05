@@ -22,6 +22,7 @@ import arc.struct.IntMap;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
 import com.xpdustry.distributor.api.audience.ForwardingAudience;
+import com.xpdustry.distributor.api.audience.PlayerAudience;
 import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
 import com.xpdustry.distributor.api.key.KeyContainer;
@@ -78,8 +79,8 @@ public final class AudienceProviderImpl implements AudienceProvider {
     }
 
     @Override
-    public Audience getPlayer(final Player player) {
-        final var audience = players.get(MUUID.from(player));
+    public PlayerAudience getPlayer(final Player player) {
+        final var audience = (PlayerAudience) players.get(MUUID.from(player));
         return audience != null ? audience : new PlayerAudienceImpl(player);
     }
 
