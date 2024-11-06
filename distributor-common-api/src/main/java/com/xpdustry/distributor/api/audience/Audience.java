@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import mindustry.net.Packets;
 
 /**
  * A universal interface for sending Mindustry content to receivers.
@@ -147,6 +148,14 @@ public interface Audience {
      * @param duration the duration
      */
     default void kick(final Component reason, final Duration duration) {}
+
+    /**
+     * Kicks this audience from the server.
+     *
+     * @param reason the reason
+     * @param duration the duration
+     */
+    default void kick(final Packets.KickReason reason, final Duration duration) {}
 
     /**
      * Returns the metadata of this audience.

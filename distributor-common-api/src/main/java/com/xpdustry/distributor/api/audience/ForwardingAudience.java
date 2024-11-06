@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import mindustry.net.Packets;
 
 /**
  * An audience that forwards all operations to a collection of sub audiences.
@@ -118,6 +119,13 @@ public interface ForwardingAudience extends Audience {
 
     @Override
     default void kick(final Component reason, final Duration duration) {
+        for (final var audience : getAudiences()) {
+            audience.kick(reason, duration);
+        }
+    }
+
+    @Override
+    default void kick(final Packets.KickReason reason, final Duration duration) {
         for (final var audience : getAudiences()) {
             audience.kick(reason, duration);
         }

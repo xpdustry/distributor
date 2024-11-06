@@ -26,6 +26,7 @@ import java.net.URI;
 import java.time.Duration;
 import mindustry.gen.Call;
 import mindustry.net.NetConnection;
+import mindustry.net.Packets;
 
 public class BaseNetConnectionAudience implements Audience {
 
@@ -87,6 +88,11 @@ public class BaseNetConnectionAudience implements Audience {
     @Override
     public void kick(final Component reason, final Duration duration) {
         this.connection.kick(render(reason), duration.toMillis());
+    }
+
+    @Override
+    public void kick(final Packets.KickReason reason, final Duration duration) {
+        this.connection.kick(reason, duration.toMillis());
     }
 
     protected String render(final Component component) {
