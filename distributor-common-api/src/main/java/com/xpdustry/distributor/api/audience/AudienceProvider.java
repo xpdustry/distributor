@@ -21,6 +21,7 @@ package com.xpdustry.distributor.api.audience;
 import com.xpdustry.distributor.api.player.MUUID;
 import mindustry.game.Team;
 import mindustry.gen.Player;
+import mindustry.net.NetConnection;
 
 /**
  * Provides various {@link Audience} instances.
@@ -60,6 +61,19 @@ public interface AudienceProvider {
      * @return the player's audience
      */
     PlayerAudience getPlayer(final Player player);
+
+    /**
+     * Returns an audience from a raw {@link NetConnection}.
+     * <br>
+     * If called before the {@link Player} instance is created, most of the player metadata will be missing.
+     * But will be partially populated after {@link mindustry.game.EventType.ConnectPacketEvent} is fired.
+     * <br>
+     * Otherwise, it will be the same as calling {@link #getPlayer(Player)}.
+     *
+     * @param connection the connection
+     * @return the player's audience
+     */
+    Audience getConnection(final NetConnection connection);
 
     /**
      * Returns an {@link Audience} instance representing the server.

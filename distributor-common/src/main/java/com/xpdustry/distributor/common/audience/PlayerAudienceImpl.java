@@ -19,29 +19,24 @@
 package com.xpdustry.distributor.common.audience;
 
 import com.xpdustry.distributor.api.DistributorProvider;
-import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.PlayerAudience;
-import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
 import com.xpdustry.distributor.api.player.MUUID;
-import java.net.URI;
-import java.time.Duration;
 import java.util.Locale;
 import java.util.Objects;
-import mindustry.gen.Call;
 import mindustry.gen.Player;
-import mindustry.net.NetConnection;
 
-public final class PlayerAudienceImpl implements PlayerAudience {
+public final class PlayerAudienceImpl extends BaseNetConnectionAudience implements PlayerAudience {
 
     private final Player player;
     private final KeyContainer metadata;
 
     PlayerAudienceImpl(final Player player) {
+        super(Objects.requireNonNull(player.con(), "Player connection is null"));
         this.player = player;
         this.metadata = DynamicKeyContainer.builder()
                 .putSupplied(StandardKeys.NAME, () -> player.getInfo().plainLastName())
@@ -53,61 +48,8 @@ public final class PlayerAudienceImpl implements PlayerAudience {
                         StandardKeys.LOCALE,
                         () -> Locale.forLanguageTag(player.locale().replace('-', '_')))
                 .putSupplied(StandardKeys.TEAM, player::team)
+                .putSupplied(StandardKeys.COLOR, () -> ComponentColor.from(player.color()))
                 .build();
-    }
-
-    @Override
-    public void sendMessage(final Component component) {
-        player.sendMessage(render(component));
-    }
-
-    @Override
-    public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
-        if (sender instanceof PlayerAudience other) {
-            player.sendMessage(render(component), other.getPlayer(), render(unformatted));
-        } else {
-            player.sendMessage(render(component));
-        }
-    }
-
-    @Override
-    public void sendWarning(final Component component) {
-        Call.announce(getConnection(), render(component));
-    }
-
-    @Override
-    public void showHUDText(final Component component) {
-        Call.setHudText(getConnection(), render(component));
-    }
-
-    @Override
-    public void hideHUDText() {
-        Call.hideHudText(getConnection());
-    }
-
-    @Override
-    public void sendNotification(final Component component, final char icon) {
-        Call.warningToast(getConnection(), icon, render(component));
-    }
-
-    @Override
-    public void sendAnnouncement(final Component component) {
-        Call.infoMessage(getConnection(), render(component));
-    }
-
-    @Override
-    public void openURI(final URI uri) {
-        Call.openURI(getConnection(), uri.toString());
-    }
-
-    @Override
-    public void showLabel(final Component label, final float x, final float y, final Duration duration) {
-        Call.label(getConnection(), render(label), duration.toMillis() / 1000F, x, y);
-    }
-
-    @Override
-    public void kick(final Component reason, final Duration duration) {
-        getConnection().kick(render(reason), duration.toMillis());
     }
 
     @Override
@@ -123,13 +65,5 @@ public final class PlayerAudienceImpl implements PlayerAudience {
     @Override
     public Player getPlayer() {
         return player;
-    }
-
-    private String render(final Component component) {
-        return ComponentStringBuilder.mindustry(getMetadata()).append(component).toString();
-    }
-
-    private NetConnection getConnection() {
-        return Objects.requireNonNull(player.con(), "Player connection is null");
     }
 }

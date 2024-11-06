@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.key;
 
 import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.player.MUUID;
 import java.util.Locale;
 import mindustry.game.Team;
@@ -31,6 +32,7 @@ public final class StandardKeys {
     public static final Key<MUUID> MUUID = Key.of(Key.DISTRIBUTOR_NAMESPACE, "muuid", MUUID.class);
     public static final Key<Locale> LOCALE = Key.of(Key.DISTRIBUTOR_NAMESPACE, "locale", Locale.class);
     public static final Key<Team> TEAM = Key.of(Key.DISTRIBUTOR_NAMESPACE, "team", Team.class);
+    public static final Key<ComponentColor> COLOR = Key.of(Key.DISTRIBUTOR_NAMESPACE, "color", ComponentColor.class);
 
     private StandardKeys() {}
 }

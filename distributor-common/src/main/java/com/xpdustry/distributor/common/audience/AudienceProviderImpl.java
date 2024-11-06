@@ -23,6 +23,7 @@ import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
 import com.xpdustry.distributor.api.audience.ForwardingAudience;
 import com.xpdustry.distributor.api.audience.PlayerAudience;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
 import com.xpdustry.distributor.api.key.KeyContainer;
@@ -33,16 +34,19 @@ import com.xpdustry.distributor.api.util.Priority;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.gen.Player;
+import mindustry.net.NetConnection;
 
 public final class AudienceProviderImpl implements AudienceProvider {
 
     private final Map<MUUID, Audience> players = new ConcurrentHashMap<>();
     // Using int map in case a smart guy tries to override default teams
     private final IntMap<TeamAudience> teams = new IntMap<>();
+    private final Map<NetConnection, NetConnectionMetadata> connections = new WeakHashMap<>();
 
     public AudienceProviderImpl(final MindustryPlugin plugin, final EventBus bus) {
         for (int i = 0; i < Team.all.length; i++) {
@@ -58,6 +62,11 @@ public final class AudienceProviderImpl implements AudienceProvider {
                 Priority.LOWEST,
                 plugin,
                 event -> players.remove(MUUID.from(event.player)));
+        bus.subscribe(
+                EventType.ConnectPacketEvent.class,
+                Priority.HIGHEST,
+                plugin,
+                event -> connections.putIfAbsent(event.connection, NetConnectionMetadata.from(event.packet)));
     }
 
     @Override
@@ -82,6 +91,13 @@ public final class AudienceProviderImpl implements AudienceProvider {
     public PlayerAudience getPlayer(final Player player) {
         final var audience = (PlayerAudience) players.get(MUUID.from(player));
         return audience != null ? audience : new PlayerAudienceImpl(player);
+    }
+
+    @Override
+    public Audience getConnection(final NetConnection connection) {
+        final var player = connection.player;
+        if (player != null) return getPlayer(player);
+        return new NetConnectionAudienceImpl(connection, connections::get);
     }
 
     @Override
@@ -110,6 +126,7 @@ public final class AudienceProviderImpl implements AudienceProvider {
             this.id = id;
             this.metadata = DynamicKeyContainer.builder()
                     .putSupplied(StandardKeys.TEAM, () -> Team.get(id))
+                    .putSupplied(StandardKeys.COLOR, () -> ComponentColor.from(Team.get(id).color))
                     .build();
         }
 
