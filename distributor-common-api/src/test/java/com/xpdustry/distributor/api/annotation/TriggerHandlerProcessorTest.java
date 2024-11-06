@@ -163,7 +163,6 @@ public final class TriggerHandlerProcessorTest {
         public final CompletableFuture<String> future = new CompletableFuture<>();
 
         @TriggerHandler(EventType.Trigger.update)
-        @Async
         public void event() {
             if (this.event) {
                 throw new IllegalStateException("Event is true.");

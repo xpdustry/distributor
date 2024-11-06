@@ -28,12 +28,8 @@ import com.xpdustry.distributor.api.test.TestPlugin;
 import com.xpdustry.distributor.api.test.TestScheduler;
 import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.common.event.EventBusImpl;
-import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,8 +43,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(ManageScheduler.class)
 @SuppressWarnings({"UnusedMethod", "UnusedVariable"})
 public final class EventHandlerProcessorTest {
-
-    private static final Duration TIMEOUT = Duration.ofSeconds(1L);
 
     private EventHandlerProcessor processor;
     private @TestScheduler PluginScheduler scheduler;
@@ -100,19 +94,6 @@ public final class EventHandlerProcessorTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void test_async() {
-        final var instance = new TestAsync();
-        final var event = new TestEvent("Hello, world!");
-        this.processor.process(instance);
-
-        this.events.post(event);
-        assertThat(instance.future)
-                .succeedsWithin(TIMEOUT, InstanceOfAssertFactories.STRING)
-                .startsWith(PluginSchedulerImpl.DISTRIBUTOR_WORKER_BASE_NAME);
-        assertThat(instance.event).isEqualTo(event);
-    }
-
     private static final class TestSimple {
 
         public @Nullable TestEvent event = null;
@@ -156,22 +137,6 @@ public final class EventHandlerProcessorTest {
 
         @EventHandler
         public void event(final TestEvent event1, final TestEvent event2) {}
-    }
-
-    private static final class TestAsync {
-
-        public volatile @Nullable TestEvent event = null;
-        public final CompletableFuture<String> future = new CompletableFuture<>();
-
-        @EventHandler
-        @Async
-        public void event(final TestEvent event) {
-            if (this.event != null) {
-                throw new IllegalStateException("Event is not null.");
-            }
-            this.event = event;
-            this.future.complete(Thread.currentThread().getName());
-        }
     }
 
     private record TestEvent(String message) {}

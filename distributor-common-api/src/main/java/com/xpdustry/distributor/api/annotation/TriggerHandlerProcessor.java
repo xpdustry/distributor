@@ -43,8 +43,7 @@ final class TriggerHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
-        final var handler =
-                new TriggerMethodEventHandler(instance, method, method.isAnnotationPresent(Async.class), this.plugin);
+        final var handler = new TriggerMethodEventHandler(instance, method, this.plugin);
         return DistributorProvider.get()
                 .getEventBus()
                 .subscribe(annotation.value(), annotation.priority(), this.plugin, handler);
@@ -57,23 +56,10 @@ final class TriggerHandlerProcessor
                 : Optional.of(() -> results.forEach(EventSubscription::unsubscribe));
     }
 
-    private record TriggerMethodEventHandler(Object target, Method method, boolean async, MindustryPlugin plugin)
-            implements Runnable {
+    private record TriggerMethodEventHandler(Object target, Method method, MindustryPlugin plugin) implements Runnable {
 
         @Override
         public void run() {
-            if (this.async) {
-                DistributorProvider.get()
-                        .getPluginScheduler()
-                        .schedule(this.plugin)
-                        .async(true)
-                        .execute(this::invoke);
-            } else {
-                this.invoke();
-            }
-        }
-
-        private void invoke() {
             try {
                 this.method.invoke(this.target);
             } catch (final ReflectiveOperationException e) {

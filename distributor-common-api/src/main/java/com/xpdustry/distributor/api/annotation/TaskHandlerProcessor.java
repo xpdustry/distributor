@@ -50,7 +50,7 @@ final class TaskHandlerProcessor extends MethodAnnotationProcessor<TaskHandler, 
         final var builder = DistributorProvider.get()
                 .getPluginScheduler()
                 .schedule(this.plugin)
-                .async(method.isAnnotationPresent(Async.class));
+                .async(annotation.async());
         if (annotation.delay() > -1) {
             builder.delay(annotation.delay(), annotation.unit());
         }

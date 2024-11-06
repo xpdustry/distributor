@@ -136,8 +136,7 @@ public final class TaskHandlerProcessorTest {
 
         public final CompletableFuture<String> future = new CompletableFuture<>();
 
-        @TaskHandler
-        @Async
+        @TaskHandler(async = true)
         public void task() {
             future.complete(Thread.currentThread().getName());
         }

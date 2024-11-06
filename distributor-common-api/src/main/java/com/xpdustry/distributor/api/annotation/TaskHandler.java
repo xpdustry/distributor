@@ -52,4 +52,9 @@ public @interface TaskHandler {
      * The time unit of the interval and initial delay.
      */
     MindustryTimeUnit unit() default MindustryTimeUnit.SECONDS;
+
+    /**
+     * Whether the task should be executed asynchronously.
+     */
+    boolean async() default false;
 }
