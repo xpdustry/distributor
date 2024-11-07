@@ -169,13 +169,13 @@ public interface Action {
     }
 
     /**
-     * Returns an action that creates and shows a new window with the given manager.
+     * Returns an action that creates and shows a new window with the given manager and previous window.
      *
      * @param manager the window manager
      * @return the action
      */
     static Action show(final WindowManager manager) {
-        return window -> manager.create(window.getViewer()).show();
+        return window -> manager.create(window).show();
     }
 
     /**
