@@ -19,6 +19,8 @@
 package com.xpdustry.distributor.api.gui;
 
 import com.xpdustry.distributor.api.key.Key;
+import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * A function that is executed when an interaction occurs in a gui. Takes an additional parameter as the input.
@@ -45,6 +47,41 @@ public interface BiAction<T> {
      */
     static <T> BiAction<T> with(final Key<T> key) {
         return (window, value) -> window.getState().set(key, value);
+    }
+
+    /**
+     * Returns a bi-action using the result of the given delegate to run another action.
+     *
+     * @param delegate the delegate
+     * @return the bi-action
+     */
+    static <T> BiAction<T> delegate(final BiFunction<Window, T, Action> delegate) {
+        return (window, value) -> delegate.apply(window, value).act(window);
+    }
+
+    /**
+     * Returns a bi-action composed of multiple bi-actions.
+     *
+     * @param actions the bi-actions
+     * @return the bi-action
+     */
+    @SafeVarargs
+    static <T> BiAction<T> compose(final BiAction<T>... actions) {
+        return compose(List.of(actions));
+    }
+
+    /**
+     * Returns a bi-action composed of multiple bi-actions.
+     *
+     * @param actions the bi-actions
+     * @return the bi-action
+     */
+    static <T> BiAction<T> compose(final List<BiAction<T>> actions) {
+        return (window, value) -> {
+            for (final var action : actions) {
+                action.act(window, value);
+            }
+        };
     }
 
     /**

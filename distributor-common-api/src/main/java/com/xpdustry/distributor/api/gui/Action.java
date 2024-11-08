@@ -21,6 +21,7 @@ package com.xpdustry.distributor.api.gui;
 import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.key.Key;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import mindustry.Vars;
@@ -176,6 +177,40 @@ public interface Action {
      */
     static Action show(final WindowManager manager) {
         return window -> manager.create(window).show();
+    }
+
+    /**
+     * Returns an action using the result of the given delegate to run another action.
+     *
+     * @param delegate the delegate
+     * @return the action
+     */
+    static Action delegate(final Function<Window, Action> delegate) {
+        return window -> delegate.apply(window).act(window);
+    }
+
+    /**
+     * Returns an action composed of multiple actions.
+     *
+     * @param actions the actions
+     * @return the action
+     */
+    static Action compose(final Action... actions) {
+        return compose(List.of(actions));
+    }
+
+    /**
+     * Returns an action composed of multiple actions.
+     *
+     * @param actions the actions
+     * @return the action
+     */
+    static Action compose(final List<Action> actions) {
+        return window -> {
+            for (final var action : actions) {
+                action.act(window);
+            }
+        };
     }
 
     /**
