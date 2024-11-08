@@ -67,7 +67,11 @@ public interface BiAction<T> {
      */
     @SafeVarargs
     static <T> BiAction<T> compose(final BiAction<T>... actions) {
-        return compose(List.of(actions));
+        return (window, value) -> {
+            for (final var action : actions) {
+                action.act(window, value);
+            }
+        };
     }
 
     /**

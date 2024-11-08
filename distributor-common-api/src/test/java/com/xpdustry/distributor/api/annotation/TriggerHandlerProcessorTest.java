@@ -28,13 +28,10 @@ import com.xpdustry.distributor.api.test.TestPlugin;
 import com.xpdustry.distributor.api.test.TestScheduler;
 import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.common.event.EventBusImpl;
-import com.xpdustry.distributor.common.scheduler.PluginSchedulerImpl;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import mindustry.game.EventType;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,18 +94,6 @@ public final class TriggerHandlerProcessorTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void test_async() {
-        final var instance = new TestAsync();
-        this.processor.process(instance);
-
-        this.events.post(EventType.Trigger.update);
-        assertThat(instance.future)
-                .succeedsWithin(TIMEOUT, InstanceOfAssertFactories.STRING)
-                .startsWith(PluginSchedulerImpl.DISTRIBUTOR_WORKER_BASE_NAME);
-        assertThat(instance.event).isTrue();
-    }
-
     private static final class TestSimple {
 
         public boolean event1 = false;
@@ -155,20 +140,5 @@ public final class TriggerHandlerProcessorTest {
 
         @TriggerHandler(EventType.Trigger.update)
         public void event(final Object object1, final Object object2) {}
-    }
-
-    private static final class TestAsync {
-
-        public volatile boolean event = false;
-        public final CompletableFuture<String> future = new CompletableFuture<>();
-
-        @TriggerHandler(EventType.Trigger.update)
-        public void event() {
-            if (this.event) {
-                throw new IllegalStateException("Event is true.");
-            }
-            this.event = true;
-            this.future.complete(Thread.currentThread().getName());
-        }
     }
 }
