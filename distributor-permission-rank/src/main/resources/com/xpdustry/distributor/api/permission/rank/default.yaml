@@ -1,4 +1,3 @@
-version: 1
 ranks:
   mindustry_player:
     distributor.player.lookup.name: true
