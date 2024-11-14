@@ -30,10 +30,13 @@ import mindustry.gen.Call;
 import mindustry.net.NetConnection;
 import mindustry.net.Packets;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
 public class BaseNetConnectionAudience implements Audience {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     protected final NetConnection connection;
 
@@ -104,8 +107,7 @@ public class BaseNetConnectionAudience implements Audience {
             final Packets.@Nullable KickReason reason, final String details, final long duration, final boolean log) {
         if (this.connection.kicked) return;
 
-        LoggerFactory.getLogger("ROOT")
-                .atLevel(log ? Level.INFO : Level.DEBUG)
+        LOGGER.atLevel(log ? Level.INFO : Level.DEBUG)
                 .setMessage("Kicking connection {} / {}; Reason: {}")
                 .addArgument(this.connection.address)
                 .addArgument(this.connection.uuid)
