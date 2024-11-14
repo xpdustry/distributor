@@ -18,15 +18,20 @@
  */
 package com.xpdustry.distributor.common.audience;
 
+import arc.Core;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.PlayerAudience;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import java.net.URI;
 import java.time.Duration;
+import mindustry.Vars;
 import mindustry.gen.Call;
 import mindustry.net.NetConnection;
 import mindustry.net.Packets;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 public class BaseNetConnectionAudience implements Audience {
 
@@ -86,13 +91,46 @@ public class BaseNetConnectionAudience implements Audience {
     }
 
     @Override
-    public void kick(final Component reason, final Duration duration) {
-        this.connection.kick(render(reason), duration.toMillis());
+    public void kick(final Component reason, final Duration duration, final boolean log) {
+        this.kick(Packets.KickReason.kick, render(reason).replace('\n', ' '), duration.toMillis(), log);
     }
 
     @Override
-    public void kick(final Packets.KickReason reason, final Duration duration) {
-        this.connection.kick(reason, duration.toMillis());
+    public void kick(final Packets.KickReason reason, final Duration duration, final boolean log) {
+        this.kick(reason, reason.name(), duration.toMillis(), log);
+    }
+
+    private void kick(
+            final Packets.@Nullable KickReason reason, final String details, final long duration, final boolean log) {
+        if (this.connection.kicked) return;
+
+        LoggerFactory.getLogger("ROOT")
+                .atLevel(log ? Level.INFO : Level.DEBUG)
+                .setMessage("Kicking connection {} / {}; Reason: {}")
+                .addArgument(this.connection.address)
+                .addArgument(this.connection.uuid)
+                .addArgument(details)
+                .log();
+
+        if (duration > 0) {
+            Vars.netServer.admins.handleKicked(this.connection.uuid, this.connection.address, duration);
+        }
+
+        if (reason != null) {
+            Call.kick(this.connection, reason);
+        } else {
+            Call.kick(this.connection, details);
+        }
+
+        if (this.connection.uuid.startsWith("steam:")) {
+            // run with a 2-frame delay so there is time to send the kick packet, steam handles this weirdly
+            Core.app.post(() -> Core.app.post(this.connection::close));
+        } else {
+            this.connection.close();
+        }
+
+        Vars.netServer.admins.save();
+        this.connection.kicked = true;
     }
 
     protected String render(final Component component) {

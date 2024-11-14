@@ -118,16 +118,16 @@ public interface ForwardingAudience extends Audience {
     }
 
     @Override
-    default void kick(final Component reason, final Duration duration) {
+    default void kick(final Component reason, final Duration duration, final boolean log) {
         for (final var audience : getAudiences()) {
-            audience.kick(reason, duration);
+            audience.kick(reason, duration, log);
         }
     }
 
     @Override
-    default void kick(final Packets.KickReason reason, final Duration duration) {
+    default void kick(final Packets.KickReason reason, final Duration duration, final boolean log) {
         for (final var audience : getAudiences()) {
-            audience.kick(reason, duration);
+            audience.kick(reason, duration, log);
         }
     }
 }

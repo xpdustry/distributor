@@ -147,7 +147,18 @@ public interface Audience {
      * @param reason   the reason
      * @param duration the duration
      */
-    default void kick(final Component reason, final Duration duration) {}
+    default void kick(final Component reason, final Duration duration) {
+        kick(reason, duration, true);
+    }
+
+    /**
+     * Kicks this audience from the server.
+     *
+     * @param reason   the reason
+     * @param duration the duration
+     * @param log      whether the kick should be logged
+     */
+    default void kick(final Component reason, final Duration duration, final boolean log) {}
 
     /**
      * Kicks this audience from the server.
@@ -155,7 +166,18 @@ public interface Audience {
      * @param reason   the reason
      * @param duration the duration
      */
-    default void kick(final Packets.KickReason reason, final Duration duration) {}
+    default void kick(final Packets.KickReason reason, final Duration duration) {
+        kick(reason, duration, true);
+    }
+
+    /**
+     * Kicks this audience from the server.
+     *
+     * @param reason   the reason
+     * @param duration the duration
+     * @param log      whether the kick should be logged
+     */
+    default void kick(final Packets.KickReason reason, final Duration duration, final boolean log) {}
 
     /**
      * Returns the metadata of this audience.
