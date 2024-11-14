@@ -27,6 +27,9 @@ bin/
 hs_err_pid*
 replay_pid*
 
+## Kotlin
+.kotlin/
+
 ## Intellij
 .idea/
 *.ipr
