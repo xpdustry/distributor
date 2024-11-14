@@ -38,6 +38,11 @@ import mindustry.gen.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * An abstract implementation of a {@link TransformerWindowManager}.
+ *
+ * @param <P> the pane type
+ */
 public abstract class AbstractTransformerWindowManager<P extends Pane>
         implements TransformerWindowManager<P>, PluginAware {
 
@@ -78,7 +83,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
     }
 
     @Override
-    public Collection<Window> getActiveWindows() {
+    public final Collection<Window> getActiveWindows() {
         return Collections.unmodifiableCollection(this.windows.values());
     }
 
@@ -101,11 +106,11 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
     }
 
-    protected Map<MUUID, SimpleWindow> getWindows() {
+    protected final Map<MUUID, SimpleWindow> getWindows() {
         return Collections.unmodifiableMap(windows);
     }
 
-    protected boolean isDisposed() {
+    protected final boolean isDisposed() {
         return disposed;
     }
 

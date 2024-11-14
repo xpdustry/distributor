@@ -29,11 +29,23 @@ import com.xpdustry.distributor.api.util.TypeToken;
  */
 public interface ServiceProvider<T> {
 
+    /**
+     * Returns the plugin providing the service.
+     */
     MindustryPlugin getPlugin();
 
+    /**
+     * Returns the service type.
+     */
     TypeToken<T> getService();
 
+    /**
+     * Returns the service instance.
+     */
     T getInstance();
 
+    /**
+     * Returns the priority of the service.
+     */
     Priority getPriority();
 }

@@ -28,7 +28,6 @@ import com.xpdustry.distributor.api.test.TestPlugin;
 import com.xpdustry.distributor.api.test.TestScheduler;
 import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.common.event.EventBusImpl;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import mindustry.game.EventType;
@@ -44,8 +43,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(ManageScheduler.class)
 @SuppressWarnings({"UnusedMethod", "UnusedVariable"})
 public final class TriggerHandlerProcessorTest {
-
-    private static final Duration TIMEOUT = Duration.ofSeconds(1L);
 
     private TriggerHandlerProcessor processor;
     private @TestScheduler PluginScheduler scheduler;

@@ -21,7 +21,17 @@ package com.xpdustry.distributor.api.gui.transform;
 import com.xpdustry.distributor.api.gui.Pane;
 import com.xpdustry.distributor.api.gui.WindowManager;
 
+/**
+ * A window manager that uses transformers to create panes, used for rendering the GUI.
+ *
+ * @param <P> the type of the pane
+ */
 public interface TransformerWindowManager<P extends Pane> extends WindowManager {
 
+    /**
+     * Adds a transformer to this window manager.
+     *
+     * @param transformer the transformer
+     */
     void addTransformer(final Transformer<P> transformer);
 }

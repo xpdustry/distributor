@@ -28,14 +28,26 @@ import mindustry.mod.Mods;
 import mindustry.mod.Plugin;
 import org.immutables.value.Value;
 
+/**
+ * A immutable implementation of {@link Mods.ModMeta}.
+ */
 @DistributorDataClassWithBuilder
 @Value.Immutable
 public interface PluginMetadata {
 
+    /**
+     * Returns a new {@link PluginMetadata.Builder} instance.
+     */
     static PluginMetadata.Builder builder() {
         return PluginMetadataImpl.builder();
     }
 
+    /**
+     * Returns a new {@link PluginMetadata.Builder} instance from the given {@link PluginMetadata}.
+     *
+     * @param metadata the {@link PluginMetadata} to create the builder from
+     * @return the created {@link PluginMetadata.Builder}
+     */
     static PluginMetadata.Builder builder(final PluginMetadata metadata) {
         return PluginMetadataImpl.builder().from(metadata);
     }
@@ -184,28 +196,64 @@ public interface PluginMetadata {
         return List.of();
     }
 
+    /**
+     * The builder for {@link PluginMetadata}.
+     */
     interface Builder {
 
+        /**
+         * Sets the name of the plugin.
+         */
         Builder setName(final String name);
 
+        /**
+         * Sets the display name of the plugin.
+         */
         Builder setDisplayName(final String displayName);
 
+        /**
+         * Sets the author of the plugin.
+         */
         Builder setAuthor(final String author);
 
+        /**
+         * Sets the description of the plugin.
+         */
         Builder setDescription(final String description);
 
+        /**
+         * Sets the version of the plugin.
+         */
         Builder setVersion(final String version);
 
+        /**
+         * Sets the main class of the plugin.
+         */
         Builder setMainClass(final String mainClass);
 
+        /**
+         * Sets the minimum game version required by the plugin.
+         */
         Builder setMinGameVersion(final int minGameVersion);
 
+        /**
+         * Sets the GitHub repository of the plugin.
+         */
         Builder setRepository(final String repository);
 
+        /**
+         * Sets the dependencies of the plugin.
+         */
         Builder setDependencies(final Iterable<String> elements);
 
+        /**
+         * Sets the soft dependencies of the plugin.
+         */
         Builder setSoftDependencies(final Iterable<String> elements);
 
+        /**
+         * Creates a new {@link PluginMetadata} instance with the builder's properties.
+         */
         PluginMetadata build();
     }
 }

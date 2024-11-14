@@ -86,6 +86,9 @@ public interface PlayerLookup {
             return QueryImpl.builder();
         }
 
+        /**
+         * The input string to search for.
+         */
         String getInput();
 
         /**
@@ -106,6 +109,9 @@ public interface PlayerLookup {
             return true;
         }
 
+        /**
+         * A builder for creating queries.
+         */
         interface Builder {
 
             Builder setInput(final String queryInput);

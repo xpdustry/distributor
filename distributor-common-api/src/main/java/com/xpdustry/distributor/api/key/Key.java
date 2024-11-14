@@ -23,14 +23,28 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.UUID;
 import org.immutables.value.Value;
 
+/**
+ * A key is typesafe way of retrieving values from containers.
+ *
+ * @param <V> the type of the value.
+ */
 @DistributorDataClass
 @Value.Immutable
 public interface Key<V> {
 
+    /**
+     * The mindustry namespace. Used for keys originating from vanilla mindustry.
+     */
     String MINDUSTRY_NAMESPACE = "mindustry";
 
+    /**
+     * The distributor namespace. Used for keys originating from distributor.
+     */
     String DISTRIBUTOR_NAMESPACE = "distributor";
 
+    /**
+     * The generated namespace. Used for keys that are generated and do not need a specific name.
+     */
     String GENERATED_NAMESPACE = "generated";
 
     static Key<Void> of(final String name) {
@@ -73,7 +87,7 @@ public interface Key<V> {
     }
 
     private static void ensureValidString(final String value, final String name) {
-        if (value.isEmpty() || value.isBlank()) throw new IllegalArgumentException(name + " cannot be empty nor blank");
+        if (value.isBlank()) throw new IllegalArgumentException(name + " cannot be empty nor blank");
     }
 
     String getNamespace();

@@ -21,6 +21,9 @@ package com.xpdustry.distributor.api.gui.menu;
 import com.xpdustry.distributor.api.gui.transform.TransformerWindowManager;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 
+/**
+ * A window manager for menu windows.
+ */
 public interface MenuManager extends TransformerWindowManager<MenuPane> {
 
     static MenuManager create(final MindustryPlugin plugin) {

@@ -20,18 +20,42 @@ package com.xpdustry.distributor.api.util;
 
 import java.util.function.Consumer;
 
-public interface Buildable<T, B extends Buildable.Builder<T, B>> {
+/**
+ * A buildable object.
+ *
+ * @param <T> the type of the object
+ * @param <B> the type of the builder
+ */
+public interface Buildable<T extends Buildable<T, B>, B extends Buildable.Builder<T, B>> {
 
+    /**
+     * Converts this object to a builder with the same properties.
+     */
     B toBuilder();
 
-    interface Builder<T, B extends Builder<T, B>> {
+    /**
+     * A builder for an object.
+     *
+     * @param <T> the type of the object
+     * @param <B> the type of the builder
+     */
+    interface Builder<T extends Buildable<T, B>, B extends Builder<T, B>> {
 
+        /**
+         * Modifies this builder.
+         *
+         * @param modifier the modifier
+         * @return this builder
+         */
         @SuppressWarnings("unchecked")
         default B modify(final Consumer<B> modifier) {
             modifier.accept((B) this);
             return (B) this;
         }
 
+        /**
+         * Builds the object.
+         */
         T build();
     }
 }

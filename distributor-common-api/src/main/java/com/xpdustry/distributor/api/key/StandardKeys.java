@@ -24,6 +24,9 @@ import com.xpdustry.distributor.api.player.MUUID;
 import java.util.Locale;
 import mindustry.game.Team;
 
+/**
+ * A collection of standard keys used in the distributor API.
+ */
 public final class StandardKeys {
 
     public static final Key<String> NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "name", String.class);

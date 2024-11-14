@@ -37,6 +37,9 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
      */
     boolean isAsync();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void cancel() {
         cancel(false);
@@ -56,6 +59,12 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
      */
     interface Builder {
 
+        /**
+         * Set the task execution mode.
+         *
+         * @param async whether the task should run asynchronously.
+         * @return this builder.
+         */
         Builder async(final boolean async);
 
         /**

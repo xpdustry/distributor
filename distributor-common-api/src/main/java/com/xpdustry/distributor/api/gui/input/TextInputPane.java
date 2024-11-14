@@ -24,6 +24,9 @@ import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
 import com.xpdustry.distributor.api.gui.Pane;
 
+/**
+ * A pane for text input.
+ */
 public interface TextInputPane extends Pane {
 
     static TextInputPane create() {

@@ -23,6 +23,9 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import com.xpdustry.distributor.api.gui.Pane;
 
+/**
+ * A popup pane.
+ */
 public interface PopupPane extends Pane {
 
     static PopupPane create() {

@@ -23,15 +23,26 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
+/**
+ * A utility class for representing complex generic types.
+ *
+ * @param <T> the type
+ */
 public abstract class TypeToken<T> {
 
     private final Type type;
     private final Class<?> rawType;
 
+    /**
+     * Creates a new type token from the given type.
+     */
     public static <T> TypeToken<T> of(final Class<T> type) {
         return new TypeToken<>(type) {};
     }
 
+    /**
+     * Creates a new type token from the given type.
+     */
     public static TypeToken<?> of(final Type type) {
         return new TypeToken<>(type) {};
     }

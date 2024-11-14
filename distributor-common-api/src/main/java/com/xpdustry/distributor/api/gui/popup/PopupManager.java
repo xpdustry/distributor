@@ -22,13 +22,24 @@ import com.xpdustry.distributor.api.gui.transform.TransformerWindowManager;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.time.Duration;
 
+/**
+ * A window manager for popups windows.
+ */
 public interface PopupManager extends TransformerWindowManager<PopupPane> {
 
     static PopupManager create(final MindustryPlugin plugin) {
         return new PopupManagerImpl(plugin);
     }
 
+    /**
+     * Returns the update interval of the popup windows.
+     */
     Duration getUpdateInterval();
 
+    /**
+     * Sets the update interval of the popup windows.
+     *
+     * @param updateInterval the update interval
+     */
     void setUpdateInterval(final Duration updateInterval);
 }

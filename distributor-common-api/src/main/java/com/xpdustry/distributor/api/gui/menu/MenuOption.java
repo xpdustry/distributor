@@ -24,6 +24,9 @@ import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import org.immutables.value.Value;
 
+/**
+ * A menu option.
+ */
 @DistributorDataClass
 @Value.Immutable
 public interface MenuOption {

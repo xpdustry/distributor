@@ -28,23 +28,62 @@ import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 
+/**
+ * The distributor API.
+ */
 public interface Distributor {
 
+    /**
+     * Returns the service manager.
+     * Available on init.
+     */
     ServiceManager getServiceManager();
 
+    /**
+     * Returns the global translation source.
+     * Available on init.
+     */
     TranslationSource getGlobalTranslationSource();
 
+    /**
+     * Returns the event bus.
+     * Available on init.
+     */
     EventBus getEventBus();
 
-    PlayerPermissionProvider getPlayerPermissionProvider();
-
-    PlayerLookup getPlayerLookup();
-
+    /**
+     * Returns the plugin scheduler.
+     * Available on init.
+     */
     PluginScheduler getPluginScheduler();
 
+    /**
+     * Returns the component renderer provider.
+     * Available on init.
+     */
     ComponentRendererProvider getComponentRendererProvider();
 
+    /**
+     * Returns the component decoder.
+     * Available on init.
+     */
     ComponentDecoder<String> getMindustryComponentDecoder();
 
+    /**
+     * Returns the audience provider.
+     * Available on init.
+     */
     AudienceProvider getAudienceProvider();
+
+    /**
+     * Returns the player permission provider.
+     * Available on load.
+     */
+    PlayerPermissionProvider getPlayerPermissionProvider();
+
+    /**
+     * Returns the player lookup.
+     * Available on load.
+     */
+    PlayerLookup getPlayerLookup();
 }

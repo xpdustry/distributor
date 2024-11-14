@@ -23,6 +23,9 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.Pane;
 
+/**
+ * A menu pane.
+ */
 public interface MenuPane extends Pane {
 
     static MenuPane create() {

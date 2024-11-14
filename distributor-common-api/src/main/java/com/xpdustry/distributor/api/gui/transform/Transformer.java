@@ -24,11 +24,21 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import mindustry.gen.Player;
 import org.immutables.value.Value;
 
+/**
+ * A function that transforms a pane.
+ *
+ * @param <P> the type of the pane
+ */
 @FunctionalInterface
 public interface Transformer<P extends Pane> {
 
     void transform(final Context<P> context);
 
+    /**
+     * The context of a pane transformation.
+     *
+     * @param <P> the type of the pane
+     */
     @DistributorDataClass
     @Value.Immutable
     interface Context<P extends Pane> {

@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.util;
 
+/**
+ * Utility class for ordering elements by priority.
+ */
 public enum Priority {
     HIGHEST,
     HIGH,
