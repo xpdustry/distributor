@@ -30,7 +30,7 @@ public interface ComponentRendererProvider {
      * Returns a renderer for the specified component.
      *
      * @param component the component
-     * @param <T> the component type
+     * @param <T>       the component type
      * @return the renderer or {@code null} if no renderer is available
      */
     <T extends Component> @Nullable ComponentRenderer<T> getRenderer(final T component);

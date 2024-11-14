@@ -77,7 +77,7 @@ public interface CommandFacade {
      * The result is affected by the permissions of the sender.
      *
      * @param sender the sender to get the help for
-     * @param query the query to get the help for
+     * @param query  the query to get the help for
      * @return the help information for this command
      */
     CommandHelp getHelp(final CommandSender sender, final String query);

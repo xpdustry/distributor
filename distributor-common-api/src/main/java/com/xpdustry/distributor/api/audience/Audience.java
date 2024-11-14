@@ -84,9 +84,9 @@ public interface Audience {
     /**
      * Sends a message to this audience.
      *
-     * @param component the message
+     * @param component   the message
      * @param unformatted the unformatted message
-     * @param sender the sender
+     * @param sender      the sender
      */
     default void sendMessage(final Component component, final Component unformatted, final Audience sender) {}
 
@@ -113,7 +113,7 @@ public interface Audience {
      * Sends a notification to this audience.
      *
      * @param component the notification
-     * @param icon the icon
+     * @param icon      the icon
      */
     default void sendNotification(final Component component, final char icon) {}
 
@@ -134,9 +134,9 @@ public interface Audience {
     /**
      * Shows a label to this audience.
      *
-     * @param label the label
-     * @param x the x position in world coordinates
-     * @param y the y position in world coordinates
+     * @param label    the label
+     * @param x        the x position in world coordinates
+     * @param y        the y position in world coordinates
      * @param duration the duration
      */
     default void showLabel(final Component label, final float x, final float y, final Duration duration) {}
@@ -144,7 +144,7 @@ public interface Audience {
     /**
      * Kicks this audience from the server.
      *
-     * @param reason the reason
+     * @param reason   the reason
      * @param duration the duration
      */
     default void kick(final Component reason, final Duration duration) {}
@@ -152,7 +152,7 @@ public interface Audience {
     /**
      * Kicks this audience from the server.
      *
-     * @param reason the reason
+     * @param reason   the reason
      * @param duration the duration
      */
     default void kick(final Packets.KickReason reason, final Duration duration) {}

@@ -57,7 +57,7 @@ public interface PlayerLookup {
      * Finds online players matching the given query.
      *
      * @param players the players to search
-     * @param query the query
+     * @param query   the query
      * @return the matching players
      */
     List<Player> findOnlinePlayers(final Collection<Player> players, final Query query);

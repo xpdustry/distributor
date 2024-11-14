@@ -31,6 +31,7 @@ public final class DistributorProvider {
 
     /**
      * Returns the global {@link Distributor} factory.
+     *
      * @throws IllegalStateException if the API hasn't been initialized yet
      */
     public static Distributor get() {
@@ -42,6 +43,7 @@ public final class DistributorProvider {
 
     /**
      * Sets the global {@link Distributor} factory.
+     *
      * @throws IllegalStateException if the API has already been initialized
      */
     public static void set(final Distributor distributor) {
@@ -53,6 +55,7 @@ public final class DistributorProvider {
 
     /**
      * Clears the global {@link Distributor} factory.
+     *
      * @throws IllegalStateException if the API hasn't been initialized yet
      */
     public static void clear() {

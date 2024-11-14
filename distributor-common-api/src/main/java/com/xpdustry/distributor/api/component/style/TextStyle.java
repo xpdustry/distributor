@@ -41,8 +41,8 @@ public interface TextStyle {
     /**
      * Creates a new text style with the given colors and decorations.
      *
-     * @param textColor the text color
-     * @param backColor the background color
+     * @param textColor   the text color
+     * @param backColor   the background color
      * @param decorations the decorations
      * @return the text style
      */
@@ -163,7 +163,7 @@ public interface TextStyle {
      * Sets a decoration state. If the state is {@link TriState#UNDEFINED}, the decoration is removed.
      *
      * @param decoration the decoration
-     * @param state the state
+     * @param state      the state
      * @return a new text style with the given decoration state
      */
     default TextStyle setDecoration(final TextDecoration decoration, final TriState state) {

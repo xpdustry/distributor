@@ -46,7 +46,7 @@ public interface TextComponent extends BuildableComponent<TextComponent, TextCom
     /**
      * Creates a new text component with the specified content and text color.
      *
-     * @param content the content
+     * @param content   the content
      * @param textColor the text color
      * @return the text component
      */
@@ -57,7 +57,7 @@ public interface TextComponent extends BuildableComponent<TextComponent, TextCom
     /**
      * Creates a new text component with the specified content and text textStyle.
      *
-     * @param content the content
+     * @param content   the content
      * @param textStyle the text textStyle
      * @return the text component
      */
@@ -78,7 +78,7 @@ public interface TextComponent extends BuildableComponent<TextComponent, TextCom
     /**
      * Creates a new text component with the specified character and text color.
      *
-     * @param ch the character
+     * @param ch        the character
      * @param textColor the text color
      * @return the text component
      */
@@ -89,7 +89,7 @@ public interface TextComponent extends BuildableComponent<TextComponent, TextCom
     /**
      * Creates a new text component with the specified character and text textStyle.
      *
-     * @param ch the character
+     * @param ch        the character
      * @param textStyle the text textStyle
      * @return the text component
      */

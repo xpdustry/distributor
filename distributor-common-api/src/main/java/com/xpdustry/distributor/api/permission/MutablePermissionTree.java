@@ -36,7 +36,7 @@ public interface MutablePermissionTree extends PermissionTree {
      * Sets the permission with the given state.
      *
      * @param permission the permission
-     * @param state the state
+     * @param state      the state
      */
     default void setPermission(final String permission, final boolean state) {
         setPermission(permission, state, false);
@@ -46,8 +46,8 @@ public interface MutablePermissionTree extends PermissionTree {
      * Sets the permission with the given state.
      *
      * @param permission the permission
-     * @param state the state
-     * @param override whether to override the child permissions with the new state
+     * @param state      the state
+     * @param override   whether to override the child permissions with the new state
      */
     void setPermission(final String permission, final boolean state, final boolean override);
 
@@ -63,7 +63,7 @@ public interface MutablePermissionTree extends PermissionTree {
     /**
      * Sets the permissions from the given permission tree.
      *
-     * @param tree the permission tree
+     * @param tree     the permission tree
      * @param override whether to override the child permissions with the new state
      */
     default void setPermissions(final PermissionTree tree, final boolean override) {
@@ -85,7 +85,7 @@ public interface MutablePermissionTree extends PermissionTree {
      * Removes the given permission from the tree. Essentially making it {@link TriState#UNDEFINED}.
      *
      * @param permission the permission
-     * @param all whether to remove all child permissions
+     * @param all        whether to remove all child permissions
      */
     void removePermission(final String permission, final boolean all);
 

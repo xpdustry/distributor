@@ -45,7 +45,7 @@ public interface DescriptionFacade {
      * Creates a new translated description.
      * It uses distributor global translation system to translate the given key with either the input locale or the default locale.
      *
-     * @param key the translation key
+     * @param key           the translation key
      * @param defaultLocale the default locale
      * @return the created translated description
      */

@@ -32,7 +32,7 @@ public interface ComponentStringBuilder extends Appendable {
      * Returns a plain component string builder.
      * Will not apply any text styles or colors.
      *
-     * @param context the context
+     * @param context  the context
      * @param provider the component renderer provider
      * @return the plain component string builder
      */
@@ -60,7 +60,7 @@ public interface ComponentStringBuilder extends Appendable {
      * <p>
      * If a valid ANSI escape code is found in an appended text, it will be removed.
      *
-     * @param context the context
+     * @param context  the context
      * @param provider the component renderer provider
      * @return the ANSI component string builder
      */
@@ -89,7 +89,7 @@ public interface ComponentStringBuilder extends Appendable {
      * <p>
      * If an open square bracket is found in an appended text, it will be replaced with a double square bracket.
      *
-     * @param context the context
+     * @param context  the context
      * @param provider the component renderer provider
      * @return the Mindustry component string builder
      */

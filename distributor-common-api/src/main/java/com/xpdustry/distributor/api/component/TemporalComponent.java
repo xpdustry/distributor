@@ -41,7 +41,7 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
     /**
      * Creates a new temporal component with the specified temporal value and temporal textStyle.
      *
-     * @param temporal the temporal value
+     * @param temporal      the temporal value
      * @param temporalStyle the temporal textStyle
      * @return the temporal component
      */
@@ -52,9 +52,9 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
     /**
      * Creates a new temporal component with the specified temporal value, temporal textStyle, and text color.
      *
-     * @param temporal the temporal value
+     * @param temporal      the temporal value
      * @param temporalStyle the temporal textStyle
-     * @param textColor the text color
+     * @param textColor     the text color
      * @return the temporal component
      */
     static TemporalComponent temporal(
@@ -65,9 +65,9 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
     /**
      * Creates a new temporal component with the specified temporal value, temporal textStyle, and text textStyle.
      *
-     * @param temporal the temporal value
+     * @param temporal      the temporal value
      * @param temporalStyle the temporal textStyle
-     * @param textStyle the text textStyle
+     * @param textStyle     the text textStyle
      * @return the temporal component
      */
     static TemporalComponent temporal(
@@ -88,7 +88,7 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
     /**
      * Creates a new temporal component with the specified temporal value and text color.
      *
-     * @param temporal the temporal value
+     * @param temporal  the temporal value
      * @param textColor the text color
      * @return the temporal component
      */
@@ -99,7 +99,7 @@ public interface TemporalComponent extends BuildableComponent<TemporalComponent,
     /**
      * Creates a new temporal component with the specified temporal value and text textStyle.
      *
-     * @param temporal the temporal value
+     * @param temporal  the temporal value
      * @param textStyle the text textStyle
      * @return the temporal component
      */

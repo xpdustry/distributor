@@ -60,7 +60,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     /**
      * Creates a new list component with the specified text color and components.
      *
-     * @param textColor the text color
+     * @param textColor  the text color
      * @param components the components
      * @return the list component
      */
@@ -71,7 +71,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     /**
      * Creates a new list component with the specified text color and components.
      *
-     * @param textColor the text color
+     * @param textColor  the text color
      * @param components the components
      * @return the list component
      */
@@ -82,7 +82,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     /**
      * Creates a new list component with the specified text textStyle and components.
      *
-     * @param textStyle the text textStyle
+     * @param textStyle  the text textStyle
      * @param components the components
      * @return the list component
      */
@@ -93,7 +93,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
     /**
      * Creates a new list component with the specified text textStyle and components.
      *
-     * @param textStyle the text textStyle
+     * @param textStyle  the text textStyle
      * @param components the components
      * @return the list component
      */

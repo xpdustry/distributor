@@ -76,9 +76,9 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     /**
      * Constructs a new {@link MindustryCommandManager}.
      *
-     * @param plugin the owning plugin
-     * @param handler the command handler
-     * @param coordinator the execution coordinator
+     * @param plugin       the owning plugin
+     * @param handler      the command handler
+     * @param coordinator  the execution coordinator
      * @param senderMapper the sender mapper
      * @see CommandManager#CommandManager(ExecutionCoordinator, CommandRegistrationHandler)
      */

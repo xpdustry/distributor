@@ -46,7 +46,7 @@ public interface NumberComponent extends BuildableComponent<NumberComponent, Num
     /**
      * Creates a new number component with the specified number and text color.
      *
-     * @param number the number
+     * @param number    the number
      * @param textColor the text color
      * @return the number component
      */
@@ -58,7 +58,7 @@ public interface NumberComponent extends BuildableComponent<NumberComponent, Num
      * Creates a new number component with the specified number and text textStyle.
      *
      * @param number the number
-     * @param style the text textStyle
+     * @param style  the text textStyle
      * @return the number component
      */
     static NumberComponent number(final Number number, final TextStyle style) {

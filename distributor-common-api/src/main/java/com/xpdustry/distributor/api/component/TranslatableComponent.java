@@ -40,7 +40,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified key and parameters.
      *
-     * @param key the key
+     * @param key        the key
      * @param parameters the parameters
      * @return the translatable component
      */
@@ -51,9 +51,9 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified key, parameters, and text color.
      *
-     * @param key the key
+     * @param key        the key
      * @param parameters the parameters
-     * @param textColor the text color
+     * @param textColor  the text color
      * @return the translatable component
      */
     static TranslatableComponent translatable(
@@ -64,9 +64,9 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified key, parameters, and text textStyle.
      *
-     * @param key the key
+     * @param key        the key
      * @param parameters the parameters
-     * @param textStyle the text textStyle
+     * @param textStyle  the text textStyle
      * @return the translatable component
      */
     static TranslatableComponent translatable(
@@ -87,7 +87,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified key and text color.
      *
-     * @param key the key
+     * @param key       the key
      * @param textColor the text color
      * @return the translatable component
      */
@@ -98,7 +98,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified key and text textStyle.
      *
-     * @param key the key
+     * @param key       the key
      * @param textStyle the text textStyle
      * @return the translatable component
      */
@@ -119,7 +119,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified content and text color.
      *
-     * @param content the content
+     * @param content   the content
      * @param textColor the text color
      * @return the translatable component
      */
@@ -130,7 +130,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified content and text textStyle.
      *
-     * @param content the content
+     * @param content   the content
      * @param textStyle the text textStyle
      * @return the translatable component
      */
@@ -154,7 +154,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified team and text color.
      *
-     * @param team the team
+     * @param team      the team
      * @param textColor the text color
      * @return the translatable component
      */
@@ -165,7 +165,7 @@ public interface TranslatableComponent
     /**
      * Creates a new translatable component with the specified team and text textStyle.
      *
-     * @param team the team
+     * @param team      the team
      * @param textStyle the text textStyle
      * @return the translatable component
      */

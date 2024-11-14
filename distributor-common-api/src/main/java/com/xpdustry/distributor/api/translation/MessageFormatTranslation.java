@@ -30,7 +30,7 @@ public interface MessageFormatTranslation extends Translation {
      * The implementation returned by this method supports {@link com.xpdustry.distributor.api.component.render.ComponentStringBuilder}.
      *
      * @param pattern the pattern
-     * @param locale the locale
+     * @param locale  the locale
      * @return the created message format translation
      */
     static Translation of(final String pattern, final Locale locale) {

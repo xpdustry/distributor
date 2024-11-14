@@ -37,7 +37,7 @@ public interface Translation {
      * Formats the translation to the given {@link ComponentStringBuilder}.
      *
      * @param parameters the translation parameters
-     * @param builder the builder
+     * @param builder    the builder
      */
     default void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
         builder.append(format(parameters));

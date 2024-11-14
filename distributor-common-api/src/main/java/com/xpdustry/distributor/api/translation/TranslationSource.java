@@ -45,8 +45,8 @@ public interface TranslationSource {
     /**
      * Returns a translation for the given key or a default translation if absent.
      *
-     * @param key the key
-     * @param locale the locale
+     * @param key      the key
+     * @param locale   the locale
      * @param fallback the fallback translation
      * @return the translation
      */
@@ -59,7 +59,7 @@ public interface TranslationSource {
     /**
      * Returns a translation for the given key or a missing translation if absent.
      *
-     * @param key the key
+     * @param key    the key
      * @param locale the locale
      * @return the translation
      */

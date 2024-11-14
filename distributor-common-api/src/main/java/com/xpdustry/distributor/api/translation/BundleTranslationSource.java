@@ -44,7 +44,7 @@ public interface BundleTranslationSource extends TranslationSource {
     /**
      * Registers a map of translations.
      *
-     * @param locale  the locale of the translations
+     * @param locale       the locale of the translations
      * @param translations the map
      * @throws IllegalArgumentException if a key is already registered
      */
@@ -64,7 +64,7 @@ public interface BundleTranslationSource extends TranslationSource {
     /**
      * Registers the entries of the given resource bundle.
      *
-     * @param bundle the resource bundle
+     * @param bundle    the resource bundle
      * @param extractor the function to extract {@link Translation}
      */
     default void registerAll(
@@ -84,8 +84,8 @@ public interface BundleTranslationSource extends TranslationSource {
     /**
      * Registers the entries of the given resource bundles.
      *
-     * @param bundles the collection of resource bundles
-     * @param extractor  the function to extract {@link Translation}
+     * @param bundles   the collection of resource bundles
+     * @param extractor the function to extract {@link Translation}
      */
     default void registerAll(
             final Collection<ResourceBundle> bundles, final BiFunction<ResourceBundle, String, Translation> extractor) {
@@ -95,9 +95,9 @@ public interface BundleTranslationSource extends TranslationSource {
     /**
      * Registers a set of translations by using a mapper function to obtain each translation.
      *
-     * @param locale   the locale of the translations
-     * @param keys     the set of keys to register
-     * @param mapper   the mapper function to obtain the translation
+     * @param locale the locale of the translations
+     * @param keys   the set of keys to register
+     * @param mapper the mapper function to obtain the translation
      * @throws IllegalArgumentException if the key is already registered
      */
     default void registerAll(final Locale locale, final Set<String> keys, final Function<String, Translation> mapper) {
@@ -107,8 +107,8 @@ public interface BundleTranslationSource extends TranslationSource {
     /**
      * Registers a translation.
      *
-     * @param key    the key of the translation
-     * @param locale the locale of the translation
+     * @param key         the key of the translation
+     * @param locale      the locale of the translation
      * @param translation the translation
      * @throws IllegalArgumentException if the key is already registered
      */

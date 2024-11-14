@@ -41,8 +41,8 @@ public interface BiAction<T> {
     /**
      * Returns a bi-action that sets a state entry with the bi-action input.
      *
-     * @param key   the key
-     * @param <T>   the type of the value
+     * @param key the key
+     * @param <T> the type of the value
      * @return the bi-action
      */
     static <T> BiAction<T> with(final Key<T> key) {

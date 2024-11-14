@@ -79,8 +79,8 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
         /**
          * Creates a new {@link ContentParseException}.
          *
-         * @param input   the input string
-         * @param ctx     the command context
+         * @param input       the input string
+         * @param ctx         the command context
          * @param contentType the content type
          */
         public ContentParseException(final CommandContext<?> ctx, final String input, final CTypeKey<?> contentType) {

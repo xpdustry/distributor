@@ -157,7 +157,7 @@ public interface Action {
     /**
      * Returns an action that invoke a command for the viewer.
      *
-     * @param name the command name
+     * @param name      the command name
      * @param arguments the command arguments
      * @return the action
      */

@@ -38,11 +38,11 @@ public sealed interface CommandHelp {
         /**
          * Creates a new command entry.
          *
-         * @param syntax the syntax of the command
-         * @param description the description of the command
+         * @param syntax             the syntax of the command
+         * @param description        the description of the command
          * @param verboseDescription the verbose description of the command
-         * @param arguments the arguments of the command
-         * @param flags the flags of the command
+         * @param arguments          the arguments of the command
+         * @param flags              the flags of the command
          */
         static Entry of(
                 final String syntax,
@@ -90,7 +90,7 @@ public sealed interface CommandHelp {
          * Creates a new command suggestion.
          *
          * @param longestSharedPath the longest shared path of the suggestions
-         * @param childSuggestions the child suggestions
+         * @param childSuggestions  the child suggestions
          */
         static Suggestion of(final String longestSharedPath, final List<String> childSuggestions) {
             return SuggestionImpl.of(longestSharedPath, childSuggestions);

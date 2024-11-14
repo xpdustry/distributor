@@ -34,10 +34,10 @@ public interface EnumRankNode<E extends Enum<E>> extends RankNode {
      *     <li>descending, where the higher ordinal is the lower rank</li>
      * </ul>
      *
-     * @param value         the rank value
-     * @param namespace     the rank namespace
-     * @param ascending     whether the enum ranks are in ascending order
-     * @param <E>           the enum type
+     * @param value     the rank value
+     * @param namespace the rank namespace
+     * @param ascending whether the enum ranks are in ascending order
+     * @param <E>       the enum type
      * @return the created enum rank node
      */
     static <E extends Enum<E>> RankNode linear(final E value, final String namespace, boolean ascending) {
@@ -49,9 +49,9 @@ public interface EnumRankNode<E extends Enum<E>> extends RankNode {
      * This means each rank node is independent of each other.
      * Ideal for achievements based permissions.
      *
-     * @param value         the rank value
-     * @param namespace     the rank namespace
-     * @param <E>           the enum type
+     * @param value     the rank value
+     * @param namespace the rank namespace
+     * @param <E>       the enum type
      * @return the created enum rank node
      */
     static <E extends Enum<E>> RankNode singular(final E value, final String namespace) {

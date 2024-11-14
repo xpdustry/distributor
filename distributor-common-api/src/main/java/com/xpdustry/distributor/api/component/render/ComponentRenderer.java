@@ -39,7 +39,7 @@ public interface ComponentRenderer<T extends Component> {
      * Renders the specified component.
      *
      * @param component the component
-     * @param builder the component string builder
+     * @param builder   the component string builder
      */
     void render(final T component, final ComponentStringBuilder builder);
 }

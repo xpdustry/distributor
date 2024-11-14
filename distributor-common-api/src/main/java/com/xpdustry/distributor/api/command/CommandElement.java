@@ -54,10 +54,10 @@ public sealed interface CommandElement {
         /**
          * Creates a new command argument.
          *
-         * @param name the name of the argument
+         * @param name        the name of the argument
          * @param description the description of the argument
-         * @param aliases the aliases of the argument
-         * @param kind the kind of the argument
+         * @param aliases     the aliases of the argument
+         * @param kind        the kind of the argument
          * @return the created argument
          */
         static Argument of(
@@ -94,11 +94,11 @@ public sealed interface CommandElement {
         /**
          * Creates a new command flag.
          *
-         * @param name the name of the flag
+         * @param name        the name of the flag
          * @param description the description of the flag
-         * @param aliases the aliases of the flag
-         * @param kind the kind of the flag
-         * @param mode the mode of the flag
+         * @param aliases     the aliases of the flag
+         * @param kind        the kind of the flag
+         * @param mode        the mode of the flag
          * @return the created flag
          */
         static Flag of(

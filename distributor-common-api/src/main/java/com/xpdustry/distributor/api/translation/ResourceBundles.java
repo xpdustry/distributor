@@ -56,9 +56,9 @@ public final class ResourceBundles {
     /**
      * Loads resource bundles from a directory in the classpath.
      *
-     * @param caller   the class of the caller
+     * @param caller    the class of the caller
      * @param directory the path to the directory
-     * @param name  the name of the bundle
+     * @param name      the name of the bundle
      * @return the loaded resource bundles
      */
     public static List<ResourceBundle> fromClasspathDirectory(
@@ -79,7 +79,7 @@ public final class ResourceBundles {
      * Loads resource bundles from a directory.
      *
      * @param directory the path to the directory
-     * @param name  the name of the bundle
+     * @param name      the name of the bundle
      * @return the loaded resource bundles
      */
     public static List<ResourceBundle> fromDirectory(final Path directory, final String name) {
@@ -94,9 +94,9 @@ public final class ResourceBundles {
     /**
      * Loads resource bundles from a zip file.
      *
-     * @param zip      the path to the zip file
+     * @param zip       the path to the zip file
      * @param directory the path to the directory
-     * @param name  the name of the bundle
+     * @param name      the name of the bundle
      * @return the loaded resource bundles
      */
     public static List<ResourceBundle> fromZipDirectory(final Path zip, final String directory, final String name) {
