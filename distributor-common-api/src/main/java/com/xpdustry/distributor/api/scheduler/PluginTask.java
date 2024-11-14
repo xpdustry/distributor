@@ -19,6 +19,8 @@
 package com.xpdustry.distributor.api.scheduler;
 
 import com.xpdustry.distributor.api.plugin.PluginAware;
+import java.time.Duration;
+import java.time.temporal.TemporalAmount;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -66,6 +68,17 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
         Builder delay(final long delay, final MindustryTimeUnit unit);
 
         /**
+         * Run the task after a delay.
+         *
+         * @param delay the delay.
+         * @return this builder.
+         */
+        default Builder delay(final TemporalAmount delay) {
+            final var duration = Duration.from(delay);
+            return delay(duration.toMillis(), MindustryTimeUnit.MILLISECONDS);
+        }
+
+        /**
          * Run the task periodically with a fixed interval.
          * Stops the periodic execution if an exception is thrown.
          *
@@ -74,6 +87,18 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
          * @return this builder.
          */
         Builder repeat(final long interval, final MindustryTimeUnit unit);
+
+        /**
+         * Run the task periodically with a fixed interval.
+         * Stops the periodic execution if an exception is thrown.
+         *
+         * @param interval the interval between the end of the last execution and the start of the next.
+         * @return this builder.
+         */
+        default Builder repeat(final TemporalAmount interval) {
+            final var duration = Duration.from(interval);
+            return repeat(duration.toMillis(), MindustryTimeUnit.MILLISECONDS);
+        }
 
         /**
          * Build and schedule the task with the given task.
