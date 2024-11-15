@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.0-rc.3 - 2024-11-15
+
+Last release candidate.
+Mostly code quality improvements and bugfixes.
+
 ## v4.0.0-rc.2 - 2024-10-01
 
 Second release candidate.
