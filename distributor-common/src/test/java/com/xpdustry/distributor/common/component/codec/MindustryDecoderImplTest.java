@@ -46,6 +46,13 @@ public final class MindustryDecoderImplTest {
         final var decoder = new MindustryDecoderImpl();
         final var component = ListComponent.components(
                 ComponentColor.RED, text("Hello, "), text("World", ComponentColor.GREEN), text("!"));
-        assertEquals(component, decoder.decode("[#FF0000]Hello, [#00FF00]World[]![]"));
+        assertEquals(component, decoder.decode("[#ff0000]Hello, [#00FF00]World[]![]"));
+    }
+
+    @Test
+    void test_decode_color_with_alpha() {
+        final var decoder = new MindustryDecoderImpl();
+        final var component = text("Hello, World!", ComponentColor.rgb(0x112233));
+        assertEquals(component, decoder.decode("[#11223344]Hello, World!"));
     }
 }

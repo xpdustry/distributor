@@ -89,16 +89,21 @@ public final class MindustryDecoderImpl implements ComponentDecoder<String> {
     }
 
     private @Nullable Color tryParseHex(final String value) {
-        if (value.length() > 8) {
+        // Mindustry won't parse a color with a length of 7
+        if (value.length() > 8 || value.length() == 7) {
             return null;
         }
+        int shifts = Math.min(value.length(), 6);
         int color = 0;
-        for (int i = 0; i < value.length(); i++) {
+        for (int i = 0; i < shifts; i++) {
             char ch = value.charAt(i);
             if (ch >= '0' && ch <= '9') color = color * 16 + (ch - '0');
             else if (ch >= 'a' && ch <= 'f') color = color * 16 + (ch - ('a' - 10));
             else if (ch >= 'A' && ch <= 'F') color = color * 16 + (ch - ('A' - 10));
             else return null;
+        }
+        for (int i = shifts; i < 6; i++) {
+            color <<= 4;
         }
         return new Color().rgb888(color);
     }
