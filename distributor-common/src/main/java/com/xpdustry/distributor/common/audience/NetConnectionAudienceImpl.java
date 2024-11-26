@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.common.audience;
 
+import arc.util.Strings;
+import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.key.MutableKeyContainer;
 import com.xpdustry.distributor.api.key.StandardKeys;
@@ -39,7 +41,12 @@ public final class NetConnectionAudienceImpl extends BaseNetConnectionAudience {
         if (metadata != null) {
             if (metadata.muuid() != null) container.set(StandardKeys.MUUID, metadata.muuid());
             container.set(StandardKeys.COLOR, metadata.color());
-            if (metadata.name() != null) container.set(StandardKeys.NAME, metadata.name());
+            if (metadata.name() != null) {
+                container.set(StandardKeys.NAME, Strings.stripColors(metadata.name()));
+                container.set(
+                        StandardKeys.DECORATED_NAME,
+                        DistributorProvider.get().getMindustryComponentDecoder().decode(metadata.name()));
+            }
             if (metadata.locale() != null) container.set(StandardKeys.LOCALE, metadata.locale());
         }
         return KeyContainer.from(container);
