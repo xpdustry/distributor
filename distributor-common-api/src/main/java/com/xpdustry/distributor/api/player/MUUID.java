@@ -22,6 +22,7 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;
+import java.util.zip.CRC32;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
 import org.immutables.value.Value;
@@ -44,6 +45,29 @@ public interface MUUID {
         checkUuid(uuid);
         checkUsid(usid);
         return MUUIDImpl.of(uuid, usid);
+    }
+
+    /**
+     * Creates a new MUUID from a long UUID and long USID.
+     *
+     * @param uuid the UUID
+     * @param usid the USID
+     * @return the MUUID
+     */
+    static MUUID of(final long uuid, final long usid) {
+        final var uuidBuffer = ByteBuffer.allocate(16);
+        uuidBuffer.putLong(uuid);
+
+        final var crc32 = new CRC32();
+        crc32.update(uuidBuffer.array(), 0, 8);
+        uuidBuffer.putLong(crc32.getValue());
+
+        final var usidBuffer = ByteBuffer.allocate(8);
+        usidBuffer.putLong(usid);
+
+        return MUUIDImpl.of(
+                Base64.getEncoder().encodeToString(uuidBuffer.array()),
+                Base64.getEncoder().encodeToString(usidBuffer.array()));
     }
 
     /**
@@ -73,9 +97,13 @@ public interface MUUID {
      * @return true if the given string is a valid UUID, false otherwise
      */
     static boolean isUuid(final String uuid) {
+        if (uuid.length() % 4 != 0) return false;
         try {
             final var bytes = Base64.getDecoder().decode(uuid);
-            return bytes.length == 16;
+            if (bytes.length != 16) return false;
+            final var crc32 = new CRC32();
+            crc32.update(bytes, 0, 8);
+            return crc32.getValue() == ByteBuffer.wrap(bytes, 8, 8).getLong();
         } catch (final IllegalArgumentException e) {
             return false;
         }
@@ -97,6 +125,7 @@ public interface MUUID {
      * @return true if the given string is a valid USID, false otherwise
      */
     static boolean isUsid(final String usid) {
+        if (usid.length() % 4 != 0) return false;
         try {
             final var bytes = Base64.getDecoder().decode(usid);
             return bytes.length == 8;
@@ -122,8 +151,15 @@ public interface MUUID {
     /**
      * Returns the UUID as decoded bytes.
      */
-    default byte[] getDecodedUuid() {
+    default byte[] getUuidAsBytes() {
         return Base64.getDecoder().decode(this.getUuid());
+    }
+
+    /**
+     * Returns the UUID as a long. Beware the long does not include the crc32 checksum.
+     */
+    default long getUuidAsLong() {
+        return ByteBuffer.wrap(getUuidAsBytes()).getLong();
     }
 
     /**
@@ -134,8 +170,15 @@ public interface MUUID {
     /**
      * Returns the USID as decoded bytes.
      */
-    default byte[] getDecodedUsid() {
+    default byte[] getUsidAsBytes() {
         return Base64.getDecoder().decode(this.getUsid());
+    }
+
+    /**
+     * Returns the USID as a long.
+     */
+    default long getUsidAsLong() {
+        return ByteBuffer.wrap(getUsidAsBytes()).getLong();
     }
 
     /**
@@ -145,7 +188,7 @@ public interface MUUID {
      */
     default UUID toRealUUID() {
         final var buffer = ByteBuffer.allocate(16);
-        final var uuid = getDecodedUuid();
+        final var uuid = getUuidAsBytes();
         buffer.put(uuid, 0, 4); // First 4 bytes
         buffer.putShort((short) 0); // Next 2 bytes
         buffer.putShort((short) 0x8000); // Version is 4 bits, put set to v8
