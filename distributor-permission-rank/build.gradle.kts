@@ -29,5 +29,5 @@ tasks.shadowJar {
 }
 
 tasks.runMindustryServer {
-    mods.from(projects.distributorCommon.shadowJar)
+    mods.from(project(projects.distributorCommon.path).tasks.shadowJar)
 }

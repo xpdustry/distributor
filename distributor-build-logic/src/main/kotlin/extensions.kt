@@ -1,10 +1,6 @@
-import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
-import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.gradle.kotlin.dsl.listProperty
-import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.the
 
@@ -21,6 +17,3 @@ open class DistributorModuleExtension(project: Project) {
         const val EXTENSION_NAME = "distributorModule"
     }
 }
-
-val DelegatingProjectDependency.shadowJar
-    get() = dependencyProject.provider { dependencyProject.tasks.named<ShadowJar>(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME) }
