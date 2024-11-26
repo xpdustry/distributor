@@ -30,8 +30,8 @@ import mindustry.game.Team;
 public final class StandardKeys {
 
     public static final Key<String> NAME = Key.of(Key.DISTRIBUTOR_NAMESPACE, "name", String.class);
-    public static final Key<Component> DISPLAY_NAME =
-            Key.of(Key.DISTRIBUTOR_NAMESPACE, "display-name", Component.class);
+    public static final Key<Component> DECORATED_NAME =
+            Key.of(Key.DISTRIBUTOR_NAMESPACE, "decorated-name", Component.class);
     public static final Key<MUUID> MUUID = Key.of(Key.DISTRIBUTOR_NAMESPACE, "muuid", MUUID.class);
     public static final Key<Locale> LOCALE = Key.of(Key.DISTRIBUTOR_NAMESPACE, "locale", Locale.class);
     public static final Key<Team> TEAM = Key.of(Key.DISTRIBUTOR_NAMESPACE, "team", Team.class);

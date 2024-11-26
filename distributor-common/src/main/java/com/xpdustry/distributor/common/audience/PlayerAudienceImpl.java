@@ -39,10 +39,10 @@ public final class PlayerAudienceImpl extends BaseNetConnectionAudience implemen
         super(Objects.requireNonNull(player.con(), "Player connection is null"));
         this.player = player;
         this.metadata = DynamicKeyContainer.builder()
-                .putSupplied(StandardKeys.NAME, () -> player.getInfo().plainLastName())
-                .putSupplied(StandardKeys.DISPLAY_NAME, () -> DistributorProvider.get()
-                        .getMindustryComponentDecoder()
-                        .decode(player.coloredName()))
+                .putConstant(StandardKeys.NAME, player.getInfo().plainLastName())
+                .putConstant(
+                        StandardKeys.DECORATED_NAME,
+                        DistributorProvider.get().getMindustryComponentDecoder().decode(player.getInfo().lastName))
                 .putConstant(StandardKeys.MUUID, MUUID.from(player))
                 .putSupplied(
                         StandardKeys.LOCALE,

@@ -35,7 +35,7 @@ public enum ServerAudience implements Audience {
     @SuppressWarnings("ImmutableEnumChecker")
     private final KeyContainer metadata = DynamicKeyContainer.builder()
             .putConstant(StandardKeys.NAME, "server")
-            .putConstant(StandardKeys.DISPLAY_NAME, TextComponent.text("Server"))
+            .putConstant(StandardKeys.DECORATED_NAME, TextComponent.text("Server"))
             .putSupplied(StandardKeys.LOCALE, Locale::getDefault)
             .build();
 
