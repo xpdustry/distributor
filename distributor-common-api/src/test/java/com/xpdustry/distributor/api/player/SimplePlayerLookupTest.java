@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.player;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import mindustry.gen.Player;
@@ -34,7 +33,7 @@ public final class SimplePlayerLookupTest {
     private static int counter = 1;
 
     private static final List<Player> PLAYERS = new ArrayList<>();
-    private static final Player PLAYER_1 = createPlayer("deez", "AAAAAAAAAAAAAAAAAAAAAA==");
+    private static final Player PLAYER_1 = createPlayer("deez");
     private static final Player PLAYER_2 = createPlayer("deez nuts");
     private static final Player PLAYER_3 = createPlayer("phinner");
     private static final Player PLAYER_4 = createPlayer("[green]zeta");
@@ -123,9 +122,8 @@ public final class SimplePlayerLookupTest {
     }
 
     private static Player createPlayer(final String name) {
-        final var uuid = new byte[16];
-        RANDOM.nextBytes(uuid);
-        return createPlayer(name, Base64.getEncoder().encodeToString(uuid));
+        final var muuid = MUUID.of(RANDOM.nextLong(), 0);
+        return createPlayer(name, muuid.getUuid());
     }
 
     private static Player createPlayer(final String name, final String uuid) {
