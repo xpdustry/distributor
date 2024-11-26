@@ -48,7 +48,7 @@ public final class MindustryListTest extends TestCase {
     private static final class TestMindustryListGenerator extends TestStringListGenerator {
 
         @Override
-        protected List<String> create(String[] elements) {
+        protected List<String> create(final String[] elements) {
             final var list = new MindustryList<String>(new Seq<>(String.class));
             list.addAll(Arrays.asList(elements));
             return list;

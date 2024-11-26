@@ -29,7 +29,7 @@ import mindustry.mod.Plugin;
 import org.immutables.value.Value;
 
 /**
- * A immutable implementation of {@link Mods.ModMeta}.
+ * An immutable implementation of {@link Mods.ModMeta}.
  */
 @DistributorDataClassWithBuilder
 @Value.Immutable

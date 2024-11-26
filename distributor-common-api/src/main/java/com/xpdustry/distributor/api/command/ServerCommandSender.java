@@ -26,11 +26,8 @@ import com.xpdustry.distributor.api.permission.PermissionContainer;
 import java.util.Locale;
 import mindustry.gen.Player;
 
-final class ServerCommandSender implements CommandSender {
-
-    static final ServerCommandSender INSTANCE = new ServerCommandSender();
-
-    private ServerCommandSender() {}
+enum ServerCommandSender implements CommandSender {
+    INSTANCE;
 
     @Override
     public String getName() {
