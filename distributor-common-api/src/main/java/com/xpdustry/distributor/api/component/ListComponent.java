@@ -23,7 +23,6 @@ import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * A component that contains a list of components.
@@ -105,34 +104,6 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
      * Returns the components in this list component.
      */
     List<Component> getComponents();
-
-    @Override
-    default Component compress() {
-        final var components = this.getComponents().stream()
-                .map(Component::compress)
-                .flatMap(component -> component instanceof ListComponent list
-                                && list.getTextStyle().equals(TextStyle.of())
-                        ? list.getComponents().stream()
-                        : Stream.of(component))
-                .filter(component -> !component.equals(TextComponent.empty()))
-                .toList();
-        if (components.isEmpty()) {
-            return TextComponent.empty();
-        } else if (components.size() == 1) {
-            final var component = components.get(0);
-            if (component instanceof BuildableComponent<?, ?> buildable) {
-                return buildable.toBuilder()
-                        .setTextStyle(getTextStyle().merge(component.getTextStyle()))
-                        .build();
-            } else if (this.getTextStyle().equals(TextStyle.of())) {
-                return component;
-            } else {
-                return this.toBuilder().setComponents(List.of(component)).build();
-            }
-        } else {
-            return this.toBuilder().setComponents(components).build();
-        }
-    }
 
     /**
      * A builder for list components.

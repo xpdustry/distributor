@@ -30,13 +30,4 @@ public interface Component {
      * Returns the text textStyle of this component.
      */
     TextStyle getTextStyle();
-
-    /**
-     * Compresses this component. Removing empty subcommands and/or merging subcomponents if necessary.
-     *
-     * @return the compressed component
-     */
-    default Component compress() {
-        return this;
-    }
 }
