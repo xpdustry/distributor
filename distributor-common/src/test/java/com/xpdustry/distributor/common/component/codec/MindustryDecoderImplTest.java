@@ -18,41 +18,73 @@
  */
 package com.xpdustry.distributor.common.component.codec;
 
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import org.junit.jupiter.api.Test;
 
 import static com.xpdustry.distributor.api.component.TextComponent.text;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class MindustryDecoderImplTest {
 
     @Test
     void test_decode_plain() {
-        final var decoder = new MindustryDecoderImpl();
-        final var component = text("Hello, World!");
-        assertEquals(component, decoder.decode("Hello, World!"));
+        assertStringDecodesTo("Hello, World!", text("Hello, World!"));
     }
 
     @Test
     void test_decode_color() {
-        final var decoder = new MindustryDecoderImpl();
-        final var component = text("Hello, World!", ComponentColor.RED);
-        assertEquals(component, decoder.decode("[#FF0000]Hello, World!"));
+        assertStringDecodesTo("[#FF0000]Hello, World!", text("Hello, World!", ComponentColor.RED));
     }
 
     @Test
-    void test_decode_nested() {
-        final var decoder = new MindustryDecoderImpl();
-        final var component = ListComponent.components(
-                ComponentColor.RED, text("Hello, "), text("World", ComponentColor.GREEN), text("!"));
-        assertEquals(component, decoder.decode("[#ff0000]Hello, [#00FF00]World[]![]"));
+    void test_escape_color() {
+        assertStringDecodesTo("[[#FF0000]Hello, World!", text("[#FF0000]Hello, World!"));
+    }
+
+    @Test
+    void test_escape_left_brackets() {
+        assertStringDecodesTo("A[[[[[[[[Hello, World![[[[[", text("A[[[[Hello, World![[["));
+        assertStringDecodesTo("[[[[[[[[Hello, World![[[[[", text("[[[[Hello, World![[["));
+        assertStringDecodesTo("[[[[[[[[Hello, World![[[[[A", text("[[[[Hello, World![[[A"));
+    }
+
+    @Test
+    void test_escape_right_brackets() {
+        assertStringDecodesTo("A]]]]]]]]Hello, World!]]]]]", text("A]]]]]]]]Hello, World!]]]]]"));
+        assertStringDecodesTo("]]]]]]]]Hello, World!]]]]]", text("]]]]]]]]Hello, World!]]]]]"));
+        assertStringDecodesTo("]]]]]]]]Hello, World!]]]]]A", text("]]]]]]]]Hello, World!]]]]]A"));
+    }
+
+    @Test
+    void test_decode_nested_simple() {
+        assertStringDecodesTo(
+                "[#ff0000]Hello, [#00FF00]World[]![]",
+                ListComponent.components(
+                        text("Hello, ", ComponentColor.RED),
+                        text("World", ComponentColor.GREEN),
+                        text("!", ComponentColor.RED)));
+    }
+
+    @Test
+    void test_decode_nested_complex() {
+        assertStringDecodesTo(
+                "[#ff0000]A[#00FF00][[B][]C[][][D][][#0000FF]E",
+                ListComponent.components(
+                        text("A", ComponentColor.RED),
+                        text("[B]", ComponentColor.GREEN),
+                        text("C", ComponentColor.RED),
+                        text("[D]"),
+                        text("E", ComponentColor.BLUE)));
     }
 
     @Test
     void test_decode_color_with_alpha() {
-        final var decoder = new MindustryDecoderImpl();
-        final var component = text("Hello, World!", ComponentColor.rgb(0x112233));
-        assertEquals(component, decoder.decode("[#11223344]Hello, World!"));
+        assertStringDecodesTo("[#11223344]Hello, World!", text("Hello, World!", ComponentColor.rgb(0x112233)));
+    }
+
+    private void assertStringDecodesTo(final String input, final Component expected) {
+        assertThat(MindustryDecoderImpl.INSTANCE.decode(input)).isEqualTo(expected);
     }
 }

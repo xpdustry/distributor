@@ -20,75 +20,95 @@ package com.xpdustry.distributor.common.component.codec;
 
 import arc.graphics.Color;
 import arc.graphics.Colors;
+import arc.struct.IntSeq;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.TextStyle;
+import java.util.ArrayList;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public final class MindustryDecoderImpl implements ComponentDecoder<String> {
+public enum MindustryDecoderImpl implements ComponentDecoder<String> {
+    INSTANCE;
 
     @Override
     public Component decode(final String input) {
-        return decode(input, new IndexHolder(), null).compress();
-    }
-
-    private Component decode(final String input, final IndexHolder holder, final @Nullable ComponentColor previous) {
-        final var list = ListComponent.components();
-        list.setTextStyle(TextStyle.of(previous));
-        while (holder.index < input.length()) {
-            final var start = input.indexOf('[', holder.index);
+        final var tcolor = new Color();
+        final var buffer = new StringBuilder();
+        final var components = new ArrayList<Component>();
+        final var colors = new IntSeq();
+        var index = 0;
+        while (index < input.length()) {
+            final var start = input.indexOf('[', index);
             if (start == -1) {
-                list.append(TextComponent.text(input.substring(holder.index)));
-                holder.index = input.length();
+                buffer.append(input, index, input.length());
+                index = input.length();
                 continue;
             }
 
             if (start + 1 < input.length() && input.charAt(start + 1) == '[') {
-                list.append(TextComponent.text("["));
-                holder.index = start + 2;
+                buffer.append(input, index, start + 1);
+                index = start + 2;
                 continue;
             }
 
             final var close = input.indexOf(']', start);
             if (close == -1) {
-                list.append(TextComponent.text(input.substring(start)));
-                holder.index = input.length();
+                buffer.append(input, start, input.length());
+                index = input.length();
                 continue;
             }
 
             final var value = input.substring(start + 1, close);
             if (value.isEmpty()) {
-                if (holder.index < start) {
-                    list.append(TextComponent.text(input.substring(holder.index, start)));
+                buffer.append(input, index, start);
+                if (!buffer.isEmpty()) {
+                    final var style =
+                            colors.isEmpty() ? TextStyle.of() : TextStyle.of(ComponentColor.rgb(colors.pop()));
+                    components.add(TextComponent.text(buffer.toString(), style));
+                    buffer.setLength(0);
                 }
-                holder.index = close + 1;
-                break;
+                index = close + 1;
+                continue;
             }
 
             var color = Colors.get(value);
             if (color == null && value.charAt(0) == '#') {
-                color = tryParseHex(value.substring(1));
+                color = tryParseHex(tcolor, value.substring(1));
             }
 
             if (color != null) {
-                if (holder.index < start) {
-                    list.append(TextComponent.text(input.substring(holder.index, start)));
+                buffer.append(input, index, start);
+                if (!buffer.isEmpty()) {
+                    final var style =
+                            colors.isEmpty() ? TextStyle.of() : TextStyle.of(ComponentColor.rgb(colors.peek()));
+                    components.add(TextComponent.text(buffer.toString(), style));
+                    buffer.setLength(0);
                 }
-                holder.index = close + 1;
-                list.append(decode(input, holder, ComponentColor.from(color)));
+                colors.add(color.rgb888());
             } else {
-                list.append(TextComponent.text("[" + value + "]"));
-                holder.index = close + 1;
+                buffer.append(input, index, close + 1);
             }
+            index = close + 1;
         }
 
-        return list.build();
+        if (!buffer.isEmpty()) {
+            final var style = colors.isEmpty() ? TextStyle.of() : TextStyle.of(ComponentColor.rgb(colors.peek()));
+            components.add(TextComponent.text(buffer.toString(), style));
+        }
+
+        if (components.isEmpty()) {
+            return TextComponent.empty();
+        } else if (components.size() == 1) {
+            return components.get(0);
+        } else {
+            return ListComponent.components(components);
+        }
     }
 
-    private @Nullable Color tryParseHex(final String value) {
+    private @Nullable Color tryParseHex(final Color tcolor, final String value) {
         // Mindustry won't parse a color with a length of 7
         if (value.length() > 8 || value.length() == 7) {
             return null;
@@ -105,10 +125,6 @@ public final class MindustryDecoderImpl implements ComponentDecoder<String> {
         for (int i = shifts; i < 6; i++) {
             color <<= 4;
         }
-        return new Color().rgb888(color);
-    }
-
-    private static final class IndexHolder {
-        int index = 0;
+        return tcolor.rgb888(color);
     }
 }

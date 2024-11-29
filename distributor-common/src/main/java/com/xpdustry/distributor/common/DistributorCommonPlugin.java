@@ -56,7 +56,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
             PluginTimeSource.mindustry(), Core.app::post, Runtime.getRuntime().availableProcessors());
     private final ComponentRendererProvider componentRendererProvider =
             new ServiceComponentRendererProvider(this.services);
-    private final ComponentDecoder<String> mindustryComponentDecoder = new MindustryDecoderImpl();
+    private final ComponentDecoder<String> mindustryComponentDecoder = MindustryDecoderImpl.INSTANCE;
     private final AudienceProvider audienceProvider = new AudienceProviderImpl(this, events);
     private @Nullable PlayerLookup lookup = null;
     private @Nullable PlayerPermissionProvider permissions = null;
