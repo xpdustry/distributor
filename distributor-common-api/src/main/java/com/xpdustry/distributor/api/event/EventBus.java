@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * Subscribers also come with {@link EventSubscription} objects to dynamically unsubscribe them. And also
  * {@link Priority} to make sure your subscribers are called in a specific order.
  * <pre> {@code
- *      final EventBus bus = DistributorProvider.get().getEventBus();
+ *      final EventBus bus = Distributor.get().getEventBus();
  *      final MindustryPlugin plugin = ...;
  *      final EventSubscription subscription = bus.subscribe(EventType.PlayerJoin.class, plugin, event -> {
  *          event.player.sendMessage("Hello " + event.player.name() + "!");

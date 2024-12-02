@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.key.Key;
 import java.util.List;
@@ -140,8 +140,7 @@ public interface Action {
      * @return the action
      */
     static Action audience(final Consumer<Audience> consumer) {
-        return window ->
-                consumer.accept(DistributorProvider.get().getAudienceProvider().getPlayer(window.getViewer()));
+        return window -> consumer.accept(Distributor.get().getAudienceProvider().getPlayer(window.getViewer()));
     }
 
     /**

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
@@ -41,7 +41,7 @@ public interface MenuOption {
 
     static MenuOption of(final String content, final Action action) {
         return MenuOptionImpl.of(
-                DistributorProvider.get().getMindustryComponentDecoder().decode(content), action);
+                Distributor.get().getMindustryComponentDecoder().decode(content), action);
     }
 
     Component getContent();

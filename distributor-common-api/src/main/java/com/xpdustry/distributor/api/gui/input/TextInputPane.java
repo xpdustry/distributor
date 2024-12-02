@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.input;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.gui.Action;
 import com.xpdustry.distributor.api.gui.BiAction;
@@ -38,7 +38,7 @@ public interface TextInputPane extends Pane {
     TextInputPane setTitle(final Component title);
 
     default TextInputPane setTitle(final String title) {
-        return setTitle(DistributorProvider.get().getMindustryComponentDecoder().decode(title));
+        return setTitle(Distributor.get().getMindustryComponentDecoder().decode(title));
     }
 
     Component getDescription();
@@ -46,8 +46,7 @@ public interface TextInputPane extends Pane {
     TextInputPane setDescription(final Component description);
 
     default TextInputPane setDescription(final String description) {
-        return setDescription(
-                DistributorProvider.get().getMindustryComponentDecoder().decode(description));
+        return setDescription(Distributor.get().getMindustryComponentDecoder().decode(description));
     }
 
     Component getPlaceholder();
@@ -55,8 +54,7 @@ public interface TextInputPane extends Pane {
     TextInputPane setPlaceholder(final Component placeholder);
 
     default TextInputPane setPlaceholder(final String placeholder) {
-        return setPlaceholder(
-                DistributorProvider.get().getMindustryComponentDecoder().decode(placeholder));
+        return setPlaceholder(Distributor.get().getMindustryComponentDecoder().decode(placeholder));
     }
 
     int getMaxLength();

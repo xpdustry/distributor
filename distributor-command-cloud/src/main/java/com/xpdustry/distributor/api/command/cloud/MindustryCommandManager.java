@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.command.cloud;
 
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.command.CommandSender;
 import com.xpdustry.distributor.api.command.DescriptionMapper;
 import com.xpdustry.distributor.api.command.cloud.parser.ContentParser;
@@ -101,8 +101,8 @@ public class MindustryCommandManager<C> extends CommandManager<C>
         this.registerDefaultExceptionHandlers();
 
         this.captionRegistry()
-                .registerProvider(createCaptionProviderFromSource(
-                        DistributorProvider.get().getGlobalTranslationSource()))
+                .registerProvider(
+                        createCaptionProviderFromSource(Distributor.get().getGlobalTranslationSource()))
                 .registerProvider(createCaptionProviderFromSource(DEFAULT_TRANSLATION_SOURCE));
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());

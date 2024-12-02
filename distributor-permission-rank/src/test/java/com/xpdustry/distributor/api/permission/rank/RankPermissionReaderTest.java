@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.permission.rank;
 
 import com.xpdustry.distributor.api.Distributor;
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.key.Key;
 import com.xpdustry.distributor.api.permission.MutablePermissionTree;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
@@ -57,12 +56,12 @@ public final class RankPermissionReaderTest {
         this.services.register(plugin, RankProvider.class, rankProvider, Priority.NORMAL);
         final var distributor = Mockito.mock(Distributor.class);
         Mockito.when(distributor.getServiceManager()).thenReturn(this.services);
-        DistributorProvider.set(distributor);
+        Distributor.set(distributor);
     }
 
     @AfterEach
     void teardown() {
-        DistributorProvider.clear();
+        Distributor.set(null);
     }
 
     @Test

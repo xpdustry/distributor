@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.component.render;
 
 import com.xpdustry.distributor.api.Distributor;
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
@@ -56,12 +55,12 @@ public final class MindustryComponentStringBuilderTest {
         final var global = TranslationSourceRegistry.create();
         global.register(translator);
         Mockito.when(distributor.getGlobalTranslationSource()).thenReturn(global);
-        DistributorProvider.set(distributor);
+        Distributor.set(distributor);
     }
 
     @AfterAll
     static void cleanup() {
-        DistributorProvider.clear();
+        Distributor.set(null);
     }
 
     @Test

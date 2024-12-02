@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.gui.popup;
 import arc.util.Align;
 import arc.util.Interval;
 import arc.util.Time;
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
@@ -44,7 +44,7 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
         super(plugin);
         interval.reset(0, Float.MAX_VALUE);
         setUpdateInterval(Duration.ofSeconds(1L));
-        updater = DistributorProvider.get().getEventBus().subscribe(EventType.Trigger.update, plugin, () -> {
+        updater = Distributor.get().getEventBus().subscribe(EventType.Trigger.update, plugin, () -> {
             if (interval.get(tickUpdateInterval)) {
                 getWindows().values().forEach(Window::show);
             }
@@ -66,7 +66,7 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
         };
         Call.infoPopup(
                 window.getViewer().con(),
-                ComponentStringBuilder.mindustry(DistributorProvider.get()
+                ComponentStringBuilder.mindustry(Distributor.get()
                                 .getAudienceProvider()
                                 .getPlayer(window.getViewer())
                                 .getMetadata())

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
 import com.xpdustry.distributor.api.permission.PlayerPermissionProvider;
 import com.xpdustry.distributor.api.util.TriState;
@@ -29,7 +29,7 @@ final class RankPlayerPermissionProvider implements PlayerPermissionProvider {
     @Override
     public PermissionContainer getPermissions(final Player player) {
         return permission -> {
-            final var services = DistributorProvider.get().getServiceManager();
+            final var services = Distributor.get().getServiceManager();
             final var permissionSources = services.getProviders(RankPermissionSource.class);
             final var rankSource = services.provide(RankProvider.class).orElseThrow();
             for (final var rank : rankSource.getRanks(player)) {

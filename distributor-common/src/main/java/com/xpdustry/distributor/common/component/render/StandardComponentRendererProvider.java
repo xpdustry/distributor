@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.common.component.render;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
 import com.xpdustry.distributor.api.component.NumberComponent;
@@ -103,7 +103,7 @@ public final class StandardComponentRendererProvider implements ComponentRendere
 
         @Override
         public void render(final TranslatableComponent component, final ComponentStringBuilder builder) {
-            DistributorProvider.get()
+            Distributor.get()
                     .getGlobalTranslationSource()
                     .getTranslationOrMissing(
                             component.getKey(),

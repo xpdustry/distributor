@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.annotation;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.scheduler.Cancellable;
 import java.lang.reflect.InvocationTargetException;
@@ -47,10 +47,8 @@ final class TaskHandlerProcessor extends MethodAnnotationProcessor<TaskHandler, 
             method.setAccessible(true);
         }
 
-        final var builder = DistributorProvider.get()
-                .getPluginScheduler()
-                .schedule(this.plugin)
-                .async(annotation.async());
+        final var builder =
+                Distributor.get().getPluginScheduler().schedule(this.plugin).async(annotation.async());
         if (annotation.delay() > -1) {
             builder.delay(annotation.delay(), annotation.unit());
         }

@@ -20,7 +20,6 @@ package com.xpdustry.distributor.common;
 
 import arc.Core;
 import com.xpdustry.distributor.api.Distributor;
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.audience.AudienceProvider;
 import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
@@ -109,7 +108,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
     @Override
     public void onInit() {
         this.getLogger().info("Loading distributor common api");
-        DistributorProvider.set(this);
+        Distributor.set(this);
         this.addListener((PluginSchedulerImpl) this.scheduler);
         this.services.register(this, ComponentRendererProvider.class, new StandardComponentRendererProvider());
         this.services.register(this, TranslationSource.class, TranslationSource.router(), Priority.HIGH);

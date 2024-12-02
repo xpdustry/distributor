@@ -20,7 +20,6 @@ package com.xpdustry.distributor.api.command.cloud.parser;
 
 import arc.Core;
 import com.xpdustry.distributor.api.Distributor;
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.command.cloud.MindustryCaptionKeys;
 import com.xpdustry.distributor.api.command.cloud.MindustryCommandContextKeys;
@@ -77,7 +76,7 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
             }
         }
         final var query = builder.setFields(fields).build();
-        final var players = DistributorProvider.get().getPlayerLookup().findOnlinePlayers(query);
+        final var players = Distributor.get().getPlayerLookup().findOnlinePlayers(query);
         if (players.isEmpty()) {
             return ArgumentParseResult.failure(new PlayerParseException.PlayerNotFound(ctx, query.getInput()));
         } else if (players.size() > 1) {

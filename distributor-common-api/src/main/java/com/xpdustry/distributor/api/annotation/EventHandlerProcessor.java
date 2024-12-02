@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.annotation;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.lang.reflect.Method;
@@ -45,7 +45,7 @@ final class EventHandlerProcessor
             method.setAccessible(true);
         }
         final var handler = new MethodEventHandler<>(instance, method, this.plugin);
-        return DistributorProvider.get()
+        return Distributor.get()
                 .getEventBus()
                 .subscribe(handler.getEventType(), annotation.priority(), this.plugin, handler);
     }

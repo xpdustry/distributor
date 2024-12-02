@@ -20,7 +20,6 @@ package com.xpdustry.distributor.api.annotation;
 
 import arc.Events;
 import com.xpdustry.distributor.api.Distributor;
-import com.xpdustry.distributor.api.DistributorProvider;
 import com.xpdustry.distributor.api.event.EventBus;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.test.ManageScheduler;
@@ -55,12 +54,12 @@ public final class EventHandlerProcessorTest {
         final var distributor = Mockito.mock(Distributor.class);
         Mockito.when(distributor.getPluginScheduler()).thenReturn(scheduler);
         Mockito.when(distributor.getEventBus()).thenReturn(this.events);
-        DistributorProvider.set(distributor);
+        Distributor.set(distributor);
     }
 
     @AfterEach
     void clear() {
-        DistributorProvider.clear();
+        Distributor.set(null);
         Events.clear(); // TODO Add dedicated injection annotation for EventBus
     }
 

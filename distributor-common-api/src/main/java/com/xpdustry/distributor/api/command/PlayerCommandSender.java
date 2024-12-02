@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.ListComponent;
@@ -76,11 +76,11 @@ record PlayerCommandSender(Player player) implements CommandSender {
 
     @Override
     public Audience getAudience() {
-        return DistributorProvider.get().getAudienceProvider().getPlayer(this.player);
+        return Distributor.get().getAudienceProvider().getPlayer(this.player);
     }
 
     @Override
     public PermissionContainer getPermissions() {
-        return DistributorProvider.get().getPlayerPermissionProvider().getPermissions(this.player);
+        return Distributor.get().getPlayerPermissionProvider().getPermissions(this.player);
     }
 }

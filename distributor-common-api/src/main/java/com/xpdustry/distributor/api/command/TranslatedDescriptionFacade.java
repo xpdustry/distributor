@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.command;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import java.util.Locale;
 
@@ -26,7 +26,7 @@ record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements 
 
     @Override
     public String getText() {
-        return DistributorProvider.get()
+        return Distributor.get()
                 .getGlobalTranslationSource()
                 .getTranslationOrMissing(key, this.defaultLocale)
                 .format(TranslationArguments.empty());
@@ -34,7 +34,7 @@ record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements 
 
     @Override
     public String getText(final CommandSender sender) {
-        return DistributorProvider.get()
+        return Distributor.get()
                 .getGlobalTranslationSource()
                 .getTranslationOrMissing(key, sender.getLocale())
                 .format(TranslationArguments.empty());
@@ -42,11 +42,11 @@ record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements 
 
     @Override
     public boolean isEmpty() {
-        return DistributorProvider.get().getGlobalTranslationSource().getTranslation(key, this.defaultLocale) == null;
+        return Distributor.get().getGlobalTranslationSource().getTranslation(key, this.defaultLocale) == null;
     }
 
     @Override
     public boolean isEmpty(final CommandSender sender) {
-        return DistributorProvider.get().getGlobalTranslationSource().getTranslation(key, sender.getLocale()) == null;
+        return Distributor.get().getGlobalTranslationSource().getTranslation(key, sender.getLocale()) == null;
     }
 }

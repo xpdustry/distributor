@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.input;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.gui.Window;
@@ -106,7 +106,7 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
     }
 
     private String render(final Window window, final Component component) {
-        return ComponentStringBuilder.mindustry(DistributorProvider.get()
+        return ComponentStringBuilder.mindustry(Distributor.get()
                         .getAudienceProvider()
                         .getPlayer(window.getViewer())
                         .getMetadata())

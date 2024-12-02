@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.component.render;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -50,8 +50,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @return the plain component string builder
      */
     static ComponentStringBuilder plain(final KeyContainer context) {
-        return new PlainComponentStringBuilder(
-                context, DistributorProvider.get().getComponentRendererProvider());
+        return new PlainComponentStringBuilder(context, Distributor.get().getComponentRendererProvider());
     }
 
     /**
@@ -80,7 +79,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @return the ANSI component string builder
      */
     static ComponentStringBuilder ansi(final KeyContainer context) {
-        return new AnsiComponentStringBuilder(context, DistributorProvider.get().getComponentRendererProvider());
+        return new AnsiComponentStringBuilder(context, Distributor.get().getComponentRendererProvider());
     }
 
     /**
@@ -109,8 +108,7 @@ public interface ComponentStringBuilder extends Appendable {
      * @return the Mindustry component string builder
      */
     static ComponentStringBuilder mindustry(final KeyContainer context) {
-        return new MindustryComponentStringBuilder(
-                context, DistributorProvider.get().getComponentRendererProvider());
+        return new MindustryComponentStringBuilder(context, Distributor.get().getComponentRendererProvider());
     }
 
     /**

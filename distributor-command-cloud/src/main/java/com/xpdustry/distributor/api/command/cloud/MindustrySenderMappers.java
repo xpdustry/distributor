@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.command.cloud;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.audience.PlayerAudience;
 import com.xpdustry.distributor.api.command.CommandSender;
@@ -67,16 +67,15 @@ public final class MindustrySenderMappers {
         @Override
         public Audience map(final CommandSender base) {
             return base.isPlayer()
-                    ? DistributorProvider.get().getAudienceProvider().getPlayer(base.getPlayer())
-                    : DistributorProvider.get().getAudienceProvider().getServer();
+                    ? Distributor.get().getAudienceProvider().getPlayer(base.getPlayer())
+                    : Distributor.get().getAudienceProvider().getServer();
         }
 
         @Override
         public CommandSender reverse(final Audience mapped) {
             if (mapped instanceof PlayerAudience player) {
                 return CommandSender.player(player.getPlayer());
-            } else if (mapped.equals(
-                    DistributorProvider.get().getAudienceProvider().getServer())) {
+            } else if (mapped.equals(Distributor.get().getAudienceProvider().getServer())) {
                 return CommandSender.server();
             } else {
                 throw new IllegalArgumentException("Cannot reverse audience: " + mapped);

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.common.audience;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.audience.PlayerAudience;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.DynamicKeyContainer;
@@ -42,7 +42,7 @@ public final class PlayerAudienceImpl extends BaseNetConnectionAudience implemen
                 .putConstant(StandardKeys.NAME, player.getInfo().plainLastName())
                 .putConstant(
                         StandardKeys.DECORATED_NAME,
-                        DistributorProvider.get().getMindustryComponentDecoder().decode(player.getInfo().lastName))
+                        Distributor.get().getMindustryComponentDecoder().decode(player.getInfo().lastName))
                 .putConstant(StandardKeys.MUUID, MUUID.from(player))
                 .putSupplied(
                         StandardKeys.LOCALE,
@@ -59,7 +59,7 @@ public final class PlayerAudienceImpl extends BaseNetConnectionAudience implemen
 
     @Override
     public PermissionContainer getPermissions() {
-        return DistributorProvider.get().getPlayerPermissionProvider().getPermissions(this.player);
+        return Distributor.get().getPlayerPermissionProvider().getPermissions(this.player);
     }
 
     @Override

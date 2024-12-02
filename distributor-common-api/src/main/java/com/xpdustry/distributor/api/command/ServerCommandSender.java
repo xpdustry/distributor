@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.command;
 
 import arc.util.Log;
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.audience.Audience;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.permission.PermissionContainer;
@@ -81,6 +81,6 @@ enum ServerCommandSender implements CommandSender {
 
     @Override
     public Audience getAudience() {
-        return DistributorProvider.get().getAudienceProvider().getServer();
+        return Distributor.get().getAudienceProvider().getServer();
     }
 }

@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 import com.xpdustry.distributor.api.gui.Window;
@@ -105,7 +105,7 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
     }
 
     private String render(final Window window, final Component component) {
-        return ComponentStringBuilder.mindustry(DistributorProvider.get()
+        return ComponentStringBuilder.mindustry(Distributor.get()
                         .getAudienceProvider()
                         .getPlayer(window.getViewer())
                         .getMetadata())

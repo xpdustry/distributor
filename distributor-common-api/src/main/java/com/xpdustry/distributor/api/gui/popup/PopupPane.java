@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.popup;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.gui.DisplayUnit;
 import com.xpdustry.distributor.api.gui.Pane;
@@ -37,8 +37,7 @@ public interface PopupPane extends Pane {
     PopupPane setContent(final Component content);
 
     default PopupPane setContent(final String content) {
-        return setContent(
-                DistributorProvider.get().getMindustryComponentDecoder().decode(content));
+        return setContent(Distributor.get().getMindustryComponentDecoder().decode(content));
     }
 
     DisplayUnit getShiftX();

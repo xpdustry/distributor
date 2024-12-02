@@ -27,11 +27,31 @@ import com.xpdustry.distributor.api.player.PlayerLookup;
 import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.TranslationSource;
+import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * The distributor API.
  */
 public interface Distributor {
+
+    /**
+     * Returns the global {@link Distributor} instance.
+     *
+     * @throws NullPointerException if the API hasn't been initialized yet
+     */
+    static Distributor get() {
+        return Objects.requireNonNull(DistributorInstanceHolder.instance, "The API hasn't been initialized yet.");
+    }
+
+    /**
+     * Sets the global {@link Distributor} instance.
+     *
+     * @param distributor the distributor instance
+     */
+    static void set(final @Nullable Distributor distributor) {
+        DistributorInstanceHolder.instance = distributor;
+    }
 
     /**
      * Returns the service manager.

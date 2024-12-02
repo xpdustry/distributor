@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.permission.rank;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.permission.PlayerPermissionProvider;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.api.util.Priority;
@@ -32,7 +32,7 @@ public final class DistributorPermissionRankPlugin extends AbstractMindustryPlug
 
     @Override
     public void onInit() {
-        final var services = DistributorProvider.get().getServiceManager();
+        final var services = Distributor.get().getServiceManager();
 
         services.register(this, PlayerPermissionProvider.class, new RankPlayerPermissionProvider(), Priority.HIGH);
         services.register(this, RankProvider.class, new MindustryRankProvider(), Priority.LOW);

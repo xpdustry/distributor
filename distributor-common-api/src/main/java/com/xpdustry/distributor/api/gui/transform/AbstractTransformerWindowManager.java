@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.gui.transform;
 
-import com.xpdustry.distributor.api.DistributorProvider;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.event.EventSubscription;
 import com.xpdustry.distributor.api.gui.Pane;
 import com.xpdustry.distributor.api.gui.Window;
@@ -54,7 +54,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
 
     protected AbstractTransformerWindowManager(final MindustryPlugin plugin) {
         this.plugin = plugin;
-        this.playerLeaveListener = DistributorProvider.get()
+        this.playerLeaveListener = Distributor.get()
                 .getEventBus()
                 .subscribe(EventType.PlayerLeave.class, plugin, event -> {
                     final var window = windows.get(MUUID.from(event.player));
