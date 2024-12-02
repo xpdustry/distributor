@@ -25,6 +25,7 @@ tasks.shadowJar {
     val relocationPackage = "com.xpdustry.distributor.api.permission.rank.shadow"
     relocate("org.yaml.snakeyaml", "$relocationPackage.snakeyaml")
     relocate("org.spongepowered.configurate", "$relocationPackage.configurate")
+    relocate("io.leangen.geantyref", "$relocationPackage.geantyref")
     minimize()
 }
 
