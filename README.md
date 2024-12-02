@@ -20,6 +20,16 @@ Distributor is a framework for writing advanced Mindustry plugins in a safe and 
 - [Wiki](https://github.com/xpdustry/distributor/wiki)
 - [Discord](https://discord.xpdustry.com)
 
+## Installation
+
+This plugin requires at least :
+
+- Mindustry v146
+
+- Java 17
+
+- [SLF4MD](https://github.com/xpdustry/slf4md) v1
+
 ## Building
 
 - `./gradlew :distributor-$module:build` to build a module, with tests included.
