@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.1 - 2024-12-02
+
+### Bugfix
+
+- Fixed un-relocated geantyref lib in distributor-permission-rank.
+
 ## v4.0.0-rc.3 - 2024-11-15
 
 Last release candidate.
