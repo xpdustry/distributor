@@ -19,7 +19,6 @@
 package com.xpdustry.distributor.api.permission;
 
 import com.xpdustry.distributor.api.util.TriState;
-import java.util.regex.Pattern;
 
 /**
  * A generic permission container.
@@ -28,12 +27,12 @@ import java.util.regex.Pattern;
 public interface PermissionContainer {
 
     /**
-     * Regex pattern used to validate permission strings.
+     * A method used to validate permission strings.
      * <p>
      * <strong>Notes:</strong>
      * <blockquote>
-     * Permission strings are composed of a series of nodes separated by dots with alphanumeric characters and minus
-     * signs, such as {@code "plugin.command"}.
+     * Permission strings are composed of a series of nodes separated by dots with alphanumeric characters, underscores and minus
+     * signs, such as {@code "plugin.my-command"}, {@code "some_value}, etc.
      * <br>
      * A parent node is always overridden by a child node, such as {@code "plugin.command"} overriding {@code "plugin"}.
      * <br>
@@ -43,7 +42,25 @@ public interface PermissionContainer {
      * It allows you to set a default value for all permissions.
      * </blockquote>
      */
-    Pattern PERMISSION_PATTERN = Pattern.compile("^(\\*|\\w+)(\\.(\\*|\\w+))*$");
+    static boolean isValidPermission(final String permission) {
+        var wildcard = false;
+        var last = '.';
+        for (int i = 0; i < permission.length(); i++) {
+            final var ch = permission.charAt(i);
+            if (ch == '*') {
+                if (wildcard || last != '.') return false;
+                wildcard = true;
+            } else if (ch == '.') {
+                if (wildcard || last == '.') return false;
+            } else if (Character.isLetterOrDigit(ch) || ch == '-' || ch == '_') {
+                if (wildcard) return false;
+            } else {
+                return false;
+            }
+            last = ch;
+        }
+        return last != '.';
+    }
 
     /**
      * Returns an empty permission container. Always returns {@link TriState#UNDEFINED}.

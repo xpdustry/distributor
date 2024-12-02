@@ -47,9 +47,30 @@ public interface MutablePermissionTree extends PermissionTree {
      *
      * @param permission the permission
      * @param state      the state
+     */
+    default void setPermission(final String permission, final TriState state) {
+        setPermission(permission, state, false);
+    }
+
+    /**
+     * Sets the permission with the given state.
+     *
+     * @param permission the permission
+     * @param state      the state
      * @param override   whether to override the child permissions with the new state
      */
-    void setPermission(final String permission, final boolean state, final boolean override);
+    default void setPermission(final String permission, final boolean state, final boolean override) {
+        setPermission(permission, TriState.of(state), override);
+    }
+
+    /**
+     * Sets the permission with the given state.
+     *
+     * @param permission the permission
+     * @param state      the state
+     * @param override   whether to override the child permissions with the new state
+     */
+    void setPermission(final String permission, final TriState state, final boolean override);
 
     /**
      * Sets the permissions from the given permission tree.
@@ -70,29 +91,5 @@ public interface MutablePermissionTree extends PermissionTree {
         for (final var entry : tree.getPermissions().entrySet()) {
             setPermission(entry.getKey(), entry.getValue(), override);
         }
-    }
-
-    /**
-     * Removes the given permission from the tree. Essentially making it {@link TriState#UNDEFINED}.
-     *
-     * @param permission the permission
-     */
-    default void removePermission(final String permission) {
-        removePermission(permission, false);
-    }
-
-    /**
-     * Removes the given permission from the tree. Essentially making it {@link TriState#UNDEFINED}.
-     *
-     * @param permission the permission
-     * @param all        whether to remove all child permissions
-     */
-    void removePermission(final String permission, final boolean all);
-
-    /**
-     * Clears all permissions.
-     */
-    default void clearPermissions() {
-        removePermission("*", true);
     }
 }

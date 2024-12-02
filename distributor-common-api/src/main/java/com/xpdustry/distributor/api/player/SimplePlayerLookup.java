@@ -29,16 +29,19 @@ import java.util.Locale;
 import mindustry.gen.Player;
 import mindustry.net.Administration;
 
+/**
+ * A simple player lookup implementation. Supporting {@link Field#ENTITY_ID}, {@link Field#UUID}, and {@link Field#NAME}.
+ */
 public class SimplePlayerLookup implements PlayerLookup {
 
     @Override
     public List<Player> findOnlinePlayers(final Collection<Player> players, final Query query) {
         final List<Player> result = new ArrayList<>();
-        this.findOnlinePlayers0(players, query, result);
+        this.findOnlinePlayers(players, query, result);
         return Collections.unmodifiableList(result);
     }
 
-    protected void findOnlinePlayers0(final Collection<Player> players, final Query query, final List<Player> result) {
+    protected void findOnlinePlayers(final Collection<Player> players, final Query query, final List<Player> result) {
         if (query.getFields().contains(Field.ENTITY_ID) && query.getInput().startsWith("#")) {
             try {
                 final var id = Integer.parseInt(query.getInput().substring(1));

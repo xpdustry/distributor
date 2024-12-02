@@ -21,14 +21,15 @@ package com.xpdustry.distributor.api.permission;
 import com.xpdustry.distributor.api.util.TriState;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class MutablePermissionTreeImpl implements MutablePermissionTree {
 
-    private final @Nullable MutablePermissionTreeImpl parent;
-    private final Map<String, MutablePermissionTreeImpl> children = new HashMap<>();
+    final @Nullable MutablePermissionTreeImpl parent;
+    final Map<String, MutablePermissionTreeImpl> children = new HashMap<>();
     private TriState value = TriState.UNDEFINED;
 
     MutablePermissionTreeImpl() {
@@ -40,7 +41,8 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     }
 
     @Override
-    public TriState getPermission(final String permission) {
+    public TriState getPermission(String permission) {
+        permission = permission.toLowerCase(Locale.ROOT);
         checkPermission(permission);
         var state = TriState.UNDEFINED;
         var node = this;
@@ -74,59 +76,45 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     }
 
     @Override
-    public void setPermission(final String permission, final boolean state, final boolean override) {
+    public void setPermission(String permission, final TriState state, boolean override) {
+        permission = permission.toLowerCase(Locale.ROOT);
         checkPermission(permission);
         final var parts = permission.split("\\.", -1);
         var node = this;
-        for (final var part : parts) {
-            final var parent = node;
-            node = node.children.computeIfAbsent(part, k -> new MutablePermissionTreeImpl(parent));
-        }
-        node.value = TriState.of(state);
-        if (override) {
-            node.children.clear();
-        }
-    }
-
-    @Override
-    public void removePermission(final String permission, final boolean all) {
-        checkPermission(permission);
-        final var parts = permission.split("\\.", -1);
-        var node = this;
-        for (final var part : parts) {
-            node = node.children.get(part);
-            if (node == null) {
-                return;
+        if (state != TriState.UNDEFINED) {
+            for (final var part : parts) {
+                final var parent = node;
+                node = node.children.computeIfAbsent(part, k -> new MutablePermissionTreeImpl(parent));
+            }
+            node.value = state;
+            if (override) {
+                node.children.clear();
+            }
+        } else {
+            for (final var part : parts) {
+                node = node.children.get(part);
+                if (node == null) {
+                    return;
+                }
+            }
+            node.value = TriState.UNDEFINED;
+            if (override) {
+                node.children.clear();
+            }
+            var index = parts.length - 1;
+            while (node.parent != null && node.children.isEmpty()) {
+                node = node.parent;
+                node.children.remove(parts[index--]);
             }
         }
-        node.value = TriState.UNDEFINED;
-        if (all) {
-            node.children.clear();
-        }
-        var index = parts.length - 1;
-        while (node.parent != null && node.children.isEmpty()) {
-            node = node.parent;
-            node.children.remove(parts[index--]);
-        }
-    }
-
-    @Override
-    public void clearPermissions() {
-        this.children.clear();
     }
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof final MutablePermissionTreeImpl that)) {
-            return false;
-        }
-        if (!this.children.equals(that.children)) {
-            return false;
-        }
-        return this.value == that.value;
+        return this == o
+                || (o instanceof MutablePermissionTreeImpl that
+                        && this.children.equals(that.children)
+                        && this.value == that.value);
     }
 
     @Override
@@ -134,8 +122,13 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
         return Objects.hash(this.children, this.value);
     }
 
+    @Override
+    public String toString() {
+        return "MutablePermissionTreeImpl{children=" + this.children + ", value=" + this.value + '}';
+    }
+
     private void checkPermission(final String permission) {
-        if (!PERMISSION_PATTERN.matcher(permission).matches()) {
+        if (!PermissionContainer.isValidPermission(permission)) {
             throw new IllegalArgumentException("The permission is not valid: " + permission);
         }
     }

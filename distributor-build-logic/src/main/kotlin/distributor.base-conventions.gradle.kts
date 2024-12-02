@@ -57,7 +57,7 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:-serial")
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
-        disable("MissingSummary", "FutureReturnValueIgnored", "InlineMeSuggester", "EmptyCatch")
+        disable("FutureReturnValueIgnored", "InlineMeSuggester", "EmptyCatch")
         check("NullAway", if (name.contains("test", ignoreCase = true)) CheckSeverity.OFF else CheckSeverity.ERROR)
         option("NullAway:AnnotatedPackages", "com.xpdustry.distributor")
     }

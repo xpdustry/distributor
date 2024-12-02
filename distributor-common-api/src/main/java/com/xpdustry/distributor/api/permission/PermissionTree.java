@@ -38,7 +38,7 @@ public interface PermissionTree extends PermissionContainer {
      * @param tree the tree
      * @return the immutable tree
      */
-    static PermissionTree from(final PermissionTree tree) {
+    static PermissionTree immutable(final PermissionTree tree) {
         if (tree instanceof ImmutablePermissionTree) return tree;
         final var mutable = MutablePermissionTree.create();
         mutable.setPermissions(tree);
