@@ -95,7 +95,7 @@ public class BaseNetConnectionAudience implements Audience {
 
     @Override
     public void kick(final Component reason, final Duration duration, final boolean log) {
-        this.kick(Packets.KickReason.kick, render(reason).replace('\n', ' '), duration.toMillis(), log);
+        this.kick(null, render(reason).replace('\n', ' '), duration.toMillis(), log);
     }
 
     @Override
