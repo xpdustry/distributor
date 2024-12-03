@@ -59,7 +59,8 @@ val generateMetadataFile by tasks.registering {
 }
 
 tasks.shadowJar {
-    archiveClassifier.set("plugin")
+    archiveFileName = extension.identifier.map { "$it.jar" }
+    archiveClassifier = "plugin"
     from(generateMetadataFile)
     from(rootProject.file("LICENSE.md")) { into("META-INF") }
     mergeServiceFiles()
