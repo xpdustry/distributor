@@ -17,15 +17,15 @@ configurate = "4.1.2"
 geantyref = "2.0.0"
 
 # testing
-junit = "5.11.3"
+junit = "5.11.4"
 assertj = "3.26.3"
-guava-testlib = "33.3.1-jre"
+guava-testlib = "33.4.0-jre"
 mockito = "5.14.2"
 
 # static analysis
 errorprone-gradle = "4.1.0"
 errorprone-core = "2.36.0"
-nullaway = "0.12.1"
+nullaway = "0.12.2"
 checker-qual = "3.48.3"
 
 # linting
