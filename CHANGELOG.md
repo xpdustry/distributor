@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.0.2 - 2024-12-17
+
+### Bugfixes
+
+- Fix `Audience#kick` not sending reason.
+
+### Chores
+
+- Updated dependencies.
+
 ## v4.0.1 - 2024-12-02
 
 ### Bugfix
