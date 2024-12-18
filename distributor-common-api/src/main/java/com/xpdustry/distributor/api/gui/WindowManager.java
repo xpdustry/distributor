@@ -18,8 +18,10 @@
  */
 package com.xpdustry.distributor.api.gui;
 
+import com.xpdustry.distributor.api.player.MUUID;
 import java.util.Collection;
 import mindustry.gen.Player;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A factory creating {@link Window} instances.
@@ -46,6 +48,20 @@ public interface WindowManager {
      * Returns the active windows.
      */
     Collection<Window> getActiveWindows();
+
+    /**
+     * Returns the active window of the given viewer.
+     *
+     * @param viewer the viewer
+     * @return the active window
+     */
+    default @Nullable Window getActiveWindow(final Player viewer) {
+        final var target = MUUID.from(viewer);
+        return getActiveWindows().stream()
+                .filter(window -> MUUID.from(window.getViewer()).equals(target))
+                .findFirst()
+                .orElse(null);
+    }
 
     /**
      * Disposes this window manager.

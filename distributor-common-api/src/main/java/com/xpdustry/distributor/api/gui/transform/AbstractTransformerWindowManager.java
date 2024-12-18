@@ -88,6 +88,11 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
     }
 
     @Override
+    public @Nullable Window getActiveWindow(final Player viewer) {
+        return windows.get(MUUID.from(viewer));
+    }
+
+    @Override
     public final void addTransformer(final Transformer<P> transformer) {
         transformers.add(Objects.requireNonNull(transformer));
     }
