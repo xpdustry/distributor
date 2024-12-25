@@ -36,11 +36,11 @@ public final class CircularRankNode implements RankNode {
 
     @Override
     public String getName() {
-        return "circular" + index;
+        return "circular" + this.index;
     }
 
     @Override
     public RankNode getPrevious() {
-        return NODES[(index - 1 + NODES.length) % NODES.length];
+        return NODES[(this.index - 1 + NODES.length) % NODES.length];
     }
 }

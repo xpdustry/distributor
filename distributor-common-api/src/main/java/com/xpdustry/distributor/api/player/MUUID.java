@@ -159,7 +159,7 @@ public interface MUUID {
      * Returns the UUID as a long. Beware the long does not include the crc32 checksum.
      */
     default long getUuidAsLong() {
-        return ByteBuffer.wrap(getUuidAsBytes()).getLong();
+        return ByteBuffer.wrap(this.getUuidAsBytes()).getLong();
     }
 
     /**
@@ -178,7 +178,7 @@ public interface MUUID {
      * Returns the USID as a long.
      */
     default long getUsidAsLong() {
-        return ByteBuffer.wrap(getUsidAsBytes()).getLong();
+        return ByteBuffer.wrap(this.getUsidAsBytes()).getLong();
     }
 
     /**
@@ -188,7 +188,7 @@ public interface MUUID {
      */
     default UUID toRealUUID() {
         final var buffer = ByteBuffer.allocate(16);
-        final var uuid = getUuidAsBytes();
+        final var uuid = this.getUuidAsBytes();
         buffer.put(uuid, 0, 4); // First 4 bytes
         buffer.putShort((short) 0); // Next 2 bytes
         buffer.putShort((short) 0x8000); // Version is 4 bits, put set to v8

@@ -104,28 +104,29 @@ final class TextInputPaneImpl implements TextInputPane {
     public boolean equals(final Object o) {
         return (this == o)
                 || (o instanceof TextInputPaneImpl other
-                        && maxLength == other.maxLength
-                        && Objects.equals(title, other.title)
-                        && Objects.equals(description, other.description)
-                        && Objects.equals(placeholder, other.placeholder)
-                        && Objects.equals(inputAction, other.inputAction)
-                        && Objects.equals(exitAction, other.exitAction));
+                        && this.maxLength == other.maxLength
+                        && Objects.equals(this.title, other.title)
+                        && Objects.equals(this.description, other.description)
+                        && Objects.equals(this.placeholder, other.placeholder)
+                        && Objects.equals(this.inputAction, other.inputAction)
+                        && Objects.equals(this.exitAction, other.exitAction));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description, placeholder, maxLength, inputAction, exitAction);
+        return Objects.hash(
+                this.title, this.description, this.placeholder, this.maxLength, this.inputAction, this.exitAction);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", TextInputPaneImpl.class.getSimpleName() + "{", "}")
-                .add("title='" + title + "'")
-                .add("description='" + description + "'")
-                .add("placeholder='" + placeholder + "'")
-                .add("maxLength=" + maxLength)
-                .add("inputAction=" + inputAction)
-                .add("exitAction=" + exitAction)
+                .add("title='" + this.title + "'")
+                .add("description='" + this.description + "'")
+                .add("placeholder='" + this.placeholder + "'")
+                .add("maxLength=" + this.maxLength)
+                .add("inputAction=" + this.inputAction)
+                .add("exitAction=" + this.exitAction)
                 .toString();
     }
 }

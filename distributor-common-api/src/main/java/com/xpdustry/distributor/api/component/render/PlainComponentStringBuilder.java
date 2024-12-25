@@ -35,7 +35,7 @@ final class PlainComponentStringBuilder implements ComponentStringBuilder {
 
     @Override
     public KeyContainer getContext() {
-        return context;
+        return this.context;
     }
 
     @Override

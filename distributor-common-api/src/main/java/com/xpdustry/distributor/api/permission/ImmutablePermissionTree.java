@@ -27,11 +27,11 @@ record ImmutablePermissionTree(PermissionTree inner) implements PermissionTree {
 
     @Override
     public TriState getPermission(final String permission) {
-        return inner.getPermission(permission);
+        return this.inner.getPermission(permission);
     }
 
     @Override
     public Map<String, Boolean> getPermissions() {
-        return inner.getPermissions();
+        return this.inner.getPermissions();
     }
 }

@@ -106,11 +106,11 @@ final class PopupPaneImpl implements PopupPane {
     @Override
     public String toString() {
         return new StringJoiner(", ", PopupPaneImpl.class.getSimpleName() + "{", "}")
-                .add("content='" + content + "'")
-                .add("shiftX=" + shiftX)
-                .add("shiftY=" + shiftY)
-                .add("alignementX=" + alignementX)
-                .add("alignementY=" + alignementY)
+                .add("content='" + this.content + "'")
+                .add("shiftX=" + this.shiftX)
+                .add("shiftY=" + this.shiftY)
+                .add("alignementX=" + this.alignementX)
+                .add("alignementY=" + this.alignementY)
                 .toString();
     }
 }

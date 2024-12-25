@@ -47,10 +47,10 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
             Call.textInput(
                     window.getViewer().con(),
                     this.id,
-                    render(window, window.getPane().getTitle()),
-                    render(window, window.getPane().getDescription()),
+                    this.render(window, window.getPane().getTitle()),
+                    this.render(window, window.getPane().getDescription()),
                     window.getPane().getMaxLength(),
-                    render(window, window.getPane().getPlaceholder()),
+                    this.render(window, window.getPane().getPlaceholder()),
                     false);
         }
     }
@@ -61,7 +61,7 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
     }
 
     private void handle(final Player player, final @Nullable String input) {
-        if (isDisposed()) {
+        if (this.isDisposed()) {
             this.getPlugin()
                     .getLogger()
                     .debug(
@@ -70,7 +70,7 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
                             player.uuid());
             return;
         }
-        final var window = getWindows().get(MUUID.from(player));
+        final var window = this.getWindows().get(MUUID.from(player));
         if (window == null) {
             this.getPlugin()
                     .getLogger()
@@ -82,7 +82,7 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
         }
 
         // Simple trick to not reopen an interface when an action already does it.
-        visible.remove(MUUID.from(player));
+        this.visible.remove(MUUID.from(player));
         if (input == null) {
             window.getPane().getExitAction().act(window);
         } else if (input.length() > window.getPane().getMaxLength()) {
@@ -100,7 +100,7 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
         }
         // The text input closes automatically when the player presses enter,
         // so reopen if it was not explicitly closed by the server.
-        if (window.isActive() && !visible.contains(MUUID.from(player))) {
+        if (window.isActive() && !this.visible.contains(MUUID.from(player))) {
             window.show();
         }
     }

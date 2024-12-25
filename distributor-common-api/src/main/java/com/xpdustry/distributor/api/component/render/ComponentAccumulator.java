@@ -48,7 +48,7 @@ public final class ComponentAccumulator implements ComponentStringBuilder {
      * Returns an immutable view of the accumulated components.
      */
     public List<Component> getComponents() {
-        return Collections.unmodifiableList(components);
+        return Collections.unmodifiableList(this.components);
     }
 
     @Override
@@ -64,17 +64,18 @@ public final class ComponentAccumulator implements ComponentStringBuilder {
 
     @Override
     public ComponentAccumulator append(final @Nullable CharSequence csq) {
-        return append(text(csq == null ? "null" : csq.toString()));
+        return this.append(text(csq == null ? "null" : csq.toString()));
     }
 
     @Override
     public ComponentAccumulator append(final @Nullable CharSequence csq, final int start, final int end) {
-        return append(text(csq == null ? "null" : csq.subSequence(start, end).toString()));
+        return this.append(
+                text(csq == null ? "null" : csq.subSequence(start, end).toString()));
     }
 
     @Override
     public ComponentAccumulator append(final char c) {
-        return append(text(c));
+        return this.append(text(c));
     }
 
     @Override

@@ -160,7 +160,7 @@ public final class ResourceBundles {
 
         @Override
         public Locale getLocale() {
-            return locale;
+            return this.locale;
         }
     }
 }

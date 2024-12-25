@@ -43,7 +43,7 @@ abstract class MethodAnnotationProcessor<A extends Annotation, R, O> implements 
                 results.add(this.process(instance, method, (A) annotation));
             }
         }
-        return reduce(Collections.unmodifiableList(results));
+        return this.reduce(Collections.unmodifiableList(results));
     }
 
     protected abstract R process(final Object instance, final Method method, final A annotation);

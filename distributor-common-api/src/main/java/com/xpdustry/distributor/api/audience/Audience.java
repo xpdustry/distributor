@@ -148,7 +148,7 @@ public interface Audience {
      * @param duration the duration
      */
     default void kick(final Component reason, final Duration duration) {
-        kick(reason, duration, true);
+        this.kick(reason, duration, true);
     }
 
     /**
@@ -167,7 +167,7 @@ public interface Audience {
      * @param duration the duration
      */
     default void kick(final Packets.KickReason reason, final Duration duration) {
-        kick(reason, duration, true);
+        this.kick(reason, duration, true);
     }
 
     /**

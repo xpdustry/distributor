@@ -29,7 +29,7 @@ record TextComponentImpl(TextStyle textStyle, String content) implements TextCom
 
     @Override
     public String getContent() {
-        return content;
+        return this.content;
     }
 
     @Override
@@ -70,7 +70,7 @@ record TextComponentImpl(TextStyle textStyle, String content) implements TextCom
 
         @Override
         public TextComponent build() {
-            return new TextComponentImpl(textStyle, content);
+            return new TextComponentImpl(this.textStyle, this.content);
         }
     }
 }

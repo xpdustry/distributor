@@ -34,7 +34,7 @@ public final class ServiceComponentRendererProvider implements ComponentRenderer
 
     @Override
     public @Nullable <T extends Component> ComponentRenderer<T> getRenderer(final T component) {
-        for (final var provider : services.getProviders(ComponentRendererProvider.class)) {
+        for (final var provider : this.services.getProviders(ComponentRendererProvider.class)) {
             final var renderer = provider.getInstance().getRenderer(component);
             if (renderer != null) return renderer;
         }

@@ -90,20 +90,20 @@ public interface ComponentColor {
      * Returns the red value of this color.
      */
     default int getR() {
-        return getRGB() >> 16 & 0xFF;
+        return this.getRGB() >> 16 & 0xFF;
     }
 
     /**
      * Returns the green value of this color.
      */
     default int getG() {
-        return getRGB() >> 8 & 0xFF;
+        return this.getRGB() >> 8 & 0xFF;
     }
 
     /**
      * Returns the blue value of this color.
      */
     default int getB() {
-        return getRGB() & 0xFF;
+        return this.getRGB() & 0xFF;
     }
 }

@@ -57,7 +57,7 @@ public interface WindowManager {
      */
     default @Nullable Window getActiveWindow(final Player viewer) {
         final var target = MUUID.from(viewer);
-        return getActiveWindows().stream()
+        return this.getActiveWindows().stream()
                 .filter(window -> MUUID.from(window.getViewer()).equals(target))
                 .findFirst()
                 .orElse(null);

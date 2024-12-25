@@ -38,7 +38,7 @@ public interface TextInputPane extends Pane {
     TextInputPane setTitle(final Component title);
 
     default TextInputPane setTitle(final String title) {
-        return setTitle(Distributor.get().getMindustryComponentDecoder().decode(title));
+        return this.setTitle(Distributor.get().getMindustryComponentDecoder().decode(title));
     }
 
     Component getDescription();
@@ -46,7 +46,8 @@ public interface TextInputPane extends Pane {
     TextInputPane setDescription(final Component description);
 
     default TextInputPane setDescription(final String description) {
-        return setDescription(Distributor.get().getMindustryComponentDecoder().decode(description));
+        return this.setDescription(
+                Distributor.get().getMindustryComponentDecoder().decode(description));
     }
 
     Component getPlaceholder();
@@ -54,7 +55,8 @@ public interface TextInputPane extends Pane {
     TextInputPane setPlaceholder(final Component placeholder);
 
     default TextInputPane setPlaceholder(final String placeholder) {
-        return setPlaceholder(Distributor.get().getMindustryComponentDecoder().decode(placeholder));
+        return this.setPlaceholder(
+                Distributor.get().getMindustryComponentDecoder().decode(placeholder));
     }
 
     int getMaxLength();

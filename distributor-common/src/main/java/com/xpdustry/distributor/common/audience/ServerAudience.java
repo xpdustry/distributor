@@ -41,22 +41,22 @@ public enum ServerAudience implements Audience {
 
     @Override
     public void sendMessage(final Component component) {
-        Log.info(render(component));
+        Log.info(this.render(component));
     }
 
     @Override
     public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
-        Log.info(render(component));
+        Log.info(this.render(component));
     }
 
     @Override
     public void sendWarning(final Component component) {
-        Log.warn(render(component));
+        Log.warn(this.render(component));
     }
 
     @Override
     public KeyContainer getMetadata() {
-        return metadata;
+        return this.metadata;
     }
 
     @Override
@@ -65,6 +65,6 @@ public enum ServerAudience implements Audience {
     }
 
     private String render(final Component component) {
-        return ComponentStringBuilder.ansi(getMetadata()).append(component).toString();
+        return ComponentStringBuilder.ansi(this.getMetadata()).append(component).toString();
     }
 }

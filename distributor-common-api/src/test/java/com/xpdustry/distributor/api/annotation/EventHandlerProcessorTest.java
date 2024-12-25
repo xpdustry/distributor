@@ -52,7 +52,7 @@ public final class EventHandlerProcessorTest {
         this.processor = new EventHandlerProcessor(new TestPlugin("test"));
         this.events = new EventBusImpl();
         final var distributor = Mockito.mock(Distributor.class);
-        Mockito.when(distributor.getPluginScheduler()).thenReturn(scheduler);
+        Mockito.when(distributor.getPluginScheduler()).thenReturn(this.scheduler);
         Mockito.when(distributor.getEventBus()).thenReturn(this.events);
         Distributor.set(distributor);
     }

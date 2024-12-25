@@ -29,37 +29,37 @@ record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements 
 
     @Override
     public String getText() {
-        return getTranslation(null).format(TranslationArguments.empty());
+        return this.getTranslation(null).format(TranslationArguments.empty());
     }
 
     @Override
     public String getText(final CommandSender sender) {
-        return getTranslation(sender).format(TranslationArguments.empty());
+        return this.getTranslation(sender).format(TranslationArguments.empty());
     }
 
     @Override
     public Component getComponent() {
-        return getTranslation(null).formatAsComponent(TranslationArguments.empty());
+        return this.getTranslation(null).formatAsComponent(TranslationArguments.empty());
     }
 
     @Override
     public Component getComponent(final CommandSender sender) {
-        return getTranslation(sender).formatAsComponent(TranslationArguments.empty());
+        return this.getTranslation(sender).formatAsComponent(TranslationArguments.empty());
     }
 
     @Override
     public boolean isEmpty() {
-        return Distributor.get().getGlobalTranslationSource().getTranslation(key, this.defaultLocale) == null;
+        return Distributor.get().getGlobalTranslationSource().getTranslation(this.key, this.defaultLocale) == null;
     }
 
     @Override
     public boolean isEmpty(final CommandSender sender) {
-        return Distributor.get().getGlobalTranslationSource().getTranslation(key, sender.getLocale()) == null;
+        return Distributor.get().getGlobalTranslationSource().getTranslation(this.key, sender.getLocale()) == null;
     }
 
     private Translation getTranslation(final @Nullable CommandSender sender) {
         return Distributor.get()
                 .getGlobalTranslationSource()
-                .getTranslationOrMissing(key, sender != null ? sender.getLocale() : this.defaultLocale);
+                .getTranslationOrMissing(this.key, sender != null ? sender.getLocale() : this.defaultLocale);
     }
 }

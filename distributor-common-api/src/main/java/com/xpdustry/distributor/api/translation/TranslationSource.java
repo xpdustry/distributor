@@ -52,7 +52,7 @@ public interface TranslationSource {
      */
     default Translation getTranslationOrDefault(
             final String key, final Locale locale, final Function<String, Translation> fallback) {
-        final var translation = getTranslation(key, locale);
+        final var translation = this.getTranslation(key, locale);
         return translation != null ? translation : fallback.apply(key);
     }
 
@@ -64,6 +64,6 @@ public interface TranslationSource {
      * @return the translation
      */
     default Translation getTranslationOrMissing(final String key, final Locale locale) {
-        return getTranslationOrDefault(key, locale, k -> TextTranslation.of("???" + k + "???"));
+        return this.getTranslationOrDefault(key, locale, k -> TextTranslation.of("???" + k + "???"));
     }
 }

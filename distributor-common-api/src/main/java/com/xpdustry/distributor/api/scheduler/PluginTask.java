@@ -42,7 +42,7 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
      */
     @Override
     default void cancel() {
-        cancel(false);
+        this.cancel(false);
     }
 
     /**
@@ -84,7 +84,7 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
          */
         default Builder delay(final TemporalAmount delay) {
             final var duration = Duration.from(delay);
-            return delay(duration.toMillis(), MindustryTimeUnit.MILLISECONDS);
+            return this.delay(duration.toMillis(), MindustryTimeUnit.MILLISECONDS);
         }
 
         /**
@@ -106,7 +106,7 @@ public interface PluginTask<V> extends Future<V>, Cancellable, PluginAware {
          */
         default Builder repeat(final TemporalAmount interval) {
             final var duration = Duration.from(interval);
-            return repeat(duration.toMillis(), MindustryTimeUnit.MILLISECONDS);
+            return this.repeat(duration.toMillis(), MindustryTimeUnit.MILLISECONDS);
         }
 
         /**

@@ -76,7 +76,7 @@ public enum MindustryDecoderImpl implements ComponentDecoder<String> {
 
             var color = Colors.get(value);
             if (color == null && value.charAt(0) == '#') {
-                color = tryParseHex(tcolor, value.substring(1));
+                color = this.tryParseHex(tcolor, value.substring(1));
             }
 
             if (color != null) {

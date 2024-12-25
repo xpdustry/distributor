@@ -117,7 +117,7 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
     }
 
     private void forEachListener(final Consumer<PluginListener> consumer) {
-        forEachListener(consumer, true);
+        this.forEachListener(consumer, true);
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
@@ -149,7 +149,8 @@ public abstract class AbstractMindustryPlugin extends Plugin implements Mindustr
 
         @Override
         public String toString() {
-            return "PluginApplicationListener{plugin=" + plugin.getMetadata().getName() + "}";
+            return "PluginApplicationListener{plugin="
+                    + this.plugin.getMetadata().getName() + "}";
         }
     }
 

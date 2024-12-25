@@ -38,13 +38,13 @@ public interface MenuGrid {
     MenuGrid setRow(final int index, final List<MenuOption> options);
 
     default MenuGrid addRow(final MenuOption... options) {
-        return addRow(Arrays.asList(options));
+        return this.addRow(Arrays.asList(options));
     }
 
     MenuGrid addRow(final List<MenuOption> options);
 
     default MenuGrid addRow(final int index, final MenuOption... options) {
-        return addRow(index, Arrays.asList(options));
+        return this.addRow(index, Arrays.asList(options));
     }
 
     MenuGrid addRow(final int index, final List<MenuOption> options);
