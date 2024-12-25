@@ -59,7 +59,7 @@ record MessageFormatTranslationImpl(String pattern, Locale locale) implements Me
         return createFormat().format(getArguments(parameters).toArray());
     }
 
-    @SuppressWarnings("JdkObsolete")
+    @SuppressWarnings({"JdkObsolete", "removal"})
     @Override
     public void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
         final var format = createFormat();

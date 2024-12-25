@@ -103,14 +103,14 @@ public final class StandardComponentRendererProvider implements ComponentRendere
 
         @Override
         public void render(final TranslatableComponent component, final ComponentStringBuilder builder) {
-            Distributor.get()
+            builder.append(Distributor.get()
                     .getGlobalTranslationSource()
                     .getTranslationOrMissing(
                             component.getKey(),
                             builder.getContext()
                                     .getOptional(StandardKeys.LOCALE)
                                     .orElseGet(Locale::getDefault))
-                    .formatTo(component.getParameters(), builder);
+                    .formatAsComponent(component.getParameters()));
         }
     }
 
