@@ -57,8 +57,10 @@ public interface MenuGrid {
 
     MenuGrid addOption(final MenuOption option);
 
+    // TODO Flawed, it returns the input option instead of the grid
     MenuOption addOption(final int y, final MenuOption option);
 
+    // TODO Flawed, it returns the input option instead of the grid
     MenuOption addOption(final int x, final int y, final MenuOption option);
 
     MenuGrid removeOption(final int x, final int y);
