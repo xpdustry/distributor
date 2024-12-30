@@ -43,7 +43,7 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     @Override
     public TriState getPermission(String permission) {
         permission = permission.toLowerCase(Locale.ROOT);
-        checkPermission(permission);
+        this.checkPermission(permission);
         var state = TriState.UNDEFINED;
         var node = this;
         for (final var part : permission.split("\\.", -1)) {
@@ -78,7 +78,7 @@ final class MutablePermissionTreeImpl implements MutablePermissionTree {
     @Override
     public void setPermission(String permission, final TriState state, boolean override) {
         permission = permission.toLowerCase(Locale.ROOT);
-        checkPermission(permission);
+        this.checkPermission(permission);
         final var parts = permission.split("\\.", -1);
         var node = this;
         if (state != TriState.UNDEFINED) {

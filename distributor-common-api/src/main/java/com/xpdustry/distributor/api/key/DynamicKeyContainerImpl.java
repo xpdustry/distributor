@@ -36,7 +36,7 @@ final class DynamicKeyContainerImpl implements DynamicKeyContainer {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Optional<V> getOptional(final Key<V> key) {
-        final var supplier = metas.get(key);
+        final var supplier = this.metas.get(key);
         if (supplier == null) {
             return Optional.empty();
         } else {
@@ -46,12 +46,12 @@ final class DynamicKeyContainerImpl implements DynamicKeyContainer {
 
     @Override
     public boolean contains(final Key<?> key) {
-        return metas.containsKey(key);
+        return this.metas.containsKey(key);
     }
 
     @Override
     public Set<Key<?>> getKeys() {
-        return Collections.unmodifiableSet(metas.keySet());
+        return Collections.unmodifiableSet(this.metas.keySet());
     }
 
     @Override
@@ -88,14 +88,14 @@ final class DynamicKeyContainerImpl implements DynamicKeyContainer {
 
         @Override
         public DynamicKeyContainer build() {
-            return new DynamicKeyContainerImpl(metas);
+            return new DynamicKeyContainerImpl(this.metas);
         }
     }
 
     private record StaticSupplier<V>(V value) implements Supplier<V> {
         @Override
         public V get() {
-            return value;
+            return this.value;
         }
     }
 }

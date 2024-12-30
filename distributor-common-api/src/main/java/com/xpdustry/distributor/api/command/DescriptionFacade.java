@@ -18,6 +18,8 @@
  */
 package com.xpdustry.distributor.api.command;
 
+import com.xpdustry.distributor.api.Distributor;
+import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.Locale;
 import org.immutables.value.Value;
@@ -59,13 +61,30 @@ public interface DescriptionFacade {
     String getText();
 
     /**
-     * Returns the description text for the given locale holder.
+     * Returns the description text for the given command sender.
      *
      * @param sender the command sender
      * @return the description text
      */
     default String getText(final CommandSender sender) {
         return this.getText();
+    }
+
+    /**
+     * Returns the description text as a {@link Component}.
+     */
+    default Component getComponent() {
+        return Distributor.get().getMindustryComponentDecoder().decode(this.getText());
+    }
+
+    /**
+     * Returns the description text as a {@link Component} for the given command sender.
+     *
+     * @param sender the command sender
+     * @return the description {@link Component}
+     */
+    default Component getComponent(final CommandSender sender) {
+        return Distributor.get().getMindustryComponentDecoder().decode(this.getText(sender));
     }
 
     /**

@@ -42,11 +42,11 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
 
     PopupManagerImpl(final MindustryPlugin plugin) {
         super(plugin);
-        interval.reset(0, Float.MAX_VALUE);
-        setUpdateInterval(Duration.ofSeconds(1L));
-        updater = Distributor.get().getEventBus().subscribe(EventType.Trigger.update, plugin, () -> {
-            if (interval.get(tickUpdateInterval)) {
-                getWindows().values().forEach(Window::show);
+        this.interval.reset(0, Float.MAX_VALUE);
+        this.setUpdateInterval(Duration.ofSeconds(1L));
+        this.updater = Distributor.get().getEventBus().subscribe(EventType.Trigger.update, plugin, () -> {
+            if (this.interval.get(this.tickUpdateInterval)) {
+                this.getWindows().values().forEach(Window::show);
             }
         });
     }
@@ -72,7 +72,7 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
                                 .getMetadata())
                         .append(window.getPane().getContent())
                         .toString(),
-                (Time.delta / 60F) * tickUpdateInterval,
+                (Time.delta / 60F) * this.tickUpdateInterval,
                 align,
                 window.getPane().getShiftY().asPixels(window.getViewer(), DisplayUnit.Axis.Y),
                 window.getPane().getShiftX().asPixels(window.getViewer(), DisplayUnit.Axis.X),
@@ -88,7 +88,7 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
     @Override
     protected void onDispose() {
         super.onDispose();
-        updater.unsubscribe();
+        this.updater.unsubscribe();
     }
 
     @Override

@@ -49,14 +49,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 
     private final ServiceManager services = new ServiceManagerImpl();
-    private final TranslationSource source = new ServiceTranslationSource(services);
+    private final TranslationSource source = new ServiceTranslationSource(this.services);
     private final EventBus events = new EventBusImpl();
     private final PluginScheduler scheduler = new PluginSchedulerImpl(
             PluginTimeSource.mindustry(), Core.app::post, Runtime.getRuntime().availableProcessors());
     private final ComponentRendererProvider componentRendererProvider =
             new ServiceComponentRendererProvider(this.services);
     private final ComponentDecoder<String> mindustryComponentDecoder = MindustryDecoderImpl.INSTANCE;
-    private final AudienceProvider audienceProvider = new AudienceProviderImpl(this, events);
+    private final AudienceProvider audienceProvider = new AudienceProviderImpl(this, this.events);
     private @Nullable PlayerLookup lookup = null;
     private @Nullable PlayerPermissionProvider permissions = null;
 
@@ -72,7 +72,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public PlayerPermissionProvider getPlayerPermissionProvider() {
-        return ensureInitialized(this.permissions, "player-permission-provider");
+        return this.ensureInitialized(this.permissions, "player-permission-provider");
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public PlayerLookup getPlayerLookup() {
-        return ensureInitialized(this.lookup, "player-lookup");
+        return this.ensureInitialized(this.lookup, "player-lookup");
     }
 
     @Override
@@ -92,12 +92,12 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
 
     @Override
     public ComponentRendererProvider getComponentRendererProvider() {
-        return componentRendererProvider;
+        return this.componentRendererProvider;
     }
 
     @Override
     public ComponentDecoder<String> getMindustryComponentDecoder() {
-        return mindustryComponentDecoder;
+        return this.mindustryComponentDecoder;
     }
 
     @Override
@@ -114,15 +114,15 @@ public final class DistributorCommonPlugin extends AbstractMindustryPlugin imple
         this.services.register(this, TranslationSource.class, TranslationSource.router(), Priority.HIGH);
         final var mindustry = BundleTranslationSource.create(Locale.ENGLISH);
         mindustry.registerAll(ResourceBundles.fromClasspathDirectory(
-                getClass(), "com/xpdustry/distributor/common/bundles/", "mindustry_bundle"));
+                this.getClass(), "com/xpdustry/distributor/common/bundles/", "mindustry_bundle"));
         this.services.register(this, TranslationSource.class, mindustry);
     }
 
     @Override
     public void onLoad() {
-        this.lookup = services.provide(PlayerLookup.class).orElseGet(PlayerLookup::create);
+        this.lookup = this.services.provide(PlayerLookup.class).orElseGet(PlayerLookup::create);
         this.permissions =
-                services.provide(PlayerPermissionProvider.class).orElseGet(PlayerPermissionProvider::mindustry);
+                this.services.provide(PlayerPermissionProvider.class).orElseGet(PlayerPermissionProvider::mindustry);
         this.getLogger().info("Loaded distributor common api");
     }
 

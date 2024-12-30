@@ -32,7 +32,7 @@ final class ImmutableKeyContainer implements KeyContainer {
 
     @Override
     public <V> Optional<V> getOptional(final Key<V> key) {
-        return delegate.getOptional(key);
+        return this.delegate.getOptional(key);
     }
 
     @Override

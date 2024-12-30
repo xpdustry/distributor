@@ -37,7 +37,7 @@ final class MindustryComponentStringBuilder implements ComponentStringBuilder {
 
     @Override
     public KeyContainer getContext() {
-        return context;
+        return this.context;
     }
 
     @Override
@@ -45,21 +45,21 @@ final class MindustryComponentStringBuilder implements ComponentStringBuilder {
         {
             var color = component.getTextStyle().getTextColor();
             final var rgb = color == null ? -1 : color.getRGB();
-            final var previous = colors.isEmpty() ? -1 : colors.peek();
-            colors.add(rgb);
+            final var previous = this.colors.isEmpty() ? -1 : this.colors.peek();
+            this.colors.add(rgb);
             if (rgb != -1 && rgb != previous) {
-                builder.append("[#").append(String.format("%06X", rgb)).append(']');
+                this.builder.append("[#").append(String.format("%06X", rgb)).append(']');
             }
         }
 
-        final var renderer = provider.getRenderer(component);
+        final var renderer = this.provider.getRenderer(component);
         if (renderer != null) renderer.render(component, this);
 
         {
-            final var popped = colors.pop();
-            final var previous = colors.isEmpty() ? -1 : colors.peek();
+            final var popped = this.colors.pop();
+            final var previous = this.colors.isEmpty() ? -1 : this.colors.peek();
             if (popped != -1 && popped != previous) {
-                builder.append("[]");
+                this.builder.append("[]");
             }
         }
 
@@ -68,16 +68,16 @@ final class MindustryComponentStringBuilder implements ComponentStringBuilder {
 
     @Override
     public ComponentStringBuilder append(final @Nullable CharSequence csq) {
-        return append(csq, 0, csq == null ? 0 : csq.length());
+        return this.append(csq, 0, csq == null ? 0 : csq.length());
     }
 
     @Override
     public ComponentStringBuilder append(final @Nullable CharSequence csq, final int start, final int end) {
         if (csq == null) {
-            builder.append("null");
+            this.builder.append("null");
         } else {
             for (int i = start; i < end; i++) {
-                append(csq.charAt(i));
+                this.append(csq.charAt(i));
             }
         }
         return this;
@@ -86,15 +86,15 @@ final class MindustryComponentStringBuilder implements ComponentStringBuilder {
     @Override
     public ComponentStringBuilder append(final char c) {
         if (c == '[') {
-            builder.append("[[");
+            this.builder.append("[[");
         } else {
-            builder.append(c);
+            this.builder.append(c);
         }
         return this;
     }
 
     @Override
     public String toString() {
-        return builder.toString();
+        return this.builder.toString();
     }
 }

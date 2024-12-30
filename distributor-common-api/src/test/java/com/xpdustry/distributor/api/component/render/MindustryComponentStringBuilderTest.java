@@ -65,35 +65,35 @@ public final class MindustryComponentStringBuilderTest {
 
     @Test
     void test_append_text_simple() {
-        final var builder = createBuilder();
+        final var builder = this.createBuilder();
         builder.append("Hello, World!");
         assertEquals("Hello, World!", builder.toString());
     }
 
     @Test
     void test_append_escaped_text() {
-        final var builder = createBuilder();
+        final var builder = this.createBuilder();
         builder.append("Hello, [World]!");
         assertEquals("Hello, [[World]!", builder.toString());
     }
 
     @Test
     void test_append_component_simple() {
-        final var builder = createBuilder();
+        final var builder = this.createBuilder();
         builder.append(text("Hello, World!"));
         assertEquals("Hello, World!", builder.toString());
     }
 
     @Test
     void test_append_component_colored() {
-        final var builder = createBuilder();
+        final var builder = this.createBuilder();
         builder.append(text("Hello, World!", ComponentColor.RED));
         assertEquals("[#FF0000]Hello, World![]", builder.toString());
     }
 
     @Test
     void test_append_nested_components() {
-        final var builder = createBuilder();
+        final var builder = this.createBuilder();
         builder.append(ListComponent.components(
                 ComponentColor.RED, text("Hello, "), text("World", ComponentColor.GREEN), text("!")));
         assertEquals("[#FF0000]Hello, [#00FF00]World[]![]", builder.toString());
@@ -101,7 +101,7 @@ public final class MindustryComponentStringBuilderTest {
 
     @Test
     void test_append_component_duplicate_colors() {
-        final var builder = createBuilder();
+        final var builder = this.createBuilder();
         builder.append(ListComponent.components(
                 ComponentColor.RED,
                 text("Hello, ", ComponentColor.RED),
@@ -115,10 +115,10 @@ public final class MindustryComponentStringBuilderTest {
         final var component = translatable("greeting", ComponentColor.RED);
         assertEquals(
                 "[#FF0000]Bonjour[]",
-                createBuilder(Locale.FRENCH).append(component).toString());
+                this.createBuilder(Locale.FRENCH).append(component).toString());
         assertEquals(
                 "[#FF0000]Hello[]",
-                createBuilder(Locale.ENGLISH).append(component).toString());
+                this.createBuilder(Locale.ENGLISH).append(component).toString());
     }
 
     @Test
@@ -127,17 +127,17 @@ public final class MindustryComponentStringBuilderTest {
                 "describe-number", TranslationArguments.array(number(0, ComponentColor.YELLOW)), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is [#FFFF00]zero[][]",
-                createBuilder().append(component1).toString());
+                this.createBuilder().append(component1).toString());
 
         final var component2 = translatable("describe-number", TranslationArguments.array(0), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is zero[]",
-                createBuilder().append(component2).toString());
+                this.createBuilder().append(component2).toString());
 
         final var component3 = translatable("describe-number", TranslationArguments.array("0"), ComponentColor.RED);
         assertEquals(
                 "[#FF0000]The [[number] is 0[]",
-                createBuilder().append(component3).toString());
+                this.createBuilder().append(component3).toString());
     }
 
     private MindustryComponentStringBuilder createBuilder(final Locale locale) {
@@ -149,6 +149,6 @@ public final class MindustryComponentStringBuilderTest {
     }
 
     private MindustryComponentStringBuilder createBuilder() {
-        return createBuilder(Locale.ENGLISH);
+        return this.createBuilder(Locale.ENGLISH);
     }
 }

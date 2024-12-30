@@ -50,7 +50,7 @@ public interface PlayerLookup {
      * @return the matching players
      */
     default List<Player> findOnlinePlayers(final Query query) {
-        return findOnlinePlayers(MindustryCollections.immutableList(Groups.player), query);
+        return this.findOnlinePlayers(MindustryCollections.immutableList(Groups.player), query);
     }
 
     /**
@@ -101,7 +101,7 @@ public interface PlayerLookup {
         }
 
         /**
-         * Whether to return a singular result if a exact match is found.
+         * Whether to return a singular result if an exact match is found.
          * Defaults to {@code true}.
          */
         @Value.Default
@@ -117,7 +117,7 @@ public interface PlayerLookup {
             Builder setInput(final String queryInput);
 
             default Builder setFields(final Field... fields) {
-                return setFields(Set.of(fields));
+                return this.setFields(Set.of(fields));
             }
 
             Builder setFields(final Iterable<Field> fields);

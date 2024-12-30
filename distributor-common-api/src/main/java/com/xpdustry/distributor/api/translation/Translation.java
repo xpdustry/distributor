@@ -18,6 +18,9 @@
  */
 package com.xpdustry.distributor.api.translation;
 
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.component.ListComponent;
+import com.xpdustry.distributor.api.component.render.ComponentAccumulator;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 
 /**
@@ -26,20 +29,34 @@ import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
 public interface Translation {
 
     /**
-     * Formats the translation with the given parameters.
+     * Formats the translation with the given parameters and return a string.
      *
      * @param parameters the translation parameters
-     * @return the formatted translation
+     * @return the formatted translation as a string
      */
     String format(final TranslationArguments parameters);
+
+    /**
+     * Formats the translation with the given parameters and return a component.
+     *
+     * @param parameters the translation parameters
+     * @return the formatted translation as a component
+     */
+    default Component formatAsComponent(final TranslationArguments parameters) {
+        final var accumulator = ComponentAccumulator.create();
+        this.formatTo(parameters, accumulator);
+        return ListComponent.components(accumulator.getComponents());
+    }
 
     /**
      * Formats the translation to the given {@link ComponentStringBuilder}.
      *
      * @param parameters the translation parameters
      * @param builder    the builder
+     * @deprecated This method has been replaced by {@link #formatAsComponent(TranslationArguments)}.
      */
+    @Deprecated(since = "4.1", forRemoval = true)
     default void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
-        builder.append(format(parameters));
+        builder.append(this.format(parameters));
     }
 }

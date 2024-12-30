@@ -34,7 +34,7 @@ public final class TranslatableComponentTest {
     @Test
     void test_content() {
         for (final var category : CTypeKey.ALL) {
-            test_content(category);
+            this.test_content(category);
         }
     }
 

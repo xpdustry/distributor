@@ -41,7 +41,7 @@ enum ServerCommandSender implements CommandSender {
 
     @Override
     public void reply(final Component component) {
-        getAudience().sendMessage(component);
+        this.getAudience().sendMessage(component);
     }
 
     @Override
@@ -51,7 +51,7 @@ enum ServerCommandSender implements CommandSender {
 
     @Override
     public void error(final Component component) {
-        getAudience().sendWarning(component);
+        this.getAudience().sendWarning(component);
     }
 
     @Override

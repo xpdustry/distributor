@@ -50,30 +50,30 @@ final class AnsiComponentStringBuilder implements ComponentStringBuilder {
 
     @Override
     public KeyContainer getContext() {
-        return context;
+        return this.context;
     }
 
     @Override
     public ComponentStringBuilder append(final Component component) {
-        escape();
+        this.escape();
 
         {
-            final var previous = styles.peek();
+            final var previous = this.styles.peek();
             final var next = previous == null ? component.getTextStyle() : previous.merge(component.getTextStyle());
-            styles.push(next);
+            this.styles.push(next);
             if (!Objects.equals(previous, next)) {
-                appendStyle(next);
+                this.appendStyle(next);
             }
         }
 
-        final var renderer = provider.getRenderer(component);
+        final var renderer = this.provider.getRenderer(component);
         if (renderer != null) renderer.render(component, this);
 
         {
-            final var popped = styles.pop();
-            final var head = styles.peek();
+            final var popped = this.styles.pop();
+            final var head = this.styles.peek();
             if (!Objects.equals(popped, head)) {
-                appendStyle(head == null ? TextStyle.of() : head);
+                this.appendStyle(head == null ? TextStyle.of() : head);
             }
         }
 
@@ -82,83 +82,84 @@ final class AnsiComponentStringBuilder implements ComponentStringBuilder {
 
     @Override
     public ComponentStringBuilder append(final @Nullable CharSequence csq) {
-        builder.append(csq);
+        this.builder.append(csq);
         return this;
     }
 
     @Override
     public ComponentStringBuilder append(final @Nullable CharSequence csq, final int start, final int end) {
-        builder.append(csq, start, end);
+        this.builder.append(csq, start, end);
         return this;
     }
 
     @Override
     public ComponentStringBuilder append(final char c) {
-        builder.append(c);
+        this.builder.append(c);
         return this;
     }
 
     @Override
     public String toString() {
-        escape();
-        return builder.toString();
+        this.escape();
+        return this.builder.toString();
     }
 
     private void escape() {
-        escape(builder.length());
+        this.escape(this.builder.length());
     }
 
     private void escape(final int end) {
-        if (!ANSI_SUPPORTED || builder.length() == mark) return;
-        final var matcher = ANSI_PATTERN.matcher(builder.substring(mark, end));
-        builder.delete(mark, end);
+        if (!ANSI_SUPPORTED || this.builder.length() == this.mark) return;
+        final var matcher = ANSI_PATTERN.matcher(this.builder.substring(this.mark, end));
+        this.builder.delete(this.mark, end);
         final var insert = new StringBuilder();
         while (matcher.find()) matcher.appendReplacement(insert, "");
         matcher.appendTail(insert);
-        builder.insert(mark, insert);
-        mark = builder.length();
+        this.builder.insert(this.mark, insert);
+        this.mark = this.builder.length();
     }
 
     private void appendStyle(final TextStyle style) {
-        final var start = builder.length();
-        appendReset();
+        final var start = this.builder.length();
+        this.appendReset();
         final var textColor = style.getTextColor();
         if (textColor != null) {
-            appendForegroundColor(textColor);
+            this.appendForegroundColor(textColor);
         }
         final var backColor = style.getBackColor();
         if (backColor != null) {
-            appendBackgroundColor(backColor);
+            this.appendBackgroundColor(backColor);
         }
         for (final var entry : style.getDecorations().entrySet()) {
             final var decoration = entry.getKey();
             if (!entry.getValue()) continue;
-            appendDecoration(decoration);
+            this.appendDecoration(decoration);
         }
-        escape(start);
+        this.escape(start);
     }
 
     private void appendReset() {
         if (!ANSI_SUPPORTED) return;
-        builder.append(ANSI_ESCAPE_START).append(0).append(ANSI_ESCAPE_CLOSE);
+        this.builder.append(ANSI_ESCAPE_START).append(0).append(ANSI_ESCAPE_CLOSE);
     }
 
     private void appendDecoration(final TextDecoration decoration) {
         if (!ANSI_SUPPORTED) return;
-        builder.append(ANSI_ESCAPE_START);
-        builder.append(
+        this.builder.append(ANSI_ESCAPE_START);
+        this.builder.append(
                 switch (decoration) {
                     case BOLD -> 1;
                     case ITALIC -> 3;
                     case UNDERLINED -> 4;
                     case STRIKETHROUGH -> 9;
                 });
-        builder.append(ANSI_ESCAPE_CLOSE);
+        this.builder.append(ANSI_ESCAPE_CLOSE);
     }
 
     private void appendForegroundColor(final ComponentColor color) {
         if (!ANSI_SUPPORTED) return;
-        builder.append(ANSI_ESCAPE_START)
+        this.builder
+                .append(ANSI_ESCAPE_START)
                 .append(38)
                 .append(';')
                 .append(2)
@@ -173,7 +174,8 @@ final class AnsiComponentStringBuilder implements ComponentStringBuilder {
 
     private void appendBackgroundColor(final ComponentColor color) {
         if (!ANSI_SUPPORTED) return;
-        builder.append(ANSI_ESCAPE_START)
+        this.builder
+                .append(ANSI_ESCAPE_START)
                 .append(48)
                 .append(';')
                 .append(2)

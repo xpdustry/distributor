@@ -40,7 +40,7 @@ Javadocs are mostly done, the wiki is next.
 
 Final beta release.
 All major feature I wanted for distributor 4 have been implemented.
-It is now time to use it in more production plugins to asses the usability of the new APIs.
+It is now time to use it in more production plugins to assess the usability of the new APIs.
 
 ## v4.0.0-beta.2 - 2024-04-08
 

@@ -70,7 +70,7 @@ public interface DisplayUnit {
 
         @Override
         default int asPixels(final Player player, final Axis axis) {
-            return getPixels();
+            return this.getPixels();
         }
     }
 }

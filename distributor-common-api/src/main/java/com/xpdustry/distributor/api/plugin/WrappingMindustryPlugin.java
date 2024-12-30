@@ -43,7 +43,7 @@ record WrappingMindustryPlugin(Plugin plugin) implements MindustryPlugin {
 
     @Override
     public Logger getLogger() {
-        return LoggerFactory.getLogger(plugin.getClass());
+        return LoggerFactory.getLogger(this.plugin.getClass());
     }
 
     @Override

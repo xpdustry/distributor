@@ -57,7 +57,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         this.playerLeaveListener = Distributor.get()
                 .getEventBus()
                 .subscribe(EventType.PlayerLeave.class, plugin, event -> {
-                    final var window = windows.get(MUUID.from(event.player));
+                    final var window = this.windows.get(MUUID.from(event.player));
                     if (window != null) window.hide();
                 });
     }
@@ -67,7 +67,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
     protected void onWindowClose(final SimpleWindow window) {}
 
     protected void onDispose() {
-        playerLeaveListener.unsubscribe();
+        this.playerLeaveListener.unsubscribe();
     }
 
     protected abstract P createPane();
@@ -88,30 +88,35 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
     }
 
     @Override
+    public @Nullable Window getActiveWindow(final Player viewer) {
+        return this.windows.get(MUUID.from(viewer));
+    }
+
+    @Override
     public final void addTransformer(final Transformer<P> transformer) {
-        transformers.add(Objects.requireNonNull(transformer));
+        this.transformers.add(Objects.requireNonNull(transformer));
     }
 
     @Override
     public final MindustryPlugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     @Override
     public final void dispose() {
-        if (!disposed) {
-            disposed = true;
-            getActiveWindows().forEach(Window::hide);
-            onDispose();
+        if (!this.disposed) {
+            this.disposed = true;
+            this.getActiveWindows().forEach(Window::hide);
+            this.onDispose();
         }
     }
 
     protected final Map<MUUID, SimpleWindow> getWindows() {
-        return Collections.unmodifiableMap(windows);
+        return Collections.unmodifiableMap(this.windows);
     }
 
     protected final boolean isDisposed() {
-        return disposed;
+        return this.disposed;
     }
 
     protected final class SimpleWindow implements Window {
@@ -134,8 +139,8 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
                 return;
             }
 
-            checkNotTransforming();
-            final var previous = AbstractTransformerWindowManager.this.windows.put(MUUID.from(viewer), this);
+            this.checkNotTransforming();
+            final var previous = AbstractTransformerWindowManager.this.windows.put(MUUID.from(this.viewer), this);
             if (previous != null && previous != this) {
                 previous.hide();
             }
@@ -144,7 +149,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
                 this.transforming = true;
                 this.pane = AbstractTransformerWindowManager.this.createPane();
                 final var context = Transformer.Context.of(this.pane, this.state, this.viewer);
-                for (final var transform : transformers) {
+                for (final var transform : AbstractTransformerWindowManager.this.transformers) {
                     transform.transform(context);
                 }
             } finally {
@@ -156,30 +161,30 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
 
         @Override
         public void hide() {
-            checkNotTransforming();
-            if (AbstractTransformerWindowManager.this.windows.remove(MUUID.from(viewer), this)) {
+            this.checkNotTransforming();
+            if (AbstractTransformerWindowManager.this.windows.remove(MUUID.from(this.viewer), this)) {
                 AbstractTransformerWindowManager.this.onWindowClose(this);
             }
         }
 
         @Override
         public boolean isActive() {
-            return AbstractTransformerWindowManager.this.windows.containsKey(MUUID.from(viewer));
+            return AbstractTransformerWindowManager.this.windows.containsKey(MUUID.from(this.viewer));
         }
 
         @Override
         public Player getViewer() {
-            return viewer;
+            return this.viewer;
         }
 
         @Override
         public MutableKeyContainer getState() {
-            return state;
+            return this.state;
         }
 
         @Override
         public @Nullable Window getParent() {
-            return parent;
+            return this.parent;
         }
 
         public P getPane() {
@@ -187,7 +192,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         private void checkNotTransforming() {
-            if (transforming) {
+            if (this.transforming) {
                 throw new IllegalStateException("Cannot open or close a window while transforming");
             }
         }

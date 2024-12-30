@@ -28,7 +28,7 @@ public final class BundleTranslationSourceImplTest {
 
     @Test
     void test_get_translation() {
-        final var registry = createSource(Locale.ENGLISH);
+        final var registry = this.createSource(Locale.ENGLISH);
         registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
         registry.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
 
@@ -55,7 +55,7 @@ public final class BundleTranslationSourceImplTest {
 
     @Test
     void test_unregister() {
-        final var registry = createSource(Locale.ENGLISH);
+        final var registry = this.createSource(Locale.ENGLISH);
 
         registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
         registry.register("greeting", Locale.ENGLISH, TextTranslation.of("Hello"));
@@ -90,7 +90,7 @@ public final class BundleTranslationSourceImplTest {
 
     @Test
     void test_illegal_register() {
-        final var registry = createSource(Locale.ENGLISH);
+        final var registry = this.createSource(Locale.ENGLISH);
         registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour"));
         assertThatThrownBy(() -> registry.register("greeting", Locale.FRENCH, TextTranslation.of("Bonjour")))
                 .isInstanceOf(IllegalArgumentException.class);

@@ -63,7 +63,7 @@ final class MindustryList<E> extends AbstractList<E> implements RandomAccess {
     @SuppressWarnings("SuspiciousSystemArraycopy")
     @Override
     public <T> T[] toArray(final T[] a) {
-        if (a.length >= size()) {
+        if (a.length >= this.size()) {
             System.arraycopy(this.seq.items, 0, a, 0, this.seq.size);
             Arrays.fill(a, this.seq.size, a.length, null);
             return a;

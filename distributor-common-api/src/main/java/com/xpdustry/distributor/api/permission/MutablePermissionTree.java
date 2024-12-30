@@ -39,7 +39,7 @@ public interface MutablePermissionTree extends PermissionTree {
      * @param state      the state
      */
     default void setPermission(final String permission, final boolean state) {
-        setPermission(permission, state, false);
+        this.setPermission(permission, state, false);
     }
 
     /**
@@ -49,7 +49,7 @@ public interface MutablePermissionTree extends PermissionTree {
      * @param state      the state
      */
     default void setPermission(final String permission, final TriState state) {
-        setPermission(permission, state, false);
+        this.setPermission(permission, state, false);
     }
 
     /**
@@ -60,7 +60,7 @@ public interface MutablePermissionTree extends PermissionTree {
      * @param override   whether to override the child permissions with the new state
      */
     default void setPermission(final String permission, final boolean state, final boolean override) {
-        setPermission(permission, TriState.of(state), override);
+        this.setPermission(permission, TriState.of(state), override);
     }
 
     /**
@@ -78,7 +78,7 @@ public interface MutablePermissionTree extends PermissionTree {
      * @param tree the permission tree
      */
     default void setPermissions(final PermissionTree tree) {
-        setPermissions(tree, false);
+        this.setPermissions(tree, false);
     }
 
     /**
@@ -89,7 +89,7 @@ public interface MutablePermissionTree extends PermissionTree {
      */
     default void setPermissions(final PermissionTree tree, final boolean override) {
         for (final var entry : tree.getPermissions().entrySet()) {
-            setPermission(entry.getKey(), entry.getValue(), override);
+            this.setPermission(entry.getKey(), entry.getValue(), override);
         }
     }
 }

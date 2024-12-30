@@ -53,7 +53,7 @@ public final class RankPermissionReaderTest {
     void setup() {
         this.reader = new RankPlayerPermissionProvider();
         this.services = new ServiceManagerImpl();
-        this.services.register(plugin, RankProvider.class, rankProvider, Priority.NORMAL);
+        this.services.register(this.plugin, RankProvider.class, this.rankProvider, Priority.NORMAL);
         final var distributor = Mockito.mock(Distributor.class);
         Mockito.when(distributor.getServiceManager()).thenReturn(this.services);
         Distributor.set(distributor);

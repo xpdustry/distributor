@@ -32,29 +32,29 @@ final class MutableKeyContainerImpl implements MutableKeyContainer {
     @SuppressWarnings("unchecked")
     @Override
     public <V> Optional<V> getOptional(final Key<V> key) {
-        return Optional.ofNullable((V) key.getToken().getRawType().cast(data.get(key)));
+        return Optional.ofNullable((V) key.getToken().getRawType().cast(this.data.get(key)));
     }
 
     @Override
     public boolean contains(final Key<?> key) {
-        return data.containsKey(key);
+        return this.data.containsKey(key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <V> @Nullable V set(final Key<V> key, final V value) {
-        final var previous = data.put(key, value);
+        final var previous = this.data.put(key, value);
         return (V) key.getToken().getRawType().cast(previous);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <V> @Nullable V remove(final Key<V> key) {
-        return (V) key.getToken().getRawType().cast(data.remove(key));
+        return (V) key.getToken().getRawType().cast(this.data.remove(key));
     }
 
     @Override
     public Set<Key<?>> getKeys() {
-        return Collections.unmodifiableSet(data.keySet());
+        return Collections.unmodifiableSet(this.data.keySet());
     }
 }

@@ -30,36 +30,36 @@ public final class MindustryDecoderImplTest {
 
     @Test
     void test_decode_plain() {
-        assertStringDecodesTo("Hello, World!", text("Hello, World!"));
+        this.assertStringDecodesTo("Hello, World!", text("Hello, World!"));
     }
 
     @Test
     void test_decode_color() {
-        assertStringDecodesTo("[#FF0000]Hello, World!", text("Hello, World!", ComponentColor.RED));
+        this.assertStringDecodesTo("[#FF0000]Hello, World!", text("Hello, World!", ComponentColor.RED));
     }
 
     @Test
     void test_escape_color() {
-        assertStringDecodesTo("[[#FF0000]Hello, World!", text("[#FF0000]Hello, World!"));
+        this.assertStringDecodesTo("[[#FF0000]Hello, World!", text("[#FF0000]Hello, World!"));
     }
 
     @Test
     void test_escape_left_brackets() {
-        assertStringDecodesTo("A[[[[[[[[Hello, World![[[[[", text("A[[[[Hello, World![[["));
-        assertStringDecodesTo("[[[[[[[[Hello, World![[[[[", text("[[[[Hello, World![[["));
-        assertStringDecodesTo("[[[[[[[[Hello, World![[[[[A", text("[[[[Hello, World![[[A"));
+        this.assertStringDecodesTo("A[[[[[[[[Hello, World![[[[[", text("A[[[[Hello, World![[["));
+        this.assertStringDecodesTo("[[[[[[[[Hello, World![[[[[", text("[[[[Hello, World![[["));
+        this.assertStringDecodesTo("[[[[[[[[Hello, World![[[[[A", text("[[[[Hello, World![[[A"));
     }
 
     @Test
     void test_escape_right_brackets() {
-        assertStringDecodesTo("A]]]]]]]]Hello, World!]]]]]", text("A]]]]]]]]Hello, World!]]]]]"));
-        assertStringDecodesTo("]]]]]]]]Hello, World!]]]]]", text("]]]]]]]]Hello, World!]]]]]"));
-        assertStringDecodesTo("]]]]]]]]Hello, World!]]]]]A", text("]]]]]]]]Hello, World!]]]]]A"));
+        this.assertStringDecodesTo("A]]]]]]]]Hello, World!]]]]]", text("A]]]]]]]]Hello, World!]]]]]"));
+        this.assertStringDecodesTo("]]]]]]]]Hello, World!]]]]]", text("]]]]]]]]Hello, World!]]]]]"));
+        this.assertStringDecodesTo("]]]]]]]]Hello, World!]]]]]A", text("]]]]]]]]Hello, World!]]]]]A"));
     }
 
     @Test
     void test_decode_nested_simple() {
-        assertStringDecodesTo(
+        this.assertStringDecodesTo(
                 "[#ff0000]Hello, [#00FF00]World[]![]",
                 ListComponent.components(
                         text("Hello, ", ComponentColor.RED),
@@ -69,7 +69,7 @@ public final class MindustryDecoderImplTest {
 
     @Test
     void test_decode_nested_complex() {
-        assertStringDecodesTo(
+        this.assertStringDecodesTo(
                 "[#ff0000]A[#00FF00][[B][]C[][][D][][#0000FF]E",
                 ListComponent.components(
                         text("A", ComponentColor.RED),
@@ -81,7 +81,7 @@ public final class MindustryDecoderImplTest {
 
     @Test
     void test_decode_color_with_alpha() {
-        assertStringDecodesTo("[#11223344]Hello, World!", text("Hello, World!", ComponentColor.rgb(0x112233)));
+        this.assertStringDecodesTo("[#11223344]Hello, World!", text("Hello, World!", ComponentColor.rgb(0x112233)));
     }
 
     private void assertStringDecodesTo(final String input, final Component expected) {

@@ -74,7 +74,7 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
 
     @Override
     public DescriptionFacade getDescription() {
-        return descriptionFacade;
+        return this.descriptionFacade;
     }
 
     @Override
@@ -84,17 +84,19 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
 
     @Override
     public boolean isVisible(final CommandSender sender) {
-        final var mapped = manager.senderMapper().map(sender);
-        return manager.commands().stream()
-                .anyMatch(command -> command.rootComponent().name().equalsIgnoreCase(realName)
-                        && manager.testPermission(mapped, command.commandPermission())
+        final var mapped = this.manager.senderMapper().map(sender);
+        return this.manager.commands().stream()
+                .anyMatch(command -> command.rootComponent().name().equalsIgnoreCase(this.realName)
+                        && this.manager
+                                .testPermission(mapped, command.commandPermission())
                                 .allowed());
     }
 
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
-        final var mapped = manager.senderMapper().map(sender);
-        final var result = manager.createHelpHandler().query(HelpQuery.of(mapped, getRealName() + " " + query));
+        final var mapped = this.manager.senderMapper().map(sender);
+        final var result =
+                this.manager.createHelpHandler().query(HelpQuery.of(mapped, this.getRealName() + " " + query));
         if (result instanceof MultipleCommandResult<C> multi) {
             return CommandHelp.Suggestion.of(multi.longestPath(), multi.childSuggestions());
         } else if (result instanceof VerboseCommandResult<C> verbose) {
@@ -107,8 +109,8 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
                     this.manager
                             .descriptionMapper()
                             .map(command.commandDescription().verboseDescription()),
-                    getArguments(command),
-                    getFlags(command));
+                    this.getArguments(command),
+                    this.getFlags(command));
         } else {
             return CommandHelp.Empty.of();
         }

@@ -34,12 +34,12 @@ record TemporalComponentImpl(TextStyle textStyle, Temporal temporal, TemporalSty
 
     @Override
     public TemporalStyle getTemporalStyle() {
-        return format;
+        return this.format;
     }
 
     @Override
     public TextStyle getTextStyle() {
-        return textStyle;
+        return this.textStyle;
     }
 
     @Override
@@ -81,7 +81,7 @@ record TemporalComponentImpl(TextStyle textStyle, Temporal temporal, TemporalSty
 
         @Override
         public TemporalComponent build() {
-            return new TemporalComponentImpl(textStyle, Objects.requireNonNull(temporal), format);
+            return new TemporalComponentImpl(this.textStyle, Objects.requireNonNull(this.temporal), this.format);
         }
     }
 }

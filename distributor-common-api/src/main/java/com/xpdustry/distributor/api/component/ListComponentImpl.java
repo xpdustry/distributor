@@ -33,7 +33,7 @@ record ListComponentImpl(TextStyle textStyle, List<Component> components) implem
 
     @Override
     public List<Component> getComponents() {
-        return components;
+        return this.components;
     }
 
     @Override
@@ -87,7 +87,7 @@ record ListComponentImpl(TextStyle textStyle, List<Component> components) implem
 
         @Override
         public ListComponentImpl build() {
-            return new ListComponentImpl(textStyle, components);
+            return new ListComponentImpl(this.textStyle, this.components);
         }
     }
 }

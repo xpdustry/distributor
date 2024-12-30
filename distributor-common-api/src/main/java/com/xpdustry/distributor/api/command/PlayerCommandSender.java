@@ -41,7 +41,7 @@ record PlayerCommandSender(Player player) implements CommandSender {
 
     @Override
     public void reply(final Component component) {
-        getAudience().sendMessage(component);
+        this.getAudience().sendMessage(component);
     }
 
     @Override
@@ -51,7 +51,7 @@ record PlayerCommandSender(Player player) implements CommandSender {
 
     @Override
     public void error(final Component component) {
-        getAudience().sendMessage(ListComponent.components(ComponentColor.RED, component));
+        this.getAudience().sendMessage(ListComponent.components(ComponentColor.RED, component));
     }
 
     @Override

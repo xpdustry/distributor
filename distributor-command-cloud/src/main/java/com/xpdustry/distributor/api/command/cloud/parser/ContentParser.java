@@ -62,9 +62,9 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
     @Override
     public ArgumentParseResult<T> parse(final CommandContext<C> ctx, final CommandInput input) {
         final var name = input.readString().toLowerCase(Locale.ROOT);
-        final var content = Vars.content.getByName(contentType.getContentType(), name);
+        final var content = Vars.content.getByName(this.contentType.getContentType(), name);
         return (content == null)
-                ? ArgumentParseResult.failure(new ContentParseException(ctx, name, contentType))
+                ? ArgumentParseResult.failure(new ContentParseException(ctx, name, this.contentType))
                 : ArgumentParseResult.success((T) content);
     }
 
@@ -95,11 +95,11 @@ public final class ContentParser<C, T extends MappableContent> implements Argume
         }
 
         public String getInput() {
-            return input;
+            return this.input;
         }
 
         public CTypeKey<?> getContentType() {
-            return contentType;
+            return this.contentType;
         }
     }
 }
