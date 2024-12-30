@@ -63,15 +63,20 @@ public final class ResourceBundles {
      */
     public static List<ResourceBundle> fromClasspathDirectory(
             final Class<?> caller, final String directory, final String name) {
-        final var path = new File(caller.getProtectionDomain()
-                        .getCodeSource()
-                        .getLocation()
-                        .getPath())
-                .toPath();
-        if (path.getFileName().toString().endsWith(".jar")) {
-            return fromZipDirectory(path, directory, name);
-        } else {
-            return fromDirectory(path.resolve(directory), name);
+        try {
+            final var path = new File(caller.getProtectionDomain()
+                            .getCodeSource()
+                            .getLocation()
+                            .toURI())
+                    .toPath();
+            if (path.getFileName().toString().endsWith(".jar")) {
+                return fromZipDirectory(path, directory, name);
+            } else {
+                return fromDirectory(path.resolve(directory), name);
+            }
+        } catch (final Exception e) {
+            throw new IllegalArgumentException(
+                    "Failed to load resource bundles from classpath directory: " + directory, e);
         }
     }
 
