@@ -34,6 +34,6 @@ enum RouterTranslationSource implements TranslationSource {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName();
+        return this.getDeclaringClass().getSimpleName();
     }
 }
