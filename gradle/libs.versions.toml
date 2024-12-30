@@ -10,6 +10,7 @@ slf4md = "1.0.1"
 
 # command
 cloud = "2.0.0"
+lamp = "4.0.0-rc.2"
 
 # utilities
 immutables = "2.10.1"
@@ -27,6 +28,7 @@ errorprone-gradle = "4.1.0"
 errorprone-core = "2.36.0"
 nullaway = "0.12.2"
 checker-qual = "3.48.3"
+jetbrains-annotations = "26.0.1"
 
 # linting
 palantir = "2.50.0"
@@ -52,6 +54,7 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # command
 cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
+lamp-common = { module = "io.github.revxrsal:lamp.common", version.ref = "lamp" }
 
 # utilities
 immutables-processor = { module = "org.immutables:value-processor", version.ref = "immutables" }
@@ -76,6 +79,7 @@ errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", versi
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker-qual" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations"}
 
 # gradle
 toxopid = { module = "com.xpdustry:toxopid", version.ref = "toxopid" }
