@@ -25,10 +25,10 @@ import com.xpdustry.distributor.api.command.CommandHelp;
 import com.xpdustry.distributor.api.command.CommandSender;
 import com.xpdustry.distributor.api.command.DescriptionFacade;
 import com.xpdustry.distributor.api.command.DescriptionMapper;
-import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.command.lamp.LampDescribable;
-import com.xpdustry.distributor.api.command.lamp.actor.ActorMapper;
+import com.xpdustry.distributor.api.command.lamp.actor.ActorFactory;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustryCommandActor;
+import com.xpdustry.distributor.api.command.lamp.description.LampDescription;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,27 +51,27 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
     private final String name;
     private final DescriptionFacade descriptionFacade;
     private final Lamp<A> lamp;
-    private final ActorMapper<A> actorMapper;
-    private final DescriptionMapper<LampDescribable<A>> descriptionMapper;
+    private final ActorFactory<A> actorFactory;
+    private final DescriptionMapper<LampDescription<A>> descriptionMapper;
 
     LampCommandFacade(
             final MindustryPlugin plugin,
             final String name,
             final DescriptionFacade descriptionFacade,
             final Lamp<A> lamp,
-            final ActorMapper<A> actorMapper,
-            final DescriptionMapper<LampDescribable<A>> descriptionMapper,
+            final ActorFactory<A> actorFactory,
+            final DescriptionMapper<LampDescription<A>> descriptionMapper,
             final boolean prefixed) {
         super(
                 prefixed ? plugin.getMetadata().getName() + ":" + name : name,
                 "[args...]",
                 descriptionFacade.getText(),
-                new LampCommandRunner<>(name, lamp, actorMapper));
+                new LampCommandRunner<>(name, lamp, actorFactory));
         this.plugin = plugin;
         this.name = name;
         this.descriptionFacade = descriptionFacade;
         this.lamp = lamp;
-        this.actorMapper = actorMapper;
+        this.actorFactory = actorFactory;
         this.descriptionMapper = descriptionMapper;
     }
 
@@ -102,7 +102,7 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
 
     @Override
     public boolean isVisible(final CommandSender sender) {
-        final var actor = actorMapper.toActor(sender, lamp);
+        final var actor = actorFactory.create(sender, lamp);
         return this.lamp.registry().commands().stream()
                 .filter(command -> command.firstNode().name().equalsIgnoreCase(this.name))
                 .anyMatch(command -> command.permission().isExecutableBy(actor));
@@ -110,7 +110,7 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
 
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
-        final A actor = actorMapper.toActor(sender, lamp);
+        final A actor = actorFactory.create(sender, lamp);
         final var base = new ArrayList<String>();
         base.add(this.getRealName().toLowerCase(Locale.ROOT));
         if (!query.isBlank()) {
@@ -141,7 +141,7 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
                     .filter(p -> !(p.isFlag() || p.isSwitch()))
                     .map(p -> CommandElement.Argument.of(
                             p.name(),
-                            this.descriptionMapper.map(LampDescribable.of(command, p)),
+                            this.descriptionMapper.map(LampDescription.Command.Node.of(p)),
                             Set.of(),
                             p.isLiteral()
                                     ? CommandElement.Argument.Kind.LITERAL
@@ -154,7 +154,7 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
                     .filter(p -> p.isFlag() || p.isSwitch())
                     .map(p -> CommandElement.Flag.of(
                             p.name(),
-                            descriptionMapper.map(LampDescribable.of(command, p)),
+                            descriptionMapper.map(LampDescription.Command.Node.of(p)),
                             Set.of(String.valueOf(p.shorthand())),
                             p.isOptional() ? CommandElement.Flag.Kind.OPTIONAL : CommandElement.Flag.Kind.REQUIRED,
                             CommandElement.Flag.Mode.SINGLE))
@@ -162,7 +162,7 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
 
             return CommandHelp.Entry.of(
                     command.usage(),
-                    descriptionMapper.map(LampDescribable.of(command)),
+                    descriptionMapper.map(LampDescription.Command.of(command)),
                     DescriptionFacade.EMPTY,
                     arguments,
                     flags);
@@ -209,9 +209,9 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
 
         private final String name;
         private final Lamp<A> lamp;
-        private final ActorMapper<A> mapper;
+        private final ActorFactory<A> mapper;
 
-        private LampCommandRunner(final String name, final Lamp<A> lamp, final ActorMapper<A> mapper) {
+        private LampCommandRunner(final String name, final Lamp<A> lamp, final ActorFactory<A> mapper) {
             this.name = name;
             this.lamp = lamp;
             this.mapper = mapper;
@@ -220,7 +220,7 @@ final class LampCommandFacade<A extends MindustryCommandActor> extends CommandHa
         @Override
         public void accept(final String[] args, final @Nullable Player player) {
             final var actor =
-                    mapper.toActor(player != null ? CommandSender.player(player) : CommandSender.server(), lamp);
+                    mapper.create(player != null ? CommandSender.player(player) : CommandSender.server(), lamp);
 
             final var input = new StringBuilder();
             input.append(this.name);

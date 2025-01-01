@@ -21,13 +21,11 @@ package com.xpdustry.distributor.api.command.lamp.actor;
 import com.xpdustry.distributor.api.command.CommandSender;
 import revxrsal.commands.Lamp;
 
-public interface ActorMapper<A extends MindustryCommandActor> {
+public interface ActorFactory<A extends MindustryCommandActor> {
 
-    static ActorMapper<MindustryCommandActor> simple() {
-        return SimpleActorMapper.INSTANCE;
+    static ActorFactory<MindustryCommandActor> simple() {
+        return SimpleActorFactory.INSTANCE;
     }
 
-    A toActor(final CommandSender sender, final Lamp<A> lamp);
-
-    CommandSender toSender(final A actor);
+    A create(final CommandSender sender, final Lamp<A> lamp);
 }

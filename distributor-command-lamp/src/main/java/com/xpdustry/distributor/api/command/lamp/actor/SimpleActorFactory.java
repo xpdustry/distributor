@@ -21,16 +21,11 @@ package com.xpdustry.distributor.api.command.lamp.actor;
 import com.xpdustry.distributor.api.command.CommandSender;
 import revxrsal.commands.Lamp;
 
-enum SimpleActorMapper implements ActorMapper<MindustryCommandActor> {
+enum SimpleActorFactory implements ActorFactory<MindustryCommandActor> {
     INSTANCE;
 
     @Override
-    public MindustryCommandActor toActor(final CommandSender sender, final Lamp<MindustryCommandActor> lamp) {
+    public MindustryCommandActor create(final CommandSender sender, final Lamp<MindustryCommandActor> lamp) {
         return new MindustryCommandActorImpl(lamp, sender);
-    }
-
-    @Override
-    public CommandSender toSender(final MindustryCommandActor actor) {
-        return actor.getCommandSender();
     }
 }

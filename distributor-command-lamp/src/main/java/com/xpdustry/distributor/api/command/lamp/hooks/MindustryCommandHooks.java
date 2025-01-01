@@ -23,10 +23,10 @@ import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.command.CommandFacade;
 import com.xpdustry.distributor.api.command.DescriptionFacade;
 import com.xpdustry.distributor.api.command.DescriptionMapper;
-import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.command.lamp.LampDescribable;
-import com.xpdustry.distributor.api.command.lamp.actor.ActorMapper;
+import com.xpdustry.distributor.api.command.lamp.actor.ActorFactory;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustryCommandActor;
+import com.xpdustry.distributor.api.command.lamp.description.LampDescription;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import java.lang.reflect.Field;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.ExecutableCommand;
@@ -50,17 +50,17 @@ public final class MindustryCommandHooks<A extends MindustryCommandActor>
 
     private final MindustryPlugin plugin;
     private final CommandHandler commandHandler;
-    private final ActorMapper<A> actorMapper;
-    private final DescriptionMapper<LampDescribable<A>> descriptionMapper;
+    private final ActorFactory<A> actorFactory;
+    private final DescriptionMapper<LampDescription<A>> descriptionMapper;
 
     public MindustryCommandHooks(
             final MindustryPlugin plugin,
             final CommandHandler commandHandler,
-            final ActorMapper<A> actorMapper,
-            final DescriptionMapper<LampDescribable<A>> descriptionMapper) {
+            final ActorFactory<A> actorFactory,
+            final DescriptionMapper<LampDescription<A>> descriptionMapper) {
         this.plugin = plugin;
         this.commandHandler = commandHandler;
-        this.actorMapper = actorMapper;
+        this.actorFactory = actorFactory;
         this.descriptionMapper = descriptionMapper;
     }
 
@@ -69,7 +69,7 @@ public final class MindustryCommandHooks<A extends MindustryCommandActor>
         if (cancel.wasCancelled() || command.lamp().registry().any(c -> c.isRelatedTo(command))) return;
         createArcCommand(
                 command.firstNode().name(),
-                descriptionMapper.map(LampDescribable.of(command, command.firstNode())),
+                descriptionMapper.map(LampDescription.Command.Node.of(command.firstNode())),
                 command.lamp());
     }
 
@@ -90,7 +90,7 @@ public final class MindustryCommandHooks<A extends MindustryCommandActor>
                 name,
                 description,
                 lamp,
-                this.actorMapper,
+                this.actorFactory,
                 descriptionMapper,
                 getArcHandlerInternalMap().containsKey(name)));
     }

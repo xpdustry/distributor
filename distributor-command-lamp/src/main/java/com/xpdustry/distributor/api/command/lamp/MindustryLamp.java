@@ -19,9 +19,11 @@
 package com.xpdustry.distributor.api.command.lamp;
 
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.command.lamp.actor.ActorMapper;
+import com.xpdustry.distributor.api.command.DescriptionMapper;
+import com.xpdustry.distributor.api.command.lamp.actor.ActorFactory;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustryCommandActor;
+import com.xpdustry.distributor.api.command.lamp.description.LampDescription;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import revxrsal.commands.Lamp;
 
 import static com.xpdustry.distributor.api.command.lamp.MindustryVisitors.componentResponseHandler;
@@ -43,7 +45,11 @@ public final class MindustryLamp {
                 .accept(mindustryParameterValidators())
                 .accept(mindustrySenderResolver())
                 .accept(mindustryPermissions())
-                .accept(registrationHooks(plugin, handler, ActorMapper.simple(), LampDescribable.simpleDescriptionMapper()))
+                .accept(registrationHooks(
+                        plugin,
+                        handler,
+                        ActorFactory.simple(),
+                        DescriptionMapper.text(LampDescription::getDescription)))
                 .accept(pluginContextParameters(plugin))
                 .accept(componentResponseHandler());
     }

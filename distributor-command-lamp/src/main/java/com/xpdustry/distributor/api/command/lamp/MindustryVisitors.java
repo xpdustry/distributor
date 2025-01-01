@@ -20,24 +20,23 @@ package com.xpdustry.distributor.api.command.lamp;
 
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.command.DescriptionMapper;
-import com.xpdustry.distributor.api.command.lamp.annotation.Permission;
-import com.xpdustry.distributor.api.component.Component;
-import com.xpdustry.distributor.api.key.CTypeKey;
-import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import com.xpdustry.distributor.api.command.lamp.actor.ActorMapper;
+import com.xpdustry.distributor.api.command.lamp.actor.ActorFactory;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustryCommandActor;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustryPermissionFactory;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustrySenderResolver;
+import com.xpdustry.distributor.api.command.lamp.annotation.Permission;
+import com.xpdustry.distributor.api.command.lamp.description.LampDescription;
 import com.xpdustry.distributor.api.command.lamp.exception.MindustryExceptionHandler;
 import com.xpdustry.distributor.api.command.lamp.hooks.MindustryCommandHooks;
 import com.xpdustry.distributor.api.command.lamp.parameters.ContentParameterType;
 import com.xpdustry.distributor.api.command.lamp.parameters.PlayerParameterType;
 import com.xpdustry.distributor.api.command.lamp.parameters.TeamParameterType;
 import com.xpdustry.distributor.api.command.lamp.validator.AllTeamValidator;
-import mindustry.ctype.MappableContent;
+import com.xpdustry.distributor.api.component.Component;
+import com.xpdustry.distributor.api.key.CTypeKey;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import mindustry.game.Team;
 import mindustry.gen.Player;
-import revxrsal.commands.Lamp;
 import revxrsal.commands.LampBuilderVisitor;
 import revxrsal.commands.response.ResponseHandler;
 
@@ -76,12 +75,16 @@ public final class MindustryVisitors {
      * @param <A>    The actor type
      * @return The visitor
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <A extends MindustryCommandActor> LampBuilderVisitor<A> mindustryParameterTypes() {
         return builder -> {
             builder.parameterTypes()
                     .addParameterTypeLast(Player.class, new PlayerParameterType())
                     .addParameterTypeLast(Team.class, new TeamParameterType());
-            CTypeKey.ALL.forEach(contentType -> registerContentParameterType(builder, contentType));
+            for (final var type : CTypeKey.ALL) {
+                builder.parameterTypes()
+                        .addParameterTypeLast(type.getKey().getToken().getRawType(), new ContentParameterType(type));
+            }
         };
     }
 
@@ -98,14 +101,6 @@ public final class MindustryVisitors {
         return builder -> builder.parameterValidator(Team.class, AllTeamValidator.INSTANCE);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T extends MappableContent> void registerContentParameterType(
-            final Lamp.Builder<?> builder, final CTypeKey<T> contentType) {
-        builder.parameterTypes()
-                .addParameterTypeLast(
-                        contentType.getKey().getToken().getRawType(), new ContentParameterType(contentType));
-    }
-
     /**
      * Adds a registration hook that injects Lamp commands into Mindustry.
      *
@@ -115,11 +110,11 @@ public final class MindustryVisitors {
     public static <A extends MindustryCommandActor> LampBuilderVisitor<A> registrationHooks(
             final MindustryPlugin plugin,
             final CommandHandler commandHandler,
-            final ActorMapper<A> actorMapper,
-            final DescriptionMapper<LampDescribable<A>> descriptionMapper) {
+            final ActorFactory<A> actorFactory,
+            final DescriptionMapper<LampDescription<A>> descriptionMapper) {
         return builder -> builder.hooks()
                 .onCommandRegistered(
-                        new MindustryCommandHooks<>(plugin, commandHandler, actorMapper, descriptionMapper));
+                        new MindustryCommandHooks<>(plugin, commandHandler, actorFactory, descriptionMapper));
     }
 
     /**

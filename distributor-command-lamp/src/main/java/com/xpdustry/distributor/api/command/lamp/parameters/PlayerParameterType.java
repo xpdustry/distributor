@@ -19,11 +19,11 @@
 package com.xpdustry.distributor.api.command.lamp.parameters;
 
 import com.xpdustry.distributor.api.Distributor;
-import com.xpdustry.distributor.api.player.PlayerLookup;
-import com.xpdustry.distributor.api.util.TriState;
 import com.xpdustry.distributor.api.command.lamp.actor.MindustryCommandActor;
 import com.xpdustry.distributor.api.command.lamp.exception.PlayerNotFoundException;
 import com.xpdustry.distributor.api.command.lamp.exception.TooManyPlayersException;
+import com.xpdustry.distributor.api.player.PlayerLookup;
+import com.xpdustry.distributor.api.util.TriState;
 import java.util.ArrayList;
 import java.util.Locale;
 import mindustry.gen.Player;

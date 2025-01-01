@@ -18,8 +18,8 @@
  */
 package com.xpdustry.distributor.api.command.lamp.parameters;
 
-import com.xpdustry.distributor.api.key.CTypeKey;
 import com.xpdustry.distributor.api.command.lamp.exception.InvalidContentException;
+import com.xpdustry.distributor.api.key.CTypeKey;
 import java.util.Locale;
 import mindustry.Vars;
 import mindustry.ctype.MappableContent;
