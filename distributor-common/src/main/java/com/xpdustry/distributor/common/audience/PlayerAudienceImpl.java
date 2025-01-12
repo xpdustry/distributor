@@ -46,7 +46,7 @@ public final class PlayerAudienceImpl extends BaseNetConnectionAudience implemen
                 .putConstant(StandardKeys.MUUID, MUUID.from(player))
                 .putSupplied(
                         StandardKeys.LOCALE,
-                        () -> Locale.forLanguageTag(player.locale().replace('-', '_')))
+                        () -> Locale.forLanguageTag(player.locale().replace('_', '-')))
                 .putSupplied(StandardKeys.TEAM, player::team)
                 .putSupplied(StandardKeys.COLOR, () -> ComponentColor.from(player.color()))
                 .build();
