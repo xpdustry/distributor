@@ -37,12 +37,12 @@ final class MindustryCommandFacade implements CommandFacade {
 
     @Override
     public String getRealName() {
-        return command.text;
+        return this.command.text;
     }
 
     @Override
     public String getName() {
-        return command.text;
+        return this.command.text;
     }
 
     @Override
@@ -63,10 +63,10 @@ final class MindustryCommandFacade implements CommandFacade {
     @Override
     public CommandHelp getHelp(final CommandSender sender, final String query) {
         return CommandHelp.Entry.of(
-                command.params.length == 0 ? command.text : command.text + " " + command.paramText,
-                getDescription(),
+                this.command.params.length == 0 ? this.command.text : this.command.text + " " + this.command.paramText,
+                this.getDescription(),
                 DescriptionFacade.EMPTY,
-                Arrays.stream(command.params)
+                Arrays.stream(this.command.params)
                         .map(p -> CommandElement.Argument.of(
                                 p.name,
                                 DescriptionFacade.EMPTY,

@@ -32,34 +32,34 @@ record TextStyleImpl(
 
     @Override
     public @Nullable ComponentColor getTextColor() {
-        return textColor;
+        return this.textColor;
     }
 
     @Override
     public TextStyle setTextColor(final @Nullable ComponentColor textColor) {
-        return new TextStyleImpl(textColor, backColor, decorations);
+        return new TextStyleImpl(textColor, this.backColor, this.decorations);
     }
 
     @Override
     public @Nullable ComponentColor getBackColor() {
-        return backColor;
+        return this.backColor;
     }
 
     @Override
     public TextStyle setBackColor(final @Nullable ComponentColor backColor) {
-        return new TextStyleImpl(textColor, backColor, decorations);
+        return new TextStyleImpl(this.textColor, backColor, this.decorations);
     }
 
     @Override
     public Map<TextDecoration, Boolean> getDecorations() {
-        return decorations;
+        return this.decorations;
     }
 
     @Override
     public TextStyle setDecorations(final Map<TextDecoration, Boolean> decorations) {
         final var copy = new EnumMap<TextDecoration, Boolean>(TextDecoration.class);
         copy.putAll(this.decorations);
-        return new TextStyleImpl(textColor, backColor, Collections.unmodifiableMap(copy));
+        return new TextStyleImpl(this.textColor, this.backColor, Collections.unmodifiableMap(copy));
     }
 
     @Override

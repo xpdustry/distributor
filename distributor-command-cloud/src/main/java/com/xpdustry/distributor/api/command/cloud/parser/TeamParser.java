@@ -78,7 +78,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
     @Override
     public @NonNull SuggestionProvider<C> suggestionProvider() {
         return SuggestionProvider.suggestingStrings(
-                getTeamIndex().keySet().stream().sorted().toArray(String[]::new));
+                this.getTeamIndex().keySet().stream().sorted().toArray(String[]::new));
     }
 
     private Map<String, Team> getTeamIndex() {

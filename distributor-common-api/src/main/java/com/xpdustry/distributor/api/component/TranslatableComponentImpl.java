@@ -82,7 +82,7 @@ record TranslatableComponentImpl(TextStyle textStyle, String key, TranslationArg
 
         @Override
         public TranslatableComponent build() {
-            return new TranslatableComponentImpl(textStyle, this.key, this.parameters);
+            return new TranslatableComponentImpl(this.textStyle, this.key, this.parameters);
         }
     }
 }

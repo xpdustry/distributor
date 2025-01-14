@@ -46,24 +46,24 @@ record MessageFormatTranslationImpl(String pattern, Locale locale) implements Me
 
     @Override
     public String getPattern() {
-        return pattern;
+        return this.pattern;
     }
 
     @Override
     public Locale getLocale() {
-        return locale;
+        return this.locale;
     }
 
     @Override
     public String format(final TranslationArguments parameters) {
-        return createFormat().format(getArguments(parameters).toArray());
+        return this.createFormat().format(this.getArguments(parameters).toArray());
     }
 
-    @SuppressWarnings("JdkObsolete")
+    @SuppressWarnings({"JdkObsolete", "removal"})
     @Override
     public void formatTo(final TranslationArguments parameters, final ComponentStringBuilder builder) {
-        final var format = createFormat();
-        final var arguments = getArguments(parameters);
+        final var format = this.createFormat();
+        final var arguments = this.getArguments(parameters);
         if (arguments.isEmpty()) {
             builder.append(format.format(null));
             return;
@@ -79,7 +79,7 @@ record MessageFormatTranslationImpl(String pattern, Locale locale) implements Me
                 builder.append(unformatted, iterator.getIndex(), end);
             } else {
                 if (index >= arguments.size()) {
-                    throw new IllegalArgumentException("Argument index out of bounds for '" + pattern
+                    throw new IllegalArgumentException("Argument index out of bounds for '" + this.pattern
                             + "': Maximum index is " + Math.max(0, arguments.size() - 1) + ", got " + index);
                 }
                 var argument = arguments.get(index);
@@ -149,6 +149,6 @@ record MessageFormatTranslationImpl(String pattern, Locale locale) implements Me
     }
 
     private MessageFormat createFormat() {
-        return new MessageFormat(pattern, locale);
+        return new MessageFormat(this.pattern, this.locale);
     }
 }

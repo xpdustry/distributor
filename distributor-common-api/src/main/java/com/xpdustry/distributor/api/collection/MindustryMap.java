@@ -60,27 +60,27 @@ final class MindustryMap<K, V> extends AbstractMap<K, V> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean containsKey(final Object key) {
-        checkNullKey(key);
+        this.checkNullKey(key);
         return this.map.containsKey((K) key);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public V get(final Object key) {
-        checkNullKey(key);
+        this.checkNullKey(key);
         return this.map.get((K) key);
     }
 
     @Override
     public V put(final K key, final V value) {
-        checkNullKey(key);
+        this.checkNullKey(key);
         return this.map.put(key, value);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public V remove(final Object key) {
-        checkNullKey(key);
+        this.checkNullKey(key);
         return this.map.remove((K) key);
     }
 
@@ -92,7 +92,7 @@ final class MindustryMap<K, V> extends AbstractMap<K, V> {
     @SuppressWarnings("unchecked")
     @Override
     public V getOrDefault(final Object key, final V defaultValue) {
-        checkNullKey(key);
+        this.checkNullKey(key);
         return this.map.get((K) key, defaultValue);
     }
 

@@ -37,7 +37,7 @@ public interface PopupPane extends Pane {
     PopupPane setContent(final Component content);
 
     default PopupPane setContent(final String content) {
-        return setContent(Distributor.get().getMindustryComponentDecoder().decode(content));
+        return this.setContent(Distributor.get().getMindustryComponentDecoder().decode(content));
     }
 
     DisplayUnit getShiftX();

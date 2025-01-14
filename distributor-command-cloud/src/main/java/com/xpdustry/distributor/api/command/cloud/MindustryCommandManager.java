@@ -102,8 +102,8 @@ public class MindustryCommandManager<C> extends CommandManager<C>
 
         this.captionRegistry()
                 .registerProvider(
-                        createCaptionProviderFromSource(Distributor.get().getGlobalTranslationSource()))
-                .registerProvider(createCaptionProviderFromSource(DEFAULT_TRANSLATION_SOURCE));
+                        this.createCaptionProviderFromSource(Distributor.get().getGlobalTranslationSource()))
+                .registerProvider(this.createCaptionProviderFromSource(DEFAULT_TRANSLATION_SOURCE));
 
         this.parserRegistry().registerParser(PlayerParser.playerParser());
         this.parserRegistry().registerParser(TeamParser.teamParser());
@@ -152,7 +152,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     @Override
     public boolean hasPermission(final @NonNull C sender, final String permission) {
         return permission.isEmpty()
-                || senderMapper()
+                || this.senderMapper()
                         .reverse(sender)
                         .getPermissions()
                         .getPermission(permission)
@@ -176,11 +176,11 @@ public class MindustryCommandManager<C> extends CommandManager<C>
         this.registerDefaultExceptionHandlers(
                 triplet -> {
                     final var context = triplet.first();
-                    senderMapper()
+                    this.senderMapper()
                             .reverse(context.sender())
                             .error(context.formatCaption(triplet.second(), triplet.third()));
                 },
-                pair -> logger.error(pair.first(), pair.second()));
+                pair -> this.logger.error(pair.first(), pair.second()));
     }
 
     private CaptionProvider<C> createCaptionProviderFromSource(final TranslationSource source) {

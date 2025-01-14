@@ -42,7 +42,7 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
         final var options = window.getPane().getGrid().getOptions().stream()
                 .map(row -> row.stream()
                         .map(MenuOption::getContent)
-                        .map(content -> render(window, content))
+                        .map(content -> this.render(window, content))
                         .toArray(String[]::new))
                 .toArray(String[][]::new);
         for (int i = 0; i < options.length; i++) {
@@ -52,15 +52,15 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
         }
         Call.followUpMenu(
                 window.getViewer().con(),
-                id,
-                render(window, window.getPane().getTitle()),
-                render(window, window.getPane().getContent()),
+                this.id,
+                this.render(window, window.getPane().getTitle()),
+                this.render(window, window.getPane().getContent()),
                 options);
     }
 
     @Override
     protected void onWindowClose(final SimpleWindow window) {
-        Call.hideFollowUpMenu(window.getViewer().con(), id);
+        Call.hideFollowUpMenu(window.getViewer().con(), this.id);
     }
 
     @Override
@@ -69,7 +69,7 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
     }
 
     private void handle(final Player player, final int option) {
-        if (isDisposed()) {
+        if (this.isDisposed()) {
             this.getPlugin()
                     .getLogger()
                     .debug(
@@ -78,7 +78,7 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
                             player.uuid());
             return;
         }
-        final var window = getWindows().get(MUUID.from(player));
+        final var window = this.getWindows().get(MUUID.from(player));
         if (window == null) {
             this.getPlugin()
                     .getLogger()
@@ -91,7 +91,7 @@ final class MenuManagerImpl extends AbstractTransformerWindowManager<MenuPane> i
         } else {
             final var choice = window.getPane().getGrid().getOption(option);
             if (choice == null) {
-                getPlugin()
+                this.getPlugin()
                         .getLogger()
                         .debug(
                                 "Received invalid menu option {} from player {} (uuid: {})",

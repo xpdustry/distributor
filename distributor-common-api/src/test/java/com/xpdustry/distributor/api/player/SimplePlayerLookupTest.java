@@ -43,27 +43,27 @@ public final class SimplePlayerLookupTest {
 
     @Test
     void find_by_name_simple() {
-        assertQueryResult(PlayerLookup.Query.of("phinner"), PLAYER_3);
+        this.assertQueryResult(PlayerLookup.Query.of("phinner"), PLAYER_3);
     }
 
     @Test
     void find_by_name_colored() {
-        assertQueryResult(PlayerLookup.Query.of("[green]phinner"), PLAYER_3);
+        this.assertQueryResult(PlayerLookup.Query.of("[green]phinner"), PLAYER_3);
     }
 
     @Test
     void find_by_name_partial() {
-        assertQueryResult(PlayerLookup.Query.of("de"), PLAYER_1, PLAYER_2);
+        this.assertQueryResult(PlayerLookup.Query.of("de"), PLAYER_1, PLAYER_2);
     }
 
     @Test
     void find_by_name_exact() {
-        assertQueryResult(PlayerLookup.Query.of("deez"), PLAYER_1);
+        this.assertQueryResult(PlayerLookup.Query.of("deez"), PLAYER_1);
     }
 
     @Test
     void find_by_name_exact_with_all() {
-        assertQueryResult(
+        this.assertQueryResult(
                 PlayerLookup.Query.builder()
                         .setInput("deez")
                         .setMatchExact(false)
@@ -74,29 +74,29 @@ public final class SimplePlayerLookupTest {
 
     @Test
     void find_by_name_accents() {
-        assertQueryResult(PlayerLookup.Query.of("phînnér"), PLAYER_3);
+        this.assertQueryResult(PlayerLookup.Query.of("phînnér"), PLAYER_3);
     }
 
     @Test
     void find_by_names_multiple_exact() {
-        assertQueryResult(PlayerLookup.Query.of("zeta"), PLAYER_4, PLAYER_5);
+        this.assertQueryResult(PlayerLookup.Query.of("zeta"), PLAYER_4, PLAYER_5);
     }
 
     @Test
     void find_by_entity_id_exact() {
-        assertQueryResult(PlayerLookup.Query.of("#4"), PLAYER_4);
+        this.assertQueryResult(PlayerLookup.Query.of("#4"), PLAYER_4);
     }
 
     @Test
     void find_by_entity_id_with_all() {
-        assertQueryResult(
+        this.assertQueryResult(
                 PlayerLookup.Query.builder().setInput("#4").setMatchExact(false).build(), PLAYER_4, PLAYER_7);
     }
 
     @Test
     void find_by_uuid() {
-        assertQueryResult(PlayerLookup.Query.of(PLAYER_3.uuid()));
-        assertQueryResult(
+        this.assertQueryResult(PlayerLookup.Query.of(PLAYER_3.uuid()));
+        this.assertQueryResult(
                 PlayerLookup.Query.builder()
                         .setInput(PLAYER_3.uuid())
                         .addField(PlayerLookup.Field.UUID)
@@ -106,7 +106,7 @@ public final class SimplePlayerLookupTest {
 
     @Test
     void find_by_uuid_with_all() {
-        assertQueryResult(
+        this.assertQueryResult(
                 PlayerLookup.Query.builder()
                         .setInput(PLAYER_1.uuid())
                         .setFields(PlayerLookup.Field.values())

@@ -55,20 +55,20 @@ final class MindustrySet<E> extends AbstractSet<E> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean contains(final Object o) {
-        checkNullElement(o);
+        this.checkNullElement(o);
         return this.set.contains((E) o);
     }
 
     @Override
     public boolean add(final E e) {
-        checkNullElement(e);
+        this.checkNullElement(e);
         return this.set.add(e);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean remove(final Object o) {
-        checkNullElement(o);
+        this.checkNullElement(o);
         return this.set.remove((E) o);
     }
 

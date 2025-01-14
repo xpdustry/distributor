@@ -40,7 +40,7 @@ public interface ForwardingAudience extends Audience {
 
     @Override
     default Stream<Audience> toStream() {
-        final var audiences = getAudiences();
+        final var audiences = this.getAudiences();
         final Stream<Audience> stream;
         if (audiences instanceof Collection<Audience> collection) {
             stream = collection.stream();
@@ -56,77 +56,77 @@ public interface ForwardingAudience extends Audience {
 
     @Override
     default void sendMessage(final Component component) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.sendMessage(component);
         }
     }
 
     @Override
     default void sendMessage(final Component component, final Component unformatted, final Audience sender) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.sendMessage(component, unformatted, sender);
         }
     }
 
     @Override
     default void sendWarning(final Component component) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.sendWarning(component);
         }
     }
 
     @Override
     default void showHUDText(final Component component) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.showHUDText(component);
         }
     }
 
     @Override
     default void hideHUDText() {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.hideHUDText();
         }
     }
 
     @Override
     default void sendNotification(final Component component, final char icon) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.sendNotification(component, icon);
         }
     }
 
     @Override
     default void sendAnnouncement(final Component component) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.sendAnnouncement(component);
         }
     }
 
     @Override
     default void openURI(final URI uri) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.openURI(uri);
         }
     }
 
     @Override
     default void showLabel(final Component label, final float x, final float y, final Duration duration) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.showLabel(label, x, y, duration);
         }
     }
 
     @Override
     default void kick(final Component reason, final Duration duration, final boolean log) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.kick(reason, duration, log);
         }
     }
 
     @Override
     default void kick(final Packets.KickReason reason, final Duration duration, final boolean log) {
-        for (final var audience : getAudiences()) {
+        for (final var audience : this.getAudiences()) {
             audience.kick(reason, duration, log);
         }
     }

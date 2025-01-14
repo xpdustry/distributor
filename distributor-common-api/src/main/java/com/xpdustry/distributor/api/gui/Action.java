@@ -77,10 +77,8 @@ public interface Action {
      * @return the action
      */
     static <T> Action compute(final Key<T> key, final Function<T, T> function) {
-        return window -> {
-            window.getState().getOptional(key).ifPresent(value -> window.getState()
-                    .set(key, function.apply(value)));
-        };
+        return window -> window.getState().getOptional(key).ifPresent(value -> window.getState()
+                .set(key, function.apply(value)));
     }
 
     /**

@@ -60,7 +60,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the provider of the elements.
      */
     public Function<Context<MenuPane>, List<E>> getProvider() {
-        return provider;
+        return this.provider;
     }
 
     /**
@@ -78,7 +78,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the renderer of the elements.
      */
     public BiFunction<Context<MenuPane>, E, Component> getRenderer() {
-        return renderer;
+        return this.renderer;
     }
 
     /**
@@ -88,7 +88,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * @return this transformer
      */
     public ListTransformer<E> setRenderer(final Function<E, Component> renderer) {
-        return setRenderer((ctx, e) -> renderer.apply(e));
+        return this.setRenderer((ctx, e) -> renderer.apply(e));
     }
 
     /**
@@ -106,7 +106,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the action to perform when an element is chosen.
      */
     public BiAction<E> getChoiceAction() {
-        return choiceAction;
+        return this.choiceAction;
     }
 
     /**
@@ -124,7 +124,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the height of a page.
      */
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     /**
@@ -143,7 +143,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the width of a page.
      */
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     /**
@@ -162,14 +162,14 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the page size.
      */
     public int getPageSize() {
-        return height * width;
+        return this.height * this.width;
     }
 
     /**
      * Returns whether the transformer fills empty spaces.
      */
     public boolean isFillEmptySpace() {
-        return fillEmptySpace;
+        return this.fillEmptySpace;
     }
 
     /**
@@ -190,7 +190,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns whether the navigation buttons are rendered.
      */
     public boolean isRenderNavigation() {
-        return renderNavigation;
+        return this.renderNavigation;
     }
 
     /**
@@ -210,7 +210,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      * Returns the key used to store the current page.
      */
     public Key<Integer> getPageKey() {
-        return pageKey;
+        return this.pageKey;
     }
 
     /**
@@ -226,19 +226,20 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
 
     @Override
     public void transform(final Context<MenuPane> context) {
-        final var elements = provider.apply(context);
-        final int pages =
-                Math.floorDiv(elements.size(), getPageSize()) + (elements.size() % getPageSize() == 0 ? 0 : 1);
-        final int page = context.getState().getOptional(pageKey).orElse(0);
+        final var elements = this.provider.apply(context);
+        final int pages = Math.floorDiv(elements.size(), this.getPageSize())
+                + (elements.size() % this.getPageSize() == 0 ? 0 : 1);
+        final int page = context.getState().getOptional(this.pageKey).orElse(0);
 
         int cursor = 0;
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < this.height; i++) {
             final List<MenuOption> options = new ArrayList<>();
-            for (int j = 0; j < width; j++) {
-                cursor = (page * getPageSize()) + (i * width) + j;
+            for (int j = 0; j < this.width; j++) {
+                cursor = (page * this.getPageSize()) + (i * this.width) + j;
                 if (cursor < elements.size()) {
                     final var element = elements.get(cursor);
-                    options.add(MenuOption.of(renderer.apply(context, element), ctx -> choiceAction.act(ctx, element)));
+                    options.add(MenuOption.of(
+                            this.renderer.apply(context, element), ctx -> this.choiceAction.act(ctx, element)));
                 } else if (this.fillEmptySpace) {
                     options.add(MenuOption.of(empty(), Action.none()));
                 } else {
@@ -248,24 +249,24 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
             if (!options.isEmpty()) {
                 context.getPane().getGrid().addRow(options);
             }
-            if (cursor >= elements.size() && !fillEmptySpace) {
+            if (cursor >= elements.size() && !this.fillEmptySpace) {
                 break;
             }
         }
 
-        if (renderNavigation) {
+        if (this.renderNavigation) {
             context.getPane()
                     .getGrid()
                     .addRow(
-                            createConditionalOption(
+                            this.createConditionalOption(
                                     page > 0,
                                     Iconc.left,
-                                    Action.with(pageKey, page - 1).then(Window::show)),
+                                    Action.with(this.pageKey, page - 1).then(Window::show)),
                             MenuOption.of(Mathf.clamp(page + 1, 0, pages) + " / " + pages, Action.none()),
-                            createConditionalOption(
+                            this.createConditionalOption(
                                     cursor + 1 < elements.size(),
                                     Iconc.right,
-                                    Action.with(pageKey, page + 1).then(Window::show)));
+                                    Action.with(this.pageKey, page + 1).then(Window::show)));
         }
     }
 

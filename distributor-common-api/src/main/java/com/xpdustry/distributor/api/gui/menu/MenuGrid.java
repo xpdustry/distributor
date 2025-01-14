@@ -38,13 +38,13 @@ public interface MenuGrid {
     MenuGrid setRow(final int index, final List<MenuOption> options);
 
     default MenuGrid addRow(final MenuOption... options) {
-        return addRow(Arrays.asList(options));
+        return this.addRow(Arrays.asList(options));
     }
 
     MenuGrid addRow(final List<MenuOption> options);
 
     default MenuGrid addRow(final int index, final MenuOption... options) {
-        return addRow(index, Arrays.asList(options));
+        return this.addRow(index, Arrays.asList(options));
     }
 
     MenuGrid addRow(final int index, final List<MenuOption> options);
@@ -57,8 +57,10 @@ public interface MenuGrid {
 
     MenuGrid addOption(final MenuOption option);
 
+    // TODO Flawed, it returns the input option instead of the grid
     MenuOption addOption(final int y, final MenuOption option);
 
+    // TODO Flawed, it returns the input option instead of the grid
     MenuOption addOption(final int x, final int y, final MenuOption option);
 
     MenuGrid removeOption(final int x, final int y);

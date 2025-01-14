@@ -46,26 +46,26 @@ public class BaseNetConnectionAudience implements Audience {
 
     @Override
     public void sendMessage(final Component component) {
-        Call.sendMessage(this.connection, render(component), null, null);
+        Call.sendMessage(this.connection, this.render(component), null, null);
     }
 
     @Override
     public void sendMessage(final Component component, final Component unformatted, final Audience sender) {
         if (sender instanceof PlayerAudience other) {
-            Call.sendMessage(this.connection, render(component), render(unformatted), other.getPlayer());
+            Call.sendMessage(this.connection, this.render(component), this.render(unformatted), other.getPlayer());
         } else {
-            Call.sendMessage(this.connection, render(component), render(unformatted), null);
+            Call.sendMessage(this.connection, this.render(component), this.render(unformatted), null);
         }
     }
 
     @Override
     public void sendWarning(final Component component) {
-        Call.announce(this.connection, render(component));
+        Call.announce(this.connection, this.render(component));
     }
 
     @Override
     public void showHUDText(final Component component) {
-        Call.setHudText(this.connection, render(component));
+        Call.setHudText(this.connection, this.render(component));
     }
 
     @Override
@@ -75,12 +75,12 @@ public class BaseNetConnectionAudience implements Audience {
 
     @Override
     public void sendNotification(final Component component, final char icon) {
-        Call.warningToast(this.connection, icon, render(component));
+        Call.warningToast(this.connection, icon, this.render(component));
     }
 
     @Override
     public void sendAnnouncement(final Component component) {
-        Call.infoMessage(this.connection, render(component));
+        Call.infoMessage(this.connection, this.render(component));
     }
 
     @Override
@@ -90,12 +90,12 @@ public class BaseNetConnectionAudience implements Audience {
 
     @Override
     public void showLabel(final Component label, final float x, final float y, final Duration duration) {
-        Call.label(this.connection, render(label), duration.toMillis() / 1000F, x, y);
+        Call.label(this.connection, this.render(label), duration.toMillis() / 1000F, x, y);
     }
 
     @Override
     public void kick(final Component reason, final Duration duration, final boolean log) {
-        this.kick(null, render(reason).replace('\n', ' '), duration.toMillis(), log);
+        this.kick(null, this.render(reason).replace('\n', ' '), duration.toMillis(), log);
     }
 
     @Override
@@ -136,6 +136,8 @@ public class BaseNetConnectionAudience implements Audience {
     }
 
     protected String render(final Component component) {
-        return ComponentStringBuilder.mindustry(getMetadata()).append(component).toString();
+        return ComponentStringBuilder.mindustry(this.getMetadata())
+                .append(component)
+                .toString();
     }
 }

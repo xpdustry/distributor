@@ -55,7 +55,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     @Override
     public void onPluginLoad() {
         try {
-            reload();
+            this.reload();
         } catch (final IOException error) {
             throw new RuntimeException("Failed to load permission file.", error);
         }
@@ -65,7 +65,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     public void onPluginServerCommandsRegistration(final CommandHandler handler) {
         handler.register("rank-permission-reload", "Reload the permissions", $ -> {
             try {
-                reload();
+                this.reload();
                 LOGGER.info("Reloaded rank permissions file");
             } catch (final IOException e) {
                 LOGGER.error("Failed to reload rank permission file", e);
@@ -76,7 +76,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
     @Override
     public PermissionContainer getRankPermissions(final RankNode node) {
         synchronized (this.lock) {
-            return getRankPermissions0(node, new HashSet<>());
+            return this.getRankPermissions0(node, new HashSet<>());
         }
     }
 
@@ -95,7 +95,7 @@ final class YamlRankPermissionSource implements RankPermissionSource, PluginList
             if (!visited.add(node)) {
                 throw new IllegalStateException("Circular rank node: " + name);
             }
-            tree.setPermissions(getRankPermissions0(previous, visited));
+            tree.setPermissions(this.getRankPermissions0(previous, visited));
         }
         final var permissions = this.permissions.get(name);
         if (permissions != null) {

@@ -133,7 +133,7 @@ public interface ListComponent extends BuildableComponent<ListComponent, ListCom
          * @return this builder
          */
         default Builder append(final Component... components) {
-            return append(Arrays.asList(components));
+            return this.append(Arrays.asList(components));
         }
 
         /**

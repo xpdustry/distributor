@@ -32,35 +32,35 @@ enum SettingsKeyContainer implements MutableKeyContainer {
     INSTANCE;
 
     {
-        setSerializerIfAbsent(Instant.class, new InstantSerializer());
+        this.setSerializerIfAbsent(Instant.class, new InstantSerializer());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <V> Optional<V> getOptional(final Key<V> key) {
-        final var name = toInternalKey(key);
+        final var name = this.toInternalKey(key);
         return Optional.ofNullable((V) Core.settings.get(name, Core.settings.getDefault(name)));
     }
 
     @Override
     public boolean contains(final Key<?> key) {
-        return Core.settings.has(toInternalKey(key));
+        return Core.settings.has(this.toInternalKey(key));
     }
 
     @Override
     public Set<Key<?>> getKeys() {
         final var keys = new HashSet<Key<?>>();
-        for (final var key : Core.settings.keys()) keys.add(fromInternalKey(key));
+        for (final var key : Core.settings.keys()) keys.add(this.fromInternalKey(key));
         return keys;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <V> @Nullable V set(final Key<V> key, final V value) {
-        if (!isSupportedType(value.getClass())) {
+        if (!this.isSupportedType(value.getClass())) {
             throw new IllegalArgumentException("Unsupported type: " + value.getClass());
         }
-        final var name = toInternalKey(key);
+        final var name = this.toInternalKey(key);
         final var previous = Core.settings.get(name, null);
         Core.settings.put(name, value);
         return (V) previous;
@@ -69,7 +69,7 @@ enum SettingsKeyContainer implements MutableKeyContainer {
     @SuppressWarnings("unchecked")
     @Override
     public <V> @Nullable V remove(final Key<V> key) {
-        final var name = toInternalKey(key);
+        final var name = this.toInternalKey(key);
         final var previous = Core.settings.get(name, null);
         Core.settings.remove(name);
         return (V) previous;

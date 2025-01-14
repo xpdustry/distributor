@@ -31,12 +31,12 @@ final class MenuGridImpl implements MenuGrid {
 
     @Override
     public List<List<MenuOption>> getOptions() {
-        return options.stream().map(Collections::unmodifiableList).toList();
+        return this.options.stream().map(Collections::unmodifiableList).toList();
     }
 
     @Override
     public List<MenuOption> getRow(int index) {
-        return Collections.unmodifiableList(options.get(index));
+        return Collections.unmodifiableList(this.options.get(index));
     }
 
     @Override
@@ -59,14 +59,14 @@ final class MenuGridImpl implements MenuGrid {
 
     @Override
     public MenuGrid removeRow(int index) {
-        options.remove(index);
+        this.options.remove(index);
         return this;
     }
 
     @Override
     public @Nullable MenuOption getOption(final int id) {
         var i = 0;
-        for (var row : options) {
+        for (var row : this.options) {
             i += row.size();
             if (i > id) {
                 return row.get(id - i + row.size());
@@ -77,15 +77,15 @@ final class MenuGridImpl implements MenuGrid {
 
     @Override
     public MenuOption getOption(final int x, final int y) {
-        return options.get(y).get(x);
+        return this.options.get(y).get(x);
     }
 
     @Override
     public MenuGrid addOption(final MenuOption option) {
-        if (options.isEmpty()) {
-            addRow(List.of(option));
+        if (this.options.isEmpty()) {
+            this.addRow(List.of(option));
         } else {
-            final var row = options.get(options.size() - 1);
+            final var row = this.options.get(this.options.size() - 1);
             row.add(option);
         }
         return this;
@@ -93,40 +93,40 @@ final class MenuGridImpl implements MenuGrid {
 
     @Override
     public MenuOption addOption(final int y, final MenuOption option) {
-        options.get(y).add(option);
+        this.options.get(y).add(option);
         return option;
     }
 
     @Override
     public MenuOption addOption(final int x, final int y, MenuOption option) {
-        options.get(y).add(x, option);
+        this.options.get(y).add(x, option);
         return option;
     }
 
     @Override
     public MenuGrid removeOption(final int x, final int y) {
-        final var row = options.get(y);
+        final var row = this.options.get(y);
         row.remove(x);
         if (row.isEmpty()) {
-            options.remove(y);
+            this.options.remove(y);
         }
         return this;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(options);
+        return Objects.hashCode(this.options);
     }
 
     @Override
     public boolean equals(final Object o) {
-        return (this == o) || (o instanceof MenuGridImpl other && Objects.equals(options, other.options));
+        return (this == o) || (o instanceof MenuGridImpl other && Objects.equals(this.options, other.options));
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", MenuGridImpl.class.getSimpleName() + "{", "}")
-                .add("options=" + options)
+                .add("options=" + this.options)
                 .toString();
     }
 }

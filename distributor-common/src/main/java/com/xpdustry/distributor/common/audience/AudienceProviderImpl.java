@@ -50,38 +50,38 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     public AudienceProviderImpl(final MindustryPlugin plugin, final EventBus bus) {
         for (int i = 0; i < Team.all.length; i++) {
-            teams.put(i, new TeamAudience(i));
+            this.teams.put(i, new TeamAudience(i));
         }
         bus.subscribe(
                 EventType.PlayerJoin.class,
                 Priority.HIGHEST,
                 plugin,
-                event -> players.put(MUUID.from(event.player), new PlayerAudienceImpl(event.player)));
+                event -> this.players.put(MUUID.from(event.player), new PlayerAudienceImpl(event.player)));
         bus.subscribe(
                 EventType.PlayerLeave.class,
                 Priority.LOWEST,
                 plugin,
-                event -> players.remove(MUUID.from(event.player)));
+                event -> this.players.remove(MUUID.from(event.player)));
         bus.subscribe(
                 EventType.ConnectPacketEvent.class,
                 Priority.HIGHEST,
                 plugin,
-                event -> connections.putIfAbsent(event.connection, NetConnectionMetadata.from(event.packet)));
+                event -> this.connections.putIfAbsent(event.connection, NetConnectionMetadata.from(event.packet)));
     }
 
     @Override
     public Audience getEveryone() {
-        return Audience.of(getPlayers(), getServer());
+        return Audience.of(this.getPlayers(), this.getServer());
     }
 
     @Override
     public Audience getPlayer(final MUUID muuid) {
-        return players.getOrDefault(muuid, Audience.empty());
+        return this.players.getOrDefault(muuid, Audience.empty());
     }
 
     @Override
     public Audience getPlayer(final String uuid) {
-        return players.entrySet().stream()
+        return this.players.entrySet().stream()
                 .filter(e -> e.getKey().getUuid().equals(uuid))
                 .map(Map.Entry::getValue)
                 .collect(Audience.collectToAudience());
@@ -89,15 +89,15 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     @Override
     public PlayerAudience getPlayer(final Player player) {
-        final var audience = (PlayerAudience) players.get(MUUID.from(player));
+        final var audience = (PlayerAudience) this.players.get(MUUID.from(player));
         return audience != null ? audience : new PlayerAudienceImpl(player);
     }
 
     @Override
     public Audience getConnection(final NetConnection connection) {
         final var player = connection.player;
-        if (player != null) return getPlayer(player);
-        return new NetConnectionAudienceImpl(connection, connections::get);
+        if (player != null) return this.getPlayer(player);
+        return new NetConnectionAudienceImpl(connection, this.connections::get);
     }
 
     @Override
@@ -107,12 +107,12 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
     @Override
     public Audience getPlayers() {
-        return Audience.of(Collections.unmodifiableCollection(players.values()));
+        return Audience.of(Collections.unmodifiableCollection(this.players.values()));
     }
 
     @Override
     public Audience getTeam(final Team team) {
-        final var audience = teams.get(team.id);
+        final var audience = this.teams.get(team.id);
         if (audience == null) throw new IllegalArgumentException("Unknown team: " + team);
         return audience;
     }
@@ -132,15 +132,16 @@ public final class AudienceProviderImpl implements AudienceProvider {
 
         @Override
         public KeyContainer getMetadata() {
-            return metadata;
+            return this.metadata;
         }
 
         @Override
         public Iterable<Audience> getAudiences() {
-            return getPlayers()
+            return AudienceProviderImpl.this
+                    .getPlayers()
                     .toStream()
                     .filter(a -> Objects.equals(
-                            a.getMetadata().getOptional(StandardKeys.TEAM).orElse(null), Team.get(id)))
+                            a.getMetadata().getOptional(StandardKeys.TEAM).orElse(null), Team.get(this.id)))
                     .toList();
         }
     }

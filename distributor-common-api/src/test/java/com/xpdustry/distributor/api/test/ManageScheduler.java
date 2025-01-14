@@ -47,8 +47,8 @@ public final class ManageScheduler
 
     @Override
     public void beforeAll(final ExtensionContext context) {
-        updater.scheduleAtFixedRate(
-                () -> schedulers.values().forEach(PluginSchedulerImpl::onPluginUpdate),
+        this.updater.scheduleAtFixedRate(
+                () -> this.schedulers.values().forEach(PluginSchedulerImpl::onPluginUpdate),
                 16L,
                 16L,
                 TimeUnit.MILLISECONDS);
@@ -67,7 +67,7 @@ public final class ManageScheduler
                     try {
                         final var scheduler = new PluginSchedulerImpl(PluginTimeSource.standard(), Runnable::run, 4);
                         ReflectionUtils.makeAccessible(field).set(context.getRequiredTestInstance(), scheduler);
-                        schedulers.put(field, scheduler);
+                        this.schedulers.put(field, scheduler);
                     } catch (final Throwable t) {
                         ExceptionUtils.throwAsUncheckedException(t);
                     }
@@ -78,8 +78,8 @@ public final class ManageScheduler
     public void afterEach(final ExtensionContext context) {
         findAnnotatedFields(context.getRequiredTestClass(), TestScheduler.class, ReflectionUtils::isNotStatic)
                 .forEach(field -> {
-                    final var scheduler =
-                            Objects.requireNonNull(schedulers.remove(field), "Scheduler not found for field: " + field);
+                    final var scheduler = Objects.requireNonNull(
+                            this.schedulers.remove(field), "Scheduler not found for field: " + field);
                     try {
                         if (scheduler != ReflectionUtils.makeAccessible(field).get(context.getRequiredTestInstance())) {
                             throw new ExtensionConfigurationException(
@@ -95,7 +95,7 @@ public final class ManageScheduler
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void afterAll(final ExtensionContext context) throws Exception {
-        updater.shutdown();
-        updater.awaitTermination(1, TimeUnit.SECONDS);
+        this.updater.shutdown();
+        this.updater.awaitTermination(1, TimeUnit.SECONDS);
     }
 }

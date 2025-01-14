@@ -26,12 +26,12 @@ record NumberComponentImpl(TextStyle textStyle, Number number) implements Number
 
     @Override
     public Number getNumber() {
-        return number;
+        return this.number;
     }
 
     @Override
     public TextStyle getTextStyle() {
-        return textStyle;
+        return this.textStyle;
     }
 
     @Override
@@ -65,7 +65,7 @@ record NumberComponentImpl(TextStyle textStyle, Number number) implements Number
 
         @Override
         public NumberComponent build() {
-            return new NumberComponentImpl(textStyle, Objects.requireNonNull(number));
+            return new NumberComponentImpl(this.textStyle, Objects.requireNonNull(this.number));
         }
     }
 }

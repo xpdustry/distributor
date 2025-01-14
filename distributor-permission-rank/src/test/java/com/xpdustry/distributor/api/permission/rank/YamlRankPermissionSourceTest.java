@@ -52,7 +52,7 @@ public final class YamlRankPermissionSourceTest {
 
     @Test
     void test_simple() throws IOException {
-        final var source = createSource(TEST_CONFIG_VALID);
+        final var source = this.createSource(TEST_CONFIG_VALID);
         source.reload();
         final var rank1 = EnumRankNode.linear(TestRank.LOW, Key.DISTRIBUTOR_NAMESPACE, true);
         final var rank2 = EnumRankNode.linear(TestRank.HIGH, Key.DISTRIBUTOR_NAMESPACE, true);
@@ -73,7 +73,7 @@ public final class YamlRankPermissionSourceTest {
 
     @Test
     void test_circular_detection() throws IOException {
-        final var source = createSource(TEST_CONFIG_VALID);
+        final var source = this.createSource(TEST_CONFIG_VALID);
         source.reload();
         assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
             assertThatThrownBy(() -> source.getRankPermissions(CircularRankNode.of(0)))
@@ -83,7 +83,7 @@ public final class YamlRankPermissionSourceTest {
 
     @Test
     void test_invalid_rank() {
-        final var source = createSource(TEST_CONFIG_INVALID_RANK);
+        final var source = this.createSource(TEST_CONFIG_INVALID_RANK);
         assertThatThrownBy(source::reload).isInstanceOf(IOException.class);
     }
 

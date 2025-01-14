@@ -49,12 +49,12 @@ public abstract class TypeToken<T> {
 
     protected TypeToken() {
         // Taken from guava TypeToken
-        final var superclass = getClass().getGenericSuperclass();
+        final var superclass = this.getClass().getGenericSuperclass();
         if (!(superclass instanceof ParameterizedType parameterized)) {
             throw new IllegalStateException(String.format("%s isn't parameterized", superclass));
         }
         this.type = parameterized.getActualTypeArguments()[0];
-        this.rawType = GenericTypeReflector.erase(type);
+        this.rawType = GenericTypeReflector.erase(this.type);
     }
 
     protected TypeToken(final Type type) {
@@ -82,6 +82,6 @@ public abstract class TypeToken<T> {
 
     @Override
     public String toString() {
-        return "TypeToken{type=" + type + '}';
+        return "TypeToken{type=" + this.type + '}';
     }
 }

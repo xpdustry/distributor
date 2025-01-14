@@ -37,7 +37,7 @@ public interface MenuPane extends Pane {
     MenuPane setTitle(final Component title);
 
     default MenuPane setTitle(final String title) {
-        return setTitle(Distributor.get().getMindustryComponentDecoder().decode(title));
+        return this.setTitle(Distributor.get().getMindustryComponentDecoder().decode(title));
     }
 
     Component getContent();
@@ -45,7 +45,7 @@ public interface MenuPane extends Pane {
     MenuPane setContent(final Component content);
 
     default MenuPane setContent(final String content) {
-        return setContent(Distributor.get().getMindustryComponentDecoder().decode(content));
+        return this.setContent(Distributor.get().getMindustryComponentDecoder().decode(content));
     }
 
     Action getExitAction();

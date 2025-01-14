@@ -52,7 +52,7 @@ public final class TaskHandlerProcessorTest {
     @BeforeEach
     void setup() {
         final var distributor = Mockito.mock(Distributor.class);
-        Mockito.when(distributor.getPluginScheduler()).thenReturn(scheduler);
+        Mockito.when(distributor.getPluginScheduler()).thenReturn(this.scheduler);
         Distributor.set(distributor);
     }
 
@@ -64,34 +64,34 @@ public final class TaskHandlerProcessorTest {
     @Test
     void test_simple() {
         final var instance = new TestSimple();
-        new TaskHandlerProcessor(plugin).process(instance);
+        new TaskHandlerProcessor(this.plugin).process(instance);
         assertThat(instance.future).succeedsWithin(Duration.ofSeconds(1L).plus(PRECISION));
     }
 
     @Test
     void test_cancellable_parameter() throws InterruptedException {
         final var instance = new TestCancellableParameter();
-        new TaskHandlerProcessor(plugin).process(instance);
+        new TaskHandlerProcessor(this.plugin).process(instance);
         Thread.sleep(500L);
         assertThat(instance.counter).hasValue(3);
     }
 
     @Test
     void test_invalid_parameter() {
-        assertThatThrownBy(() -> new TaskHandlerProcessor(plugin).process(new TestInvalidParameter()))
+        assertThatThrownBy(() -> new TaskHandlerProcessor(this.plugin).process(new TestInvalidParameter()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void test_too_many_parameters() {
-        assertThatThrownBy(() -> new TaskHandlerProcessor(plugin).process(new TestTooManyParameters()))
+        assertThatThrownBy(() -> new TaskHandlerProcessor(this.plugin).process(new TestTooManyParameters()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void test_async() {
         final var instance = new TestAsync();
-        new TaskHandlerProcessor(plugin).process(instance);
+        new TaskHandlerProcessor(this.plugin).process(instance);
         assertThat(instance.future)
                 .succeedsWithin(Duration.ofSeconds(1L).plus(PRECISION), InstanceOfAssertFactories.STRING)
                 .startsWith(PluginSchedulerImpl.DISTRIBUTOR_WORKER_BASE_NAME);
@@ -103,7 +103,7 @@ public final class TaskHandlerProcessorTest {
 
         @TaskHandler(delay = 1, unit = MindustryTimeUnit.SECONDS)
         public void task() {
-            future.complete(true);
+            this.future.complete(true);
         }
     }
 
@@ -113,7 +113,7 @@ public final class TaskHandlerProcessorTest {
 
         @TaskHandler(interval = 100, unit = MindustryTimeUnit.MILLISECONDS)
         public void task(final Cancellable cancellable) {
-            if (counter.incrementAndGet() == 3) {
+            if (this.counter.incrementAndGet() == 3) {
                 cancellable.cancel();
             }
         }
@@ -137,7 +137,7 @@ public final class TaskHandlerProcessorTest {
 
         @TaskHandler(async = true)
         public void task() {
-            future.complete(Thread.currentThread().getName());
+            this.future.complete(Thread.currentThread().getName());
         }
     }
 }

@@ -156,7 +156,7 @@ public interface TextStyle {
      * @return this setter or a copy
      */
     default TextStyle addDecoration(final TextDecoration decoration) {
-        return setDecoration(decoration, TriState.TRUE);
+        return this.setDecoration(decoration, TriState.TRUE);
     }
 
     /**
@@ -173,7 +173,7 @@ public interface TextStyle {
         } else {
             copy.put(decoration, state.asBoolean());
         }
-        return setDecorations(copy);
+        return this.setDecorations(copy);
     }
 
     /**

@@ -33,7 +33,7 @@ final class MenuPaneImpl implements MenuPane {
 
     @Override
     public Component getTitle() {
-        return title;
+        return this.title;
     }
 
     @Override
@@ -44,7 +44,7 @@ final class MenuPaneImpl implements MenuPane {
 
     @Override
     public Component getContent() {
-        return content;
+        return this.content;
     }
 
     @Override
@@ -55,7 +55,7 @@ final class MenuPaneImpl implements MenuPane {
 
     @Override
     public Action getExitAction() {
-        return exitAction;
+        return this.exitAction;
     }
 
     @Override
@@ -66,7 +66,7 @@ final class MenuPaneImpl implements MenuPane {
 
     @Override
     public MenuGrid getGrid() {
-        return grid;
+        return this.grid;
     }
 
     @Override
@@ -79,24 +79,24 @@ final class MenuPaneImpl implements MenuPane {
     public boolean equals(final Object o) {
         return (this == o)
                 || (o instanceof MenuPaneImpl other
-                        && Objects.equals(title, other.title)
-                        && Objects.equals(content, other.content)
-                        && Objects.equals(exitAction, other.exitAction)
-                        && Objects.equals(grid, other.grid));
+                        && Objects.equals(this.title, other.title)
+                        && Objects.equals(this.content, other.content)
+                        && Objects.equals(this.exitAction, other.exitAction)
+                        && Objects.equals(this.grid, other.grid));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, content, exitAction, grid);
+        return Objects.hash(this.title, this.content, this.exitAction, this.grid);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", MenuPaneImpl.class.getSimpleName() + "{", "}")
-                .add("title='" + title + "'")
-                .add("content='" + content + "'")
-                .add("exitAction=" + exitAction)
-                .add("grid=" + grid)
+                .add("title='" + this.title + "'")
+                .add("content='" + this.content + "'")
+                .add("exitAction=" + this.exitAction)
+                .add("grid=" + this.grid)
                 .toString();
     }
 }

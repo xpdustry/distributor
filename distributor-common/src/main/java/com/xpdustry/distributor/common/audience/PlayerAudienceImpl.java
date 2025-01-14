@@ -54,7 +54,7 @@ public final class PlayerAudienceImpl extends BaseNetConnectionAudience implemen
 
     @Override
     public KeyContainer getMetadata() {
-        return metadata;
+        return this.metadata;
     }
 
     @Override
@@ -64,6 +64,6 @@ public final class PlayerAudienceImpl extends BaseNetConnectionAudience implemen
 
     @Override
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 }
