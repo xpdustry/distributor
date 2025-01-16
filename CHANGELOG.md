@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.1.0 - 2024-12-30
+
+### Features
+
+- Added `DescriptionFacade#getComponent`.
+- Added `Translation#formatAsComponent` and deprecated `Translation#formatTo`.
+- Added `ComponentAccumulator`.
+- Added `WindowManager#getActiveWindow`.
+
+### Bugfixes
+
+- Fix crash caused by `ResourceBundles#fromClasspathDirectory` if the path of the jar contains invalid URL characters.
+
+### Chores
+
+- Updated dependencies.
+- Annotated flawed methods in `MenuGrid` (read source for more info).
+
 ## v4.0.2 - 2024-12-17
 
 ### Bugfixes
