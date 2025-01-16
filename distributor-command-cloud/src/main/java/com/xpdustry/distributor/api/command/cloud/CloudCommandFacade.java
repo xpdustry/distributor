@@ -93,10 +93,10 @@ final class CloudCommandFacade<C> extends CommandHandler.Command implements Comm
     }
 
     @Override
-    public CommandHelp getHelp(final CommandSender sender, final String query) {
+    public CommandHelp getHelp(final CommandSender sender, String query) {
         final var mapped = this.manager.senderMapper().map(sender);
-        final var result =
-                this.manager.createHelpHandler().query(HelpQuery.of(mapped, this.getRealName() + " " + query));
+        query = query.isBlank() ? this.getRealName() : this.getRealName() + " " + query.trim();
+        final var result = this.manager.createHelpHandler().query(HelpQuery.of(mapped, query));
         if (result instanceof MultipleCommandResult<C> multi) {
             return CommandHelp.Suggestion.of(multi.longestPath(), multi.childSuggestions());
         } else if (result instanceof VerboseCommandResult<C> verbose) {
