@@ -18,7 +18,7 @@ geantyref = "2.0.0"
 
 # testing
 junit = "5.11.4"
-assertj = "3.27.0"
+assertj = "3.27.3"
 guava-testlib = "33.4.0-jre"
 mockito = "5.14.2"
 
