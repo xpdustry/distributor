@@ -14,7 +14,7 @@ cloud = "2.0.0"
 # utilities
 immutables = "2.10.1"
 configurate = "4.1.2"
-geantyref = "2.0.0"
+geantyref = "2.0.1"
 
 # testing
 junit = "5.11.4"
