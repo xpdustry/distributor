@@ -69,6 +69,18 @@ public interface PluginAnnotationProcessor<R> {
     }
 
     /**
+     * Processes the {@link PlayerActionHandler} method annotations of a given object to create player action filters.
+     * The result is an {@link EventSubscription} tied to all created filters. If none, an empty result is returned.
+     *
+     * @param plugin the owning plugin
+     * @return a new player action handler processor
+     * @since 4.2.0
+     */
+    static PluginAnnotationProcessor<EventSubscription> playerActions(final MindustryPlugin plugin) {
+        return new PlayerActionHandlerProcessor(plugin);
+    }
+
+    /**
      * Composes multiple processors into one that returns their result in a list.
      * <br>
      * Note that if a composed processor is in the list of processors, it will be flattened. Such as:
