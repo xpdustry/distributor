@@ -10,35 +10,33 @@ slf4md = "1.0.1"
 
 # command
 cloud = "2.0.0"
-lamp = "4.0.0-rc.2"
 
 # utilities
 immutables = "2.10.1"
 configurate = "4.1.2"
-geantyref = "2.0.0"
+geantyref = "2.0.1"
 
 # testing
-junit = "5.11.4"
-assertj = "3.27.0"
+junit = "5.12.0"
+assertj = "3.27.3"
 guava-testlib = "33.4.0-jre"
-mockito = "5.14.2"
+mockito = "5.16.0"
 
 # static analysis
 errorprone-gradle = "4.1.0"
 errorprone-core = "2.36.0"
-nullaway = "0.12.2"
+nullaway = "0.12.4"
 checker-qual = "3.48.3"
-jetbrains-annotations = "26.0.1"
 
 # linting
-palantir = "2.50.0"
-ktlint = "0.51.0-FINAL"
+palantir = "2.56.0"
+ktlint = "1.5.0"
 
 # gradle
-toxopid = "4.1.1"
+toxopid = "4.1.2"
 indra = "3.1.3"
-spotless = "6.25.0"
-shadow = "8.3.5"
+spotless = "7.0.2"
+shadow = "8.3.6"
 
 [libraries]
 
@@ -54,7 +52,6 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # command
 cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
-lamp-common = { module = "io.github.revxrsal:lamp.common", version.ref = "lamp" }
 
 # utilities
 immutables-processor = { module = "org.immutables:value-processor", version.ref = "immutables" }
@@ -79,7 +76,6 @@ errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", versi
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker-qual" }
-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations"}
 
 # gradle
 toxopid = { module = "com.xpdustry:toxopid", version.ref = "toxopid" }

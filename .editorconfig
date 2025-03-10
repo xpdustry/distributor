@@ -1,4 +1,0 @@
-[*.{kt,kts}]
-ktlint_code_style = ktlint_official
-ktlint_standard_filename = disabled
-ij_kotlin_packages_to_use_import_on_demand = unset

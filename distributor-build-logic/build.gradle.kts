@@ -32,11 +32,10 @@ kotlin {
 spotless {
     kotlin {
         targetExclude("src/*/kotlin/**.gradle.kts", "build/generated-sources/**")
-        ktlint().setEditorConfigPath(file("../.editorconfig"))
+        ktlint().editorConfigOverride(mapOf("max_line_length" to "120", "ktlint_standard_filename" to "disabled"))
     }
-
     kotlinGradle {
         target("*.gradle.kts", "src/*/kotlin/**.gradle.kts")
-        ktlint().setEditorConfigPath(file("../.editorconfig"))
+        ktlint().editorConfigOverride(mapOf("max_line_length" to "120"))
     }
 }
