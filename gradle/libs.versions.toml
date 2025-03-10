@@ -5,7 +5,7 @@ java = "17"
 mindustry = "v146"
 
 # logging
-slf4j = "2.0.16"
+slf4j = "2.0.17"
 slf4md = "1.0.1"
 
 # command
@@ -13,7 +13,7 @@ cloud = "2.0.0"
 
 # utilities
 immutables = "2.10.1"
-configurate = "4.1.2"
+configurate = "4.2.0"
 geantyref = "2.0.1"
 
 # testing
