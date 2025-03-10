@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.caption.Caption;
 import org.incendo.cloud.caption.CaptionVariable;
 import org.incendo.cloud.component.CommandComponent;
@@ -87,13 +86,13 @@ public final class PlayerParser<C> implements ArgumentParser<C, Player> {
     }
 
     @Override
-    public @NonNull CompletableFuture<@NonNull ArgumentParseResult<Player>> parseFuture(
+    public CompletableFuture<ArgumentParseResult<Player>> parseFuture(
             final CommandContext<C> ctx, final CommandInput input) {
         return CompletableFuture.supplyAsync(() -> this.parse(ctx, input), Core.app::post);
     }
 
     @Override
-    public @NonNull SuggestionProvider<C> suggestionProvider() {
+    public SuggestionProvider<C> suggestionProvider() {
         return (ctx, input) -> CompletableFuture.supplyAsync(
                 () -> MindustryCollections.immutableList(Groups.player).stream()
                         .map(Player::plainName)

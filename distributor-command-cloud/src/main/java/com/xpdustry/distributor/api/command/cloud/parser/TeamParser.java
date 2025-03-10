@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import mindustry.game.Team;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.caption.CaptionVariable;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
@@ -47,7 +46,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
         return teamParser(TeamMode.BASE);
     }
 
-    public static <C> @NonNull ParserDescriptor<C, Team> teamParser(final TeamMode teamMode) {
+    public static <C> ParserDescriptor<C, Team> teamParser(final TeamMode teamMode) {
         return ParserDescriptor.of(new TeamParser<>(teamMode), Team.class);
     }
 
@@ -66,7 +65,8 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
     }
 
     @Override
-    public ArgumentParseResult<Team> parse(final CommandContext<C> ctx, final CommandInput input) {
+    public @org.jspecify.annotations.NonNull ArgumentParseResult<Team> parse(
+            final CommandContext<C> ctx, final CommandInput input) {
         final var name = input.readString().toLowerCase(Locale.ROOT);
         if (this.getTeamIndex().containsKey(name)) {
             return ArgumentParseResult.success(this.getTeamIndex().get(name));
@@ -76,7 +76,7 @@ public final class TeamParser<C> implements ArgumentParser<C, Team> {
     }
 
     @Override
-    public @NonNull SuggestionProvider<C> suggestionProvider() {
+    public SuggestionProvider<C> suggestionProvider() {
         return SuggestionProvider.suggestingStrings(
                 this.getTeamIndex().keySet().stream().sorted().toArray(String[]::new));
     }

@@ -66,7 +66,7 @@ spotless {
 }
 
 tasks.withType<JavaCompile> {
-    options.compilerArgs.add("-Xlint:-serial")
+    options.compilerArgs.add("-Xlint:-serial,-processing")
     options.errorprone {
         disableWarningsInGeneratedCode.set(true)
         disable("FutureReturnValueIgnored", "InlineMeSuggester", "EmptyCatch")

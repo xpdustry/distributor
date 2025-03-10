@@ -37,7 +37,6 @@ import io.leangen.geantyref.TypeToken;
 import java.util.Locale;
 import java.util.Objects;
 import mindustry.game.Team;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.CloudCapability;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
@@ -150,7 +149,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     }
 
     @Override
-    public boolean hasPermission(final @NonNull C sender, final String permission) {
+    public boolean hasPermission(final C sender, final String permission) {
         return permission.isEmpty()
                 || this.senderMapper()
                         .reverse(sender)
@@ -165,7 +164,7 @@ public class MindustryCommandManager<C> extends CommandManager<C>
     }
 
     @Override
-    public final @NonNull SenderMapper<CommandSender, C> senderMapper() {
+    public final SenderMapper<CommandSender, C> senderMapper() {
         return this.senderMapper;
     }
 

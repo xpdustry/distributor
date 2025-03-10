@@ -37,6 +37,7 @@ tasks.runMindustryServer {
 val generateMetadataFile by tasks.registering {
     val output = temporaryDir.resolve("plugin.json")
     outputs.file(output)
+    inputs.property("version", project.version.toString())
     doLast {
         output.writeText(
             ModMetadata.toJson(
@@ -44,7 +45,7 @@ val generateMetadataFile by tasks.registering {
                     name = extension.identifier.get(),
                     displayName = extension.display.get(),
                     description = extension.description.get(),
-                    version = project.version.toString(),
+                    version = inputs.properties["version"].toString(),
                     repository = "xpdustry/distributor",
                     author = "xpdustry",
                     minGameVersion = libs.versions.mindustry.get().substring(1),
