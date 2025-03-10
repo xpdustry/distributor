@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.gui;
 import com.xpdustry.distributor.api.player.MUUID;
 import java.util.Collection;
 import mindustry.gen.Player;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A factory creating {@link Window} instances.

@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.gui;
 
 import com.xpdustry.distributor.api.key.MutableKeyContainer;
 import mindustry.gen.Player;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a window. A container for the pane and state of a GUI.

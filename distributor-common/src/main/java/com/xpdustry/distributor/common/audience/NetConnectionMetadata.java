@@ -23,7 +23,7 @@ import com.xpdustry.distributor.api.player.MUUID;
 import java.util.Locale;
 import mindustry.net.NetConnection;
 import mindustry.net.Packets;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record NetConnectionMetadata(
         @Nullable MUUID muuid, ComponentColor color, @Nullable String name, @Nullable Locale locale) {

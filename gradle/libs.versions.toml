@@ -23,10 +23,10 @@ guava-testlib = "33.4.0-jre"
 mockito = "5.16.0"
 
 # static analysis
+jspecify = "1.0.0"
 errorprone-gradle = "4.1.0"
 errorprone-core = "2.36.0"
 nullaway = "0.12.4"
-checker-qual = "3.48.3"
 
 # linting
 palantir = "2.56.0"
@@ -72,10 +72,10 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 
 # static analysis
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorprone-gradle" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
-checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker-qual" }
 
 # gradle
 toxopid = { module = "com.xpdustry:toxopid", version.ref = "toxopid" }

@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.component.style;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 record TextStyleImpl(
         @Nullable ComponentColor textColor,

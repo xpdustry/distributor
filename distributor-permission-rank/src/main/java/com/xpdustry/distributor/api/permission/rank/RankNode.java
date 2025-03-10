@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.permission.rank;
 
 import java.util.regex.Pattern;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a node in a rank based permission system.

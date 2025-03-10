@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.command;
 
 import arc.util.CommandHandler;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@code CommandFacade} is a simple abstraction for advanced command systems in Mindustry.

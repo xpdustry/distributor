@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.component;
 
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.Objects;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 record NumberComponentImpl(TextStyle textStyle, Number number) implements NumberComponent {
 

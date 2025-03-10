@@ -22,8 +22,8 @@ import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClassSingleton;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the style of a temporal component.

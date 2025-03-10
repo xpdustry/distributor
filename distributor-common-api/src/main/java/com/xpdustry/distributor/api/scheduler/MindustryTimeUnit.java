@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.scheduler;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Time units used by the {@link PluginTask.Builder} and {@link PluginTask} classes to represent time.

@@ -22,7 +22,7 @@ import arc.struct.ObjectSet;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A wrapper {@link Set} for an {@link ObjectSet}.

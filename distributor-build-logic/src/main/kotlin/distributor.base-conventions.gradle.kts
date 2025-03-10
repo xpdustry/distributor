@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    compileOnlyApi(libs.checker.qual)
+    compileOnlyApi(libs.jspecify)
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
     testImplementation(libs.bundles.test.lib)

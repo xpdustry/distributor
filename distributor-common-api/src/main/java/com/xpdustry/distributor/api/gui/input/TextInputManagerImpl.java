@@ -30,7 +30,7 @@ import java.util.Set;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.ui.Menus;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextInputPane> implements TextInputManager {
 

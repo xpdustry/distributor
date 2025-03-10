@@ -29,7 +29,7 @@ import com.xpdustry.distributor.api.util.Priority;
 import com.xpdustry.distributor.common.event.EventBusImpl;
 import java.util.ArrayList;
 import java.util.List;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

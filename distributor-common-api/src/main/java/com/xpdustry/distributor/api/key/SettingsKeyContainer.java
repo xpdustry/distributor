@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import mindustry.io.JsonIO;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 enum SettingsKeyContainer implements MutableKeyContainer {
     INSTANCE;

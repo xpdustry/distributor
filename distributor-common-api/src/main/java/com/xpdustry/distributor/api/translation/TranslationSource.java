@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.translation;
 
 import java.util.Locale;
 import java.util.function.Function;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A helper class for adding translations to your plugin.

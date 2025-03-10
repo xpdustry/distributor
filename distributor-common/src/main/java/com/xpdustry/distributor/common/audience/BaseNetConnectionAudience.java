@@ -29,7 +29,7 @@ import mindustry.Vars;
 import mindustry.gen.Call;
 import mindustry.net.NetConnection;
 import mindustry.net.Packets;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;

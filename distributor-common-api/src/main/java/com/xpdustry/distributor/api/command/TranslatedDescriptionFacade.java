@@ -23,7 +23,7 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.translation.Translation;
 import com.xpdustry.distributor.api.translation.TranslationArguments;
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 record TranslatedDescriptionFacade(String key, Locale defaultLocale) implements DescriptionFacade {
 

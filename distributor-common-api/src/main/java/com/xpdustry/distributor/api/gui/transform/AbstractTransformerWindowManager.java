@@ -35,8 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 import mindustry.game.EventType;
 import mindustry.gen.Player;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An abstract implementation of a {@link TransformerWindowManager}.
@@ -124,7 +123,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         private final Player viewer;
         private final @Nullable Window parent;
         private final MutableKeyContainer state;
-        private @MonotonicNonNull P pane = null;
+        private @Nullable P pane = null;
         private boolean transforming = false;
 
         private SimpleWindow(final Player viewer, final @Nullable Window parent) {
@@ -188,7 +187,7 @@ public abstract class AbstractTransformerWindowManager<P extends Pane>
         }
 
         public P getPane() {
-            return this.pane;
+            return Objects.requireNonNull(this.pane);
         }
 
         private void checkNotTransforming() {

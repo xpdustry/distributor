@@ -22,7 +22,7 @@ import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.render.ComponentRenderer;
 import com.xpdustry.distributor.api.component.render.ComponentRendererProvider;
 import com.xpdustry.distributor.api.service.ServiceManager;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class ServiceComponentRendererProvider implements ComponentRendererProvider {
 

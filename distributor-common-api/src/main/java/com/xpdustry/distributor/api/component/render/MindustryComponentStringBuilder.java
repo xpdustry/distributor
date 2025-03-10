@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.component.render;
 import arc.struct.IntSeq;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.key.KeyContainer;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class MindustryComponentStringBuilder implements ComponentStringBuilder {
 

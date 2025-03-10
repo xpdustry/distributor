@@ -22,7 +22,7 @@ import com.xpdustry.distributor.api.component.style.TemporalStyle;
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.time.temporal.Temporal;
 import java.util.Objects;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 record TemporalComponentImpl(TextStyle textStyle, Temporal temporal, TemporalStyle format)
         implements TemporalComponent {

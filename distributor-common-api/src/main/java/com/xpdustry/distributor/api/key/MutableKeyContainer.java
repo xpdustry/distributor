@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.key;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A mutable version of {@link KeyContainer}.

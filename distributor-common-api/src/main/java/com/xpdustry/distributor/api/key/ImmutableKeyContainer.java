@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.key;
 
 import java.util.Optional;
 import java.util.Set;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class ImmutableKeyContainer implements KeyContainer {
 

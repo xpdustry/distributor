@@ -19,7 +19,7 @@
 package com.xpdustry.distributor.api.permission.rank;
 
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 record LinearEnumRankNode<E extends Enum<E>>(E value, String namespace, boolean ascending) implements EnumRankNode<E> {
 

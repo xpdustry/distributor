@@ -44,7 +44,7 @@ import com.xpdustry.distributor.common.service.ServiceManagerImpl;
 import com.xpdustry.distributor.common.translation.ServiceTranslationSource;
 import java.util.Locale;
 import java.util.Objects;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class DistributorCommonPlugin extends AbstractMindustryPlugin implements Distributor {
 

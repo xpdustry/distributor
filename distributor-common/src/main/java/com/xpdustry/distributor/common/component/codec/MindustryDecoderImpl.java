@@ -28,7 +28,7 @@ import com.xpdustry.distributor.api.component.codec.ComponentDecoder;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.component.style.TextStyle;
 import java.util.ArrayList;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public enum MindustryDecoderImpl implements ComponentDecoder<String> {
     INSTANCE;

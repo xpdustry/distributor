@@ -28,7 +28,7 @@ import com.xpdustry.distributor.api.scheduler.PluginScheduler;
 import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import java.util.Objects;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The distributor API.

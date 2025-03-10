@@ -21,7 +21,7 @@ package com.xpdustry.distributor.api.translation;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class TranslationSourceRegistryImpl implements TranslationSourceRegistry {
 

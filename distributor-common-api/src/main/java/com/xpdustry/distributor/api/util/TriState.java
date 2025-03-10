@@ -18,7 +18,7 @@
  */
 package com.xpdustry.distributor.api.util;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A ternary boolean type. Equivalent to {@code @Nullable Boolean}, but safer.

@@ -22,7 +22,7 @@ import com.xpdustry.distributor.api.service.ServiceManager;
 import com.xpdustry.distributor.api.translation.Translation;
 import com.xpdustry.distributor.api.translation.TranslationSource;
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class ServiceTranslationSource implements TranslationSource {
 

@@ -20,7 +20,7 @@ package com.xpdustry.distributor.api.gui.menu;
 
 import java.util.Arrays;
 import java.util.List;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A menu option grid.

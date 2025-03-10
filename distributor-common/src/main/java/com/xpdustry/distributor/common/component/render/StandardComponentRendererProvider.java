@@ -32,7 +32,7 @@ import com.xpdustry.distributor.api.component.style.TemporalStyle;
 import com.xpdustry.distributor.api.key.StandardKeys;
 import java.time.ZoneId;
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class StandardComponentRendererProvider implements ComponentRendererProvider {
 
