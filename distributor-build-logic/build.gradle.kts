@@ -23,6 +23,12 @@ java {
     targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
+    }
+}
+
 spotless {
     kotlin {
         targetExclude("src/*/kotlin/**.gradle.kts", "build/generated-sources/**")
