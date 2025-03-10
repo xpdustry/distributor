@@ -26,7 +26,7 @@ mockito = "5.16.0"
 errorprone-gradle = "4.1.0"
 errorprone-core = "2.36.0"
 nullaway = "0.12.4"
-checker-qual = "3.48.3"
+checker-qual = "3.49.1"
 
 # linting
 palantir = "2.56.0"
