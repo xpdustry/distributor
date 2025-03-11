@@ -53,12 +53,12 @@ final class PopupManagerImpl extends AbstractTransformerWindowManager<PopupPane>
 
     @Override
     protected void onWindowOpen(final SimpleWindow window) {
-        int align =
-                switch (window.getPane().getAlignementX()) {
-                    case LEFT -> Align.left;
-                    case CENTER -> Align.center;
-                    case RIGHT -> Align.right;
-                };
+        int align = 0;
+        align |= switch (window.getPane().getAlignementX()) {
+            case LEFT -> Align.left;
+            case CENTER -> Align.center;
+            case RIGHT -> Align.right;
+        };
         align |= switch (window.getPane().getAlignementY()) {
             case TOP -> Align.top;
             case CENTER -> Align.center;
