@@ -52,7 +52,8 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
     private BiAction<E> choiceAction = BiAction.from(Action.none());
     private int height = 5;
     private int width = 1;
-    private boolean fillEmptySpace = false;
+    private boolean fillEmptyWidth = false;
+    private boolean fillEmptyHeight = false;
     private boolean renderNavigation = true;
     private Key<Integer> pageKey = Key.generated(Integer.class);
 
@@ -167,9 +168,11 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
 
     /**
      * Returns whether the transformer fills empty spaces.
+     * @deprecated Use {@link #isFillEmptyWidth()} or {@link #isFillEmptyHeight()}
      */
+    @Deprecated(forRemoval = true)
     public boolean isFillEmptySpace() {
-        return this.fillEmptySpace;
+        return this.fillEmptyWidth && this.fillEmptyHeight;
     }
 
     /**
@@ -180,9 +183,57 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
      *
      * @param fillEmptySpace whether to fill empty spaces
      * @return this transformer
+     * @deprecated Use {@link #setFillEmptyWidth(boolean)} or {@link #setFillEmptyHeight(boolean)}
      */
+    @Deprecated(forRemoval = true)
     public ListTransformer<E> setFillEmptySpace(final boolean fillEmptySpace) {
-        this.fillEmptySpace = fillEmptySpace;
+        this.fillEmptyWidth = fillEmptySpace;
+        this.fillEmptyHeight = fillEmptySpace;
+        return this;
+    }
+
+    /**
+     * Returns whether the transformer fills empty spaces across the width of the list.
+     */
+    public boolean isFillEmptyWidth() {
+        return this.fillEmptyWidth;
+    }
+
+    /**
+     * Sets whether the transformer fills empty spaces across the width of the list.
+     * <p>
+     * For example, if the height is 12 and the width is 3, and there are 7 elements,
+     * the transformer will add 2 empty options to fill the 3rd row.
+     * An empty 4th row won't be added unless {@link #isFillEmptyHeight()} is {@code true}.
+     *
+     * @param fillEmptyWidth whether to fill empty spaces
+     * @return this transformer
+     */
+    public ListTransformer<E> setFillEmptyWidth(final boolean fillEmptyWidth) {
+        this.fillEmptyWidth = fillEmptyWidth;
+        return this;
+    }
+
+    /**
+     * Returns whether the transformer fills empty spaces across the height of the list.
+     */
+    public boolean isFillEmptyHeight() {
+        return this.fillEmptyHeight;
+    }
+
+    /**
+     * Sets whether the transformer fills empty spaces across the height of the list.
+     * <p>
+     * For example, if the height is 12 and the width is 3, and there are 7 elements,
+     * the transformer will add an empty 4th row.
+     * The 3 empty options in the 4th row and the 2 empty options in the 3rd row won't be added
+     * unless {@link #isFillEmptyWidth()} is {@code true}.
+     *
+     * @param fillEmptyHeight whether to fill empty spaces
+     * @return this transformer
+     */
+    public ListTransformer<E> setFillEmptyHeight(final boolean fillEmptyHeight) {
+        this.fillEmptyHeight = fillEmptyHeight;
         return this;
     }
 
@@ -240,7 +291,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
                     final var element = elements.get(cursor);
                     options.add(MenuOption.of(
                             this.renderer.apply(context, element), ctx -> this.choiceAction.act(ctx, element)));
-                } else if (this.fillEmptySpace) {
+                } else if (this.fillEmptyWidth) {
                     options.add(MenuOption.of(empty(), Action.none()));
                 } else {
                     break;
@@ -249,7 +300,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
             if (!options.isEmpty()) {
                 context.getPane().getGrid().addRow(options);
             }
-            if (cursor >= elements.size() && !this.fillEmptySpace) {
+            if (cursor >= elements.size() && !this.fillEmptyHeight) {
                 break;
             }
         }
