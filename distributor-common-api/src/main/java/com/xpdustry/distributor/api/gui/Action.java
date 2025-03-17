@@ -119,15 +119,21 @@ public interface Action {
     }
 
     /**
+     * Returns an action that hides the current window.
+     */
+    static Action hide() {
+        return Window::hide;
+    }
+
+    /**
      * Returns an action that hides all windows in the hierarchy.
      */
     static Action hideAll() {
         return window -> {
-            var current = window;
-            while (current != null) {
-                current.hide();
-                current = current.getParent();
-            }
+            do {
+                window.hide();
+                window = window.getParent();
+            } while (window != null);
         };
     }
 
@@ -167,6 +173,13 @@ public interface Action {
     }
 
     /**
+     * Returns an action that creates shows the current window.
+     */
+    static Action show() {
+        return Window::show;
+    }
+
+    /**
      * Returns an action that creates and shows a new window with the given manager and previous window.
      *
      * @param manager the window manager
@@ -193,7 +206,7 @@ public interface Action {
      * @return the action
      */
     static Action compose(final Action... actions) {
-        return compose(List.of(actions));
+        return new Actions.CompositeAction(List.of(actions));
     }
 
     /**
@@ -203,11 +216,7 @@ public interface Action {
      * @return the action
      */
     static Action compose(final List<Action> actions) {
-        return window -> {
-            for (final var action : actions) {
-                action.act(window);
-            }
-        };
+        return new Actions.CompositeAction(actions);
     }
 
     /**
@@ -224,9 +233,6 @@ public interface Action {
      * @return the new action
      */
     default Action then(final Action next) {
-        return window -> {
-            this.act(window);
-            next.act(window);
-        };
+        return new Actions.CompositeAction(List.of(this, next));
     }
 }
