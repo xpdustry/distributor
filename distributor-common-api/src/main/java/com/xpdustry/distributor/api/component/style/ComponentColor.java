@@ -18,6 +18,7 @@
  */
 package com.xpdustry.distributor.api.component.style;
 
+import arc.graphics.Color;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import mindustry.graphics.Pal;
 import org.immutables.value.Value;
@@ -29,14 +30,47 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface ComponentColor {
 
-    ComponentColor RED = rgb(0xFF0000);
-    ComponentColor GREEN = rgb(0x00FF00);
-    ComponentColor BLUE = rgb(0x0000FF);
-    ComponentColor YELLOW = rgb(0xFFFF00);
-    ComponentColor CYAN = rgb(0x00FFFF);
-    ComponentColor MAGENTA = rgb(0xFF00FF);
-    ComponentColor WHITE = rgb(0xFFFFFF);
-    ComponentColor BLACK = rgb(0x000000);
+    ComponentColor WHITE = from(Color.white);
+    ComponentColor LIGHT_GRAY = from(Color.lightGray);
+    ComponentColor GRAY = from(Color.gray);
+    ComponentColor DARK_GRAY = from(Color.darkGray);
+    ComponentColor BLACK = from(Color.black);
+
+    ComponentColor BLUE = from(Color.blue);
+    ComponentColor NAVY = from(Color.navy);
+    ComponentColor ROYAL = from(Color.royal);
+    ComponentColor SLATE = from(Color.slate);
+    ComponentColor SKY = from(Color.sky);
+    ComponentColor CYAN = from(Color.cyan);
+    ComponentColor TEAL = from(Color.teal);
+
+    ComponentColor GREEN = from(Color.green);
+    ComponentColor ACID = from(Color.acid);
+    ComponentColor LIME = from(Color.lime);
+    ComponentColor FOREST = from(Color.forest);
+    ComponentColor OLIVE = from(Color.olive);
+
+    ComponentColor YELLOW = from(Color.yellow);
+    ComponentColor GOLD = from(Color.gold);
+    ComponentColor GOLDENROD = from(Color.goldenrod);
+    ComponentColor ORANGE = from(Color.orange);
+
+    ComponentColor BROWN = from(Color.brown);
+    ComponentColor TAN = from(Color.tan);
+    ComponentColor BRICK = from(Color.brick);
+
+    ComponentColor RED = from(Color.red);
+    ComponentColor SCARLET = from(Color.scarlet);
+    ComponentColor CRIMSON = from(Color.crimson);
+    ComponentColor CORAL = from(Color.coral);
+    ComponentColor SALMON = from(Color.salmon);
+    ComponentColor PINK = from(Color.pink);
+    ComponentColor MAGENTA = from(Color.magenta);
+
+    ComponentColor PURPLE = from(Color.purple);
+    ComponentColor VIOLET = from(Color.violet);
+    ComponentColor MAROON = from(Color.maroon);
+
     ComponentColor ACCENT = from(Pal.accent);
 
     /**
