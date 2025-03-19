@@ -18,34 +18,27 @@
  */
 package com.xpdustry.distributor.api.gui.menu;
 
-import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.Component;
 import com.xpdustry.distributor.api.component.TextComponent;
 import com.xpdustry.distributor.api.gui.Action;
+import java.util.Objects;
 
-/**
- * A menu option.
- */
-public interface MenuOption {
+record MenuOptionImpl(Component content, Action action) implements MenuOption {
 
-    static MenuOption of() {
-        return MenuOptionImpl.EMPTY;
+    static final MenuOptionImpl EMPTY = new MenuOptionImpl(TextComponent.empty(), Action.none());
+
+    MenuOptionImpl {
+        Objects.requireNonNull(content, "content");
+        Objects.requireNonNull(action, "action");
     }
 
-    static MenuOption of(final Component content, final Action action) {
-        return new MenuOptionImpl(content, action);
+    @Override
+    public Component getContent() {
+        return this.content;
     }
 
-    static MenuOption of(final char icon, final Action action) {
-        return new MenuOptionImpl(TextComponent.text(icon), action);
+    @Override
+    public Action getAction() {
+        return this.action;
     }
-
-    static MenuOption of(final String content, final Action action) {
-        return new MenuOptionImpl(
-                Distributor.get().getMindustryComponentDecoder().decode(content), action);
-    }
-
-    Component getContent();
-
-    Action getAction();
 }

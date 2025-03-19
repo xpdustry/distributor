@@ -35,7 +35,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import mindustry.gen.Iconc;
 
-import static com.xpdustry.distributor.api.component.TextComponent.empty;
 import static com.xpdustry.distributor.api.component.TextComponent.text;
 
 /**
@@ -292,7 +291,7 @@ public final class ListTransformer<E> implements Transformer<MenuPane> {
                     options.add(MenuOption.of(
                             this.renderer.apply(context, element), ctx -> this.choiceAction.act(ctx, element)));
                 } else if (this.fillEmptyWidth) {
-                    options.add(MenuOption.of(empty(), Action.none()));
+                    options.add(MenuOption.of());
                 } else {
                     break;
                 }
