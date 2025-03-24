@@ -19,13 +19,13 @@ geantyref = "2.0.1"
 # testing
 junit = "5.12.1"
 assertj = "3.27.3"
-guava-testlib = "33.4.0-jre"
+guava-testlib = "33.4.5-jre"
 mockito = "5.16.1"
 
 # static analysis
 jspecify = "1.0.0"
 errorprone-gradle = "4.1.0"
-errorprone-core = "2.36.0"
+errorprone-core = "2.37.0"
 nullaway = "0.12.4"
 
 # linting

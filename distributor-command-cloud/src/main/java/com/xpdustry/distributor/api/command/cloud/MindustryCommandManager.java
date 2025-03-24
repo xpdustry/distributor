@@ -81,19 +81,19 @@ public class MindustryCommandManager<C> extends CommandManager<C>
      * @param senderMapper the sender mapper
      * @see CommandManager#CommandManager(ExecutionCoordinator, CommandRegistrationHandler)
      */
+    @SuppressWarnings("this-escape")
     public MindustryCommandManager(
             final MindustryPlugin plugin,
             final CommandHandler handler,
             final ExecutionCoordinator<C> coordinator,
             final SenderMapper<CommandSender, C> senderMapper) {
         super(coordinator, CommandRegistrationHandler.nullCommandRegistrationHandler());
-
         this.handler = handler;
-        this.commandRegistrationHandler(new MindustryRegistrationHandler<>(this, handler));
-        this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
-
         this.plugin = plugin;
         this.senderMapper = senderMapper;
+
+        this.commandRegistrationHandler(new MindustryRegistrationHandler<>(this, handler));
+        this.transitionOrThrow(RegistrationState.BEFORE_REGISTRATION, RegistrationState.REGISTERING);
 
         this.registerCapability(CloudCapability.StandardCapabilities.ROOT_COMMAND_DELETION);
 

@@ -38,15 +38,16 @@ import org.slf4j.LoggerFactory;
  * An abstract implementation of {@link MindustryPlugin}, without the quirks of {@link Plugin} (like the fact that
  * {@link #registerServerCommands(CommandHandler)} is called before {@link #init()}).
  */
+@SuppressWarnings("this-escape")
 public abstract class AbstractMindustryPlugin extends Plugin implements MindustryPlugin {
 
     static {
         Core.app.addListener(new MindustryPluginShutdownHook());
     }
 
-    private final PluginMetadata metadata = PluginMetadata.from(this);
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginListener> listeners = new ArrayList<>();
+    private final PluginMetadata metadata = PluginMetadata.from(this);
 
     @Override
     public final PluginMetadata getMetadata() {
