@@ -2,7 +2,7 @@
 
 # platforms
 java = "17"
-mindustry = "v146"
+mindustry = "v149"
 
 # logging
 slf4j = "2.0.17"
