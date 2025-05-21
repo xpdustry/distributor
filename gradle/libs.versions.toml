@@ -20,7 +20,7 @@ geantyref = "2.0.1"
 junit = "5.12.1"
 assertj = "3.27.3"
 guava-testlib = "33.4.5-jre"
-mockito = "5.16.1"
+mockito = "5.18.0"
 
 # static analysis
 jspecify = "1.0.0"
