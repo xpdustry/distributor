@@ -17,7 +17,7 @@ configurate = "4.2.0"
 geantyref = "2.0.1"
 
 # testing
-junit = "5.13.1"
+junit = "5.13.2"
 assertj = "3.27.3"
 guava-testlib = "33.4.8-jre"
 mockito = "5.18.0"
