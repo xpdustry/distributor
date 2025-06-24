@@ -61,7 +61,7 @@ public interface PluginMetadata {
     static PluginMetadata from(final Mods.ModMeta meta) {
         return PluginMetadata.builder()
                 .setName(Objects.requireNonNull(meta.name))
-                .setDisplayName(meta.displayName())
+                .setDisplayName(meta.displayName)
                 .setAuthor(Objects.requireNonNullElse(meta.author, "Unknown"))
                 .setDescription(Objects.requireNonNullElse(meta.description, ""))
                 .setVersion(Objects.requireNonNullElse(meta.version, "1.0.0"))

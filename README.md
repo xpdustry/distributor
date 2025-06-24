@@ -2,7 +2,7 @@
 
 [![Xpdustry latest](https://maven.xpdustry.com/api/badge/latest/releases/com/xpdustry/distributor-common-api?color=00ced1&name=distributor&prefix=v)](https://maven.xpdustry.com/#/releases/com/xpdustry/distributor-common-api)
 [![Downloads](https://img.shields.io/github/downloads/xpdustry/distributor/total?color=00ced1)](https://github.com/xpdustry/distributor/releases)
-[![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-00ced1)](https://github.com/Anuken/Mindustry/releases)
+[![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0%20%7C%208.0-00ced1)](https://github.com/Anuken/Mindustry/releases)
 
 Distributor is a framework for writing advanced Mindustry plugins in a safe and efficient way, it features:
 
@@ -28,7 +28,7 @@ This plugin requires at least :
 
 - Java 17
 
-- [SLF4MD](https://github.com/xpdustry/slf4md) v1
+- [SLF4MD](https://github.com/xpdustry/slf4md) v1.0.4
 
 ## Building
 
