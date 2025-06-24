@@ -56,6 +56,11 @@ final class TextInputManagerImpl extends AbstractTransformerWindowManager<TextIn
     }
 
     @Override
+    protected void onWindowClose(final SimpleWindow window) {
+        this.visible.remove(MUUID.from(window.getViewer()));
+    }
+
+    @Override
     protected TextInputPane createPane() {
         return TextInputPane.create();
     }
