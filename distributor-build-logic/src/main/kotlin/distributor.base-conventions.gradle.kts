@@ -32,6 +32,7 @@ dependencies {
     errorprone(libs.nullaway)
     testImplementation(libs.bundles.test.lib)
     testRuntimeOnly(libs.bundles.test.engine)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 indra {

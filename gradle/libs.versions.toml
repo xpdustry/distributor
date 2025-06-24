@@ -17,16 +17,16 @@ configurate = "4.2.0"
 geantyref = "2.0.1"
 
 # testing
-junit = "5.12.1"
+junit = "5.13.1"
 assertj = "3.27.3"
-guava-testlib = "33.4.5-jre"
-mockito = "5.16.1"
+guava-testlib = "33.4.8-jre"
+mockito = "5.18.0"
 
 # static analysis
 jspecify = "1.0.0"
-errorprone-gradle = "4.1.0"
-errorprone-core = "2.37.0"
-nullaway = "0.12.4"
+errorprone-gradle = "4.2.0"
+errorprone-core = "2.38.0"
+nullaway = "0.12.7"
 
 # linting
 palantir = "2.56.0"
@@ -35,8 +35,8 @@ ktlint = "1.5.0"
 # gradle
 toxopid = "4.1.2"
 indra = "3.1.3"
-spotless = "7.0.2"
-shadow = "8.3.6"
+spotless = "7.0.4"
+shadow = "8.3.7"
 
 [libraries]
 
