@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import mindustry.entities.EntityGroup;
 import mindustry.gen.Entityc;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A utility class for wrapping arc collections into standard java collections.
@@ -80,7 +81,7 @@ public final class MindustryCollections {
      * @param <E> the element type
      * @return the wrapped {@link Seq}
      */
-    public static <E> List<E> mutableList(final Seq<E> seq) {
+    public static <E extends @Nullable Object> List<E> mutableList(final Seq<E> seq) {
         return new MindustryList<>(seq);
     }
 
@@ -91,7 +92,7 @@ public final class MindustryCollections {
      * @param <E> the element type
      * @return the wrapped {@link Seq}
      */
-    public static <E> List<E> immutableList(final Seq<E> seq) {
+    public static <E extends @Nullable Object> List<E> immutableList(final Seq<E> seq) {
         return Collections.unmodifiableList(new MindustryList<>(seq));
     }
 
@@ -125,7 +126,7 @@ public final class MindustryCollections {
      * @param <V> the value type
      * @return the wrapped {@link ObjectMap}
      */
-    public static <K, V> Map<K, V> mutableMap(final ObjectMap<K, V> map) {
+    public static <K, V extends @Nullable Object> Map<K, V> mutableMap(final ObjectMap<K, V> map) {
         return new MindustryMap<>(map);
     }
 
@@ -137,7 +138,7 @@ public final class MindustryCollections {
      * @param <V> the value type
      * @return the wrapped {@link ObjectMap}
      */
-    public static <K, V> Map<K, V> immutableMap(final ObjectMap<K, V> map) {
+    public static <K, V extends @Nullable Object> Map<K, V> immutableMap(final ObjectMap<K, V> map) {
         return Collections.unmodifiableMap(new MindustryMap<>(map));
     }
 
@@ -147,7 +148,7 @@ public final class MindustryCollections {
      * @param <T> the element type
      * @return the seq collector
      */
-    public static <T> Collector<T, ?, Seq<T>> collectToSeq() {
+    public static <T extends @Nullable Object> Collector<T, ?, Seq<T>> collectToSeq() {
         return collectToSeq(Seq::new);
     }
 
@@ -159,7 +160,8 @@ public final class MindustryCollections {
      * @param <S>        the seq type
      * @return the seq collector
      */
-    public static <T, S extends Seq<T>> Collector<T, ?, S> collectToSeq(final Supplier<S> seqFactory) {
+    public static <T extends @Nullable Object, S extends Seq<T>> Collector<T, ?, S> collectToSeq(
+            final Supplier<S> seqFactory) {
         return Collector.of(seqFactory, Seq::add, (seq1, seq2) -> {
             seq1.addAll(seq2);
             return seq1;
@@ -176,7 +178,7 @@ public final class MindustryCollections {
      * @param <T>       the element type
      * @return the object map collector
      */
-    public static <T, K, V> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
+    public static <T, K, V extends @Nullable Object> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
             final Function<? super T, ? extends K> keyMapper, final Function<? super T, ? extends V> valMapper) {
         return collectToObjectMap0(keyMapper, valMapper, (a, b) -> a, ObjectMap::new, true);
     }
@@ -195,10 +197,11 @@ public final class MindustryCollections {
      * @param <M>              the object map type
      * @return the object map collector
      */
-    public static <T, K, V, M extends ObjectMap<K, V>> Collector<T, ?, M> collectToObjectMap(
-            final Function<? super T, ? extends K> keyMapper,
-            final Function<? super T, ? extends V> valMapper,
-            final Supplier<M> objectMapFactory) {
+    public static <T extends @Nullable Object, K, V extends @Nullable Object, M extends ObjectMap<K, V>>
+            Collector<T, ?, M> collectToObjectMap(
+                    final Function<? super T, ? extends K> keyMapper,
+                    final Function<? super T, ? extends V> valMapper,
+                    final Supplier<M> objectMapFactory) {
         return collectToObjectMap0(keyMapper, valMapper, (a, b) -> a, objectMapFactory, true);
     }
 
@@ -214,10 +217,11 @@ public final class MindustryCollections {
      * @param <V>       the value type
      * @return the object map collector
      */
-    public static <T, K, V> Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
-            final Function<? super T, ? extends K> keyMapper,
-            final Function<? super T, ? extends V> valMapper,
-            final BinaryOperator<V> valMerger) {
+    public static <T extends @Nullable Object, K, V extends @Nullable Object>
+            Collector<T, ?, ObjectMap<K, V>> collectToObjectMap(
+                    final Function<? super T, ? extends K> keyMapper,
+                    final Function<? super T, ? extends V> valMapper,
+                    final BinaryOperator<V> valMerger) {
         return collectToObjectMap0(keyMapper, valMapper, valMerger, ObjectMap::new, false);
     }
 
@@ -235,20 +239,22 @@ public final class MindustryCollections {
      * @param <M>              the object map type
      * @return the object map collector
      */
-    public static <T, K, V, M extends ObjectMap<K, V>> Collector<T, ?, M> collectToObjectMap(
-            final Function<? super T, ? extends K> keyMapper,
-            final Function<? super T, ? extends V> valMapper,
-            final BinaryOperator<V> valMerger,
-            final Supplier<M> objectMapFactory) {
+    public static <T extends @Nullable Object, K, V extends @Nullable Object, M extends ObjectMap<K, V>>
+            Collector<T, ?, M> collectToObjectMap(
+                    final Function<? super T, ? extends K> keyMapper,
+                    final Function<? super T, ? extends V> valMapper,
+                    final BinaryOperator<V> valMerger,
+                    final Supplier<M> objectMapFactory) {
         return collectToObjectMap0(keyMapper, valMapper, valMerger, objectMapFactory, false);
     }
 
-    private static <T, K, V, M extends ObjectMap<K, V>> Collector<T, ?, M> collectToObjectMap0(
-            final Function<? super T, ? extends K> keyMapper,
-            final Function<? super T, ? extends V> valMapper,
-            final BinaryOperator<V> valMerger,
-            final Supplier<M> supplier,
-            final boolean unique) {
+    private static <T extends @Nullable Object, K, V extends @Nullable Object, M extends ObjectMap<K, V>>
+            Collector<T, ?, M> collectToObjectMap0(
+                    final Function<? super T, ? extends K> keyMapper,
+                    final Function<? super T, ? extends V> valMapper,
+                    final BinaryOperator<V> valMerger,
+                    final Supplier<M> supplier,
+                    final boolean unique) {
         return Collector.of(
                 supplier,
                 (map, element) -> {
