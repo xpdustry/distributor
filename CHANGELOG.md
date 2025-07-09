@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v4.2.0 - 2025-06-24
+
+### Features
+
+- **Made distributor compatible with Mindustry v8.**
+- Added empty `MenuOption`.
+- Added all colors of `arc.graphics.Color` to `ComponentColor`.
+- Added `CompositeAction`.
+- Replaced nullability annotations from "checker framework" to "jspecify".
+- Added `ListTransformer#isFillEmptyWidth` and `ListTransformer#isFillEmptyHeight`.
+- Added `PlayerActionHandler` annotation.
+
+### Bugfixes
+
+- Fix invalid state when player leave with text input open.
+- Fix `CloudCommandFacade#getHelp` invalid result if query is blank.
+- Fix invalid PlayerAudience locale if it contains a region identifier.
+
 ## v4.1.0 - 2024-12-30
 
 ### Features
