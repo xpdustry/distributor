@@ -15,11 +15,11 @@ cloud = "2.0.0"
 immutables = "2.10.1"
 configurate = "4.2.0"
 geantyref = "2.0.1"
+guava = "33.4.8-jre"
 
 # testing
 junit = "5.13.1"
 assertj = "3.27.3"
-guava-testlib = "33.4.8-jre"
 mockito = "5.18.0"
 
 # static analysis
@@ -59,6 +59,7 @@ immutables-annotations = { module = "org.immutables:value-annotations", version.
 configurate-core = { module = "org.spongepowered:configurate-core", version.ref = "configurate" }
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 geantyref = { module = "io.leangen.geantyref:geantyref", version.ref = "geantyref" }
+# guava-core = { module = "com.google.guava:guava", version.ref = "guava" }
 
 # testing
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
@@ -67,7 +68,7 @@ junit-engine-jupiter = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 junit-engine-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
-guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava-testlib" }
+guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 
