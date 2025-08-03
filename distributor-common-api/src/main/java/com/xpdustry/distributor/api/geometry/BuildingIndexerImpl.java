@@ -110,6 +110,19 @@ class BuildingIndexerImpl<T> implements BuildingIndexer<T> {
     }
 
     @Override
+    public boolean update(final int x, final int y, final T data) {
+        final var building = this.remove(x, y);
+        if (building != null) {
+            if (!this.insert(x, y, building.s(), data)) {
+                throw new IllegalStateException("The removed building couldn't be added back.");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public @Nullable IndexedBuilding<T> remove(final int x, final int y) {
         final var removing = this.select(x, y);
         if (removing != null) {

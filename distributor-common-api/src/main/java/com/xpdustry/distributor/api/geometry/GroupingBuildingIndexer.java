@@ -22,6 +22,10 @@ import java.util.Collection;
 
 public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
 
+    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
+        return new GroupingBuildingIndexerImpl<>(function);
+    }
+
     Collection<IndexedBuildingGroup<T>> groups();
 
     GroupingFunction<T> function();

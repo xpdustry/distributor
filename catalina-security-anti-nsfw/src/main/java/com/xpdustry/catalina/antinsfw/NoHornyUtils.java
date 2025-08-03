@@ -16,28 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.catalina.antinsfw;
 
-import java.util.Collection;
-import org.jspecify.annotations.Nullable;
+import mindustry.gen.Building;
 
-public interface BuildingIndexer<T> {
+public final class NoHornyUtils {
 
-    @Nullable IndexedBuilding<T> select(final int x, final int y);
+    private NoHornyUtils() {}
 
-    boolean exists(final int x, final int y);
+    public static int rx(final Building building) {
+        return building.tileX() - building.block.sizeOffset;
+    }
 
-    Collection<IndexedBuilding<T>> selectAll(final int x, final int y, final int w, final int h);
-
-    Collection<IndexedBuilding<T>> selectAll();
-
-    Collection<IndexedBuilding<T>> selectAllAdjacent(final int x, final int y);
-
-    boolean insert(final int x, final int y, final int size, final T data);
-
-    boolean update(final int x, final int y, final T data);
-
-    @Nullable IndexedBuilding<T> remove(final int x, final int y);
-
-    boolean removeAll();
+    public static int ry(final Building building) {
+        return building.tileY() - building.block.sizeOffset;
+    }
 }

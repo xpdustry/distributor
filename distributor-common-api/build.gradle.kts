@@ -4,12 +4,12 @@ plugins {
 }
 
 dependencies {
-    compileOnly(projects.distributorInternalAnnotations)
     testImplementation(projects.distributorCommon)
-    annotationProcessor(libs.immutables.processor)
     compileOnlyApi(libs.slf4j.api)
     testImplementation(libs.slf4j.simple)
     compileOnlyApi(libs.bundles.mindustry)
     testImplementation(libs.bundles.mindustry)
     implementation(libs.geantyref)
+    compileOnly(projects.distributorInternalAnnotations)
+    annotationProcessor(libs.immutables.processor)
 }

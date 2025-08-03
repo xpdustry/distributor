@@ -17,6 +17,8 @@ dependencies {
     testImplementation(projects.distributorCommon)
     testImplementation(libs.slf4j.api)
     testImplementation(libs.slf4j.simple)
+    compileOnly(projects.distributorInternalAnnotations)
+    annotationProcessor(libs.immutables.processor)
 }
 
 tasks.runMindustryServer {

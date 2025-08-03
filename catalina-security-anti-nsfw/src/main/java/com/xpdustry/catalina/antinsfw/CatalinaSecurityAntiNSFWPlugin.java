@@ -18,6 +18,23 @@
  */
 package com.xpdustry.catalina.antinsfw;
 
+import com.xpdustry.distributor.api.annotation.PluginAnnotationProcessor;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
+import com.xpdustry.distributor.api.plugin.PluginListener;
+import org.jspecify.annotations.NonNull;
 
-public final class CatalinaSecurityAntiNSFWPlugin extends AbstractMindustryPlugin {}
+public final class CatalinaSecurityAntiNSFWPlugin extends AbstractMindustryPlugin {
+
+    private final PluginAnnotationProcessor<?> processor = PluginAnnotationProcessor.events(this);
+
+    @Override
+    public void onInit() {
+        this.addListener(new CanvasTracker(this));
+    }
+
+    @Override
+    public void addListener(final @NonNull PluginListener listener) {
+        super.addListener(listener);
+        this.processor.process(listener);
+    }
+}
