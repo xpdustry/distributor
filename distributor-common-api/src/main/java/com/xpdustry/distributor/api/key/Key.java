@@ -22,6 +22,7 @@ import com.xpdustry.distributor.api.util.TypeToken;
 import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
 import java.util.UUID;
 import org.immutables.value.Value;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A key is typesafe way of retrieving values from containers.
@@ -30,7 +31,7 @@ import org.immutables.value.Value;
  */
 @DistributorDataClass
 @Value.Immutable
-public interface Key<V> {
+public interface Key<V extends @Nullable Object> {
 
     /**
      * The mindustry namespace. Used for keys originating from vanilla mindustry.

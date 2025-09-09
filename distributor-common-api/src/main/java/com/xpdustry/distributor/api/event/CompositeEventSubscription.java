@@ -16,17 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.distributor.api.event;
 
 import java.util.Collection;
 
-public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
-
-    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
-        return new GroupingBuildingIndexerImpl<>(function);
+record CompositeEventSubscription(Collection<EventSubscription> subscriptions) implements EventSubscription {
+    @Override
+    public void unsubscribe() {
+        this.subscriptions.forEach(EventSubscription::unsubscribe);
     }
-
-    GroupingFunction<T> function();
-
-    Collection<IndexedBuildingGroup<T>> groups();
 }

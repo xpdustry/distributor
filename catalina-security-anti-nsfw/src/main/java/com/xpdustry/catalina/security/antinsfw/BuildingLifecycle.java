@@ -16,17 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.catalina.security.antinsfw;
 
-import java.util.Collection;
+import com.xpdustry.distributor.api.event.EventSubscription;
+import mindustry.gen.Building;
+import mindustry.gen.Player;
+import org.jspecify.annotations.Nullable;
 
-public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
+public interface BuildingLifecycle {
 
-    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
-        return new GroupingBuildingIndexerImpl<>(function);
+    <B extends Building> EventSubscription subscribe(final Class<B> type, final Listener<B> listener);
+
+    @FunctionalInterface
+    interface Listener<B extends Building> {
+
+        void onBuildingLifecycleEvent(final B building, final Kind kind, final @Nullable Player player);
     }
 
-    GroupingFunction<T> function();
-
-    Collection<IndexedBuildingGroup<T>> groups();
+    enum Kind {
+        INSERT,
+        UPDATE,
+        REMOVE,
+    }
 }

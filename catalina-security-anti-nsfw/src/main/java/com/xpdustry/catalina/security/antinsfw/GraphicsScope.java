@@ -16,17 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.catalina.security.antinsfw;
 
-import java.util.Collection;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
-public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
+record GraphicsScope(Graphics2D graphics) implements AutoCloseable {
 
-    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
-        return new GroupingBuildingIndexerImpl<>(function);
+    GraphicsScope(final BufferedImage image) {
+        this(image.createGraphics());
     }
 
-    GroupingFunction<T> function();
-
-    Collection<IndexedBuildingGroup<T>> groups();
+    @Override
+    public void close() {
+        this.graphics.dispose();
+    }
 }

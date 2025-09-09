@@ -19,6 +19,7 @@
 package com.xpdustry.distributor.api.geometry;
 
 import java.util.Collection;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 public interface BuildingIndexer<T> {
@@ -36,6 +37,15 @@ public interface BuildingIndexer<T> {
     boolean insert(final int x, final int y, final int size, final T data);
 
     boolean update(final int x, final int y, final T data);
+
+    default IndexedBuilding<T> upsert(final int x, final int y, final int size, final T data) {
+        if (this.exists(x, y)) {
+            this.update(x, y, data);
+        } else {
+            this.insert(x, y, size, data);
+        }
+        return Objects.requireNonNull(this.select(x, y));
+    }
 
     @Nullable IndexedBuilding<T> remove(final int x, final int y);
 

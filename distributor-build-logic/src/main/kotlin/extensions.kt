@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.the
 
 internal val Project.libs: LibrariesForLibs get() = the()
 
+// TODO: changes do not propagate correctly to tasks
 open class DistributorModuleExtension(project: Project) {
     val identifier = project.objects.property<String>()
     val display = project.objects.property<String>()

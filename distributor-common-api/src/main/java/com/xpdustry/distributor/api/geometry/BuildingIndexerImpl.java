@@ -41,7 +41,10 @@ class BuildingIndexerImpl<T> implements BuildingIndexer<T> {
         final Set<IndexedBuilding<T>> result = new HashSet<>();
         for (int i = 0; i <= w; i += w) {
             for (int j = 0; j <= h; j += h) {
-                result.add(this.select(x + i, y + j));
+                final var building = this.select(x + i, y + j);
+                if (building != null) {
+                    result.add(building);
+                }
             }
         }
         return Collections.unmodifiableCollection(result);

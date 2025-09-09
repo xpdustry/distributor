@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.catalina.antinsfw;
+package com.xpdustry.catalina.security.antinsfw;
 
 import arc.graphics.Pixmap;
 import java.awt.image.BufferedImage;
@@ -87,7 +87,7 @@ final class ImmutablePixMapImpl implements ImmutablePixMap {
         final var image = new BufferedImage(this.w(), this.h(), BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < this.h; y++) {
             for (int x = 0; x < this.w; x++) {
-                image.setRGB(x, y, this.pixelAt(x, y));
+                image.setRGB(x, image.getHeight() - y, this.pixelAt(x, y));
             }
         }
         return image;

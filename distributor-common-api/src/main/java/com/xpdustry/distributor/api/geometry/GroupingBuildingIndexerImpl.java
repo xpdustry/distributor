@@ -85,6 +85,11 @@ final class GroupingBuildingIndexerImpl<T> extends BuildingIndexerImpl<T> implem
     }
 
     @Override
+    public GroupingFunction<T> function() {
+        return this.function;
+    }
+
+    @Override
     public Collection<IndexedBuildingGroup<T>> groups() {
         final var groups = new ArrayList<IndexedBuildingGroup<T>>();
         final var visited = new IntSet();
@@ -118,10 +123,5 @@ final class GroupingBuildingIndexerImpl<T> extends BuildingIndexerImpl<T> implem
             groups.add(IndexedBuildingGroup.of(group));
         }
         return groups;
-    }
-
-    @Override
-    public GroupingFunction<T> function() {
-        return this.function;
     }
 }

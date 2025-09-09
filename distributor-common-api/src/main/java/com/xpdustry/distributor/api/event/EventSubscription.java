@@ -18,10 +18,17 @@
  */
 package com.xpdustry.distributor.api.event;
 
+import java.util.Collection;
+
 /**
  * A subscription to an event.
  */
+@FunctionalInterface
 public interface EventSubscription {
+
+    static EventSubscription compose(final Collection<EventSubscription> events) {
+        return new CompositeEventSubscription(events);
+    }
 
     /**
      * Unsubscribes the bound subscriber from the event.

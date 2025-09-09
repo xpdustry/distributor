@@ -16,17 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.catalina.security.antinsfw;
 
-import java.util.Collection;
+import mindustry.gen.Building;
 
-public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
+public final class NoHornyUtils {
 
-    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
-        return new GroupingBuildingIndexerImpl<>(function);
+    private NoHornyUtils() {}
+
+    public static int rx(final Building building) {
+        return building.tileX() - building.block.sizeOffset;
     }
 
-    GroupingFunction<T> function();
-
-    Collection<IndexedBuildingGroup<T>> groups();
+    public static int ry(final Building building) {
+        return building.tileY() - building.block.sizeOffset;
+    }
 }

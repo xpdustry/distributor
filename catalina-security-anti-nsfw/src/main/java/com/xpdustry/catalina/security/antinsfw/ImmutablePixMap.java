@@ -16,17 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.catalina.security.antinsfw;
 
-import java.util.Collection;
+import arc.graphics.Pixmap;
+import java.awt.image.BufferedImage;
 
-public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
+public interface ImmutablePixMap {
 
-    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
-        return new GroupingBuildingIndexerImpl<>(function);
+    static ImmutablePixMap from(final Pixmap pixmap) {
+        return new ImmutablePixMapImpl(pixmap);
     }
 
-    GroupingFunction<T> function();
+    int w();
 
-    Collection<IndexedBuildingGroup<T>> groups();
+    int h();
+
+    int pixelAt(int x, int y);
+
+    BufferedImage toBufferedImage();
 }

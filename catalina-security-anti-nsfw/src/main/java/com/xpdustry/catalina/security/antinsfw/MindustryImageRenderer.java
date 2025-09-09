@@ -16,22 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.catalina.antinsfw;
+package com.xpdustry.catalina.security.antinsfw;
 
-import arc.graphics.Pixmap;
+import com.xpdustry.distributor.api.geometry.IndexedBuildingGroup;
 import java.awt.image.BufferedImage;
 
-public interface ImmutablePixMap {
+public interface MindustryImageRenderer {
 
-    static ImmutablePixMap from(final Pixmap pixmap) {
-        return new ImmutablePixMapImpl(pixmap);
-    }
+    BufferedImage render(final IndexedBuildingGroup<? extends MindustryImage> group);
 
-    int w();
-
-    int h();
-
-    int pixelAt(int x, int y);
-
-    BufferedImage toBufferedImage();
+    BufferedImage render(final MindustryImage image);
 }

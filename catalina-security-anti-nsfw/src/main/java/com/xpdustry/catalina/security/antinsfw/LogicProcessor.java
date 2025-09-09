@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.catalina.antinsfw;
+package com.xpdustry.catalina.security.antinsfw;
 
-import com.xpdustry.distributor.api.geometry.IndexedBuildingGroup;
+import com.xpdustry.distributor.api.geometry.ImmutablePoint2;
+import com.xpdustry.distributor.api.player.MUUID;
+import java.time.Instant;
+import java.util.List;
+import org.jspecify.annotations.Nullable;
 
-public interface ImageProcessor {
-
-    void process(final IndexedBuildingGroup<ImageData> group);
-}
+public record LogicProcessor(
+        List<DrawInstruction> instructions, Instant timestamp, List<ImmutablePoint2> links, @Nullable MUUID author) {}

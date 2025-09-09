@@ -16,17 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.distributor.api.geometry;
+package com.xpdustry.catalina.security.antinsfw;
 
-import java.util.Collection;
+import com.xpdustry.distributor.api.geometry.ImmutablePoint2;
+import com.xpdustry.distributor.api.player.MUUID;
+import java.time.Instant;
+import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
-public interface GroupingBuildingIndexer<T> extends BuildingIndexer<T> {
+public sealed interface MindustryImage {
 
-    static <T> GroupingBuildingIndexer<T> create(final GroupingFunction<T> function) {
-        return new GroupingBuildingIndexerImpl<>(function);
+    int resolution();
+
+    record Display(int resolution, Map<ImmutablePoint2, LogicProcessor> processors) implements MindustryImage {}
+
+    record Canvas(ImmutablePixMap pixels, Instant timestamp, @Nullable MUUID author) implements MindustryImage {
+        @Override
+        public int resolution() {
+            return Math.max(this.pixels.w(), this.pixels.h());
+        }
     }
-
-    GroupingFunction<T> function();
-
-    Collection<IndexedBuildingGroup<T>> groups();
 }

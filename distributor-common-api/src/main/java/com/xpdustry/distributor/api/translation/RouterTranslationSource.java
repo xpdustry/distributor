@@ -24,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 enum RouterTranslationSource implements TranslationSource {
     INSTANCE;
 
-    static final Locale ROUTER_LOCALE = new Locale("router");
+    static final Locale ROUTER_LOCALE = Locale.forLanguageTag("router");
     private static final Translation ROUTER_TRANSLATION = TextTranslation.of("router");
 
     @Override

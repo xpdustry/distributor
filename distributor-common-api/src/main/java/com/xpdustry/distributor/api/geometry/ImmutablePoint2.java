@@ -18,18 +18,4 @@
  */
 package com.xpdustry.distributor.api.geometry;
 
-import com.xpdustry.distributor.internal.annotation.DistributorDataClass;
-import org.immutables.value.Value;
-
-@DistributorDataClass
-@Value.Immutable
-public sealed interface ImmutablePoint2 permits ImmutablePoint2Impl {
-
-    static ImmutablePoint2 of(final int x, final int y) {
-        return ImmutablePoint2Impl.of(x, y);
-    }
-
-    int x();
-
-    int y();
-}
+public record ImmutablePoint2(int x, int y) {}

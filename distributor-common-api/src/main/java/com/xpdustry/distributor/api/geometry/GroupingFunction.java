@@ -23,10 +23,10 @@ public interface GroupingFunction<T> {
     boolean group(final IndexedBuilding<T> buildingA, final IndexedBuilding<T> buildingB);
 
     static <T> GroupingFunction<T> always() {
-        return (buildingA, buildingB) -> true;
+        return (_, _) -> true;
     }
 
     static <T> GroupingFunction<T> single() {
-        return (buildingA, buildingB) -> false;
+        return (_, _) -> false;
     }
 }

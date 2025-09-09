@@ -16,19 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.catalina.antinsfw;
+package com.xpdustry.catalina.security.antinsfw;
 
-import mindustry.gen.Building;
+import com.xpdustry.distributor.api.key.KeyContainer;
+import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public final class NoHornyUtils {
+public final class CatalinaSecurityAntiNSFWPlugin extends AbstractMindustryPlugin {
 
-    private NoHornyUtils() {}
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public static int rx(final Building building) {
-        return building.tileX() - building.block.sizeOffset;
+    @Override
+    public void onInit() {
+        final var lifecycle = new BuildingLifecycleImpl(this);
+        this.addListener(new DisplayTracker(lifecycle, this.executor, KeyContainer.empty()));
+        this.addListener(new CanvasTracker(lifecycle, this.executor));
     }
 
-    public static int ry(final Building building) {
-        return building.tileY() - building.block.sizeOffset;
+    @Override
+    public void onExit() {
+        this.executor.shutdown();
     }
 }

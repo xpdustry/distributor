@@ -16,25 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.catalina.antinsfw;
+package com.xpdustry.distributor.api.event;
 
-import com.xpdustry.distributor.api.annotation.PluginAnnotationProcessor;
-import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
-import com.xpdustry.distributor.api.plugin.PluginListener;
-import org.jspecify.annotations.NonNull;
+import java.util.function.Consumer;
 
-public final class CatalinaSecurityAntiNSFWPlugin extends AbstractMindustryPlugin {
+public interface EventListener<E> extends Consumer<E> {
 
-    private final PluginAnnotationProcessor<?> processor = PluginAnnotationProcessor.events(this);
+    void onEvent(final E event);
 
+    @Deprecated
     @Override
-    public void onInit() {
-        this.addListener(new CanvasTracker(this));
-    }
-
-    @Override
-    public void addListener(final @NonNull PluginListener listener) {
-        super.addListener(listener);
-        this.processor.process(listener);
+    default void accept(final E e) {
+        this.onEvent(e);
     }
 }

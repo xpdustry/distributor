@@ -1,8 +1,8 @@
 [versions]
 
 # platforms
-java = "17"
-mindustry = "v150"
+java = "25"
+mindustry = "v151"
 
 # logging
 slf4j = "2.0.17"
@@ -29,7 +29,7 @@ errorprone-core = "2.38.0"
 nullaway = "0.12.7"
 
 # linting
-palantir = "2.56.0"
+palantir = "2.74.0"
 ktlint = "1.5.0"
 
 # gradle

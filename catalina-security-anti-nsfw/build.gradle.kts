@@ -7,7 +7,7 @@ plugins {
 distributorModule {
     identifier = "catalina-security-anti-nsfw"
     display = "CatalinaSecurityAntiNSFW"
-    main = "com.xpdustry.catalina.antinsfw.CatalinaSecurityAntiNSFWPlugin"
+    main = "com.xpdustry.catalina.security.antinsfw.CatalinaSecurityAntiNSFWPlugin"
     description = "Nohorny 3."
     dependencies = listOf("distributor-common")
 }

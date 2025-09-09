@@ -22,13 +22,14 @@ import io.leangen.geantyref.GenericTypeReflector;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A utility class for representing complex generic types.
  *
  * @param <T> the type
  */
-public abstract class TypeToken<T> {
+public abstract class TypeToken<T extends @Nullable Object> {
 
     private final Type type;
     private final Class<?> rawType;
