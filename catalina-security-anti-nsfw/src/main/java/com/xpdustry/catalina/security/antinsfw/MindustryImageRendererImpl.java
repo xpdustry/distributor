@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 final class MindustryImageRendererImpl implements MindustryImageRenderer {
 
@@ -68,7 +67,7 @@ final class MindustryImageRendererImpl implements MindustryImageRenderer {
                                     scope.graphics().setColor(new Color(r, g, b, a));
                                 case DrawInstruction.DrawRect(int x, int y, int w, int h) ->
                                     scope.graphics().fillRect(x, y, w, h);
-                                case DrawInstruction.DrawPoly(List<ImmutablePoint2> points) ->
+                                case DrawInstruction.DrawPoly(var points) ->
                                     scope.graphics()
                                             .fillPolygon(
                                                     points.stream()

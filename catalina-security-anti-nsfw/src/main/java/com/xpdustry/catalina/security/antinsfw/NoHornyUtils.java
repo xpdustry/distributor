@@ -20,7 +20,7 @@ package com.xpdustry.catalina.security.antinsfw;
 
 import mindustry.gen.Building;
 
-public final class NoHornyUtils {
+final class NoHornyUtils {
 
     private NoHornyUtils() {}
 
