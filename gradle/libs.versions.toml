@@ -12,7 +12,7 @@ slf4md = "1.0.4"
 cloud = "2.0.0"
 
 # utilities
-immutables = "2.10.1"
+immutables = "2.12.2"
 configurate = "4.2.0"
 geantyref = "2.0.1"
 
