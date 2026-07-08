@@ -1,9 +1,0 @@
-{
-  "displayName": "Distributor",
-  "name": "distributor",
-  "author": "xpdustry",
-  "minGameVersion": "146",
-  "hidden": true,
-  "java": true,
-  "repo": "xpdustry/distributor"
-}
