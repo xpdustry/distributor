@@ -47,20 +47,20 @@ final class MindustryMap<K, V extends @Nullable Object> extends AbstractMap<K, V
 
     @SuppressWarnings("unchecked")
     @Override
-    public V get(final Object key) {
+    public @Nullable V get(final Object key) {
         this.checkNullKey(key);
         return this.map.get((K) key);
     }
 
     @Override
-    public V put(final K key, final V value) {
+    public @Nullable V put(final K key, final V value) {
         this.checkNullKey(key);
         return this.map.put(key, value);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public V remove(final Object key) {
+    public @Nullable V remove(final Object key) {
         this.checkNullKey(key);
         return this.map.remove((K) key);
     }
@@ -153,13 +153,13 @@ final class MindustryMap<K, V extends @Nullable Object> extends AbstractMap<K, V
         }
 
         @Override
-        public V getValue() {
+        public @Nullable V getValue() {
             this.checkPresent();
             return MindustryMap.this.map.get(this.key);
         }
 
         @Override
-        public V setValue(final V value) {
+        public @Nullable V setValue(final V value) {
             this.checkPresent();
             return MindustryMap.this.map.put(this.key, value);
         }

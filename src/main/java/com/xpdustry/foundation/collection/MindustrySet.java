@@ -19,7 +19,7 @@ final class MindustrySet<E> extends AbstractSet<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return this.set.new ObjectSetIterator();
+        return new ObjectSet.ObjectSetIterator<>(this.set);
     }
 
     @Override
