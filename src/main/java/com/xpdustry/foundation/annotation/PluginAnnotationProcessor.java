@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.SequencedCollection;
+import java.util.stream.Stream;
 
 // TODO
 //  Convert to a registry system with a PluginAnnotation meta annotation.
@@ -80,7 +81,11 @@ public interface PluginAnnotationProcessor<R> {
     /// @return the composed processor
     static PluginAnnotationProcessor<List<Object>> compose(
             final SequencedCollection<PluginAnnotationProcessor<?>> processors) {
-        return new CompositeAnnotationProcessor(processors);
+        return new CompositeAnnotationProcessor(processors.stream()
+                .flatMap(processor -> processor instanceof CompositeAnnotationProcessor(var nested)
+                        ? nested.stream()
+                        : Stream.of(processor))
+                .toList());
     }
 
     /// Processes the annotations of the given object.
