@@ -42,10 +42,6 @@ public abstract class BaseMindustryPlugin extends Plugin
     private final PluginMetadata metadata = PluginMetadata.from(this.getClass());
     private @Nullable CommandHandler serverCommandHandler = null;
 
-    {
-        this.addListener(this);
-    }
-
     /// Returns the plugin data directory
     public final Path directory() {
         return this.getConfigFolder().file().toPath();
@@ -107,6 +103,7 @@ public abstract class BaseMindustryPlugin extends Plugin
                     "Failed to create data directory for the " + this.metadata.name() + " plugin", e);
         }
         final var handler = Objects.requireNonNull(this.serverCommandHandler);
+        this.addListener(this);
         this.forEachListener(PluginListener::onInit);
         this.forEachListener(listener -> listener.onServerCommandsRegistration(handler));
         Core.app.addListener(new PluginApplicationListener(this));
