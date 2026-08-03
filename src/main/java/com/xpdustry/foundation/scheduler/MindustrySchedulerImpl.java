@@ -30,7 +30,7 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
             final var task = this.tasks.peek();
             if (task.state() != MindustryTask.State.SCHEDULED) {
                 this.tasks.remove();
-            } else if (task.nextExecutionTime < this.time.ticks()) {
+            } else if (task.nextExecutionTime <= this.time.ticks()) {
                 this.tasks.remove();
                 task.run();
             } else {
@@ -61,13 +61,19 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
 
         @Override
         public MindustryScheduler.TaskBuilder initialDelay(final long time, final MindustryTimeUnit unit) {
-            this.delay = MindustryTimeUnit.TICKS.convert(time, unit);
+            if (time < 0L) {
+                throw new IllegalArgumentException("The initial delay must not be negative.");
+            }
+            this.delay = Math.max(1L, MindustryTimeUnit.TICKS.convert(time, unit));
             return this;
         }
 
         @Override
         public MindustryScheduler.TaskBuilder repeatWithDelay(final long time, final MindustryTimeUnit unit) {
-            this.repeat = MindustryTimeUnit.TICKS.convert(time, unit);
+            if (time < 0L) {
+                throw new IllegalArgumentException("The repeat delay must not be negative.");
+            }
+            this.repeat = Math.max(1L, MindustryTimeUnit.TICKS.convert(time, unit));
             return this;
         }
 

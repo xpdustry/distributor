@@ -17,7 +17,7 @@ plugins {
     id("net.kyori.indra") version "4.0.0"
     id("net.kyori.indra.publishing") version "4.0.0"
     id("com.gradleup.shadow") version "9.4.1"
-    id("com.xpdustry.toxopid") version "4.2.0"
+    id("com.xpdustry.toxopid") version "4.2.1-SNAPSHOT" // TODO remove when toxopid 4.2.1 or 5
     id("net.ltgt.errorprone") version "5.1.0"
 }
 
@@ -49,6 +49,8 @@ val toxopid = extensions.getByType<ToxopidExtension>()
 toxopid.platforms = setOf(ModPlatform.SERVER)
 toxopid.compileVersion = "v${metadata.minGameVersion}"
 
+val mockitoAgent = configurations.register("mockitoAgent")
+
 dependencies {
     compileOnly(toxopid.dependencies.mindustryCore)
     testImplementation(toxopid.dependencies.mindustryCore)
@@ -65,7 +67,10 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
     testImplementation("org.junit.vintage:junit-vintage-engine:6.0.1")
+    testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("com.google.guava:guava-testlib:33.4.8-jre")
+    testImplementation("org.mockito:mockito-core:5.18.0")
+    mockitoAgent("org.mockito:mockito-core:5.18.0") { isTransitive = false }
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     errorprone("com.google.errorprone:error_prone_core:2.49.0")
@@ -180,4 +185,8 @@ tasks.named<MindustryExec>(MindustryExec.SERVER_EXEC_TASK_NAME) {
 
 tasks.withType<MindustryExec> {
     jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
+
+tasks.withType<Test> {
+    jvmArgs("-javaagent:${mockitoAgent.get().singleFile.absolutePath}")
 }
