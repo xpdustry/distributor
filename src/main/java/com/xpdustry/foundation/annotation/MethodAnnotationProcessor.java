@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apiguardian.api.API;
 
-abstract class MethodAnnotationProcessor<A extends Annotation, R, O> implements PluginAnnotationProcessor<O> {
+@API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
+public abstract class MethodAnnotationProcessor<A extends Annotation, R, O> implements PluginAnnotationProcessor<O> {
 
     private final Class<A> annotationType;
 

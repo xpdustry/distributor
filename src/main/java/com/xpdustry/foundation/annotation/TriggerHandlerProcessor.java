@@ -9,13 +9,15 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import mindustry.game.EventType;
+import org.apiguardian.api.API;
 
-final class TriggerHandlerProcessor
+@API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
+public class TriggerHandlerProcessor
         extends MethodAnnotationProcessor<TriggerHandler, EventSubscription, EventSubscription> {
 
     private final PluginFacade plugin;
 
-    TriggerHandlerProcessor(final PluginFacade plugin) {
+    protected TriggerHandlerProcessor(final PluginFacade plugin) {
         super(TriggerHandler.class);
         this.plugin = plugin;
     }

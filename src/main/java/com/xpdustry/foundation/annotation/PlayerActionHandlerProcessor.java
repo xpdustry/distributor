@@ -8,13 +8,15 @@ import java.util.List;
 import java.util.Optional;
 import mindustry.Vars;
 import mindustry.net.Administration;
+import org.apiguardian.api.API;
 
-final class PlayerActionHandlerProcessor
+@API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
+public class PlayerActionHandlerProcessor
         extends MethodAnnotationProcessor<PlayerActionHandler, EventSubscription, EventSubscription> {
 
     private final PluginFacade plugin;
 
-    PlayerActionHandlerProcessor(final PluginFacade plugin) {
+    protected PlayerActionHandlerProcessor(final PluginFacade plugin) {
         super(PlayerActionHandler.class);
         this.plugin = plugin;
     }

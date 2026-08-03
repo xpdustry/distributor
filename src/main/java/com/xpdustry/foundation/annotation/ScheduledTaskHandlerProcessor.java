@@ -9,13 +9,15 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.apiguardian.api.API;
 
-final class ScheduledTaskHandlerProcessor
+@API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
+public class ScheduledTaskHandlerProcessor
         extends MethodAnnotationProcessor<ScheduledTaskHandler, MindustryTask, MindustryTask> {
 
     private final PluginFacade plugin;
 
-    ScheduledTaskHandlerProcessor(final PluginFacade plugin) {
+    protected ScheduledTaskHandlerProcessor(final PluginFacade plugin) {
         super(ScheduledTaskHandler.class);
         this.plugin = plugin;
     }
@@ -30,19 +32,23 @@ final class ScheduledTaskHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
-
-        final var builder = FoundationAPI.get()
+        return FoundationAPI.get()
                 .scheduler()
                 .newTaskBuilder(this.plugin)
                 .initialDelay(annotation.initialDelay(), annotation.unit())
-                .repeatWithDelay(annotation.delay(), annotation.unit());
-
-        return builder.execute(new MethodTaskHandler(instance, method));
+                .repeatWithDelay(annotation.delay(), annotation.unit())
+                .execute(new MethodTaskHandler(instance, method));
     }
 
     @Override
     protected Optional<MindustryTask> reduce(final List<MindustryTask> results) {
-        return results.isEmpty() ? Optional.empty() : Optional.of(new CompositeTask(results));
+        if (results.isEmpty()) {
+            return Optional.empty();
+        } else if (results.size() == 1) {
+            return Optional.of(results.getFirst());
+        } else {
+            return Optional.of(new CompositeTask(results));
+        }
     }
 
     private record MethodTaskHandler(Object object, Method method) implements Consumer<MindustryTask> {

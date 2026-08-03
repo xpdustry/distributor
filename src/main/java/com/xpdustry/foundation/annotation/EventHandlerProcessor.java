@@ -8,13 +8,15 @@ import com.xpdustry.foundation.plugin.PluginFacade;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import org.apiguardian.api.API;
 
-final class EventHandlerProcessor
+@API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
+public class EventHandlerProcessor
         extends MethodAnnotationProcessor<EventHandler, EventSubscription, EventSubscription> {
 
     private final PluginFacade plugin;
 
-    EventHandlerProcessor(final PluginFacade plugin) {
+    protected EventHandlerProcessor(final PluginFacade plugin) {
         super(EventHandler.class);
         this.plugin = plugin;
     }

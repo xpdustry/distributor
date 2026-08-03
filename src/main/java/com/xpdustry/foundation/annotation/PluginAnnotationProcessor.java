@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SequencedCollection;
 
+// TODO
+//  Convert to a registry system with a PluginAnnotation meta annotation.
+//  Would make filtering easier and allow to detect unused plugin annotations.
+
 /// Centralized mechanism for processing annotations of plugin objects.
 ///
 /// @param <R> the result type of the processor

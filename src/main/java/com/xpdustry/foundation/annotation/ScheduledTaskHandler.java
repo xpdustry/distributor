@@ -27,4 +27,7 @@ public @interface ScheduledTaskHandler {
 
     /// The time unit of the interval and initial delay.
     MindustryTimeUnit unit();
+
+    /// Whether to launch the task in a background thread.
+    boolean async() default false;
 }
