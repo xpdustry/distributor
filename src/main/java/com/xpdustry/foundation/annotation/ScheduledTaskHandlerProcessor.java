@@ -4,6 +4,7 @@ package com.xpdustry.foundation.annotation;
 import com.xpdustry.foundation.plugin.PluginFacade;
 import com.xpdustry.foundation.scheduler.MindustryScheduler;
 import com.xpdustry.foundation.scheduler.MindustryTask;
+import com.xpdustry.foundation.scheduler.MindustryTaskAction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -25,9 +26,10 @@ public class ScheduledTaskHandlerProcessor
 
     @Override
     protected MindustryTask process(final Object instance, final Method method, final ScheduledTaskHandler annotation) {
-        if (method.getParameterCount() > 0) {
-            throw new IllegalArgumentException(
-                    "The scheduled task handler on " + method + " should not have any parameters.");
+        if (method.getParameterCount() > 1) {
+            throw new IllegalArgumentException("The task handler on " + method + " has the wrong parameter count.");
+        } else if (method.getParameterCount() == 1 && !MindustryTask.class.equals(method.getParameterTypes()[0])) {
+            throw new IllegalArgumentException("The task handler on " + method + " has the wrong parameter type.");
         }
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
@@ -55,12 +57,16 @@ public class ScheduledTaskHandlerProcessor
         }
     }
 
-    public record MethodTaskHandler(Object object, Method method) implements Runnable {
+    public record MethodTaskHandler(Object object, Method method) implements MindustryTaskAction {
 
         @Override
-        public void run() {
+        public void run(final MindustryTask task) {
             try {
-                this.method.invoke(this.object);
+                if (this.method.getParameterCount() == 1) {
+                    this.method.invoke(this.object, task);
+                } else {
+                    this.method.invoke(this.object);
+                }
             } catch (final IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException("Unable to invoke " + this.method, e);
             }

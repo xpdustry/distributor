@@ -67,8 +67,17 @@ public interface MindustryScheduler {
 
         /// Builds and schedules a task.
         ///
-        /// @param action the action to run for the task
+        /// @param action the action to run
         /// @return the scheduled task
-        MindustryTask execute(final Runnable action);
+        default MindustryTask execute(final Runnable action) {
+            return this.execute(_ -> action.run());
+        }
+
+        /// Builds and schedules a task.
+        ///
+        /// @param action the action to run; the supplied [MindustryTask] can cancel itself
+        ///         during periodic execution
+        /// @return the scheduled task
+        MindustryTask execute(final MindustryTaskAction action);
     }
 }

@@ -78,7 +78,7 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
         }
 
         @Override
-        public MindustryTask execute(final Runnable action) {
+        public MindustryTask execute(final MindustryTaskAction action) {
             final var task = new MindustryTaskImpl(this.plugin, this.repeat, action);
             if (MindustrySchedulerImpl.this.closed) {
                 task.state.set(MindustryTask.State.CANCELLED);
@@ -95,10 +95,10 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
 
         private final PluginFacade plugin;
         private final long repeat;
-        private final Runnable action;
+        private final MindustryTaskAction action;
         private long nextExecutionTime;
 
-        private MindustryTaskImpl(final PluginFacade plugin, final long repeat, final Runnable action) {
+        private MindustryTaskImpl(final PluginFacade plugin, final long repeat, final MindustryTaskAction action) {
             this.plugin = plugin;
             this.repeat = repeat;
             this.action = action;
@@ -121,7 +121,7 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
                 return;
             }
             try {
-                this.action.run();
+                this.action.run(this);
                 if (this.repeat < 0) {
                     this.state.compareAndSet(State.SCHEDULED, State.FINISHED);
                 } else {
