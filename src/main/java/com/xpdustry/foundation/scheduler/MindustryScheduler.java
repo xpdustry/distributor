@@ -3,6 +3,7 @@ package com.xpdustry.foundation.scheduler;
 
 import com.xpdustry.foundation.plugin.PluginFacade;
 import java.time.Duration;
+import java.util.concurrent.Executor;
 
 public interface MindustryScheduler {
 
@@ -64,6 +65,12 @@ public interface MindustryScheduler {
         /// @return this builder
         /// @throws IllegalArgumentException if the delay is negative
         TaskBuilder repeatWithDelay(final long time, final MindustryTimeUnit unit);
+
+        /// Executes the task in a specific executor.
+        ///
+        /// @param executor the executor to use for the task execution
+        /// @return this builder
+        TaskBuilder executor(final Executor executor);
 
         /// Builds and schedules a task.
         ///
