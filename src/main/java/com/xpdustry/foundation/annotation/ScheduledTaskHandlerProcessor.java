@@ -37,11 +37,7 @@ public class ScheduledTaskHandlerProcessor
                 .newTaskBuilder(this.plugin)
                 .initialDelay(annotation.initialDelay(), annotation.unit())
                 .repeatWithDelay(annotation.delay(), annotation.unit())
-                .execute(this.createTaskAction(instance, method));
-    }
-
-    protected MindustryTaskAction createTaskAction(final Object instance, final Method method) {
-        return new MethodTaskHandler(instance, method);
+                .execute(new MethodTaskHandler(instance, method));
     }
 
     @Override
@@ -55,7 +51,7 @@ public class ScheduledTaskHandlerProcessor
         }
     }
 
-    private record MethodTaskHandler(Object object, Method method) implements MindustryTaskAction {
+    protected record MethodTaskHandler(Object object, Method method) implements MindustryTaskAction {
 
         @Override
         public void run(final MindustryTask task) {
@@ -71,7 +67,7 @@ public class ScheduledTaskHandlerProcessor
         }
     }
 
-    private record CompositeTask(List<MindustryTask> tasks) implements MindustryTask {
+    protected record CompositeTask(List<MindustryTask> tasks) implements MindustryTask {
 
         @Override
         public State state() {
