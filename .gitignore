@@ -39,3 +39,6 @@ replay_pid*
 ## OS Specific
 .DS_Store
 Thumbs.db
+
+## AI
+.codex
