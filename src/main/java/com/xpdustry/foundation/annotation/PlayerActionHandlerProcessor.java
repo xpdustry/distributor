@@ -51,7 +51,7 @@ public class PlayerActionHandlerProcessor
                 : Optional.of(() -> results.forEach(EventSubscription::unsubscribe));
     }
 
-    private record MethodActionFilter(Object target, Method method, PluginFacade plugin)
+    public record MethodActionFilter(Object target, Method method, PluginFacade plugin)
             implements Administration.ActionFilter {
 
         @Override

@@ -30,8 +30,13 @@ public class TriggerHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
-        final var handler = new TriggerMethodEventHandler(instance, method);
-        return FoundationAPI.get().events().subscribe(this.plugin, annotation.value(), annotation.priority(), handler);
+        return FoundationAPI.get()
+                .events()
+                .subscribe(
+                        this.plugin,
+                        annotation.value(),
+                        annotation.priority(),
+                        new TriggerMethodEventHandler(instance, method));
     }
 
     @Override
@@ -41,7 +46,7 @@ public class TriggerHandlerProcessor
                 : Optional.of(() -> results.forEach(EventSubscription::unsubscribe));
     }
 
-    private record TriggerMethodEventHandler(Object target, Method method)
+    public record TriggerMethodEventHandler(Object target, Method method)
             implements EventSubscriber<EventType.Trigger> {
 
         @Override

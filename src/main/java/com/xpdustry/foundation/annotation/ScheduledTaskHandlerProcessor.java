@@ -32,6 +32,11 @@ public class ScheduledTaskHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
+        return this.createTask(instance, method, annotation);
+    }
+
+    protected MindustryTask createTask(
+            final Object instance, final Method method, final ScheduledTaskHandler annotation) {
         return FoundationAPI.get()
                 .scheduler()
                 .newTaskBuilder(this.plugin)
@@ -51,7 +56,7 @@ public class ScheduledTaskHandlerProcessor
         }
     }
 
-    protected record MethodTaskHandler(Object object, Method method) implements MindustryTaskAction {
+    public record MethodTaskHandler(Object object, Method method) implements MindustryTaskAction {
 
         @Override
         public void run(final MindustryTask task) {
@@ -67,7 +72,7 @@ public class ScheduledTaskHandlerProcessor
         }
     }
 
-    protected record CompositeTask(List<MindustryTask> tasks) implements MindustryTask {
+    public record CompositeTask(List<MindustryTask> tasks) implements MindustryTask {
 
         @Override
         public State state() {
