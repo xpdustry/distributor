@@ -12,7 +12,7 @@ import org.apiguardian.api.API;
 @API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
 public abstract class MethodAnnotationProcessor<A extends Annotation, R, O> implements PluginAnnotationProcessor<O> {
 
-    private final Class<A> annotationType;
+    protected final Class<A> annotationType;
 
     protected MethodAnnotationProcessor(final Class<A> annotationType) {
         this.annotationType = annotationType;

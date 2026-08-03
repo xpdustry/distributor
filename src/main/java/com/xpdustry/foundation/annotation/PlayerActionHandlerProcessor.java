@@ -14,7 +14,7 @@ import org.apiguardian.api.API;
 public class PlayerActionHandlerProcessor
         extends MethodAnnotationProcessor<PlayerActionHandler, EventSubscription, EventSubscription> {
 
-    private final PluginFacade plugin;
+    protected final PluginFacade plugin;
 
     protected PlayerActionHandlerProcessor(final PluginFacade plugin) {
         super(PlayerActionHandler.class);

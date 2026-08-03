@@ -15,7 +15,7 @@ import org.apiguardian.api.API;
 public class ScheduledTaskHandlerProcessor
         extends MethodAnnotationProcessor<ScheduledTaskHandler, MindustryTask, MindustryTask> {
 
-    private final PluginFacade plugin;
+    protected final PluginFacade plugin;
 
     protected ScheduledTaskHandlerProcessor(final PluginFacade plugin) {
         super(ScheduledTaskHandler.class);

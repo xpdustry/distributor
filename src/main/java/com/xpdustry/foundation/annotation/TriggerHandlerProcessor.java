@@ -15,7 +15,7 @@ import org.apiguardian.api.API;
 public class TriggerHandlerProcessor
         extends MethodAnnotationProcessor<TriggerHandler, EventSubscription, EventSubscription> {
 
-    private final PluginFacade plugin;
+    protected final PluginFacade plugin;
 
     protected TriggerHandlerProcessor(final PluginFacade plugin) {
         super(TriggerHandler.class);
