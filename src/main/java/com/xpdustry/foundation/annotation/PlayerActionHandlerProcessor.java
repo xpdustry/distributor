@@ -3,6 +3,7 @@ package com.xpdustry.foundation.annotation;
 
 import com.xpdustry.foundation.event.EventSubscription;
 import com.xpdustry.foundation.plugin.PluginFacade;
+import com.xpdustry.foundation.scheduler.MindustryThread;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
@@ -39,9 +40,13 @@ public class PlayerActionHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
+        MindustryThread.checkIsMainThread("process player action handler");
         final var filter = new MethodActionFilter(instance, method, this.plugin);
         Vars.netServer.admins.addActionFilter(filter);
-        return () -> Vars.netServer.admins.actionFilters.remove(filter);
+        return () -> {
+            MindustryThread.checkIsMainThread("unsubscribe player action handler");
+            Vars.netServer.admins.actionFilters.remove(filter);
+        };
     }
 
     @Override

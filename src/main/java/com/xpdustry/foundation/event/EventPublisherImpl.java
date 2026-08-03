@@ -6,6 +6,7 @@ import arc.func.Cons;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import com.xpdustry.foundation.plugin.PluginFacade;
+import com.xpdustry.foundation.scheduler.MindustryThread;
 import com.xpdustry.foundation.util.Priority;
 import java.util.Comparator;
 
@@ -52,9 +53,11 @@ public final class EventPublisherImpl implements EventPublisher {
             final Object event,
             final Priority priority,
             final EventSubscriber<E> subscriber) {
+        MindustryThread.checkIsMainThread("subscribe");
         final var cons = new EventListenerAsCons<>(subscriber, priority, plugin);
         EVENTS_MAP.get(event, () -> new Seq<>(Cons.class)).add(cons).sort(COMPARATOR);
         return () -> {
+            MindustryThread.checkIsMainThread("unsubscribe");
             final var subscribers = EVENTS_MAP.get(event);
             if (subscribers != null) {
                 subscribers.remove(cons);
@@ -67,11 +70,13 @@ public final class EventPublisherImpl implements EventPublisher {
 
     @Override
     public <E> void publish(final Class<? super E> type, E event) {
+        MindustryThread.checkIsMainThread("publish");
         Events.fire(type, event);
     }
 
     @Override
     public <E extends Enum<E>> void publish(final E event) {
+        MindustryThread.checkIsMainThread("publish");
         Events.fire(event);
     }
 

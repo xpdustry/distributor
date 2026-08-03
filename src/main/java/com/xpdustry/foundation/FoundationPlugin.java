@@ -6,11 +6,16 @@ import com.xpdustry.foundation.event.EventPublisherImpl;
 import com.xpdustry.foundation.plugin.BaseMindustryPlugin;
 import com.xpdustry.foundation.scheduler.MindustryScheduler;
 import com.xpdustry.foundation.scheduler.MindustrySchedulerImpl;
+import com.xpdustry.foundation.scheduler.MindustryThread;
 import com.xpdustry.foundation.scheduler.MindustryTimeSource;
 import com.xpdustry.foundation.translation.TranslationSourceList;
 
 /// Foundation's Mindustry plugin entrypoint.
 public final class FoundationPlugin extends BaseMindustryPlugin implements FoundationAPI {
+
+    static {
+        MindustryThread.captureMainThread();
+    }
 
     private final TranslationSourceList translations = new TranslationSourceList();
     private final EventPublisher events = new EventPublisherImpl();
