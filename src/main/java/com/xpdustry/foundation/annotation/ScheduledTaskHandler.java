@@ -8,9 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /// Marks a method as a scheduled task handler.
-///
-/// The method may have one [com.xpdustry.foundation.scheduler.MindustryTask] parameter
-/// to allow the task to cancel itself.
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ScheduledTaskHandler {
@@ -27,7 +24,4 @@ public @interface ScheduledTaskHandler {
 
     /// The time unit of the interval and initial delay.
     MindustryTimeUnit unit();
-
-    /// Whether to launch the task in a background thread.
-    boolean async() default false;
 }
