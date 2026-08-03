@@ -3,7 +3,6 @@ package com.xpdustry.foundation.scheduler;
 
 import com.xpdustry.foundation.plugin.PluginFacade;
 import java.time.Duration;
-import java.util.function.Consumer;
 
 public interface MindustryScheduler {
 
@@ -52,17 +51,17 @@ public interface MindustryScheduler {
 
         /// Builds and schedules a task.
         ///
-        /// @param runnable the task to run
+        /// @param action the action to run
         /// @return the scheduled task
-        default MindustryTask execute(final Runnable runnable) {
-            return this.execute(_ -> runnable.run());
+        default MindustryTask execute(final Runnable action) {
+            return this.execute(_ -> action.run());
         }
 
         /// Builds and schedules a task.
         ///
-        /// @param runnable the task to run; the supplied [MindustryTask] can cancel itself
+        /// @param action the action to run; the supplied [MindustryTask] can cancel itself
         ///         during periodic execution
         /// @return the scheduled task
-        MindustryTask execute(final Consumer<MindustryTask> runnable);
+        MindustryTask execute(final MindustryTaskAction action);
     }
 }

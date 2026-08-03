@@ -4,11 +4,11 @@ package com.xpdustry.foundation.annotation;
 import com.xpdustry.foundation.FoundationAPI;
 import com.xpdustry.foundation.plugin.PluginFacade;
 import com.xpdustry.foundation.scheduler.MindustryTask;
+import com.xpdustry.foundation.scheduler.MindustryTaskAction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
@@ -37,7 +37,11 @@ public class ScheduledTaskHandlerProcessor
                 .newTaskBuilder(this.plugin)
                 .initialDelay(annotation.initialDelay(), annotation.unit())
                 .repeatWithDelay(annotation.delay(), annotation.unit())
-                .execute(new MethodTaskHandler(instance, method));
+                .execute(this.createTaskAction(instance, method));
+    }
+
+    protected MindustryTaskAction createTaskAction(final Object instance, final Method method) {
+        return new MethodTaskHandler(instance, method);
     }
 
     @Override
@@ -51,10 +55,10 @@ public class ScheduledTaskHandlerProcessor
         }
     }
 
-    private record MethodTaskHandler(Object object, Method method) implements Consumer<MindustryTask> {
+    private record MethodTaskHandler(Object object, Method method) implements MindustryTaskAction {
 
         @Override
-        public void accept(final MindustryTask task) {
+        public void run(final MindustryTask task) {
             try {
                 if (this.method.getParameterCount() == 1) {
                     this.method.invoke(this.object, task);

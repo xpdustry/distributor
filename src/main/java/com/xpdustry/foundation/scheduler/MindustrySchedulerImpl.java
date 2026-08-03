@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 public final class MindustrySchedulerImpl implements MindustryScheduler, PluginListener {
 
@@ -73,8 +72,8 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
         }
 
         @Override
-        public MindustryTask execute(final Consumer<MindustryTask> runnable) {
-            final var task = new MindustryTaskImpl(this.plugin, this.repeat, runnable);
+        public MindustryTask execute(final MindustryTaskAction action) {
+            final var task = new MindustryTaskImpl(this.plugin, this.repeat, action);
             if (MindustrySchedulerImpl.this.closed) {
                 task.state.set(MindustryTask.State.CANCELLED);
             } else {
@@ -90,14 +89,13 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
 
         private final PluginFacade plugin;
         private final long repeat;
-        private final Consumer<MindustryTask> runnable;
+        private final MindustryTaskAction action;
         private long nextExecutionTime;
 
-        private MindustryTaskImpl(
-                final PluginFacade plugin, final long repeat, final Consumer<MindustryTask> runnable) {
+        private MindustryTaskImpl(final PluginFacade plugin, final long repeat, final MindustryTaskAction action) {
             this.plugin = plugin;
             this.repeat = repeat;
-            this.runnable = runnable;
+            this.action = action;
         }
 
         @SuppressWarnings("NullAway") // bruh
@@ -117,7 +115,7 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
                 return;
             }
             try {
-                this.runnable.accept(this);
+                this.action.run(this);
                 if (this.repeat < 0) {
                     this.state.compareAndSet(State.SCHEDULED, State.FINISHED);
                 } else {
