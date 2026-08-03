@@ -88,18 +88,14 @@ public final class MindustrySchedulerImplTest {
         final var task = this.scheduler
                 .newTaskBuilder(this.plugin)
                 .repeatWithDelay(Duration.ofMillis(500L))
-                .execute(current -> {
-                    executionTimes.add(this.time.ticks());
-                    if (executionTimes.size() == 3) {
-                        current.cancel();
-                    }
-                });
+                .execute(() -> executionTimes.add(this.time.ticks()));
 
         this.scheduler.onTick();
         this.time.advance(30L);
         this.scheduler.onTick();
         this.time.advance(30L);
         this.scheduler.onTick();
+        task.cancel();
         this.time.advance(30L);
         this.scheduler.onTick();
 
