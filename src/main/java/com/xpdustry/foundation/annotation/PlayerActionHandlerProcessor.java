@@ -7,7 +7,6 @@ import com.xpdustry.foundation.scheduler.MindustryThread;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import mindustry.Vars;
 import mindustry.net.Administration;
 import org.apiguardian.api.API;
 
@@ -16,10 +15,12 @@ public class PlayerActionHandlerProcessor
         extends MethodAnnotationProcessor<PlayerActionHandler, EventSubscription, EventSubscription> {
 
     protected final PluginFacade plugin;
+    protected final Administration administration;
 
-    protected PlayerActionHandlerProcessor(final PluginFacade plugin) {
+    protected PlayerActionHandlerProcessor(final PluginFacade plugin, final Administration administration) {
         super(PlayerActionHandler.class);
         this.plugin = plugin;
+        this.administration = administration;
     }
 
     @Override
@@ -42,10 +43,10 @@ public class PlayerActionHandlerProcessor
         }
         MindustryThread.checkIsMainThread("process player action handler");
         final var filter = new MethodActionFilter(instance, method, this.plugin);
-        Vars.netServer.admins.addActionFilter(filter);
+        this.administration.addActionFilter(filter);
         return () -> {
             MindustryThread.checkIsMainThread("unsubscribe player action handler");
-            Vars.netServer.admins.actionFilters.remove(filter);
+            this.administration.actionFilters.remove(filter);
         };
     }
 

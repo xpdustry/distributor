@@ -29,5 +29,10 @@ public final class MindustryThread {
         thread = Thread.currentThread();
     }
 
+    @API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.*")
+    public static void clear() {
+        thread = null;
+    }
+
     private MindustryThread() {}
 }

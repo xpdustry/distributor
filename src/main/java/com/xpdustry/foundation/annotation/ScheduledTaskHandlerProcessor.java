@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package com.xpdustry.foundation.annotation;
 
-import com.xpdustry.foundation.FoundationAPI;
 import com.xpdustry.foundation.plugin.PluginFacade;
+import com.xpdustry.foundation.scheduler.MindustryScheduler;
 import com.xpdustry.foundation.scheduler.MindustryTask;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,10 +15,12 @@ public class ScheduledTaskHandlerProcessor
         extends MethodAnnotationProcessor<ScheduledTaskHandler, MindustryTask, MindustryTask> {
 
     protected final PluginFacade plugin;
+    protected final MindustryScheduler scheduler;
 
-    protected ScheduledTaskHandlerProcessor(final PluginFacade plugin) {
+    protected ScheduledTaskHandlerProcessor(final PluginFacade plugin, final MindustryScheduler scheduler) {
         super(ScheduledTaskHandler.class);
         this.plugin = plugin;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -35,8 +37,7 @@ public class ScheduledTaskHandlerProcessor
 
     protected MindustryTask createTask(
             final Object instance, final Method method, final ScheduledTaskHandler annotation) {
-        return FoundationAPI.get()
-                .scheduler()
+        return this.scheduler
                 .newTaskBuilder(this.plugin)
                 .initialDelay(annotation.initialDelay(), annotation.unit())
                 .repeatWithDelay(annotation.delay(), annotation.unit())

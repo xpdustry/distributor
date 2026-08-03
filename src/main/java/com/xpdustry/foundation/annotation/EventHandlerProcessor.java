@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package com.xpdustry.foundation.annotation;
 
-import com.xpdustry.foundation.FoundationAPI;
+import com.xpdustry.foundation.event.EventPublisher;
 import com.xpdustry.foundation.event.EventSubscriber;
 import com.xpdustry.foundation.event.EventSubscription;
 import com.xpdustry.foundation.plugin.PluginFacade;
@@ -15,10 +15,12 @@ public class EventHandlerProcessor
         extends MethodAnnotationProcessor<EventHandler, EventSubscription, EventSubscription> {
 
     protected final PluginFacade plugin;
+    protected final EventPublisher events;
 
-    protected EventHandlerProcessor(final PluginFacade plugin) {
+    protected EventHandlerProcessor(final PluginFacade plugin, final EventPublisher events) {
         super(EventHandler.class);
         this.plugin = plugin;
+        this.events = events;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class EventHandlerProcessor
             method.setAccessible(true);
         }
         final var handler = new MethodEventHandler<>(instance, method);
-        return FoundationAPI.get().events().subscribe(this.plugin, handler.eventType(), annotation.priority(), handler);
+        return this.events.subscribe(this.plugin, handler.eventType(), annotation.priority(), handler);
     }
 
     @Override

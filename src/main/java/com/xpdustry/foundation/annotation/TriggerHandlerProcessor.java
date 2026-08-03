@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package com.xpdustry.foundation.annotation;
 
-import com.xpdustry.foundation.FoundationAPI;
+import com.xpdustry.foundation.event.EventPublisher;
 import com.xpdustry.foundation.event.EventSubscriber;
 import com.xpdustry.foundation.event.EventSubscription;
 import com.xpdustry.foundation.plugin.PluginFacade;
@@ -16,10 +16,12 @@ public class TriggerHandlerProcessor
         extends MethodAnnotationProcessor<TriggerHandler, EventSubscription, EventSubscription> {
 
     protected final PluginFacade plugin;
+    protected final EventPublisher events;
 
-    protected TriggerHandlerProcessor(final PluginFacade plugin) {
+    protected TriggerHandlerProcessor(final PluginFacade plugin, final EventPublisher events) {
         super(TriggerHandler.class);
         this.plugin = plugin;
+        this.events = events;
     }
 
     @Override
@@ -30,13 +32,11 @@ public class TriggerHandlerProcessor
         if (!method.canAccess(instance)) {
             method.setAccessible(true);
         }
-        return FoundationAPI.get()
-                .events()
-                .subscribe(
-                        this.plugin,
-                        annotation.value(),
-                        annotation.priority(),
-                        new TriggerMethodEventHandler(instance, method));
+        return this.events.subscribe(
+                this.plugin,
+                annotation.value(),
+                annotation.priority(),
+                new TriggerMethodEventHandler(instance, method));
     }
 
     @Override
