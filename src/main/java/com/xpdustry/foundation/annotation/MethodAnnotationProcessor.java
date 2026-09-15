@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.apiguardian.api.API;
+import org.jspecify.annotations.Nullable;
 
 @API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.annotation.*")
 public abstract class MethodAnnotationProcessor<A extends Annotation, R, O> implements PluginAnnotationProcessor<O> {
@@ -18,20 +19,22 @@ public abstract class MethodAnnotationProcessor<A extends Annotation, R, O> impl
         this.annotationType = annotationType;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public final Optional<O> process(final Object instance) {
+    public Optional<O> process(final Object instance) {
         final List<R> results = new ArrayList<>();
         for (final var method : instance.getClass().getDeclaredMethods()) {
             for (final var annotation : method.getDeclaredAnnotations()) {
                 if (!this.annotationType.equals(annotation.annotationType())) continue;
-                results.add(this.process(instance, method, (A) annotation));
+                final var result = this.process(instance, method, this.annotationType.cast(annotation));
+                if (result != null) {
+                    results.add(result);
+                }
             }
         }
         return this.reduce(Collections.unmodifiableList(results));
     }
 
-    protected abstract R process(final Object instance, final Method method, final A annotation);
+    protected abstract @Nullable R process(final Object instance, final Method method, final A annotation);
 
     protected abstract Optional<O> reduce(final List<R> results);
 }
