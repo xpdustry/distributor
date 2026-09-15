@@ -37,7 +37,6 @@ val metadata =
         java = true,
         hidden = true,
         minGameVersion = "159",
-        dependencies = mutableListOf(ModDependency("slf4md", soft = true)),
     )
 
 repositories {
@@ -59,9 +58,6 @@ dependencies {
     compileOnly(toxopid.dependencies.mindustryHeadless)
     testImplementation(toxopid.dependencies.mindustryHeadless)
 
-    compileOnlyApi("org.slf4j:slf4j-api:2.0.18")
-    testRuntimeOnly("org.slf4j:slf4j-simple:2.0.18")
-
     compileOnlyApi("org.jspecify:jspecify:1.0.0")
     compileOnlyApi("org.apiguardian:apiguardian-api:1.1.2")
 
@@ -78,7 +74,6 @@ dependencies {
 }
 
 configurations.runtimeClasspath {
-    exclude(group = "org.slf4j")
     exclude(group = "com.google.errorprone")
 }
 
@@ -169,18 +164,6 @@ tasks.named<ShadowJar>("shadowJar") {
 
 tasks.named(LifecycleBasePlugin.BUILD_TASK_NAME) {
     dependsOn(tasks.named<ShadowJar>("shadowJar"))
-}
-
-val downloadSlf4md =
-    tasks.register<GithubAssetDownload>("downloadSlf4md") {
-        owner = "xpdustry"
-        repo = "slf4md"
-        asset = "slf4md.jar"
-        version = "v1.3.0"
-    }
-
-tasks.named<MindustryExec>(MindustryExec.SERVER_EXEC_TASK_NAME) {
-    mods.from(downloadSlf4md)
 }
 
 tasks.withType<MindustryExec> {

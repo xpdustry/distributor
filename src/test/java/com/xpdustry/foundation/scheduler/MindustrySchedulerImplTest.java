@@ -2,12 +2,12 @@
 package com.xpdustry.foundation.scheduler;
 
 import com.xpdustry.foundation.plugin.PluginFacade;
+import com.xpdustry.foundation.plugin.PluginLogger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -19,14 +19,14 @@ public final class MindustrySchedulerImplTest {
 
     private MutableTimeSource time;
     private PluginFacade plugin;
-    private Logger logger;
+    private PluginLogger logger;
     private MindustrySchedulerImpl scheduler;
 
     @BeforeEach
     void before() {
         this.time = new MutableTimeSource();
         this.plugin = mock(PluginFacade.class);
-        this.logger = mock(Logger.class);
+        this.logger = mock(PluginLogger.class);
         when(this.plugin.logger()).thenReturn(this.logger);
         this.scheduler = new MindustrySchedulerImpl(this.time);
     }

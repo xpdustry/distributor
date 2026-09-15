@@ -17,8 +17,6 @@ import mindustry.Vars;
 import mindustry.graphics.MultiPacker;
 import mindustry.mod.Plugin;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /// Alternative base [Plugin] class for foundation plugins.
 ///
@@ -38,8 +36,8 @@ public abstract class BaseMindustryPlugin extends Plugin
     }
 
     private final List<PluginListener> listeners = new ArrayList<>();
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final PluginMetadata metadata = PluginMetadata.from(this.getClass());
+    private final PluginLogger logger = new PluginLoggerImpl(this.metadata);
     private @Nullable CommandHandler serverCommandHandler = null;
 
     /// Returns the plugin data directory
@@ -48,13 +46,13 @@ public abstract class BaseMindustryPlugin extends Plugin
     }
 
     @Override
-    public final Logger logger() {
-        return this.logger;
+    public final PluginMetadata metadata() {
+        return this.metadata;
     }
 
     @Override
-    public final PluginMetadata metadata() {
-        return this.metadata;
+    public final PluginLogger logger() {
+        return this.logger;
     }
 
     @Override

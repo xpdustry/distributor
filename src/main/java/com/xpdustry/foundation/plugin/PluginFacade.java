@@ -2,8 +2,6 @@
 package com.xpdustry.foundation.plugin;
 
 import mindustry.mod.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /// A facade for exposing basic objects and data about a plugin.
 public interface PluginFacade {
@@ -13,14 +11,14 @@ public interface PluginFacade {
     /// @param plugin the plugin to wrap
     /// @return the plugin facade
     static PluginFacade from(final Plugin plugin) {
-        return plugin instanceof PluginFacade facade
-                ? facade
-                : new PluginFacadeImpl(LoggerFactory.getLogger(plugin.getClass()), PluginMetadata.from(plugin));
+        if (plugin instanceof PluginFacade facade) return facade;
+        final var metadata = PluginMetadata.from(plugin);
+        return new PluginFacadeImpl(metadata, new PluginLoggerImpl(metadata));
     }
-
-    /// Returns the logger bound to the plugin.
-    Logger logger();
 
     /// Returns the plugin metadata.
     PluginMetadata metadata();
+
+    /// Returns the logger bound to the plugin.
+    PluginLogger logger();
 }
