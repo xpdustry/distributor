@@ -4,12 +4,9 @@ package com.xpdustry.foundation.scheduler;
 import com.xpdustry.foundation.plugin.PluginFacade;
 import com.xpdustry.foundation.plugin.PluginListener;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
-import org.jspecify.annotations.Nullable;
 
 public final class MindustrySchedulerImpl implements MindustryScheduler, PluginListener {
 
@@ -57,7 +54,6 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
         private final PluginFacade plugin;
         private long delay = -1;
         private long repeat = -1;
-        private @Nullable Executor executor = null;
 
         private TaskBuilderImpl(final PluginFacade plugin) {
             this.plugin = plugin;
@@ -82,14 +78,8 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
         }
 
         @Override
-        public TaskBuilder executor(final Executor executor) {
-            this.executor = Objects.requireNonNull(executor, "executor");
-            return this;
-        }
-
-        @Override
         public MindustryTask execute(final MindustryTaskAction action) {
-            final var task = new MindustryTaskImpl(this.plugin, this.repeat, action, this.executor);
+            final var task = new MindustryTaskImpl(this.plugin, this.repeat, action);
             if (MindustrySchedulerImpl.this.closed) {
                 task.state.set(MindustryTask.State.CANCELLED);
             } else {
@@ -106,24 +96,22 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
         private final PluginFacade plugin;
         private final long repeat;
         private final MindustryTaskAction action;
-        private final @Nullable Executor executor;
         private long nextExecutionTime;
 
-        private MindustryTaskImpl(
-                final PluginFacade plugin,
-                final long repeat,
-                final MindustryTaskAction action,
-                final @Nullable Executor executor) {
+        private MindustryTaskImpl(final PluginFacade plugin, final long repeat, final MindustryTaskAction action) {
             this.plugin = plugin;
             this.repeat = repeat;
             this.action = action;
-            this.executor = executor;
         }
 
         @SuppressWarnings("NullAway") // bruh
         @Override
         public State state() {
-            return this.state.get();
+            final var state = this.state.get();
+            return switch (this.state.get()) {
+                case CANCELLED, FINISHED -> state;
+                case SCHEDULED -> MindustrySchedulerImpl.this.closed ? State.FINISHED : state;
+            };
         }
 
         @Override
@@ -133,14 +121,6 @@ public final class MindustrySchedulerImpl implements MindustryScheduler, PluginL
 
         @Override
         public void run() {
-            if (this.executor == null) {
-                this.run0();
-            } else {
-                this.executor.execute(this::run0);
-            }
-        }
-
-        private void run0() {
             if (this.state.get() != State.SCHEDULED) {
                 return;
             }

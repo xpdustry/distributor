@@ -9,7 +9,7 @@ import arc.util.Time;
 public interface MindustryTimeSource {
 
     /// Returns a time source backed by the system clock, using [System#currentTimeMillis()].
-    static MindustryTimeSource standard() {
+    static MindustryTimeSource system() {
         return () -> System.currentTimeMillis() / 16L;
     }
 
