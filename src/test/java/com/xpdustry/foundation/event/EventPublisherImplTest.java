@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 
 public final class EventPublisherImplTest {
 
-    private EventPublisher publisher;
+    private EventPublisherImpl publisher;
     private PluginFacade plugin;
 
     @BeforeEach
@@ -82,7 +82,7 @@ public final class EventPublisherImplTest {
 
         assertThat(classCalled).isFalse();
         assertThat(enumCalled).isFalse();
-        assertThat(EventPublisherImpl.EVENTS_MAP).isEmpty();
+        assertThat(this.publisher.events).isEmpty();
     }
 
     @Test

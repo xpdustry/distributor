@@ -9,8 +9,10 @@ import com.xpdustry.foundation.plugin.PluginFacade;
 import com.xpdustry.foundation.scheduler.MindustryThread;
 import com.xpdustry.foundation.util.Priority;
 import java.util.Comparator;
+import org.apiguardian.api.API;
 
 /// Default [EventPublisher] implementation backed by `arc.Events`.
+@API(status = API.Status.INTERNAL, consumers = "com.xpdustry.foundation.*")
 public final class EventPublisherImpl implements EventPublisher {
 
     private static final Comparator<Cons<?>> COMPARATOR = (a, b) -> {
@@ -18,8 +20,6 @@ public final class EventPublisherImpl implements EventPublisher {
         final var priorityB = b instanceof EventListenerAsCons<?> m ? m.priority : Priority.NORMAL;
         return priorityA.compareTo(priorityB);
     };
-
-    static final ObjectMap<Object, Seq<Cons<?>>> EVENTS_MAP = getEventsMap();
 
     @SuppressWarnings("unchecked")
     private static ObjectMap<Object, Seq<Cons<?>>> getEventsMap() {
@@ -30,6 +30,16 @@ public final class EventPublisherImpl implements EventPublisher {
         } catch (final ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    final ObjectMap<Object, Seq<Cons<?>>> events;
+
+    public EventPublisherImpl() {
+        this(getEventsMap());
+    }
+
+    public EventPublisherImpl(final ObjectMap<Object, Seq<Cons<?>>> events) {
+        this.events = events;
     }
 
     @Override
@@ -55,14 +65,14 @@ public final class EventPublisherImpl implements EventPublisher {
             final EventSubscriber<E> subscriber) {
         MindustryThread.checkIsMainThread("subscribe");
         final var cons = new EventListenerAsCons<>(subscriber, priority, plugin);
-        EVENTS_MAP.get(event, () -> new Seq<>(Cons.class)).add(cons).sort(COMPARATOR);
+        events.get(event, () -> new Seq<>(Cons.class)).add(cons).sort(COMPARATOR);
         return () -> {
             MindustryThread.checkIsMainThread("unsubscribe");
-            final var subscribers = EVENTS_MAP.get(event);
+            final var subscribers = events.get(event);
             if (subscribers != null) {
                 subscribers.remove(cons);
                 if (subscribers.isEmpty()) {
-                    EVENTS_MAP.remove(event);
+                    events.remove(event);
                 }
             }
         };
