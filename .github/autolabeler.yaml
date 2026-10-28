@@ -1,0 +1,15 @@
+autolabeler:
+  - labels: [ breaking ]
+    title: [ '/^\w+(\([^)]*\))?!:/' ]
+    body: [ '/^BREAKING[ -]CHANGE:/m' ]
+  - labels: [ feature ]
+    title: [ '/^feat(\([^)]*\))?!?:/' ]
+  - labels: [ fix ]
+    title: [ '/^fix(\([^)]*\))?!?:/' ]
+  - labels: [ dependencies ]
+    branch: [ '/^renovate\//' ]
+    title: [ '/^\w+\(deps\)!?:/' ]
+  - labels: [ maintenance ]
+    title: [ '/^(build|chore|ci|docs|perf|refactor|revert|style|test)(\([^)]*\))?!?:/' ]
+  - labels: [ needs-triage ]
+    fallback: true

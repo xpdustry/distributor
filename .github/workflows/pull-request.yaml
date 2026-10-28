@@ -1,0 +1,40 @@
+name: "Pull Request"
+
+# Runs with the configuration of the base branch, so it can label the pull requests from forks.
+# None of the jobs check out the pull request, they only read its metadata
+on:
+  pull_request_target:
+    types: [ opened, reopened, edited, synchronize ]
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.number }}"
+  cancel-in-progress: true
+
+jobs:
+
+  title:
+    name: "Validate Title"
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    steps:
+
+      - name: "Validate Title"
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  label:
+    name: "Label"
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+
+      - name: "Label"
+        uses: release-drafter/release-drafter/autolabeler@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7
+        with:
+          config-name: autolabeler.yaml

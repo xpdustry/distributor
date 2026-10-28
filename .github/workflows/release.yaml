@@ -1,0 +1,82 @@
+name: "Release"
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: "release"
+  cancel-in-progress: false
+
+jobs:
+
+  triage:
+    name: "Triage"
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+
+      - name: "Checkout Repository"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+
+      - name: "Check Pull Request Labels"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISTRIBUTOR_RELEASE_TAGS: "v[0-9].*"
+        run: |
+          previous="$(git describe --tags --abbrev=0 --match 'v*' --exclude "$DISTRIBUTOR_RELEASE_TAGS" 2>/dev/null || true)"
+          since="${previous:+merged:>$(git log -1 --format=%cI "$previous")}"
+          untriaged="$(gh pr list \
+            --state merged \
+            --base "$GITHUB_REF_NAME" \
+            --label needs-triage \
+            --search "$since" \
+            --json number,title \
+            --jq '.[] | "#\(.number) \(.title)"')"
+          if [ -n "$untriaged" ]; then
+            echo "$untriaged"
+            echo "::error::Some pull requests still need triage, label them before releasing"
+            exit 1
+          fi
+
+  build:
+    name: "Build"
+    needs: triage
+    uses: ./.github/workflows/build.yaml
+    with:
+      release: true
+    secrets: inherit
+    permissions:
+      contents: read
+
+  release:
+    name: "Release"
+    needs: build
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+
+      - name: "Download Release Jars"
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-artifacts
+          path: release-artifacts
+
+      - name: "Create Release"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: "v${{ needs.build.outputs.version }}"
+        run: |
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes \
+            release-artifacts/*.jar

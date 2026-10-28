@@ -10,7 +10,8 @@ jobs:
   action:
     name: "Action"
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 5
     permissions:
       checks: write
       pull-requests: write # needed unless run with comment_mode: off
@@ -20,7 +21,7 @@ jobs:
     steps:
 
       - name: "Download and Extract Test Results"
-        uses: dawidd6/action-download-artifact@b6e2e70617bc3265edd6dab6c906732b2f1ae151 # v21
+        uses: dawidd6/action-download-artifact@eab87c9830c39eff17e5a6eadb20bfb4bc880477 # v27
         with:
           run_id: ${{ github.event.workflow_run.id }}
           path: artifacts
@@ -28,7 +29,7 @@ jobs:
           name_is_regexp: true
 
       - name: "Publish Test Results"
-        uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/event-file/event.json
