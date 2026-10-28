@@ -1,38 +1,30 @@
-# Distributor
+# Xpdustry
 
-[![Xpdustry latest](https://maven.xpdustry.com/api/badge/latest/releases/com/xpdustry/distributor-common-api?color=008080&name=distributor&prefix=v)](https://maven.xpdustry.com/#/releases/com/xpdustry/distributor-common-api)
-[![Downloads](https://img.shields.io/github/downloads/xpdustry/distributor/total?color=008080)](https://github.com/xpdustry/distributor/releases)
-[![Mindustry 8.0](https://img.shields.io/badge/Mindustry-8.0-008080)](https://github.com/Anuken/Mindustry/releases)
+Everything you need for the modern Mindustry server, every project lives in its `projects/*` directory.
 
-Distributor is a framework for writing advanced Mindustry plugins in a safe and efficient way, it features:
+- `projects/foundation`: the API covering everything a good Mindustry plugin needs.
+- `projects/nucleus`: the main plugin of the xpdustry servers, and the reference on how to use foundation.
+- `projects/sql-postgresql`: the plugin providing the PostgreSQL JDBC driver to the other plugins.
+- `projects/sql-postgresql-embedded`: the plugin providing an embedded PostgreSQL server to the other plugins.
+- `projects/build-logic`: the Gradle conventions of the projects.
 
-- Powerful wrappers and utilities for the Mindustry core API.
-- An audience/component system for sending media to players (shameless port of [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure)).
-- A powerful command system provided by [Cloud](https://github.com/Incendo/cloud).
-- A nice permission system.
-- A scheduler API for managing sync and async background tasks.
-- A translation system for localizing messages.
-- **Much more...**
+## Developing
 
-## Links
+Requires Java 25. The usual tasks are `./gradlew build`, `./gradlew test` and `./gradlew spotlessApply`.
 
-- [JavaDoc](https://maven.xpdustry.com/javadoc/releases/com/xpdustry/distributor-common/latest/)
-- [Wiki](https://github.com/xpdustry/distributor/wiki)
-- [Discord](https://discord.xpdustry.com)
+- `./gradlew :<project>:runMindustryServer` runs a local server with the plugin and the plugins it depends on,
+  in `projects/<project>/build/mindustry-server`.
+- `./gradlew :<project>:runMindustryClient` runs a local client, with its data in
+  `projects/<project>/build/mindustry-client`.
 
-## Installation
+## Releasing
 
-This plugin requires at least :
+The projects are released together, by running the `Release` workflow, which builds them, publishes the libraries to
+Maven and creates the GitHub release with the plugin jars.
 
-- Mindustry v149
+- The version is `YEAR.MONTH.BUILD`, derived from the nearest release tag and the date of the commit, so a commit
+  always builds the same version. The other builds are snapshots of the next release.
+- The release notes are generated from the titles of the merged pull requests, which follow the
+  [conventional commits](https://www.conventionalcommits.org), and grouped by the labels they get from them.
 
-- Java 17
-
-- [SLF4MD](https://github.com/xpdustry/slf4md) v1.0.4
-
-## Building
-
-- `./gradlew :distributor-$module:build` to build a module, with tests included.
-- `./gradlew :distributor-$module:shadowJar` to only compile a plugin module (it will be located at `distributor-$module/build/libs/distributor-$module-$version-plugin.jar`).
-- `./gradlew :distributor-$module:test` to run the unit tests of a module.
-- `./gradlew :distributor-$module:runMindustryServer` to run a plugin module in a local Mindustry server.
+Everything is under the [MIT license](LICENSE.md).

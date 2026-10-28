@@ -1,8 +1,7 @@
 ## Gradle
-**/.gradle
+.gradle
 **/build/
 !src/**/build/
-!gradle-wrapper.jar
 
 ## Eclipse
 bin/
@@ -11,6 +10,7 @@ bin/
 .classpath
 .project
 .loadpath
+.factorypath
 
 ## VSCode
 .vscode/*
@@ -26,6 +26,7 @@ bin/
 *.tar.gz
 hs_err_pid*
 replay_pid*
+!gradle/wrapper/gradle-wrapper.jar
 
 ## Kotlin
 .kotlin/
