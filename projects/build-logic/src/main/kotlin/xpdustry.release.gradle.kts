@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-// The release of the monorepo, applied to the root project, which lists the released plugins in release
-
 val release = configurations.dependencyScope("release")
 val releaseClasspath = configurations.resolvable("releaseClasspath") {
     extendsFrom(release.get())

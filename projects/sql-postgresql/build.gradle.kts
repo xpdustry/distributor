@@ -12,5 +12,7 @@ xpdustry {
 }
 
 dependencies {
-    runtimeOnly(libs.postgresql)
+    api(libs.postgresql)
+    // Its annotations are only declared for the runtime, which breaks compiling against it
+    compileOnlyApi(libs.postgresql.annotations)
 }

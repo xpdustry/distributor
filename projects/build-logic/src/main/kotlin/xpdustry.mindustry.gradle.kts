@@ -18,7 +18,6 @@ dependencies {
 
 val plugin = the<XpdustryExtension>().plugin
 
-// The plugins this one depends on, which provide their classes at runtime, so they are never bundled
 val mindustryImplementation = configurations.dependencyScope("mindustryImplementation") {
     description = "The plugins compiled against and required at runtime, the hard dependencies."
 }
@@ -39,7 +38,6 @@ configurations.testRuntimeOnly {
     extendsFrom(mindustryRuntimeOnly.get())
 }
 
-// The names of the plugins declared in the given scopes, named after their project
 fun pluginNames(vararg scopes: NamedDomainObjectProvider<DependencyScopeConfiguration>) = provider {
     scopes.flatMap { scope -> scope.get().dependencies.map { it.name } }.toSet()
 }
@@ -75,7 +73,6 @@ val generateMetadataFile = tasks.register("generateMetadataFile") {
     }
 }
 
-// The plugin jar is released on GitHub, Maven only gets the jar the other plugins compile against
 shadow {
     addShadowVariantIntoJavaComponent = false
 }
@@ -88,7 +85,6 @@ tasks.shadowJar {
     mergeServiceFiles()
     // The duplicates are excluded before reaching the transformers, so the merged files must be included
     filesMatching("META-INF/services/**") { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
-    // Ensures the included duplicates are merged by the transformers
     failOnDuplicateEntries = true
 }
 
@@ -96,14 +92,12 @@ tasks.build {
     dependsOn(tasks.shadowJar)
 }
 
-// Exposes the plugin jar to the other projects, for the release and their local servers, with the plugins it requires
 configurations.consumable("pluginJar") {
     extendsFrom(mindustryImplementation.get(), mindustryRuntimeOnly.get())
     outgoing.artifact(tasks.shadowJar)
     usingMindustryPluginVariant(objects)
 }
 
-// The plugins loaded alongside this one by runMindustryServer
 val mindustryPluginsClasspath = configurations.resolvable("mindustryPluginsClasspath") {
     extendsFrom(mindustryImplementation.get(), mindustryCompileOnly.get(), mindustryRuntimeOnly.get())
     usingMindustryPluginVariant(objects)

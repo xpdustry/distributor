@@ -32,7 +32,6 @@ java {
 
 spotless {
     java {
-        // The default target includes the generated sources
         targetExclude("build/**")
         palantirJavaFormat()
         formatAnnotations()
@@ -49,9 +48,9 @@ tasks.withType<JavaCompile>().configureEach {
         disableWarningsInGeneratedCode = true
         excludedPaths = ".*/build/generated/.*"
         disable("MissingSummary", "InlineMeSuggester")
-        // From the palantir checks, var is part of our style
         disable("VarUsage")
-        // From the palantir checks, they push the palantir safe-logging library
+        disable("CatchSpecificity")
+        disable("StrictUnusedVariable")
         disable(
             "PreferSafeLoggableExceptions",
             "PreferSafeLogger",

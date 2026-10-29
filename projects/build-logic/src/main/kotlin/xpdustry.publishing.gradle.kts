@@ -4,7 +4,6 @@ plugins {
     signing
 }
 
-// The version is set in the settings, before the project is configured
 val isRelease = !version.toString().endsWith("-SNAPSHOT")
 
 java {
@@ -79,7 +78,6 @@ signing {
     sign(publishing.publications)
 }
 
-// Only the releases are signed
 tasks.withType<Sign>().configureEach {
     enabled = isRelease
 }

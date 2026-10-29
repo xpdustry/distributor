@@ -13,10 +13,11 @@ xpdustry {
 
 dependencies {
     mindustryRuntimeOnly(projects.sqlPostgresql)
-    runtimeOnly(libs.postgresql.embedded)
+    api(libs.postgresql.embedded)
+    // The embedded server logs through slf4j 1.7, upgraded to the slf4j 2 of the other plugins, silenced like theirs
+    runtimeOnly(libs.slf4j.nop)
 }
 
-// The driver itself is provided by sql-postgresql
 configurations.runtimeClasspath {
     exclude(group = "org.postgresql")
 }
