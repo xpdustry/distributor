@@ -73,10 +73,6 @@ val generateMetadataFile = tasks.register("generateMetadataFile") {
     }
 }
 
-shadow {
-    addShadowVariantIntoJavaComponent = false
-}
-
 tasks.shadowJar {
     archiveFileName = "${project.name}.jar"
     archiveClassifier = "plugin"
@@ -92,9 +88,9 @@ tasks.build {
     dependsOn(tasks.shadowJar)
 }
 
-configurations.consumable("pluginJar") {
+// The plugin jar variant, also published as the classifier "plugin"
+configurations.shadowRuntimeElements {
     extendsFrom(mindustryImplementation.get(), mindustryRuntimeOnly.get())
-    outgoing.artifact(tasks.shadowJar)
     usingMindustryPluginVariant(objects)
 }
 

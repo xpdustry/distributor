@@ -1,5 +1,6 @@
 plugins {
     alias(conventions.plugins.xpdustry.mindustry)
+    alias(conventions.plugins.xpdustry.publishing)
 }
 
 description = "Provides an embedded PostgreSQL server to the other plugins."

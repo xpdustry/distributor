@@ -1,5 +1,6 @@
 plugins {
     alias(conventions.plugins.xpdustry.mindustry)
+    alias(conventions.plugins.xpdustry.publishing)
 }
 
 description = "Provides the PostgreSQL JDBC driver to the other plugins."

@@ -74,10 +74,12 @@ publishing {
 }
 
 signing {
-    useInMemoryPgpKeys(findProperty("signingKey")?.toString(), findProperty("signingPassword")?.toString())
+    // CI must sign, local builds may skip it
+    isRequired = providers.environmentVariable("CI").isPresent
+    useInMemoryPgpKeys(
+        providers.gradleProperty("signingKeyId").orNull,
+        providers.gradleProperty("signingKey").orNull,
+        providers.gradleProperty("signingPassword").orNull,
+    )
     sign(publishing.publications)
-}
-
-tasks.withType<Sign>().configureEach {
-    enabled = isRelease
 }
