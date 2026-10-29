@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.database;
 
+import com.google.errorprone.annotations.MustBeClosed;
 import com.uber.nullaway.annotations.Initializer;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.foundation.plugin.PluginLogger;
@@ -39,6 +40,7 @@ public final class PostgresDatabaseImpl implements PluginListener, PostgresDatab
     private final ConfigManager configManager;
     private final Path directory;
     private PostgresDataSourceFactory factory;
+    private DataSource unpooled;
     private HikariDataSource source;
 
     @Inject
@@ -77,9 +79,10 @@ public final class PostgresDatabaseImpl implements PluginListener, PostgresDatab
         }
     }
 
+    @MustBeClosed
     @Override
     public Connection newOrphanConnection() throws SQLException {
-        return this.source.getConnection();
+        return this.unpooled.getConnection();
     }
 
     @Initializer
@@ -106,7 +109,8 @@ public final class PostgresDatabaseImpl implements PluginListener, PostgresDatab
         }
 
         final var config = new HikariConfig();
-        config.setDataSource(this.factory.create());
+        this.unpooled = this.factory.create();
+        config.setDataSource(this.unpooled);
         config.setPoolName("sql-transaction-pool");
         config.setMaximumPoolSize(Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
         config.setMinimumIdle(2);

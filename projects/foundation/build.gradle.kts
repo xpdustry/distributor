@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     alias(conventions.plugins.xpdustry.mindustry)
     alias(conventions.plugins.xpdustry.publishing)
@@ -32,4 +34,6 @@ val mockitoAgentClasspath = configurations.resolvable("mockitoAgentClasspath") {
 tasks.test {
     val agent = files(mockitoAgentClasspath)
     jvmArgumentProviders.add { listOf("-javaagent:${agent.singleFile.absolutePath}") }
+    // The agent extends the boot class path, which class data sharing warns about on every run
+    jvmArgs("-Xshare:off")
 }

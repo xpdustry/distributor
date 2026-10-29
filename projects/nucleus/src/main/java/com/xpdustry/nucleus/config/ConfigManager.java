@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
 
 public final class ConfigManager implements PluginListener {
@@ -61,12 +60,5 @@ public final class ConfigManager implements PluginListener {
                 throw new IllegalArgumentException("Failed to parse " + name, e);
             }
         }
-    }
-
-    @VisibleForTesting
-    public ConfigManager fork() {
-        final var that = new ConfigManager();
-        that.entries.putAll(this.entries);
-        return that;
     }
 }

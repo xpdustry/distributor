@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.database;
 
+import com.google.errorprone.annotations.MustBeClosed;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ public interface PostgresDatabase {
 
     <R> R withTransaction(SQLFunction<Transaction, R> function);
 
+    @MustBeClosed
     Connection newOrphanConnection() throws SQLException;
 
     interface Transaction {
