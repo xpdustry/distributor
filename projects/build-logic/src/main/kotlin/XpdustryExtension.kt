@@ -4,6 +4,9 @@ import org.gradle.api.tasks.Nested
 
 const val GITHUB_REPOSITORY = "xpdustry/monorepo"
 
+/** The Java version of the toolchain, so the one the servers must run. */
+const val JAVA_VERSION = 25
+
 abstract class XpdustryExtension {
     /** The plugin settings, read by `xpdustry.mindustry`. */
     @get:Nested abstract val plugin: PluginSettings

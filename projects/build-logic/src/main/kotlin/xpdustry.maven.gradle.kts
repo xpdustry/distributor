@@ -1,0 +1,68 @@
+plugins {
+    `maven-publish`
+    signing
+}
+
+val isRelease = !version.toString().endsWith("-SNAPSHOT")
+
+publishing {
+    publications.withType<MavenPublication>().configureEach {
+        pom {
+            url = "https://github.com/$GITHUB_REPOSITORY"
+
+            licenses {
+                license {
+                    name = "The MIT License"
+                    url = "https://opensource.org/licenses/MIT"
+                }
+            }
+
+            organization {
+                name = "xpdustry"
+                url = "https://xpdustry.com"
+            }
+
+            developers {
+                developer {
+                    id = "Phinner"
+                    timezone = "Europe/Brussels"
+                }
+            }
+
+            scm {
+                connection = "scm:git:https://github.com/$GITHUB_REPOSITORY.git"
+                developerConnection = "scm:git:ssh://git@github.com/$GITHUB_REPOSITORY.git"
+                url = "https://github.com/$GITHUB_REPOSITORY"
+            }
+
+            issueManagement {
+                system = "GitHub"
+                url = "https://github.com/$GITHUB_REPOSITORY/issues"
+            }
+
+            ciManagement {
+                system = "GitHub Actions"
+                url = "https://github.com/$GITHUB_REPOSITORY/actions"
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "xpdustry"
+            url = uri("https://maven.xpdustry.com/${if (isRelease) "releases" else "snapshots"}")
+            credentials(PasswordCredentials::class)
+        }
+    }
+}
+
+signing {
+    // CI must sign, local builds may skip it
+    isRequired = providers.environmentVariable("CI").isPresent
+    useInMemoryPgpKeys(
+        providers.gradleProperty("signingKeyId").orNull,
+        providers.gradleProperty("signingKey").orNull,
+        providers.gradleProperty("signingPassword").orNull,
+    )
+    sign(publishing.publications)
+}
