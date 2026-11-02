@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.text;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.nucleus.dependency.Inject;
 import java.io.IOException;
@@ -14,15 +12,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class BadWordFinder implements PluginListener {
 
     private final StringTrieMap<BadWordCategory> trie = new StringTrieMap<>();
-    private final Gson gson;
+    private final JsonMapper json;
 
     @Inject
-    public BadWordFinder(final Gson gson) {
-        this.gson = gson;
+    public BadWordFinder(final JsonMapper json) {
+        this.json = json;
     }
 
     public List<String> findBadWords(final String text, final Set<BadWordCategory> categories) {
@@ -41,7 +41,7 @@ public final class BadWordFinder implements PluginListener {
         Objects.requireNonNull(stream, "bad_words.json");
         try (stream;
                 final var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            final var map = this.gson.fromJson(reader, new TypeToken<Map<BadWordCategory, List<String>>>() {});
+            final var map = this.json.readValue(reader, new TypeReference<Map<BadWordCategory, List<String>>>() {});
             for (final var entry : map.entrySet()) {
                 for (final var word : entry.getValue()) {
                     this.trie.put(word, entry.getKey());

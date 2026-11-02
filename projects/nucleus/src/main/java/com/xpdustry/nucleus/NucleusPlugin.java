@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus;
 
-import com.google.gson.Gson;
 import com.xpdustry.foundation.annotation.PluginAnnotationProcessor;
 import com.xpdustry.foundation.plugin.BaseMindustryPlugin;
 import com.xpdustry.foundation.plugin.PluginFacade;
@@ -13,22 +12,29 @@ import com.xpdustry.nucleus.config.ConfigModule;
 import com.xpdustry.nucleus.database.DatabaseModule;
 import com.xpdustry.nucleus.dependency.DependencyModule;
 import com.xpdustry.nucleus.dependency.DependencyService;
+import com.xpdustry.nucleus.foundation.FoundationModule;
 import com.xpdustry.nucleus.gatekeeper.GatekeeperModule;
+import com.xpdustry.nucleus.lifecycle.LifecycleModule;
 import com.xpdustry.nucleus.message.MessageModule;
 import com.xpdustry.nucleus.metric.MetricCollectorHandlerProcessor;
 import com.xpdustry.nucleus.metric.MetricModule;
 import com.xpdustry.nucleus.network.NetworkModule;
 import com.xpdustry.nucleus.text.TextModule;
+import com.xpdustry.nucleus.update.UpdateModule;
 import com.xpdustry.nucleus.version.NucleusVersion;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class NucleusPlugin extends BaseMindustryPlugin {
 
-    private final HttpClient http = HttpClient.newHttpClient();
+    private final HttpClient http =
+            HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
 
     private final DependencyService dependencies = DependencyService.create(
             new PluginModule(),
+            new FoundationModule(),
+            new LifecycleModule(),
             new ConfigModule(),
             new DatabaseModule(),
             new MessageModule(),
@@ -36,7 +42,8 @@ public final class NucleusPlugin extends BaseMindustryPlugin {
             new NetworkModule(),
             new MetricModule(),
             new GatekeeperModule(),
-            new ConcurrentModule());
+            new ConcurrentModule(),
+            new UpdateModule());
 
     @Override
     public void onInit() {
@@ -79,7 +86,7 @@ public final class NucleusPlugin extends BaseMindustryPlugin {
             binder.bind(Path.class, plugin.directory());
             binder.bind(PluginLogger.class, plugin.logger());
             binder.bind(PluginFacade.class, plugin);
-            binder.bind(Gson.class, new Gson());
+            binder.bind(JsonMapper.class, new JsonMapper());
             binder.bind(HttpClient.class, plugin.http);
             final var version = new NucleusVersion(plugin.metadata().version());
             binder.bind(NucleusVersion.class, version);

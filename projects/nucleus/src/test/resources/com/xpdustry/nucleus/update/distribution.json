@@ -1,0 +1,42 @@
+{
+    "version": "2026.10.0-SNAPSHOT",
+    "commit": "47d7d90932004044abfb4fb7c615b8c0a8369585",
+    "committed": "2026-10-29T19:53:41Z",
+    "java": 25,
+    "mindustry": {
+        "version": "v160.7",
+        "url": "https://github.com/Anuken/Mindustry/releases/download/v160.7/server-release.jar",
+        "sha256": "f7b899a4038b95b14a824d5f8993984f79d73baa3254c385b6538327f9c0befd"
+    },
+    "plugins": [
+        {
+            "name": "foundation",
+            "sha256": "9253aea4a55eed97d568ff51e444f207aeb737969f6a423fb39c371c1bc01788",
+            "dependencies": [
+                
+            ]
+        },
+        {
+            "name": "nucleus",
+            "sha256": "5f78b5846912b2fc72cf2a55fee3cad5d90feab9d59c6e2a85f7a208eb55a99a",
+            "dependencies": [
+                "foundation",
+                "sql-postgresql"
+            ]
+        },
+        {
+            "name": "sql-postgresql",
+            "sha256": "1a22955a8328d6fb611104bcb3a25b48a773a384b188fe4f2dd1457fdf8ba616",
+            "dependencies": [
+                
+            ]
+        },
+        {
+            "name": "sql-postgresql-embedded",
+            "sha256": "89f86208ecbe044ab9e58e5714e259d190afbac46481991f84597dd0b9cbf4f5",
+            "dependencies": [
+                "sql-postgresql"
+            ]
+        }
+    ]
+}

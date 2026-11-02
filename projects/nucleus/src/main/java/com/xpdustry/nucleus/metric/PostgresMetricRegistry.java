@@ -2,7 +2,6 @@
 package com.xpdustry.nucleus.metric;
 
 import arc.Core;
-import com.google.gson.Gson;
 import com.xpdustry.foundation.annotation.ScheduledTaskHandler;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.foundation.plugin.PluginLogger;
@@ -20,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class PostgresMetricRegistry implements MetricRegistry, PluginListener {
 
@@ -28,20 +28,20 @@ public final class PostgresMetricRegistry implements MetricRegistry, PluginListe
     private final List<MetricCollectorWithAsync> collectors = new CopyOnWriteArrayList<>();
     private final ConfigManager config;
     private final Executor executor;
-    private final Gson gson;
+    private final JsonMapper json;
     private final PostgresDatabase database;
 
     @Inject
     public PostgresMetricRegistry(
             final ConfigManager config,
             final Executor executor,
-            final Gson gson,
+            final JsonMapper json,
             final PostgresDatabase database,
             final PluginLogger logger) {
         this.logger = logger;
         this.config = config;
         this.executor = executor;
-        this.gson = gson;
+        this.json = json;
         this.database = database;
     }
 
@@ -82,7 +82,7 @@ public final class PostgresMetricRegistry implements MetricRegistry, PluginListe
                             (binder, sample) -> binder.bind(server)
                                     .bind(sample.name)
                                     .bind(now)
-                                    .bind(this.gson.toJson(sample.labels))
+                                    .bind(this.json.writeValueAsString(sample.labels))
                                     .bind(sample.value))
                     .executeUpdate());
         } catch (final Exception e) {

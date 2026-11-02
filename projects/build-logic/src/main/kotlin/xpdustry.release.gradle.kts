@@ -25,7 +25,6 @@ val mindustryServerClasspath = configurations.resolvable("mindustryServerClasspa
     extendsFrom(mindustryServer.get())
 }
 
-// Fails without any commit or outside a git repository
 val head = providers.exec {
     commandLine("git", "show", "--no-patch", "--format=%H %ct", "HEAD")
     isIgnoreExitValue = true
@@ -36,7 +35,6 @@ val generateDistributionManifest = tasks.register<GenerateDistributionManifest>(
     plugins.from(releaseClasspath)
     mindustryServer.fileProvider(mindustryServerClasspath.map { it.singleFile })
     mindustryVersion = libs.versions.mindustry
-    // Where the mindustry-releases repository of the settings downloads it from
     mindustryUrl = libs.versions.mindustry.map {
         "https://github.com/Anuken/Mindustry/releases/download/$it/server-release.jar"
     }
@@ -59,7 +57,6 @@ publishing {
     }
 }
 
-// Servers update as soon as the manifest is published, so every plugin it lists must be published first
 val self = path
 tasks.named("publishDistributionPublicationToXpdustryRepository") {
     dependsOn(

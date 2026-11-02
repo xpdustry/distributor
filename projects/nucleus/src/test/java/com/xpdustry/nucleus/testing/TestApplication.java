@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.testing;
 
-import com.google.gson.Gson;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.foundation.plugin.PluginLogger;
 import com.xpdustry.nucleus.config.ConfigManager;
@@ -17,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import tools.jackson.databind.json.JsonMapper;
 
 /// An application made of the given modules, on top of what the plugin provides outside of Mindustry.
 ///
@@ -32,7 +32,7 @@ public final class TestApplication implements AutoCloseable {
     private TestApplication(final Path directory, final DependencyModule... modules) {
         final var base = (DependencyModule) binder -> {
             binder.bind(Path.class, directory);
-            binder.bind(Gson.class, new Gson());
+            binder.bind(JsonMapper.class, new JsonMapper());
             binder.bind(Executor.class, this.executor);
             binder.bind(ConfigManager.class, new ConfigManager());
             binder.bind(PluginLogger.class, new TestPluginLogger());

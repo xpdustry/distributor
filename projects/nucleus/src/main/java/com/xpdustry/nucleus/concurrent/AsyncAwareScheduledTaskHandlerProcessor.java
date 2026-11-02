@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.concurrent;
 
-import com.xpdustry.foundation.FoundationAPI;
 import com.xpdustry.foundation.annotation.ScheduledTaskHandler;
 import com.xpdustry.foundation.annotation.ScheduledTaskHandlerProcessor;
 import com.xpdustry.foundation.plugin.PluginFacade;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.foundation.plugin.PluginLogger;
+import com.xpdustry.foundation.scheduler.MindustryScheduler;
 import com.xpdustry.foundation.scheduler.MindustryTask;
 import com.xpdustry.foundation.scheduler.MindustryTimeUnit;
 import com.xpdustry.nucleus.dependency.Inject;
@@ -24,8 +24,8 @@ public final class AsyncAwareScheduledTaskHandlerProcessor extends ScheduledTask
     private final List<MindustryAsyncTask> tasks = new ArrayList<>();
 
     @Inject
-    public AsyncAwareScheduledTaskHandlerProcessor(final PluginFacade plugin) {
-        super(plugin, FoundationAPI.get().scheduler());
+    public AsyncAwareScheduledTaskHandlerProcessor(final PluginFacade plugin, final MindustryScheduler scheduler) {
+        super(plugin, scheduler);
     }
 
     @Override

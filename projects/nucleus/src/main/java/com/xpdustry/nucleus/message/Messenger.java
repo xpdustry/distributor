@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.message;
 
-import com.google.gson.Gson;
 import com.xpdustry.foundation.annotation.ScheduledTaskHandler;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.foundation.plugin.PluginLogger;
@@ -22,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class Messenger implements PluginListener {
 
@@ -32,7 +32,7 @@ public final class Messenger implements PluginListener {
     private final ConfigManager config;
     private final Executor executor;
     private final PostgresDatabase database;
-    private final Gson gson = new Gson();
+    private final JsonMapper json;
     private final ServerInfoProvider info;
     private final Map<String, List<MessageSubscriber<?>>> subscribers = new ConcurrentHashMap<>();
     private final Map<String, DiscoveredServer> servers = new ConcurrentHashMap<>();
@@ -43,12 +43,14 @@ public final class Messenger implements PluginListener {
             final Executor executor,
             final PostgresDatabase database,
             final ServerInfoProvider info,
+            final JsonMapper json,
             final PluginLogger logger) {
         this.logger = logger;
         this.config = config;
         this.executor = executor;
         this.database = database;
         this.info = info;
+        this.json = json;
         this.subscribe(DiscoveryMessage.class, (sender, message) -> {
             if (message.info() == null) {
                 this.servers.remove(sender);
@@ -78,7 +80,7 @@ public final class Messenger implements PluginListener {
             payload.append('|');
             payload.append(this.config.get(ConfigPropertyKey.SERVER_NAME));
             payload.append('|');
-            payload.append(this.gson.toJson(message));
+            payload.append(this.json.writeValueAsString(message));
         } catch (final Exception e) {
             this.logger.error(
                     "Failed to serialize a message of type {}",
@@ -164,7 +166,7 @@ public final class Messenger implements PluginListener {
 
         final M message;
         try {
-            message = this.gson.fromJson(payload, (Class<M>) Class.forName(payloadType));
+            message = this.json.readValue(payload, (Class<M>) Class.forName(payloadType));
         } catch (final ClassNotFoundException e) {
             return;
         } catch (final Exception e) {

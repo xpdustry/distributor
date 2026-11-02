@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.network;
 
-import com.google.gson.Gson;
 import com.xpdustry.foundation.annotation.ScheduledTaskHandler;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.foundation.plugin.PluginLogger;
@@ -16,26 +15,27 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class InetAddressInfoProvider implements PluginListener {
 
     private final PluginLogger logger;
 
     private final ConfigManager config;
-    private final Gson gson;
+    private final JsonMapper json;
     private final HttpClient http;
     private final PostgresDatabase database;
 
     @Inject
     public InetAddressInfoProvider(
             final ConfigManager config,
-            final Gson gson,
+            final JsonMapper json,
             final HttpClient http,
             final PostgresDatabase database,
             final PluginLogger logger) {
         this.logger = logger;
         this.config = config;
-        this.gson = gson;
+        this.json = json;
         this.http = http;
         this.database = database;
     }
@@ -88,7 +88,7 @@ public final class InetAddressInfoProvider implements PluginListener {
         }
 
         try {
-            final var body = this.gson.fromJson(response.body(), VpnApiIoResponse.class);
+            final var body = this.json.readValue(response.body(), VpnApiIoResponse.class);
             final var safe = !(body.security.vpn || body.security.proxy || body.security.tor || body.security.relay);
             final var countryCode = body.location.country_code;
             final var asnName = body.network.autonomous_system_organization;

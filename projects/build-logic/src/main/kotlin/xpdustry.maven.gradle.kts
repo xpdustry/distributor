@@ -57,7 +57,6 @@ publishing {
 }
 
 signing {
-    // CI must sign, local builds may skip it
     isRequired = providers.environmentVariable("CI").isPresent
     useInMemoryPgpKeys(
         providers.gradleProperty("signingKeyId").orNull,

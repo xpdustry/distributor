@@ -31,7 +31,8 @@ postgresql = "org.postgresql:postgresql:42.7.14"
 postgresql-annotations = "org.checkerframework:checker-qual:3.55.1"
 postgresql-embedded = "io.zonky.test:embedded-postgres:2.2.2"
 hikari = "com.zaxxer:HikariCP:7.1.0"
-gson = "com.google.code.gson:gson:2.15.0"
+jackson-databind = "tools.jackson.core:jackson-databind:3.2.4"
+bouncycastle-openpgp = "org.bouncycastle:bcpg-jdk18on:1.86"
 slf4j-nop = "org.slf4j:slf4j-nop:2.0.18"
 
 [plugins]

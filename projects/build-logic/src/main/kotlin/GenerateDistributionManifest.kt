@@ -47,7 +47,6 @@ abstract class GenerateDistributionManifest : DefaultTask() {
         if (duplicates.isNotEmpty()) throw GradleException("Duplicate plugins $duplicates")
         val manifest =
             linkedMapOf(
-                "schema" to 1,
                 "version" to distributionVersion.get(),
                 "commit" to commit.get(),
                 "committed" to committed.get(),
@@ -72,7 +71,6 @@ abstract class GenerateDistributionManifest : DefaultTask() {
         return linkedMapOf(
             "name" to metadata["name"],
             "sha256" to sha256(jar),
-            // Only the hard ones, the soft ones never keep a plugin from loading
             "dependencies" to metadata["dependencies"],
         )
     }

@@ -33,7 +33,7 @@ final class MessengerTest {
             12,
             3,
             30,
-            new MindustryVersion(8, 157, 0, MindustryVersion.Type.OFFICIAL),
+            new MindustryVersion(157, 0),
             ServerInfo.Gamemode.SURVIVAL,
             null,
             ServerInfo.State.PLAYING);

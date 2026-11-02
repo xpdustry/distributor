@@ -9,5 +9,6 @@ public final class ConfigModule implements DependencyModule {
     @Override
     public void configure(final DependencyService.Binder binder) {
         binder.bind(ConfigManager.class);
+        binder.bind(ConfigCommand.class);
     }
 }

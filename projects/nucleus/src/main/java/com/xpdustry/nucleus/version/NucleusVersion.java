@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 package com.xpdustry.nucleus.version;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Comparator;
 
 /// A calendar-based version for nucleus, a snapshot being a build of the next release.
@@ -25,6 +27,7 @@ public record NucleusVersion(int year, int month, int build, boolean snapshot) i
         }
     }
 
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public NucleusVersion(final String version) {
         var normalized = version;
         if (normalized.startsWith("v")) {
@@ -58,6 +61,7 @@ public record NucleusVersion(int year, int month, int build, boolean snapshot) i
         return COMPARATOR.compare(this, other);
     }
 
+    @JsonValue
     @Override
     public String toString() {
         return this.year + "." + this.month + "." + this.build + (this.snapshot ? SNAPSHOT_SUFFIX : "");

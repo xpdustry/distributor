@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 import mindustry.mod.Mods;
 import mindustry.mod.Plugin;
 
@@ -20,14 +21,16 @@ public record PluginMetadata(
         String mainClass,
         int minGameVersion,
         String repository,
-        List<String> dependencies,
-        List<String> softDependencies) {
+        List<Dependency> dependencies) {
+
+    /// A plugin this plugin depends on, optional for the soft dependencies.
+    public record Dependency(String name, boolean optional) {}
 
     /// Creates a new [PluginMetadata] from a [Mods.ModMeta].
     ///
     /// @param meta the [Mods.ModMeta] to create the [PluginMetadata] from
     /// @return the created [PluginMetadata]
-    static PluginMetadata from(final Mods.ModMeta meta) {
+    public static PluginMetadata from(final Mods.ModMeta meta) {
         return new PluginMetadata(
                 Objects.requireNonNull(meta.name),
                 Objects.requireNonNullElse(meta.displayName, meta.name),
@@ -37,15 +40,22 @@ public record PluginMetadata(
                 Objects.requireNonNull(meta.main),
                 meta.getMinMajor(),
                 Objects.requireNonNullElse(meta.repo, ""),
-                List.copyOf(MindustryCollections.asList(meta.dependencies)),
-                List.copyOf(MindustryCollections.asList(meta.softDependencies)));
+                Stream.concat(
+                                MindustryCollections.asList(meta.dependencies).stream()
+                                        .map(name -> new Dependency(name, false)),
+                                MindustryCollections.asList(meta.softDependencies).stream()
+                                        .map(name -> new Dependency(name, true)))
+                        .toList());
     }
 
     /// Returns the plugin metadata of the given plugin.
     ///
     /// @param plugin the plugin to get the metadata from
     /// @return the metadata of the given plugin
-    static PluginMetadata from(final Plugin plugin) {
+    public static PluginMetadata from(final Plugin plugin) {
+        if (plugin instanceof PluginFacade facade) {
+            return facade.metadata();
+        }
         return PluginMetadata.from(plugin.getClass());
     }
 
@@ -54,7 +64,7 @@ public record PluginMetadata(
     /// @param clazz the plugin class to get the metadata from
     /// @return the metadata of the given plugin class
     /// @throws RuntimeException if the plugin metadata is missing or invalid
-    static PluginMetadata from(final Class<? extends Plugin> clazz) {
+    public static PluginMetadata from(final Class<? extends Plugin> clazz) {
         try {
             return PluginMetadata.from(clazz.getClassLoader());
         } catch (final IOException e) {
@@ -67,7 +77,7 @@ public record PluginMetadata(
     /// @param classLoader the class loader to get the metadata from
     /// @return the metadata from the given class loader
     /// @throws IOException if the plugin metadata is missing or invalid
-    static PluginMetadata from(final ClassLoader classLoader) throws IOException {
+    public static PluginMetadata from(final ClassLoader classLoader) throws IOException {
         var resource = classLoader.getResourceAsStream("plugin.json");
         if (resource == null) {
             resource = classLoader.getResourceAsStream("plugin.hjson");

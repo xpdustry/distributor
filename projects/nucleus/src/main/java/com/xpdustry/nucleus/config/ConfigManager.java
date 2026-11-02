@@ -4,16 +4,17 @@ package com.xpdustry.nucleus.config;
 import com.xpdustry.foundation.plugin.PluginListener;
 import com.xpdustry.nucleus.dependency.Inject;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
 
 public final class ConfigManager implements PluginListener {
 
-    private final Map<String, Object> entries = new HashMap<>();
+    private final Map<String, Object> entries = new ConcurrentHashMap<>();
     private final @Nullable Path file;
 
     @Inject
@@ -34,6 +35,25 @@ public final class ConfigManager implements PluginListener {
     public <T> ConfigManager set(final ConfigPropertyKey<T> key, final T value) {
         this.entries.put(key.name(), value);
         return this;
+    }
+
+    /// Returns whether the key has a value other than its default.
+    public boolean isSet(final ConfigPropertyKey<?> key) {
+        return this.entries.containsKey(key.name());
+    }
+
+    /// Parses the value of the key and saves it to the config file.
+    ///
+    /// @throws IllegalArgumentException if the value is invalid for the key
+    public <T> void save(final ConfigPropertyKey<T> key, final String value) throws IOException {
+        this.entries.put(key.name(), key.parse(value));
+        this.write();
+    }
+
+    /// Resets the key to its default value and saves the config file.
+    public void reset(final ConfigPropertyKey<?> key) throws IOException {
+        this.entries.remove(key.name());
+        this.write();
     }
 
     @Override
@@ -60,5 +80,30 @@ public final class ConfigManager implements PluginListener {
                 throw new IllegalArgumentException("Failed to parse " + name, e);
             }
         }
+    }
+
+    private void write() throws IOException {
+        if (this.file == null) {
+            return;
+        }
+        final var properties = new Properties();
+        for (final var key : ConfigPropertyKey.all().values()) {
+            if (this.isSet(key)) {
+                properties.setProperty(key.name(), format(this, key));
+            }
+        }
+        final var writer = new StringWriter();
+        properties.store(writer, null);
+        // Drops the date comment and sorts the entries, which store writes in no particular order
+        final var lines = writer.toString()
+                .lines()
+                .filter(line -> !line.startsWith("#"))
+                .sorted()
+                .toList();
+        Files.write(this.file, lines);
+    }
+
+    static <T> String format(final ConfigManager config, final ConfigPropertyKey<T> key) {
+        return key.format(config.get(key));
     }
 }
